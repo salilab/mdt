@@ -1,0 +1,76 @@
+import os
+import re
+from subprocess import Popen, PIPE
+
+def _makedef(target, source, env):
+  dll = str(target[0])
+  if dll.endswith(".def"):
+      dll = dll[:-4] + '.dll'
+  infh = open(str(source[0]), "r")
+  outfh = open(str(target[0]), "w")
+  print >> outfh, "LIBRARY %s" % dll
+  print >> outfh, "EXPORTS"
+  srch = re.compile("\s*\w+.*\s+(\w+)\(")
+  for line in infh:
+      m = srch.match(line)
+      if m:
+          print >> outfh, "  %s" % m.group(1)
+
+class WineEnvironment(Environment):
+    """Environment to build Windows binaries under Linux, by running the
+       MSVC compiler (cl) and linker (link) through wine, using the w32cc
+       and w32link shell scripts"""
+    def __init__(self, platform='win32', CC='w32cc', LINK='w32link', **kw):
+        Environment.__init__(self, platform=platform, CC=CC, LINK=LINK, **kw)
+        posix_env = Environment(platform='posix')
+        self['SHLIBPREFIX'] = self['LIBLINKPREFIX'] = 'lib'
+        self['LIBSUFFIX'] = '.lib'
+        self['PSPAWN'] = posix_env['PSPAWN']
+        self['SPAWN'] = posix_env['SPAWN']
+        self['SHELL'] = posix_env['SHELL']
+        self['ENV'] = posix_env['ENV']
+
+def get_modeller_config():
+    if ARGUMENTS.has_key('modinstall'):
+        modinstall = ARGUMENTS['modinstall']
+    else:
+        modinstall = os.environ['MODINSTALLSVN']
+
+    p = Popen("%s/bin/modSVN -" % modinstall, shell=True, stdin=PIPE,
+              stdout=PIPE, close_fds=True)
+    print >> p.stdin, "print 'EXE type: ', info.exe_type"
+    p.stdin.close()
+    for line in p.stdout:
+        if line.startswith("EXE type"):
+            exetype=line[11:].rstrip('\r\n')
+    include = ['%s/src/include' % modinstall]
+    bin = '%s/bin' % modinstall
+    if exetype == 'i386-w32':
+        libpath = ['%s/src/main' % modinstall]
+    else:
+        libpath = ['%s/lib/%s' % (modinstall, exetype)]
+    libs = ["modeller"]
+    return {'include':include, 'libpath':libpath, 'libs':libs,
+            'exetype':exetype, 'bin':bin}
+
+def is_wine_platform(modconfig):
+    import SCons.Platform
+    return modconfig['exetype'] == 'i386-w32' \
+           and SCons.Platform.platform_default() == 'posix'
+
+def get_python_include(modconfig):
+    if is_wine_platform(modconfig):
+        return '/usr/lib/w32comp/w32python/2.4/include/'
+    else:
+        import distutils.sysconfig
+        return distutils.sysconfig.get_python_inc()
+
+def MyEnvironment(modconfig, *args, **kw):
+    if is_wine_platform(modconfig):
+        env = WineEnvironment(*args, **kw)
+        env.is_wine = True
+    else:
+        env = Environment(*args, **kw)
+        env.is_wine = False
+    env.Append(BUILDERS = {'W32Def': Builder(action=_makedef)})
+    return env

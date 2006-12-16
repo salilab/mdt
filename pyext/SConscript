@@ -1,0 +1,11 @@
+Import('env', 'modconfig', 'pythoninc')
+
+e = env.Copy()
+if e.is_wine:
+    e['SHLIBSUFFIX'] = '.pyd'
+
+e.SharedLibrary('_mdt', 'mdt.i', SHLIBPREFIX='',
+                SWIGFLAGS='-python -noproxy',
+                CPPPATH=modconfig['include']+[pythoninc],
+                LIBS=modconfig['libs']+['mdt'],
+                LIBPATH=modconfig['libpath']+['../src'])

@@ -1,0 +1,8 @@
+Import('env', 'modconfig')
+
+env.W32Def('libmdt.def', 'mdt.h')
+env.SharedLibrary('mdt', ('mdt_exp_transform.c', 'mdt_linear_transform.c',
+                          'util.c', 'mdt_inverse_transform.c', 'mdt_smooth.c'),
+                  WIN32DEFPREFIX='lib', WIN32_INSERT_DEF=1,
+                  CPPPATH=modconfig['include'],
+                  LIBS=modconfig['libs'], LIBPATH=modconfig['libpath'])

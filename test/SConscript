@@ -1,0 +1,22 @@
+Import('env', 'modconfig')
+
+e = env.Copy()
+
+if modconfig['exetype'] != 'i386-w32':
+    e['ENV']['LD_LIBRARY_PATH'] = 'src/'
+    python = 'python'
+else:
+    python = 'w32python'
+e['ENV']['PYTHONPATH'] = 'pyext'
+
+def builder_unit_test(target, source, env):
+    app = "%s/modpy.sh %s %s -v > /dev/null" % (modconfig['bin'], python,
+                                                source[0].abspath)
+    if env.Execute(app) == 0:
+        file(str(target[0]), 'w').write('PASSED\n')
+    else:
+        return 1
+e.Append(BUILDERS = {'Test': Builder(action=builder_unit_test)})
+
+e.Alias("test", e.Test("test.passed", "test_mdt.py"))
+e.AlwaysBuild("test.passed")

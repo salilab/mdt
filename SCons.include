@@ -1,6 +1,5 @@
 import os
 import re
-from subprocess import Popen, PIPE
 
 def _makedef(target, source, env):
   dll = str(target[0])
@@ -34,13 +33,20 @@ def get_modeller_config():
     if ARGUMENTS.has_key('modinstall'):
         modinstall = ARGUMENTS['modinstall']
     else:
-        modinstall = os.environ['MODINSTALLSVN']
+        try:
+            modinstall = os.environ['MODINSTALLSVN']
+        except KeyError:
+            raise KeyError, \
+                """Could not determine Modeller install location - 
+                   specify with 'scons modinstall=/home/modeller' or similar"""
 
-    p = Popen("%s/bin/modSVN -" % modinstall, shell=True, stdin=PIPE,
-              stdout=PIPE, close_fds=True)
-    print >> p.stdin, "print 'EXE type: ', info.exe_type"
-    p.stdin.close()
-    for line in p.stdout:
+    (fhin, fhout, fherr) = os.popen3("%s/bin/modSVN -" % modinstall)
+    print >> fhin, "print 'EXE type: ', info.exe_type"
+    fhin.close()
+    err = fherr.read()
+    if err:
+        raise IOError, ("Error running Modeller: " + err)
+    for line in fhout:
         if line.startswith("EXE type"):
             exetype=line[11:].rstrip('\r\n')
     include = ['%s/src/include' % modinstall]

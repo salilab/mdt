@@ -6,6 +6,7 @@ if e.is_wine:
 if modconfig['exetype'].startswith('mac10'):
     e['SHLINKFLAGS'] = '$LINKFLAGS -bundle -flat_namespace -undefined suppress'
     e['SHLIBSUFFIX'] = '.so'
+    e.Depends('_mdt.so', '#src/libmdt.dylib')
 
 e.SharedLibrary('_mdt', 'mdt.i', SHLIBPREFIX='',
                 SWIGFLAGS='-python -noproxy',

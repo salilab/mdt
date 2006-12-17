@@ -56,6 +56,8 @@ def get_modeller_config():
     else:
         libpath = ['%s/lib/%s' % (modinstall, exetype)]
     libs = ["modeller"]
+    if exetype == 'mac10v4-xlf':
+        libs += ["hdf5", "hdf5_hl"]
     return {'include':include, 'libpath':libpath, 'libs':libs,
             'exetype':exetype, 'bin':bin}
 

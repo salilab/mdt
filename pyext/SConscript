@@ -3,6 +3,9 @@ Import('env', 'modconfig', 'pythoninc')
 e = env.Copy()
 if e.is_wine:
     e['SHLIBSUFFIX'] = '.pyd'
+if modconfig['exetype'].startswith('mac10'):
+    e['SHLINKFLAGS'] = '$LINKFLAGS -bundle -flat_namespace -undefined suppress'
+    e['SHLIBSUFFIX'] = '.so'
 
 e.SharedLibrary('_mdt', 'mdt.i', SHLIBPREFIX='',
                 SWIGFLAGS='-python -noproxy',

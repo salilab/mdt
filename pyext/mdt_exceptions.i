@@ -5,7 +5,7 @@ static PyObject *mdterror;
 
 
 /** Raise an exception if an error code was returned. */
-static int handle_error(void)
+static void handle_error(void)
 {
   char *mod_err = get_mod_error();
 

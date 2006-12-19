@@ -49,7 +49,8 @@ def get_modeller_config():
     for line in fhout:
         if line.startswith("EXE type"):
             exetype=line[11:].rstrip('\r\n')
-    include = ['%s/src/include' % modinstall]
+    include = ['%s/src/include' % modinstall,
+               '%s/src/include/%s' % (modinstall, exetype)]
     bin = '%s/bin' % modinstall
     if exetype == 'i386-w32':
         libpath = ['%s/src/main' % modinstall]

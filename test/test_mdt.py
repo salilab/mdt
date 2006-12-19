@@ -220,6 +220,9 @@ class MDTTests(ModellerTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         m = mdt.mdt(mlib, features=(1,2))
+        # Dimensions must be 1 or 2:
+        for dim in (0, 3):
+            self.assertRaises(ValueError, m.smooth, dim, 1.0)
         # A smoothed empty MDT should be the prior, i.e. 1/nbin:
         m2 = m.smooth(2, 1.0)
         inds = []

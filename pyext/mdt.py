@@ -3,6 +3,8 @@ import _mdt
 from modeller.util.modobject import modobject
 from modeller.util import modlist
 
+error = _mdt.error
+
 class mdt_library(modobject):
     """Library data used in the construction and use of MDTs"""
     __modpt = None

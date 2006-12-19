@@ -17,8 +17,12 @@ else:
     e['SHLIBSUFFIX'] = so
     e['CPPFLAGS'] = basecflags + " " + opt
 
-e.SharedLibrary('_mdt', 'mdt.i', SHLIBPREFIX='',
-                SWIGFLAGS='-python -noproxy',
-                CPPPATH=modconfig['include']+[pythoninc],
-                LIBS=modconfig['libs']+['mdt'],
-                LIBPATH=modconfig['libpath']+['../src'])
+lib = e.SharedLibrary('_mdt', 'mdt.i', SHLIBPREFIX='',
+                      SWIGFLAGS='-python -noproxy',
+                      CPPPATH=modconfig['include']+[pythoninc],
+                      LIBS=modconfig['libs']+['mdt'],
+                      LIBPATH=modconfig['libpath']+['../src'])
+
+libinst = env.Install(modconfig['libinstall'], lib)
+pyinst = env.Install(modconfig['pyinstall'], 'mdt.py')
+env.Alias('install', [libinst, pyinst])

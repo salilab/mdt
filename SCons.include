@@ -30,17 +30,22 @@ class WineEnvironment(Environment):
         self['ENV'] = posix_env['ENV']
 
 def get_modeller_config():
+    if ARGUMENTS.has_key('modsource'):
+        modsource = ARGUMENTS['modsource']
+    else:
+        try:
+            modsource = os.environ['MODINSTALLSVN']
+        except KeyError:
+            raise KeyError, \
+                """Could not determine Modeller source location - 
+                   specify with 'scons modsource=/home/modeller' or similar"""
+
     if ARGUMENTS.has_key('modinstall'):
         modinstall = ARGUMENTS['modinstall']
     else:
-        try:
-            modinstall = os.environ['MODINSTALLSVN']
-        except KeyError:
-            raise KeyError, \
-                """Could not determine Modeller install location - 
-                   specify with 'scons modinstall=/home/modeller' or similar"""
+        modinstall = modsource
 
-    (fhin, fhout, fherr) = os.popen3("%s/bin/modSVN -" % modinstall)
+    (fhin, fhout, fherr) = os.popen3("%s/bin/modSVN -" % modsource)
     print >> fhin, "print 'EXE type: ', info.exe_type"
     fhin.close()
     err = fherr.read()
@@ -49,20 +54,24 @@ def get_modeller_config():
     for line in fhout:
         if line.startswith("EXE type"):
             exetype=line[11:].rstrip('\r\n')
-    include = ['%s/src/include' % modinstall,
-               '%s/src/include/%s' % (modinstall, exetype)]
-    bin = '%s/bin' % modinstall
+    include = ['%s/src/include' % modsource,
+               '%s/src/include/%s' % (modsource, exetype)]
+    bin = '%s/bin' % modsource
     if exetype == 'i386-w32':
-        libpath = ['%s/src/main' % modinstall]
+        libpath = ['%s/src/main' % modsource]
+        libinstall = '%s/bin' % modinstall
     else:
-        libpath = ['%s/lib/%s' % (modinstall, exetype)]
+        libpath = ['%s/lib/%s' % (modsource, exetype)]
+        libinstall = '%s/lib/%s' % (modinstall, exetype)
     libs = ["modeller"]
+    pyinstall = '%s/modlib' % modinstall
     if exetype == 'mac10v4-xlf':
         libs += ["hdf5", "hdf5_hl"]
     elif exetype == 'mac10v4-intel':
         libs += ["hdf5", "hdf5_hl", "imf", "svml", "ifcore", "irc"]
     return {'include':include, 'libpath':libpath, 'libs':libs,
-            'exetype':exetype, 'bin':bin}
+            'exetype':exetype, 'bin':bin, 'libinstall':libinstall,
+            'pyinstall':pyinstall}
 
 def is_wine_platform(modconfig):
     import SCons.Platform

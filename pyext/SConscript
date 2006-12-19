@@ -3,10 +3,19 @@ Import('env', 'modconfig', 'pythoninc')
 e = env.Copy()
 if e.is_wine:
     e['SHLIBSUFFIX'] = '.pyd'
-if modconfig['exetype'].startswith('mac10'):
-    e['SHLINKFLAGS'] = '$LINKFLAGS -bundle -flat_namespace -undefined suppress'
-    e['SHLIBSUFFIX'] = '.so'
-    e.Depends('_mdt.so', '#src/libmdt.dylib')
+else:
+    if modconfig['exetype'].startswith('mac10'):
+        e.Depends('_mdt.so', '#src/libmdt.dylib')
+    if modconfig['exetype'].startswith('rs6000'):
+        e['ENV']['PATH'] += ':/usr/vac/bin'
+    from distutils.sysconfig import get_config_vars
+    vars = get_config_vars('CC', 'OPT', 'BASECFLAGS', 'LDSHARED', 'SO')
+    (cc, opt, basecflags, ldshared, so) = vars
+    e['CC'] = cc
+    e['SHLINK'] = ldshared
+    e['SHLINKFLAGS'] = []
+    e['SHLIBSUFFIX'] = so
+    e['CPPFLAGS'] = basecflags + " " + opt
 
 e.SharedLibrary('_mdt', 'mdt.i', SHLIBPREFIX='',
                 SWIGFLAGS='-python -noproxy',

@@ -93,6 +93,7 @@ int main(void)
     return res
 
 def MyEnvironment(modconfig, *args, **kw):
+    import platform
     if is_wine_platform(modconfig):
         env = WineEnvironment(*args, **kw)
         env.is_wine = True
@@ -102,7 +103,8 @@ def MyEnvironment(modconfig, *args, **kw):
     env.Append(BUILDERS = {'W32Def': Builder(action=_makedef)})
 
     conf = env.Configure(custom_tests = {'CheckGNUHash': CheckGNUHash})
-    conf.CheckGNUHash()
+    if platform.system() == 'Linux':
+        conf.CheckGNUHash()
     conf.Finish()
 
     return env

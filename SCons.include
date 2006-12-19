@@ -75,6 +75,23 @@ def get_python_include(modconfig):
         import distutils.sysconfig
         return distutils.sysconfig.get_python_inc()
 
+def CheckGNUHash(context):
+    """Disable GNU_HASH-style linking (if found) for backwards compatibility"""
+    context.Message('Checking whether GNU_HASH linking should be disabled...')
+    lastLINKFLAGS = context.env['LINKFLAGS']
+    context.env.Append(LINKFLAGS="-Wl,--hash-style=sysv")
+    text = """
+int main(void)
+{ return 0; }
+"""
+    res = context.TryLink(text, '.c')
+    if not res:
+        context.Result("no")
+        context.env.Replace(LINKFLAGS=lastLINKFLAGS)
+    else:
+        context.Result("yes")
+    return res
+
 def MyEnvironment(modconfig, *args, **kw):
     if is_wine_platform(modconfig):
         env = WineEnvironment(*args, **kw)
@@ -83,4 +100,9 @@ def MyEnvironment(modconfig, *args, **kw):
         env = Environment(*args, **kw)
         env.is_wine = False
     env.Append(BUILDERS = {'W32Def': Builder(action=_makedef)})
+
+    conf = env.Configure(custom_tests = {'CheckGNUHash': CheckGNUHash})
+    conf.CheckGNUHash()
+    conf.Finish()
+
     return env

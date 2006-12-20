@@ -4,13 +4,13 @@ e = configure_for_pyext(env, modconfig)
 if modconfig['exetype'].startswith('mac10'):
     e.Depends('_mdt.so', '#src/libmdt.dylib')
 
-lib = e.SharedLibrary('_mdt', 'mdt.i', SHLIBPREFIX='',
+lib = e.SharedLibrary('_mdt', 'mdt.i',
                       SWIGFLAGS='-python -noproxy',
                       CPPPATH=modconfig['include']+[pythoninc],
                       LIBS=modconfig['libs']+['mdt'],
                       LIBPATH=modconfig['libpath']+['../src'])
 
-libinst = env.Install(modconfig['libinstall'], lib)
-pyinst = env.Install(modconfig['pyinstall'], 'mdt.py')
-env.Alias('install', [libinst, pyinst])
+libinst = e.Install(modconfig['libinstall'], lib)
+pyinst = e.Install(modconfig['pyinstall'], 'mdt.py')
+e.Alias('install', [libinst, pyinst])
 Return('lib')

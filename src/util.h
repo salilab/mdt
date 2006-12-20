@@ -28,6 +28,10 @@ int indmdt(const int *indf, const struct mdt_type *mdt);
     more points are available. */
 int roll_ind(int *indf, const struct mdt_type *mdt, int nfeat);
 
+/** Get the number of bins in the 1 or 2 dependent features */
+void get_binx_biny(int dimensions, const struct mdt_type *mdt,
+                   const char *routine, int *nbinx, int *nbiny, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

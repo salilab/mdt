@@ -69,3 +69,26 @@ int roll_ind(int *indf, const struct mdt_type *mdt, int nfeat)
   }
   return 0;
 }
+
+/** Get the number of bins in the 1 or 2 dependent features */
+void get_binx_biny(int dimensions, const struct mdt_type *mdt,
+                   const char *routine, int *nbinx, int *nbiny, int *ierr)
+{
+  if (dimensions < 1 || dimensions > 2 || dimensions > mdt->nfeat) {
+    modlogerror(routine, ME_VALUE,
+                "'dimensions' is %d; it must be either 1 or 2, and not more "
+                "than the dimensionality of this MDT (%d)", dimensions,
+                mdt->nfeat);
+    *ierr = 1;
+  } else {
+    *ierr = 0;
+    if (dimensions == 1) {
+      *nbinx = f_int1_get(&mdt->nbins, mdt->nfeat - 1);
+      *nbiny = 1;
+    } else {
+      *nbinx = f_int1_get(&mdt->nbins, mdt->nfeat - 1);
+      *nbiny = f_int1_get(&mdt->nbins, mdt->nfeat - 2);
+    }
+  }
+}
+

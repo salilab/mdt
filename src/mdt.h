@@ -31,6 +31,9 @@ void mdt_inverse_transform(struct mdt_type *mdt, float offset, float multiplier,
 void mdt_log_transform(struct mdt_type *mdt, float offset, float multiplier,
                        float undefined);
 
+/** Offset an MDT by the minimum value. */
+void mdt_offset_min(struct mdt_type *mdt, int dimensions, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

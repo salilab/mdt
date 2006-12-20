@@ -14,27 +14,17 @@ void mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 {
   static const float divisor = 1e-15;
   static const char *routine = "mdt_smooth";
-  int nbins, *indf;
+  int nbins, nbinx, nbiny, *indf;
   double *in_bin, *out_bin;
 
   *ierr = 0;
-  if (dimensions < 1 || dimensions > 2 || dimensions > mdtin->nfeat) {
-    modlogerror(routine, ME_VALUE,
-                "'dimensions' is %d; it must be either 1 or 2, and not more "
-                "than the dimensionality of this MDT (%d)", dimensions,
-                mdtin->nfeat);
-    *ierr = 1;
+  get_binx_biny(dimensions, mdtin, routine, &nbinx, &nbiny, ierr);
+  if (*ierr != 0) {
     return;
   }
+  nbins = nbinx * nbiny;
 
   copy_mdt(mdtin, mdtout);
-
-  if (dimensions == 1) {
-    nbins = f_int1_get(&mdtin->nbins, mdtin->nfeat - 1);
-  } else {
-    nbins = f_int1_get(&mdtin->nbins, mdtin->nfeat - 1) *
-        f_int1_get(&mdtin->nbins, mdtin->nfeat - 2);
-  }
 
   indf = mdt_start_indices(mdtin);
   in_bin = f_double1_pt(&mdtin->bin);

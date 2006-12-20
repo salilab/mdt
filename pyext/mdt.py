@@ -225,7 +225,9 @@ class mdt(mdt_section):
 
     def offset_min(self, dimensions):
         """Offset the MDT by the minimum value."""
-        return self.__transform_mdt(dimensions, 4, (), 0.)
+        mdtout = self.copy()
+        _mdt.mdt_offset_min(mdtout._modpt, dimensions)
+        return mdtout
 
     def close_spline(self, dimensions):
         """Attempt to 'close' the MDT, so that it is useful for creating splines

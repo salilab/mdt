@@ -1,7 +1,7 @@
 Import('env', 'modconfig')
 
 files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',
-         'mdt_inverse_transform.c', 'mdt_smooth.c')
+         'mdt_inverse_transform.c', 'mdt_log_transform.c', 'mdt_smooth.c')
 
 env.W32Def('libmdt.def', 'mdt.h')
 lib = env.SharedLibrary('mdt', files, WIN32DEFPREFIX='lib', WIN32_INSERT_DEF=1,

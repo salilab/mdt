@@ -207,7 +207,9 @@ class mdt(mdt_section):
 
     def log_transform(self, offset, multiplier, undefined=0.):
         """Apply a log transform to the MDT."""
-        return self.__transform_mdt(1, 1, (offset, multiplier), undefined)
+        mdtout = self.copy()
+        _mdt.mdt_log_transform(mdtout._modpt, offset, multiplier, undefined)
+        return mdtout
 
     def linear_transform(self, offset, multiplier):
         """Apply a linear transform to the MDT."""

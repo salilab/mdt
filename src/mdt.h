@@ -27,6 +27,10 @@ void mdt_linear_transform(struct mdt_type *mdt, float offset, float multiplier);
 void mdt_inverse_transform(struct mdt_type *mdt, float offset, float multiplier,
                            float undefined);
 
+/** Transform an MDT with a log function */
+void mdt_log_transform(struct mdt_type *mdt, float offset, float multiplier,
+                       float undefined);
+
 #ifdef __cplusplus
 }
 #endif

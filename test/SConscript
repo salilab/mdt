@@ -22,5 +22,7 @@ def builder_unit_test(target, source, env):
         return 1
 e.Append(BUILDERS = {'Test': Builder(action=builder_unit_test)})
 
-e.Alias("test", e.Test("test.passed", "test_mdt.py"))
+test = e.Test("test.passed", "test_mdt.py")
+e.Alias("test", test)
 e.AlwaysBuild("test.passed")
+Return('test')

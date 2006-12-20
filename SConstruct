@@ -7,6 +7,7 @@ env = MyEnvironment(modconfig)
 
 Export('env', 'modconfig', 'pythoninc', 'configure_for_pyext')
 
-SConscript(['src/SConscript',
-            'pyext/SConscript',
-            'test/SConscript'])
+test = SConscript('test/SConscript')
+pyext = SConscript('pyext/SConscript')
+SConscript('src/SConscript')
+env.Depends(test, pyext)

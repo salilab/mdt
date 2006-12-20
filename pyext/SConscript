@@ -13,3 +13,4 @@ lib = e.SharedLibrary('_mdt', 'mdt.i', SHLIBPREFIX='',
 libinst = env.Install(modconfig['libinstall'], lib)
 pyinst = env.Install(modconfig['pyinstall'], 'mdt.py')
 env.Alias('install', [libinst, pyinst])
+Return('lib')

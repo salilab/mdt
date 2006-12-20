@@ -9,5 +9,6 @@ Export('env', 'modconfig', 'pythoninc', 'configure_for_pyext')
 
 test = SConscript('test/SConscript')
 pyext = SConscript('pyext/SConscript')
-SConscript('src/SConscript')
+src = SConscript('src/SConscript')
 env.Depends(test, pyext)
+env.Default(src, pyext)

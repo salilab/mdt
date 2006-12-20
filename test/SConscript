@@ -8,7 +8,8 @@ if modconfig['exetype'] != 'i386-w32':
     python = 'python'
 else:
     import shutil
-    shutil.copy("../src/libmdt.dll", "../libmdt.dll")
+    e.Command('#libmdt.dll', '#src/libmdt.dll', 'ln -sf $SOURCE $TARGET')
+    e.Depends('test.passed', '#libmdt.dll')
     python = 'w32python'
 e['ENV']['PYTHONPATH'] = 'pyext'
 

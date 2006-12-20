@@ -1,15 +1,21 @@
 Import('env', 'modconfig', 'pythoninc', 'configure_for_pyext')
 
+# Get a modified build environment suitable for building Python extensions:
 e = configure_for_pyext(env, modconfig)
+
+# On Mac, add an explicit dependency on the C shared library, since this
+# isn't done by default:
 if modconfig['exetype'].startswith('mac10'):
     e.Depends('_mdt.so', '#src/libmdt.dylib')
 
+# Build the Python extension from SWIG interface file:
 lib = e.SharedLibrary('_mdt', 'mdt.i',
                       SWIGFLAGS='-python -noproxy',
                       CPPPATH=modconfig['include']+[pythoninc],
                       LIBS=modconfig['libs']+['mdt'],
                       LIBPATH=modconfig['libpath']+['../src'])
 
+# Install the Python extension and any .py files:
 libinst = e.Install(modconfig['libinstall'], lib)
 pyinst = e.Install(modconfig['pyinstall'], 'mdt.py')
 e.Alias('install', [libinst, pyinst])

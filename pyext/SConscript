@@ -13,7 +13,7 @@ lib = e.SharedLibrary('_mdt', 'mdt.i',
                       SWIGFLAGS='-python -noproxy',
                       CPPPATH=modconfig['include']+[pythoninc],
                       LIBS=modconfig['libs']+['mdt'],
-                      LIBPATH=modconfig['libpath']+['../src'])
+                      LIBPATH=['../src']+modconfig['libpath'])
 
 # Install the Python extension and any .py files:
 libinst = e.Install(modconfig['libinstall'], lib)

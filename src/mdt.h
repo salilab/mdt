@@ -34,6 +34,9 @@ void mdt_log_transform(struct mdt_type *mdt, float offset, float multiplier,
 /** Offset an MDT by the minimum value. */
 void mdt_offset_min(struct mdt_type *mdt, int dimensions, int *ierr);
 
+/** Close an MDT so that it is useful for creating periodic splines. */
+void mdt_close(struct mdt_type *mdt, int dimensions, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

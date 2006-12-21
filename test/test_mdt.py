@@ -204,22 +204,26 @@ class MDTTests(ModellerTest):
         while self.roll_inds(inds, m.shape, m.offset):
             self.assertAlmostEqual(m[inds] - minminval, m2[inds], places=3)
 
-    def test_close_spline(self):
+    def test_close(self):
         """Check for correctness of spline closing"""
         m = self.get_test_mdt(features=(1,2))
         # Get a better range of values in our starting MDT
         m = m.log_transform(0.0, 0.7, 10.0)
         # Only 1D or 2D should be allowed
         for dim in (0, 3):
-            self.assertRaises(ValueError, m.close_spline, dimensions=dim)
+            self.assertRaises(ValueError, m.close, dimensions=dim)
         nx, ny = m.shape
-        m2 = m.close_spline(dimensions=1)
+        m2 = m.close(dimensions=1)
         for x in range(nx):
             self.assertEqual(m2[x,0], m2[x,ny-1])
-        m2 = m.close_spline(dimensions=2)
+        m2 = m.close(dimensions=2)
         self.assertEqual(m2[0,0], m2[0,ny-1])
         self.assertEqual(m2[0,0], m2[nx-1,0])
         self.assertEqual(m2[0,0], m2[nx-1,ny-1])
+        for x in range(nx):
+            self.assertEqual(m2[x,0], m2[x,ny-1])
+        for y in range(ny):
+            self.assertEqual(m2[0,y], m2[nx-1,y])
 
     def test_super_smooth(self):
         """Check for correctness of super smoothing"""

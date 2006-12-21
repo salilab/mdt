@@ -229,10 +229,12 @@ class mdt(mdt_section):
         _mdt.mdt_offset_min(mdtout._modpt, dimensions)
         return mdtout
 
-    def close_spline(self, dimensions):
+    def close(self, dimensions):
         """Attempt to 'close' the MDT, so that it is useful for creating splines
            of periodic features."""
-        return self.__transform_mdt(dimensions, 5, (), 0.)
+        mdtout = self.copy()
+        _mdt.mdt_close(mdtout._modpt, dimensions)
+        return mdtout
 
     def entropy_full(self):
         """Print full entropy information."""

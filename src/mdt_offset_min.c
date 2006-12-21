@@ -58,7 +58,8 @@ void mdt_offset_min(struct mdt_type *mdt, int dimensions, int *ierr)
     }
 
 /* roll the indices of the "constant" features one forward: */
-  } while (roll_ind(indf, mdt, mdt->nfeat - dimensions));
+  } while (roll_ind(indf, f_int1_pt(&mdt->istart), f_int1_pt(&mdt->iend),
+                    mdt->nfeat - dimensions));
 
   free(indf);
 }

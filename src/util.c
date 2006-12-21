@@ -3,6 +3,7 @@
  *             Part of MDT, Copyright(c) 1989-2006 Andrej Sali
  */
 
+#include <math.h>
 #include "modeller.h"
 #include "mod_dynmem.h"
 #include "util.h"
@@ -50,12 +51,9 @@ int indmdt(const int *indf, const struct mdt_type *mdt)
 
 /** Update the indices for the next point in the MDT. Return false if no
     more points are available. */
-int roll_ind(int *indf, const struct mdt_type *mdt, int nfeat)
+int roll_ind(int indf[], const int istart[], const int iend[], int nfeat)
 {
-  int *istart, *iend, i;
-  istart = f_int1_pt(&mdt->istart);
-  iend = f_int1_pt(&mdt->iend);
-  i = nfeat - 1;
+  int i = nfeat - 1;
   while (i >= 0) {
     if (indf[i] + 1 <= iend[i]) {
       indf[i]++;
@@ -92,3 +90,30 @@ void get_binx_biny(int dimensions, const struct mdt_type *mdt,
   }
 }
 
+
+/** Return the sum of a set. */
+double get_sum(const double bin[], int nbins)
+{
+  int i;
+  double sum = 0.;
+  for (i = 0; i < nbins; i++) {
+    sum += bin[i];
+  }
+  return sum;
+}
+
+
+/** Return the entropy of a set. */
+double entrp1(const double frq[], int nbinx)
+{
+  int i;
+  double ent;
+
+  ent = 0.;
+  for (i = 0; i < nbinx; i++) {
+    if (frq[i] > 1.0e-37) {
+      ent -= frq[i] * log(frq[i]);
+    }
+  }
+  return ent;
+}

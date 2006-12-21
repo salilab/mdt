@@ -60,7 +60,8 @@ void mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
     }
 
 /* roll the indices of the "constant" features one forward: */
-  } while (roll_ind(indf, mdtin, mdtin->nfeat - dimensions));
+  } while (roll_ind(indf, f_int1_pt(&mdtin->istart), f_int1_pt(&mdtin->iend),
+                    mdtin->nfeat - dimensions));
 
   mdtout->pdf = 1;
   free(indf);

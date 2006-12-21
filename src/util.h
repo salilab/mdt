@@ -26,11 +26,17 @@ int indmdt(const int *indf, const struct mdt_type *mdt);
 
 /** Update the indices for the next point in the MDT. Return false if no
     more points are available. */
-int roll_ind(int *indf, const struct mdt_type *mdt, int nfeat);
+int roll_ind(int indf[], const int istart[], const int iend[], int nfeat);
 
 /** Get the number of bins in the 1 or 2 dependent features */
 void get_binx_biny(int dimensions, const struct mdt_type *mdt,
                    const char *routine, int *nbinx, int *nbiny, int *ierr);
+
+/** Return the sum of a set. */
+double get_sum(const double bin[], int nbins);
+
+/** Return the entropy of a set. */
+double entrp1(const double frq[], int nbinx);
 
 #ifdef __cplusplus
 }

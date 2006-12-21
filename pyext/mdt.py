@@ -277,12 +277,6 @@ class mdt(mdt_section):
                                     io.modpt, edat.modpt,
                                     self._mlib.env.libs.modpt)
 
-    def __transform_mdt(self, dimensions, trf_type, parameters, trf_undefined):
-        mdtout = mdt(self._mlib)
-        _modeller.transform_mdt(self._modpt, mdtout._modpt, dimensions,
-                                trf_type, parameters, trf_undefined)
-        return mdtout
-
     def __getitem__(self, indx):
         if not isinstance(indx, (list, tuple)):
             indx = (indx,)

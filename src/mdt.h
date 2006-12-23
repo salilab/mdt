@@ -37,6 +37,9 @@ void mdt_offset_min(struct mdt_type *mdt, int dimensions, int *ierr);
 /** Close an MDT so that it is useful for creating periodic splines. */
 void mdt_close(struct mdt_type *mdt, int dimensions, int *ierr);
 
+/** Get the entropy of the dependent variable. */
+float mdt_entropy_hx(const struct mdt_type *mdt, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

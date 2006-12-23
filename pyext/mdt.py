@@ -242,7 +242,7 @@ class mdt(mdt_section):
 
     def entropy_hx(self):
         """Get the entropy of the dependent variable."""
-        return _modeller.entropy_hx_mdt(self._modpt, self._mlib.modpt)
+        return _mdt.mdt_entropy_hx(self._modpt)
 
     def super_smooth(self, prior_weight, entropy_weighing):
         """Multi-level smoothing"""

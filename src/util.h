@@ -38,6 +38,12 @@ double get_sum(const double bin[], int nbins);
 /** Return the entropy of a set. */
 double entrp1(const double frq[], int nbinx);
 
+/** Calculate the pdf p(x/independent features) summed over all
+    independent features and their values except for the n_feat_fix fixed
+    independent features. */
+void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
+            const int i_val_fix[], int nbinx, double frq[]);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,4 +1,4 @@
-# Include TNT build utility functions:
+# Include NMP build utility functions:
 execfile('../SCons.include')
 
 # Get Modeller and Python locations, and set up a build environment:

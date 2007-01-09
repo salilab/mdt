@@ -2,6 +2,7 @@ Import('env', 'modconfig')
 
 # Source files
 files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',
+         'num_recipes.c',
          'mdt_inverse_transform.c', 'mdt_log_transform.c', 'mdt_offset_min.c',
          'mdt_smooth.c', 'mdt_close.c', 'mdt_entropy_hx.c', 'mdt_write.c')
 

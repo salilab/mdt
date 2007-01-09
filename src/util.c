@@ -8,6 +8,7 @@
 #include "modeller.h"
 #include "mod_dynmem.h"
 #include "util.h"
+#include "num_recipes.h"
 
 /** Return the indices of the "top-left" corner of the MDT. This must be freed
     by the user after use. */
@@ -147,6 +148,20 @@ static int *complem(const int i_feat_fix[], int n_feat_fix, int numb_features,
   return i_feat_var;
 }
 
+/** Allocate and set control arrays for a subset of the MDT features */
+static void setup_mdt_feature_arrays(const struct mdt_type *mdt,
+                                     const int ifeat[], int nfeat, int **istart,
+                                     int **ival, int **nbins)
+{
+  int i;
+  *istart = dmalloc(sizeof(int) * nfeat);
+  *ival = dmalloc(sizeof(int) * nfeat);
+  *nbins = dmalloc(sizeof(int) * nfeat);
+  for (i = 0; i < nfeat; i++) {
+    (*nbins)[i] = f_int1_get(&mdt->nbins, ifeat[i]);
+    (*ival)[i] = (*istart)[i] = f_int1_get(&mdt->istart, ifeat[i]);
+  }
+}
 
 /** Calculate the pdf p(x/independent features) summed over all
     independent features and their values except for the n_feat_fix fixed
@@ -169,13 +184,8 @@ void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
   }
 
   /* set the control arrays for non-independent feature values: */
-  istart = dmalloc(sizeof(int) * n_feat_var);
-  i_val_var = dmalloc(sizeof(int) * n_feat_var);
-  var_feature_bins = dmalloc(sizeof(int) * n_feat_var);
-  for (i = 0; i < n_feat_var; i++) {
-    var_feature_bins[i] = f_int1_get(&mdt->nbins, i_feat_var[i]);
-    i_val_var[i] = istart[i] = f_int1_get(&mdt->istart, i);
-  }
+  setup_mdt_feature_arrays(mdt, i_feat_var, n_feat_var, &istart, &i_val_var,
+                           &var_feature_bins);
 
   /* clear the output frq array: */
   for (i = 0; i < nbinx; i++) {
@@ -204,4 +214,174 @@ void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
   free(i_val_var);
   free(indf);
   free(var_feature_bins);
+}
+
+/** Return entropy of p(x/y,z,...) where y,z are the independent features.
+    See pages 480-483 in Numerical Recipes for equations. */
+double entrp2(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
+              int n_feat_fix, int nbinx, float sumi[])
+{
+  static const char *routine = "entrp2";
+  static const double small = 1.0e-3, tiny = 1.0e-6;
+  int i, *fix_feature_bins, *i_val_fix, *istart;
+  double spjk, entrp, sumfrq, *fijk;
+
+  /* initialize the column and row totals; only for the chi^2 calc later on: */
+  for (i = 0; i < nbinx; i++) {
+    sumi[i] = 0.;
+  }
+
+  fijk = dmalloc(sizeof(double) * nbinx);
+  /* set the control arrays for fixed (and non-independent) feature values: */
+  setup_mdt_feature_arrays(mdt, i_feat_fix, n_feat_fix, &istart, &i_val_fix,
+                           &fix_feature_bins);
+
+  /* for each possible combination of values of the current combination
+     of independent features (all j,k,...) */
+  spjk = entrp = 0.;
+  do {
+    /* get pdf p(x/y,z,...) for the current combination of values of the
+       current combination of independent features */
+    getfrq(mdt, i_feat_fix, n_feat_fix, i_val_fix, nbinx, fijk);
+
+    /* over all values of the dependent variable */
+    sumfrq = get_sum(fijk, nbinx);
+
+    /* only for the chi^2 calculation later on: */
+    for (i = 0; i < nbinx; i++) {
+      sumi[i] += fijk[i];
+    }
+
+    if (sumfrq > tiny) {
+      double e2, pjk;
+      int ix;
+      /* for all values of the dependent variable */
+      e2 = 0.;
+      for (ix = 0; ix < nbinx; ix++) {
+        double p = fijk[ix] / sumfrq;
+        /* note that: lim_{p->0} p*ln(p) = 0 */
+        if (p > tiny) {
+          e2 += p * log(p);
+        }
+      }
+
+      /* sumfrq/summdt is a weight for this contribution to total entropy:
+         it equals to the probability of occurence of this particular
+         combination of independent feature values in the sample: */
+      pjk = sumfrq / summdt;
+      entrp -= pjk * e2;
+      spjk += pjk;
+    }
+
+  } while (roll_ind(i_val_fix, istart, fix_feature_bins, n_feat_fix));
+
+  if (fabs(spjk - 1.0) > small) {
+    modlogwarning(routine, "Sum of p(ijk) (%.8f) is not equal to 1.0", spjk);
+  }
+
+  /* clean up */
+  free(fijk);
+  free(fix_feature_bins);
+  free(i_val_fix);
+  free(istart);
+
+  return entrp;
+}
+
+/** Get the chi^2, etc for pdf p(x/y,z,...) */
+double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
+              int n_feat_fix, int nbinx, float sumi[], double *df, double *prob,
+              double *ccc, double *cramrv, int *ierr)
+{
+  static const char *routine = "chiqrt";
+  static const double small = 1.0e-6, tiny = 1.0e-30, fract = 0.001;
+  int i, *fix_feature_bins, *i_val_fix, *istart;
+  float s, sumjmdt;
+  double *fijk, chi2;
+  int nni, nnj, minnn;
+
+  *ierr = 0;
+
+  /* a self-consistency test and getting nni: */
+  nni = 0;
+  s = 0.;
+  for (i = 0; i < nbinx; i++) {
+    s += sumi[i];
+    if (sumi[i] > small) {
+      nni++;
+    }
+  }
+  if (fabs((s - summdt) / (s + tiny)) > fract) {
+    modlogerror(routine, ME_GENERIC,
+                "Inconsistency in chi-square calculation: %f %f", s, summdt);
+    *ierr = 1;
+    return 0.;
+  }
+
+  fijk = dmalloc(sizeof(double) * nbinx);
+  /* set the control arrays for non-independent feature values: */
+  setup_mdt_feature_arrays(mdt, i_feat_fix, n_feat_fix, &istart, &i_val_fix,
+                           &fix_feature_bins);
+
+  /* do the chi^2 sum: */
+  nnj = 0;
+  sumjmdt = 0.;
+  chi2 = 0.;
+  do {
+    double sumj;
+
+    /* get pdf p(x/y,z,...) for the current combination of values of the
+       current combination of independent features */
+    getfrq(mdt, i_feat_fix, n_feat_fix, i_val_fix, nbinx, fijk);
+
+    sumj = get_sum(fijk, nbinx);
+    sumjmdt += sumj;
+    if (sumj > small) {
+      nnj++;
+    }
+
+    for (i = 0; i < nbinx; i++) {
+      double expctd, actual;
+      expctd = sumj * sumi[i] / summdt;
+      actual = fijk[i];
+      chi2 += (actual - expctd) * (actual - expctd) / (expctd + tiny);
+    }
+  } while (roll_ind(i_val_fix, istart, fix_feature_bins, n_feat_fix));
+
+  /* clean up */
+  free(fijk);
+  free(fix_feature_bins);
+  free(i_val_fix);
+  free(istart);
+
+  /* test for the sum over j: */
+  if (fabs((sumjmdt - summdt) / (summdt + tiny)) > fract) {
+    modlogerror(routine, ME_GENERIC,
+                "Inconsistency in chi-square calculation: %f %f", sumjmdt,
+                summdt);
+    *ierr = 1;
+    return 0.;
+  }
+
+  /* degrees of freedom for chi^2: */
+  *df = nni * nnj - nni - nnj + 1;
+
+  /* significance level of the chi^2 (small values indicating significant
+     association): */
+  if (*df > small) {
+    *prob = gammq(0.5 * (*df), 0.5 * chi2);
+  } else {
+    modlogwarning(routine, "There are zero degrees of freedom; "
+                  "chi-square calculation is meaningless.");
+    *prob = -1.0;
+  }
+
+  /* Cramer V (or phi statistic) for the strength of the association: */
+  minnn = (nni < nnj ? nni : nnj);
+  *cramrv = sqrt(chi2 / (summdt * (minnn - 1)));
+
+  /* contingency coefficient C for the strength of the association: */
+  *ccc = sqrt(chi2 / (chi2 + summdt));
+
+  return chi2;
 }

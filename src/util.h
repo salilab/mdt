@@ -44,6 +44,16 @@ double entrp1(const double frq[], int nbinx);
 void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
             const int i_val_fix[], int nbinx, double frq[]);
 
+/** Return entropy of p(x/y,z,...) where y,z are the independent features.
+    See pages 480-483 in Numerical Recipes for equations. */
+double entrp2(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
+              int n_feat_fix, int nbinx, float sumi[]);
+
+/** Get the chi^2, etc for pdf p(x/y,z,...) */
+double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
+              int n_feat_fix, int nbinx, float sumi[], double *df, double *prob,
+              double *ccc, double *cramrv, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

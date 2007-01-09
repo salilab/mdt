@@ -170,7 +170,7 @@ class mdt(mdt_section):
 
     def write(self, file, write_preamble=True):
         """Write an MDT to a file"""
-        _modeller.write_mdt(self._modpt, self._mlib.modpt, file, write_preamble)
+        _mdt.mdt_write(self._modpt, self._mlib.modpt, file, write_preamble)
 
     def reshape(self, features, offset, shape):
         """Reorder the MDT features and decrease their ranges."""

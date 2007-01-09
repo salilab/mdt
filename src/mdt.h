@@ -40,6 +40,10 @@ void mdt_close(struct mdt_type *mdt, int dimensions, int *ierr);
 /** Get the entropy of the dependent variable. */
 float mdt_entropy_hx(const struct mdt_type *mdt, int *ierr);
 
+/** Write out an MDT. */
+void mdt_write(const struct mdt_type *mdt, const struct mdt_library *mlib,
+               const char *filename, mbool write_preamble, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

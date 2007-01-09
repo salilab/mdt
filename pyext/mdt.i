@@ -9,6 +9,8 @@
 
 %include "mdt_exceptions.i"
 
+typedef int mbool;
+
 %include "../src/mdt.h"
 
 %init {

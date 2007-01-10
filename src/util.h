@@ -28,6 +28,20 @@ int indmdt(const int *indf, const struct mdt_type *mdt);
     more points are available. */
 int roll_ind(int indf[], const int istart[], const int iend[], int nfeat);
 
+/** Roll n indices in ind so that all combinations of n different indices
+    are generated, where the possible values for each index are 1+x to nmax-y.
+
+    For example, for n=3:
+
+    for (i = 0, i < nmax-2; i++) {
+      for (j = i+1, j < nmax-1; j++) {
+        for (k = j+1, k < nmax; k++) {
+
+    *ind should be NULL on the first call to this routine, and it will be
+    initialized (the user should free it when finished).
+    Returns false if no more indices are available. */
+int roll_ind_comb(int **ind, int n, int nmax);
+
 /** Get the number of bins in the 1 or 2 dependent features */
 void get_binx_biny(int dimensions, const struct mdt_type *mdt,
                    const char *routine, int *nbinx, int *nbiny, int *ierr);

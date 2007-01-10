@@ -70,6 +70,49 @@ int roll_ind(int indf[], const int istart[], const int iend[], int nfeat)
   return 0;
 }
 
+
+/** Roll n indices in ind so that all combinations of n different indices
+    are generated, where the possible values for each index are 1+x to nmax-y.
+
+    For example, for n=3:
+
+    for (i = 0, i < nmax-2; i++) {
+      for (j = i+1, j < nmax-1; j++) {
+        for (k = j+1, k < nmax; k++) {
+
+    *ind should be NULL on the first call to this routine, and it will be
+    initialized (the user should free it when finished).
+    Returns false if no more indices are available. */
+int roll_ind_comb(int **ind, int n, int nmax)
+{
+  int i;
+  int *indr;
+
+  if (n == 0) {
+    return 0;
+  } else if (*ind == NULL) {
+    *ind = indr = dmalloc(sizeof(int) * n);
+    for (i = 0; i < n; i++) {
+      indr[i] = i;
+    }
+    return 1;
+  } else {
+    indr = *ind;
+    for (i = n; i > 0; i--) {
+      if (indr[i] < nmax - (n-i)) {
+        int k;
+        indr[i]++;
+        for (k = i + 1; k < n; k++) {
+          indr[k] = indr[k-1] + 1;
+        }
+        return 1;
+      }
+    }
+    return 0;
+  }
+}
+
+
 /** Get the number of bins in the 1 or 2 dependent features */
 void get_binx_biny(int dimensions, const struct mdt_type *mdt,
                    const char *routine, int *nbinx, int *nbiny, int *ierr)

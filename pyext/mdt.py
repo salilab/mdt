@@ -238,7 +238,7 @@ class mdt(mdt_section):
 
     def entropy_full(self):
         """Print full entropy information."""
-        return _modeller.entropy_mdt(self._modpt, self._mlib.modpt)
+        return _mdt.mdt_entropy_full(self._modpt, self._mlib.modpt)
 
     def entropy_hx(self):
         """Get the entropy of the dependent variable."""

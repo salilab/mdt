@@ -14,7 +14,7 @@ env.W32Def('libmdt.def', 'mdt.h')
 lib = env.SharedLibrary('mdt', files, WIN32DEFPREFIX='lib', WIN32_INSERT_DEF=1,
                         WINDOWSEXPPREFIX='lib',
                         CPPPATH=modconfig['include'],
-                        LIBS=modconfig['libs']+['m'],
+                        LIBS=modconfig['libs']+modconfig['libm'],
                         LIBPATH=modconfig['libpath'])
 
 # Install the shared library

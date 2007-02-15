@@ -1,6 +1,6 @@
 import unittest
-from ModellerTest import ModellerTest
 from modeller import *
+from modeller.test import ModellerTest
 import mdt
 import math
 

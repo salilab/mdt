@@ -278,5 +278,25 @@ class MDTTests(ModellerTest):
             rowsum += m[i].sum()
         self.assertAlmostEqual(sum, rowsum, places=3)
 
+    def test_normalize(self):
+        """Check that normalize works"""
+        m = self.get_test_mdt(features=(1,2))
+        mlib = self.get_mdt_library()
+        m = mdt.mdt(mlib, features=(1,2))
+        # Dimensions must be 1 or 2:
+        for dim in (0, 3):
+            self.assertRaises(ValueError, m.normalize, dimensions=dim,
+                              dx_dy=(1,)*dim, to_zero=False, to_pdf=True)
+                               
+        # A normalized empty MDT should be the prior, i.e. 1/nbin:
+        m2 = m.normalize(dimensions=2, dx_dy=(1,1), to_zero=False, to_pdf=True)
+        inds = []
+        while self.roll_inds(inds, m.shape, m.offset):
+            self.assertAlmostEqual(1./484., m2[inds], places=3)
+        m2 = m.normalize(dimensions=1, dx_dy=1, to_zero=False, to_pdf=True)
+        inds = []
+        while self.roll_inds(inds, m.shape, m.offset):
+            self.assertAlmostEqual(1./22., m2[inds], places=3)
+
 if __name__ == '__main__':
     unittest.main()

@@ -48,6 +48,12 @@ void mdt_entropy_full(const struct mdt_type *mdt,
 void mdt_write(const struct mdt_type *mdt, const struct mdt_library *mlib,
                const char *filename, mbool write_preamble, int *ierr);
 
+/** Normalize an MDT. */
+void mdt_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+                   const struct mdt_library *mlib, int dimensions,
+                   const float dx_dy[], int n_dx_dy, mbool to_zero,
+                   mbool to_pdf, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

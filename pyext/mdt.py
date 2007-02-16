@@ -188,8 +188,8 @@ class mdt(mdt_section):
     def normalize(self, dimensions, dx_dy, to_zero, to_pdf):
         """Normalize the MDT."""
         mdtout = mdt(self._mlib)
-        _modeller.normalize_mdt(self._modpt, mdtout._modpt, self._mlib.modpt,
-                                dimensions, to_zero, dx_dy, to_pdf)
+        _mdt.mdt_normalize(self._modpt, mdtout._modpt, self._mlib.modpt,
+                           dimensions, dx_dy, to_zero, to_pdf)
         return mdtout
 
     def integrate(self, features):

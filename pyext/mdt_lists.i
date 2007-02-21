@@ -46,10 +46,16 @@ static type *to_varlist_ ## type ##(PyObject *pyinput, int *sizevar, char *displ
 %enddef
 
 TO_VARLIST(float, PyNumber_Check, PyFloat_AsDouble, "%s[%d] should be a number")
+TO_VARLIST(int, PyInt_Check, PyInt_AsLong, "%s[%d] should be an integer")
 
 
 %typemap(in) (const float VARLIST[], int N_VARLIST) {
     $1 = to_varlist_float($input, &$2, "$1_name");
+    if (!$1) SWIG_fail;
+}
+
+%typemap(in) (const int VARLIST[], int N_VARLIST) {
+    $1 = to_varlist_int($input, &$2, "$1_name");
     if (!$1) SWIG_fail;
 }
 #endif 
@@ -58,5 +64,11 @@ TO_VARLIST(float, PyNumber_Check, PyFloat_AsDouble, "%s[%d] should be a number")
     if ($1) free($1);
 }
 %typemap(arginit) (const float VARLIST[], int N_VARLIST) {
+  $1 = NULL;
+}
+%typemap(freearg) (const int VARLIST[], int N_VARLIST) {
+    if ($1) free($1);
+}
+%typemap(arginit) (const int VARLIST[], int N_VARLIST) {
   $1 = NULL;
 }

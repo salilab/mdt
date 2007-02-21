@@ -54,6 +54,10 @@ void mdt_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
                    const float dx_dy[], int n_dx_dy, mbool to_zero,
                    mbool to_pdf, int *ierr);
 
+/** Integrate an MDT. */
+void mdt_integrate(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+                   const int features[], int n_features, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

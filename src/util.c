@@ -70,6 +70,29 @@ int roll_ind(int indf[], const int istart[], const int iend[], int nfeat)
   return 0;
 }
 
+/** Like roll_ind(), but only for the selected inds[n_inds] features */
+int roll_inds(int indf[], const int istart[], const int iend[], int nfeat,
+              const int inds[], int n_inds)
+{
+  int iind, i;
+  assert(n_inds > 0 && n_inds <= nfeat);
+  iind = n_inds - 1;
+  while (iind >= 0) {
+    i = inds[iind];
+    assert(i >= 0 && i < nfeat);
+    if (indf[i] + 1 <= iend[i]) {
+      indf[i]++;
+      return 1;
+    } else if (i == 0) {
+      return 0;
+    } else {
+      indf[i] = istart[i];
+      iind--;
+    }
+  }
+  return 0;
+}
+
 
 /** Roll n indices in ind so that all combinations of n different indices
     are generated, where the possible values for each index are 1+x to nmax-y.

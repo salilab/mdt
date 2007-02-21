@@ -13,6 +13,7 @@
 typedef int mbool;
 
 %apply (const float VARLIST[], int N_VARLIST) { (const float dx_dy[], int n_dx_dy) };
+%apply (const int VARLIST[], int N_VARLIST) { (const int features[], int n_features) };
 
 %include "../src/mdt.h"
 

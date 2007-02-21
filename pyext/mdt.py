@@ -195,7 +195,7 @@ class mdt(mdt_section):
     def integrate(self, features):
         """Integrate the MDT, and reorder the features."""
         mdtout = mdt(self._mlib)
-        _modeller.integrate_mdt(self._modpt, mdtout._modpt, features)
+        _mdt.mdt_integrate(self._modpt, mdtout._modpt, features)
         return mdtout
 
     def exp_transform(self, offset, expoffset, multiplier, power):

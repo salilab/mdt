@@ -175,8 +175,7 @@ class mdt(mdt_section):
     def reshape(self, features, offset, shape):
         """Reorder the MDT features and decrease their ranges."""
         mdtout = mdt(self._mlib)
-        _modeller.reshape_mdt(self._modpt, mdtout._modpt, features, offset,
-                              shape)
+        _mdt.mdt_reshape(self._modpt, mdtout._modpt, features, offset, shape)
         return mdtout
 
     def smooth(self, dimensions, weight):

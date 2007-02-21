@@ -58,20 +58,6 @@ static void get_feature_indices(const struct mdt_type *mdt,
   }
 }
 
-/** Make the stride array for faster indmdt lookup */
-static void make_mdt_stride(struct mdt_type *mdt)
-{
-  int i;
-  int *stride = f_int1_pt(&mdt->stride);
-  int *nbins = f_int1_pt(&mdt->nbins);
-
-  stride[mdt->nfeat - 1] = 1;
-  for (i = mdt->nfeat - 2; i > 0; i--) {
-    stride[i] = stride[i + 1] * nbins[i + 1];
-  }
-  assert(mdt->nelems == stride[0] * nbins[0]);
-}
-
 /** Copy a subset of the mdtin feature indices to mdtout */
 static void copy_mdt_indices_subset(const struct mdt_type *mdtin,
                                     struct mdt_type *mdtout,

@@ -72,6 +72,9 @@ double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
               int n_feat_fix, int nbinx, float sumi[], double *df, double *prob,
               double *ccc, double *cramrv, int *ierr);
 
+/** Make the stride array for faster indmdt lookup */
+void make_mdt_stride(struct mdt_type *mdt);
+
 #ifdef __cplusplus
 }
 #endif

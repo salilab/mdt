@@ -58,6 +58,11 @@ void mdt_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 void mdt_integrate(const struct mdt_type *mdtin, struct mdt_type *mdtout,
                    const int features[], int n_features, int *ierr);
 
+/** Reshape an MDT. */
+void mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+                 const int features[], int n_features, const int offset[],
+                 int n_offset, const int shape[], int n_shape, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

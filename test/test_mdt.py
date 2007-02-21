@@ -115,6 +115,11 @@ class MDTTests(ModellerTest):
         for m in (m1, m2, mboth):
             m.add_alignment(aln)
 
+        # Number of features must be correct:
+        for features in ((), (1,2), (1,2,3)):
+            self.assertRaises(ValueError, mboth.integrate, features=features)
+        # Features must exist in input MDT:
+        self.assertRaises(ValueError, mboth.integrate, features=3)
         m1int = mboth.integrate(features=1)
         self.assertMDTsEqual(m1, m1int)
         m2int = mboth.integrate(features=2)

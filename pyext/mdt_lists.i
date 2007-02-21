@@ -1,5 +1,6 @@
 #ifdef SWIGPYTHON
 %define TO_VARLIST(type, checkfn, convertfn, errmsg)
+%ignore to_varlist_ ## type ##;
 %inline %{
 static type *to_varlist_ ## type ##(PyObject *pyinput, int *sizevar, char *displayname) {
   Py_ssize_t seqlen;

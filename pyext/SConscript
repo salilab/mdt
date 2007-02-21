@@ -10,7 +10,8 @@ if modconfig['exetype'].startswith('mac10'):
 
 # Build the Python extension from SWIG interface file:
 lib = e.SharedLibrary('_mdt', 'mdt.i',
-                      SWIGFLAGS='-python -noproxy',
+                      SWIGFLAGS='-python -noproxy ' + \
+                                '-nodefaultctor -nodefaultdtor',
                       CPPPATH=modconfig['include']+[pythoninc],
                       LIBS=modconfig['libs']+['mdt'],
                       LIBPATH=['../src']+modconfig['libpath'])

@@ -63,6 +63,10 @@ void mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
                  const int features[], int n_features, const int offset[],
                  int n_offset, const int shape[], int n_shape, int *ierr);
 
+/** Get an element from an MDT. */
+double mdt_get(const struct mdt_type *mdt, const int indices[], int n_indices,
+               int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

@@ -17,6 +17,7 @@ typedef int mbool;
 %apply (const int VARLIST[], int N_VARLIST) { (const int features[], int n_features) };
 %apply (const int VARLIST[], int N_VARLIST) { (const int offset[], int n_offset) };
 %apply (const int VARLIST[], int N_VARLIST) { (const int shape[], int n_shape) };
+%apply (const int VARLIST[], int N_VARLIST) { (const int indices[], int n_indices) };
 
 %include "../src/mdt.h"
 

@@ -282,7 +282,7 @@ class mdt(mdt_section):
         if len(indx) < len(self.features):
             return mdt_section(self, indx)
         else:
-            return _modeller.mdt_get(self._modpt, indx)
+            return _mdt.mdt_get(self._modpt, indx)
 
     def __get_pdf(self):
         return _mdt.mdt_type_pdf_get(self._modpt)

@@ -7,6 +7,7 @@
 #include "mod_error.h"
 %}
 
+%include "fortran-pointers.i"
 %include "mdt_exceptions.i"
 %include "mdt_lists.i"
 
@@ -18,6 +19,10 @@ typedef int mbool;
 %apply (const int VARLIST[], int N_VARLIST) { (const int shape[], int n_shape) };
 
 %include "../src/mdt.h"
+
+# Wrap MDT types
+%include "mdt_type.i"
+%include "mdt_library.i"
 
 %init {
 #ifdef SWIGPYTHON

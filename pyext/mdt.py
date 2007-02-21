@@ -21,10 +21,10 @@ class mdt_library(modobject):
                  hbond_cutoff=3.5):
         self.env = env.copy()
         _modeller.read_mdt_library(self.modpt, file)
-        _modeller.mdt_library_deltai_set(self.modpt, deltai)
-        _modeller.mdt_library_deltaj_set(self.modpt, deltaj)
-        _modeller.mdt_library_deltai_ali_set(self.modpt, deltai_ali)
-        _modeller.mdt_library_deltaj_ali_set(self.modpt, deltaj_ali)
+        _mdt.mdt_library_deltai_set(self.modpt, deltai)
+        _mdt.mdt_library_deltaj_set(self.modpt, deltaj)
+        _mdt.mdt_library_deltai_ali_set(self.modpt, deltai_ali)
+        _mdt.mdt_library_deltaj_ali_set(self.modpt, deltaj_ali)
         _modeller.readbin_mdt_library(self.modpt, self.env.libs.modpt,
                                       binfile, residue_grouping, distance_atoms,
                                       special_atoms, hbond_cutoff)
@@ -35,13 +35,13 @@ class mdt_library(modobject):
     def __get_modpt(self):
         return self.__modpt
     def __get_deltai(self):
-        return _modeller.mdt_library_deltai_get(self.modpt)
+        return _mdt.mdt_library_deltai_get(self.modpt)
     def __get_deltaj(self):
-        return _modeller.mdt_library_deltaj_get(self.modpt)
+        return _mdt.mdt_library_deltaj_get(self.modpt)
     def __get_deltai_ali(self):
-        return _modeller.mdt_library_deltai_ali_get(self.modpt)
+        return _mdt.mdt_library_deltai_ali_get(self.modpt)
     def __get_deltaj_ali(self):
-        return _modeller.mdt_library_deltaj_ali_get(self.modpt)
+        return _mdt.mdt_library_deltaj_ali_get(self.modpt)
     def __get_atom_classes(self):
         return bond_classes(self, 1)
     def __get_bond_classes(self):
@@ -285,13 +285,13 @@ class mdt(mdt_section):
             return _modeller.mdt_get(self._modpt, indx)
 
     def __get_pdf(self):
-        return _modeller.mdt_type_pdf_get(self._modpt)
+        return _mdt.mdt_type_pdf_get(self._modpt)
     def __get_n_proteins(self):
-        return _modeller.mdt_type_n_proteins_get(self._modpt)
+        return _mdt.mdt_type_n_proteins_get(self._modpt)
     def __get_n_protein_pairs(self):
-        return _modeller.mdt_type_n_protein_pairs_get(self._modpt)
+        return _mdt.mdt_type_n_protein_pairs_get(self._modpt)
     def __get_sample_size(self):
-        return _modeller.mdt_type_sample_size_get(self._modpt)
+        return _mdt.mdt_type_sample_size_get(self._modpt)
     def __get_features(self):
         return feature_list(self)
     def __get_offset(self):
@@ -317,7 +317,7 @@ class feature_list(modlist.fixlist):
         modlist.fixlist.__init__(self)
 
     def __len__(self):
-        return _modeller.mdt_type_nfeat_get(self.__mdt._modpt)
+        return _mdt.mdt_type_nfeat_get(self.__mdt._modpt)
 
     def _getfunc(self, indx):
         return feature(self.__mdt, indx)
@@ -331,12 +331,12 @@ class feature(object):
         self._indx = indx
 
     def __get_ifeat(self):
-        ifeat = _modeller.mdt_type_ifeat_get(self._mdt._modpt)
+        ifeat = _mdt.mdt_type_ifeat_get(self._mdt._modpt)
         return _modeller.f_int1_get(ifeat, self._indx)
     def __get_bins(self):
         return bin_list(self)
     def __get_offset(self):
-        offset = _modeller.mdt_type_istart_get(self._mdt._modpt)
+        offset = _mdt.mdt_type_istart_get(self._mdt._modpt)
         return _modeller.f_int1_get(offset, self._indx) - 1
     def __get_periodic(self):
         return _modeller.mdt_feature_is_periodic(self.ifeat)
@@ -356,7 +356,7 @@ class bin_list(modlist.fixlist):
         modlist.fixlist.__init__(self)
 
     def __len__(self):
-        nbins = _modeller.mdt_type_nbins_get(self._mdt._modpt)
+        nbins = _mdt.mdt_type_nbins_get(self._mdt._modpt)
         return _modeller.f_int1_get(nbins, self.__feature._indx)
 
     def _getfunc(self, indx):

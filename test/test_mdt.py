@@ -263,6 +263,9 @@ class MDTTests(ModellerTest):
         """Check that reshaping works correctly"""
         m = self.get_test_mdt(features=(1,2))
         m2 = self.get_test_mdt(features=(2,1))
+        for features in ((3,1), (2,1,1)):
+            self.assertRaises(ValueError, m.reshape, features=features,
+                              offset=m.offset, shape=(22,22))
         m3 = m.reshape(features=(2,1), offset=m.offset, shape=(22,22))
         self.assertMDTsEqual(m2, m3)
         m3 = m.reshape(features=(1,2), offset=(0,0), shape=m.shape)

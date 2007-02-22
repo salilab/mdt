@@ -3,6 +3,7 @@ from modeller import *
 from modeller.test import ModellerTest
 import mdt
 import math
+import os
 
 class MDTTests(ModellerTest):
 
@@ -305,6 +306,24 @@ class MDTTests(ModellerTest):
         inds = []
         while self.roll_inds(inds, m.shape, m.offset):
             self.assertAlmostEqual(1./22., m2[inds], places=3)
+
+    def test_write_asgl(self):
+        """Check that ASGL output works"""
+        m = self.get_test_mdt(features=(1,2))
+        root = 'asgl1-a'
+        m.write_asgl(asglroot=root, plots_per_page=8, dimensions=1,
+                     plot_position=1, every_x_numbered=999, text="test text",
+                     x_decimal=0)
+        f = file(root+'.top', 'r')
+        self.assertEqual(len(f.readlines()), 486)
+        del f
+        os.unlink(root+'.top')
+        for n in range(1,23):
+            fname = '%s.%d' % (root, n)
+            f = file(fname, 'r')
+            self.assertEqual(len(f.readlines()), 22)
+            del f
+            os.unlink(fname)
 
 if __name__ == '__main__':
     unittest.main()

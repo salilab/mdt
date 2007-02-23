@@ -311,6 +311,11 @@ class MDTTests(ModellerTest):
         """Check that ASGL output works"""
         m = self.get_test_mdt(features=(1,2))
         root = 'asgl1-a'
+        for dim in (0, 3):
+            self.assertRaises(ValueError, m.write_asgl, dimensions=dim,
+                              asglroot=root, plots_per_page=8, plot_position=1,
+                              every_x_numbered=999, text="test text",
+                              x_decimal=0)
         m.write_asgl(asglroot=root, plots_per_page=8, dimensions=1,
                      plot_position=1, every_x_numbered=999, text="test text",
                      x_decimal=0)

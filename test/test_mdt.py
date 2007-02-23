@@ -301,6 +301,17 @@ class MDTTests(ModellerTest):
         for (row, known) in zip(rowentr, known_rowentr):
             self.assertAlmostEqual(row, known, places=3)
 
+    def test_mean_stdev(self):
+        """Check the mean and entropy of each row"""
+        m = self.get_test_mdt(features=(1,2))
+        mean_stdev = [m[i].mean_stdev() for i in range(3)]
+        known = [[9.357142, 8.131571],
+                 [3.264705, 4.492207],
+                 [8.8125,   8.228902]]
+        for (row, known) in zip(mean_stdev, known):
+            for (a, b) in zip(row, known):
+                self.assertAlmostEqual(a, b, places=3)
+
     def test_normalize(self):
         """Check that normalize works"""
         m = self.get_test_mdt(features=(1,2))

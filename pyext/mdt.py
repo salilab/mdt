@@ -124,11 +124,11 @@ class mdt_section(modobject):
 
     def sum(self):
         """Sum of all points in the table"""
-        return _modeller.mdt_section_sum(self._modpt, self._indices)
+        return _mdt.mdt_section_sum(self._modpt, self._indices)
 
     def entropy(self):
         """Entropy of all points in the table"""
-        return _modeller.mdt_section_entropy(self._modpt, self._indices)
+        return _mdt.mdt_section_entropy(self._modpt, self._indices)
 
     def mean_stdev(self):
         """Mean and standard deviation of the table"""

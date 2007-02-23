@@ -75,6 +75,14 @@ void mdt_write_asgl(const struct mdt_type *mdt, const struct mdt_library *mlib,
                     int plot_position, const char *plot_type, int x_decimal,
                     int y_decimal, int *ierr);
 
+/** Sum an MDT section. */
+double mdt_section_sum(const struct mdt_type *mdt, const int indices[],
+                       int n_indices, int *ierr);
+
+/** Get the entropy of an MDT section. */
+double mdt_section_entropy(const struct mdt_type *mdt, const int indices[],
+                           int n_indices, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

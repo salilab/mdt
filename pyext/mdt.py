@@ -255,11 +255,11 @@ class mdt(mdt_section):
                    every_x_numbered=1, every_y_numbered=1, x_decimal=1,
                    y_decimal=1):
         """Make input files for ASGL"""
-        return _modeller.write_asgl(self._modpt, self._mlib.modpt, asglroot,
-                                    text, dimensions, every_x_numbered,
-                                    every_y_numbered, plot_density_cutoff,
-                                    plots_per_page, plot_position, plot_type,
-                                    x_decimal, y_decimal)
+        return _mdt.mdt_write_asgl(self._modpt, self._mlib.modpt, asglroot,
+                                   text, dimensions, every_x_numbered,
+                                   every_y_numbered, plot_density_cutoff,
+                                   plots_per_page, plot_position, plot_type,
+                                   x_decimal, y_decimal)
 
 
     def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,

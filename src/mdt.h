@@ -67,6 +67,14 @@ void mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 double mdt_get(const struct mdt_type *mdt, const int indices[], int n_indices,
                int *ierr);
 
+/** Write input files to plot the given MDT with ASGL. */
+void mdt_write_asgl(const struct mdt_type *mdt, const struct mdt_library *mlib,
+                    const char *asglroot, const char *text, int dimensions,
+                    int every_x_numbered, int every_y_numbered,
+                    double plot_density_cutoff, int plots_per_page,
+                    int plot_position, const char *plot_type, int x_decimal,
+                    int y_decimal, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

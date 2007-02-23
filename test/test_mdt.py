@@ -287,6 +287,20 @@ class MDTTests(ModellerTest):
             rowsum += m[i].sum()
         self.assertAlmostEqual(sum, rowsum, places=3)
 
+    def test_entropy(self):
+        """Check the entropy of each row"""
+        m = self.get_test_mdt(features=(1,2))
+        nbins = len(m.features[0].bins)
+        rowentr = [m[i].entropy() for i in range(nbins)]
+        known_rowentr = [1.908535, 0.578325, 1.229918, 1.559581,
+                         1.332179, 1.747868, 0.693147, 1.671595,
+                         0.796311, 0.796311, 0.0,      1.475076,
+                         1.569152, 0.950270, 0.0,      1.560710,
+                         1.098612, 1.671595, 0.0,      1.386294,
+                         2.642088, 3.091042]
+        for (row, known) in zip(rowentr, known_rowentr):
+            self.assertAlmostEqual(row, known, places=3)
+
     def test_normalize(self):
         """Check that normalize works"""
         m = self.get_test_mdt(features=(1,2))

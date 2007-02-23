@@ -13,6 +13,7 @@
 
 typedef int mbool;
 
+%apply double *OUTPUT { double * };
 %apply (const float VARLIST[], int N_VARLIST) { (const float dx_dy[], int n_dx_dy) };
 %apply (const int VARLIST[], int N_VARLIST) { (const int features[], int n_features) };
 %apply (const int VARLIST[], int N_VARLIST) { (const int offset[], int n_offset) };

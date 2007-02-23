@@ -83,6 +83,15 @@ double mdt_section_sum(const struct mdt_type *mdt, const int indices[],
 double mdt_section_entropy(const struct mdt_type *mdt, const int indices[],
                            int n_indices, int *ierr);
 
+/** Get the mean and standard deviation of an MDT section. */
+void mdt_section_meanstdev(const struct mdt_type *mdt,
+                           const struct mdt_library *mlib, const int indices[],
+                           int n_indices, double *mean, double *stdev,
+                           int *ierr);
+
+/** Is the given feature type periodic? */
+mbool mdt_feature_is_periodic(int ifeat);
+
 #ifdef __cplusplus
 }
 #endif

@@ -132,8 +132,8 @@ class mdt_section(modobject):
 
     def mean_stdev(self):
         """Mean and standard deviation of the table"""
-        return _modeller.mdt_section_meanstdev(self._modpt, self._mlib.modpt,
-                                               self._indices)
+        return _mdt.mdt_section_meanstdev(self._modpt, self._mlib.modpt,
+                                          self._indices)
 
 
 class mdt(mdt_section):
@@ -339,7 +339,7 @@ class feature(object):
         offset = _mdt.mdt_type_istart_get(self._mdt._modpt)
         return _modeller.f_int1_get(offset, self._indx) - 1
     def __get_periodic(self):
-        return _modeller.mdt_feature_is_periodic(self.ifeat)
+        return _mdt.mdt_feature_is_periodic(self.ifeat)
 
     ifeat = property(__get_ifeat, doc="Integer type")
     bins = property(__get_bins, doc="Feature bins")

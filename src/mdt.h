@@ -75,6 +75,11 @@ void mdt_write_asgl(const struct mdt_type *mdt, const struct mdt_library *mlib,
                     int plot_position, const char *plot_type, int x_decimal,
                     int y_decimal, int *ierr);
 
+/** Super-duper multi-level hierarchical recursive multi-dimensional
+    smoothing of sparse MDT frequency tables. */
+void mdt_super_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+                      float prior_weight, mbool entropy_weighing);
+
 /** Sum an MDT section. */
 double mdt_section_sum(const struct mdt_type *mdt, const int indices[],
                        int n_indices, int *ierr);

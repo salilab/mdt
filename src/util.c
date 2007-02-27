@@ -40,12 +40,22 @@ void weights(float weight, int nbins, float norm, float *w1, float *w2)
     indices are indf. */
 int indmdt(const int *indf, const struct mdt_type *mdt)
 {
-  int i, ind;
-  ind = indf[mdt->nfeat - 1] - f_int1_get(&mdt->istart, mdt->nfeat - 1);
+  return indmdt_full(indf, f_int1_pt(&mdt->stride), mdt->nfeat,
+                     f_int1_pt(&mdt->istart));
+}
 
-  for (i = mdt->nfeat - 2; i >= 0; i--) {
-    int indval = indf[i] - f_int1_get(&mdt->istart, i);
-    ind += f_int1_get(&mdt->stride, i) * indval;
+
+/** Return the index in the MDT pdf of the point whose feature bin
+    indices are indf, using the stride and istart arrays. */
+int indmdt_full(const int *indf, const int stride[], int nfeat,
+                const int istart[])
+{
+  int i, ind;
+  ind = indf[nfeat - 1] - istart[nfeat - 1];
+
+  for (i = nfeat - 2; i >= 0; i--) {
+    int indval = indf[i] - istart[i];
+    ind += stride[i] * indval;
   }
   return ind;
 }
@@ -111,14 +121,14 @@ int roll_ind_comb(int **ind, int n, int nmax)
   int i;
   int *indr;
 
-  if (n == 0) {
-    return 0;
-  } else if (*ind == NULL) {
+  if (*ind == NULL) {
     *ind = indr = dmalloc(sizeof(int) * n);
     for (i = 0; i < n; i++) {
       indr[i] = i;
     }
     return 1;
+  } else if (n == 0) {
+    return 0;
   } else {
     indr = *ind;
     for (i = n; i > 0; i--) {
@@ -455,13 +465,20 @@ double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
 /** Make the stride array for faster indmdt lookup */
 void make_mdt_stride(struct mdt_type *mdt)
 {
-  int i;
-  int *stride = f_int1_pt(&mdt->stride);
-  int *nbins = f_int1_pt(&mdt->nbins);
+  int nelems = make_mdt_stride_full(f_int1_pt(&mdt->nbins), mdt->nfeat,
+                                    f_int1_pt(&mdt->stride));
+  assert(mdt->nelems == nelems);
+}
 
-  stride[mdt->nfeat - 1] = 1;
-  for (i = mdt->nfeat - 2; i >= 0; i--) {
+/** Make the stride array from the nbins array, and return the size of
+    the MDT. */
+int make_mdt_stride_full(const int nbins[], int nfeat, int stride[])
+{
+  int i;
+
+  stride[nfeat - 1] = 1;
+  for (i = nfeat - 2; i >= 0; i--) {
     stride[i] = stride[i + 1] * nbins[i + 1];
   }
-  assert(mdt->nelems == stride[0] * nbins[0]);
+  return stride[0] * nbins[0];
 }

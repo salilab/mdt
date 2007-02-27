@@ -24,6 +24,11 @@ void weights(float weight, int nbins, float norm, float *w1, float *w2);
     indices are indf. */
 int indmdt(const int *indf, const struct mdt_type *mdt);
 
+/** Return the index in the MDT pdf of the point whose feature bin
+    indices are indf, using the stride and istart arrays. */
+int indmdt_full(const int *indf, const int stride[], int nfeat,
+                const int istart[]);
+
 /** Update the indices for the next point in the MDT. Return false if no
     more points are available. */
 int roll_ind(int indf[], const int istart[], const int iend[], int nfeat);
@@ -74,6 +79,10 @@ double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
 
 /** Make the stride array for faster indmdt lookup */
 void make_mdt_stride(struct mdt_type *mdt);
+
+/** Make the stride array from the nbins array, and return the size of
+    the MDT. */
+int make_mdt_stride_full(const int nbins[], int nfeat, int stride[]);
 
 #ifdef __cplusplus
 }

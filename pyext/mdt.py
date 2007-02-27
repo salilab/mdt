@@ -246,8 +246,8 @@ class mdt(mdt_section):
     def super_smooth(self, prior_weight, entropy_weighing):
         """Multi-level smoothing"""
         mdtout = mdt(self._mlib)
-        _modeller.super_smooth_mdt(self._modpt, mdtout._modpt, prior_weight,
-                                   entropy_weighing)
+        _mdt.mdt_super_smooth(self._modpt, mdtout._modpt, prior_weight,
+                              entropy_weighing)
         return mdtout
 
     def write_asgl(self, asglroot, text, dimensions, plot_position,

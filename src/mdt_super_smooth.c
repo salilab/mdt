@@ -218,6 +218,8 @@ static void getapriori(mbool entropy_weighing, const double bin1[],
 
     /* normalize (because weights w do not generally sum to 1): */
     normalize_freq(apriori, nbinx);
+
+    free(inds1);
   }
 }
 
@@ -275,6 +277,7 @@ static void prepare_level(int level, struct combination_vector *vec, int *nelm2,
       /* save the feature combination for the next level: */
       comb->i_feat_fixn2[i] = i_feat_fix[i];
     }
+    free(i_feat_fix);
     comb->ndims2[level - 1] = f_int1_get(&mdtin->nbins, mdtin->nfeat - 1);
 
     *nelm2 += make_mdt_stride_full(comb->ndims2, level, comb->stride2);

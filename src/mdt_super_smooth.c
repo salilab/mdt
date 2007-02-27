@@ -200,7 +200,7 @@ static void getapriori(mbool entropy_weighing, const double bin1[],
         /* from the previous level: */
         inds1[n_feat_fix - 1] = 1;
         is1 = comb->i1add + indmdt_full(inds1, comb->stride1, n_feat_fix,
-                                        i_start_fix) - 1;
+                                        i_start_fix);
 
         if (entropy_weighing) {
           /* w is proportional to rho_c in Eq. 12; w is the nominator in

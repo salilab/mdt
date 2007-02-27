@@ -131,8 +131,8 @@ int roll_ind_comb(int **ind, int n, int nmax)
     return 0;
   } else {
     indr = *ind;
-    for (i = n; i > 0; i--) {
-      if (indr[i] < nmax - (n-i)) {
+    for (i = n - 1; i >= 0; i--) {
+      if (indr[i] < nmax - 1 - (n-i)) {
         int k;
         indr[i]++;
         for (k = i + 1; k < n; k++) {

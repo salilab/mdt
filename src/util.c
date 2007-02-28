@@ -122,7 +122,9 @@ int roll_ind_comb(int **ind, int n, int nmax)
   int *indr;
 
   if (*ind == NULL) {
-    *ind = indr = dmalloc(sizeof(int) * n);
+    /* In the case where n == 0, allocate a dummy size 1 array so that the
+       pointer is not NULL */
+    *ind = indr = dmalloc(sizeof(int) * (n == 0 ? 1 : n));
     for (i = 0; i < n; i++) {
       indr[i] = i;
     }

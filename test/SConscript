@@ -5,6 +5,7 @@ e = env.Copy()
 if modconfig['exetype'] != 'i386-w32':
     # Make sure python can find our shared libraries:
     e['ENV']['LD_LIBRARY_PATH'] = 'src/'
+    e['ENV']['DYLD_LIBRARY_PATH'] = 'src/'
     e['ENV']['LIBPATH'] = 'src/'
     python = 'python'
 else:

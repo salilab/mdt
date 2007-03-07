@@ -4,7 +4,7 @@ struct mdt_type {
   int nfeat;
   int n_proteins, n_protein_pairs;
   double sample_size;
-  mbool pdf;
+  gboolean pdf;
   struct f_int1_array istart, iend, nbins, ifeat;
   struct f_float1_array bin;
 };

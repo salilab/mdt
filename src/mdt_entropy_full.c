@@ -5,8 +5,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <glib.h>
 #include "modeller.h"
-#include "mod_dynmem.h"
 #include "mdt.h"
 #include "util.h"
 #include "num_recipes.h"
@@ -30,7 +30,7 @@ static void wrhead(double hx, const struct mdt_type *mdt,
     int ifeat = f_int1_get(&mdt->ifeat, i) - 1;
     featnam = mdt_library_featnam_get(mlib, ifeat);
     modlognote("%3d   %6d %s", i+1, ifeat+1, featnam);
-    free(featnam);
+    g_free(featnam);
   }
 
   modlognote("\n  The last feature is the dependent one (x).");
@@ -82,17 +82,14 @@ static void wrres(const int i_feat_fix[], int n_feat_fix, double df,
                   double uuxy)
 {
   int i;
-  dstr *str = dstr_new();
+  GString *str = g_string_new(NULL);
   for (i = 0; i < n_feat_fix; i++) {
-    char *val;
-    val = dstrdup_printf("%3d", i_feat_fix[i]+1);
-    dstr_append(str, val);
-    free(val);
+    g_string_append_printf(str, "%3d", i_feat_fix[i]+1);
   }
-  dstr_truncate(str, 21);
-  modlogout("%-21s%10.2f %10.4g %10.4g %7.4f %7.4f %7.4f", str->text, df, chisq,
+  g_string_truncate(str, 21);
+  modlogout("%-21s%10.2f %10.4g %10.4g %7.4f %7.4f %7.4f", str->str, df, chisq,
             prob, hxy, uxy, uuxy);
-  dstr_free(str);
+  g_string_free(str, TRUE);
 }
 
 
@@ -120,8 +117,8 @@ void mdt_entropy_full(const struct mdt_type *mdt,
   }
 
   /* get pdf p(x) irrespective of the values of the independent variables */
-  sumi = dmalloc(sizeof(float) * nbinx);
-  frq = dmalloc(sizeof(double) * nbinx);
+  sumi = g_malloc(sizeof(float) * nbinx);
+  frq = g_malloc(sizeof(double) * nbinx);
   getfrq(mdt, NULL, 0, NULL, nbinx, frq);
 
 
@@ -192,9 +189,9 @@ void mdt_entropy_full(const struct mdt_type *mdt,
       /* write out: */
       wrres(i_feat_fix, n_feat_fix, df, chisq, prob, hxy, uxy, uuxy);
     }
-    free(i_feat_fix);
+    g_free(i_feat_fix);
     if (*ierr != 0) break;
   }
-  free(frq);
-  free(sumi);
+  g_free(frq);
+  g_free(sumi);
 }

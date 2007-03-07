@@ -40,7 +40,7 @@ static float get_dxdy(const float dx_dy[], const struct mdt_type *mdtin,
 
 /** Normalize over nbins bins */
 static void do_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
-                         int indf[], float dxdy, mbool to_zero, int nbins,
+                         int indf[], float dxdy, gboolean to_zero, int nbins,
                          int nfeat)
 {
   static const float divisor = 1e-15;
@@ -80,8 +80,8 @@ static void do_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 /** Normalize an MDT. */
 void mdt_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
                    const struct mdt_library *mlib, int dimensions,
-                   const float dx_dy[], int n_dx_dy, mbool to_zero,
-                   mbool to_pdf, int *ierr)
+                   const float dx_dy[], int n_dx_dy, gboolean to_zero,
+                   gboolean to_pdf, int *ierr)
 {
   static const char *routine = "mdt_normalize";
   float dxdy;

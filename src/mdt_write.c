@@ -68,7 +68,7 @@ static void write_mdt_data(FILE *fp, const struct mdt_type *mdt)
 
 /** Write out an MDT. */
 void mdt_write(const struct mdt_type *mdt, const struct mdt_library *mlib,
-               const char *filename, mbool write_preamble, int *ierr)
+               const char *filename, gboolean write_preamble, int *ierr)
 {
   FILE *fp;
   struct mod_file file_info;

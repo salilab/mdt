@@ -48,7 +48,7 @@ static void reshape_mdt_table(const struct mdt_type *mdtin,
   out_bin = f_double1_pt(&mdtout->bin);
   in_bin = f_double1_pt(&mdtin->bin);
   out_indf = mdt_start_indices(mdtout);
-  in_indf = malloc(sizeof(int) * mdtin->nfeat);
+  in_indf = g_malloc(sizeof(int) * mdtin->nfeat);
   do {
     int i, i1, i2;
     for (i = 0; i < mdtin->nfeat; i++) {
@@ -59,8 +59,8 @@ static void reshape_mdt_table(const struct mdt_type *mdtin,
     out_bin[i2] = in_bin[i1];
   } while (roll_ind(out_indf, f_int1_pt(&mdtout->istart),
                     f_int1_pt(&mdtout->iend), mdtout->nfeat));
-  free(in_indf);
-  free(out_indf);
+  g_free(in_indf);
+  g_free(out_indf);
 }
 
 /** Get mapping from old to new features */
@@ -137,20 +137,20 @@ void mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
     return;
   }
 
-  old_position = malloc(sizeof(int) * mdtin->nfeat);
-  new_position = malloc(sizeof(int) * mdtin->nfeat);
+  old_position = g_malloc(sizeof(int) * mdtin->nfeat);
+  new_position = g_malloc(sizeof(int) * mdtin->nfeat);
 
   get_position_mappings(mdtin, features, old_position, new_position, routine,
                         ierr);
   if (*ierr) {
-    free(old_position);
-    free(new_position);
+    g_free(old_position);
+    g_free(new_position);
     return;
   }
   check_start_end(mdtin, offset, shape, old_position, features, routine, ierr);
   if (*ierr) {
-    free(old_position);
-    free(new_position);
+    g_free(old_position);
+    g_free(new_position);
     return;
   }
 
@@ -165,6 +165,6 @@ void mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
     mdtout->sample_size = get_sum(f_double1_pt(&mdtout->bin), mdtout->nelems);
   }
 
-  free(old_position);
-  free(new_position);
+  g_free(old_position);
+  g_free(new_position);
 }

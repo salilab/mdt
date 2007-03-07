@@ -6,6 +6,7 @@
 #ifndef __MDT_MDT_H
 #define __MDT_MDT_H
 
+#include <glib.h>
 #include "mod_types.h"
 
 #ifdef __cplusplus
@@ -46,13 +47,13 @@ void mdt_entropy_full(const struct mdt_type *mdt,
 
 /** Write out an MDT. */
 void mdt_write(const struct mdt_type *mdt, const struct mdt_library *mlib,
-               const char *filename, mbool write_preamble, int *ierr);
+               const char *filename, gboolean write_preamble, int *ierr);
 
 /** Normalize an MDT. */
 void mdt_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
                    const struct mdt_library *mlib, int dimensions,
-                   const float dx_dy[], int n_dx_dy, mbool to_zero,
-                   mbool to_pdf, int *ierr);
+                   const float dx_dy[], int n_dx_dy, gboolean to_zero,
+                   gboolean to_pdf, int *ierr);
 
 /** Integrate an MDT. */
 void mdt_integrate(const struct mdt_type *mdtin, struct mdt_type *mdtout,
@@ -78,7 +79,7 @@ void mdt_write_asgl(const struct mdt_type *mdt, const struct mdt_library *mlib,
 /** Super-duper multi-level hierarchical recursive multi-dimensional
     smoothing of sparse MDT frequency tables. */
 void mdt_super_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
-                      float prior_weight, mbool entropy_weighing);
+                      float prior_weight, gboolean entropy_weighing);
 
 /** Sum an MDT section. */
 double mdt_section_sum(const struct mdt_type *mdt, const int indices[],
@@ -95,7 +96,7 @@ void mdt_section_meanstdev(const struct mdt_type *mdt,
                            int *ierr);
 
 /** Is the given feature type periodic? */
-mbool mdt_feature_is_periodic(int ifeat);
+gboolean mdt_feature_is_periodic(int ifeat);
 
 #ifdef __cplusplus
 }

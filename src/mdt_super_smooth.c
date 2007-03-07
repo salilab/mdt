@@ -11,8 +11,6 @@
 #include "num_recipes.h"
 #include "util.h"
 
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
-
 /** All information needed for a single combination of features */
 struct combination {
   int *stride1;
@@ -33,7 +31,7 @@ struct combination_vector {
 
 /** Create and return a new combination_vector */
 static struct combination_vector *new_combination_vector(void) {
-  struct combination_vector *vec = malloc(sizeof(struct combination_vector));
+  struct combination_vector *vec = g_malloc(sizeof(struct combination_vector));
   vec->combinations = NULL;
   vec->length = vec->allocated = 0;
   return vec;
@@ -43,14 +41,14 @@ static struct combination_vector *new_combination_vector(void) {
 static void free_combination_vector(struct combination_vector *vec) {
   int i;
   for (i = 0; i < vec->allocated; i++) {
-    free(vec->combinations[i].stride1);
-    free(vec->combinations[i].stride2);
-    free(vec->combinations[i].ndims2);
-    free(vec->combinations[i].i_feat_fixn1);
-    free(vec->combinations[i].i_feat_fixn2);
+    g_free(vec->combinations[i].stride1);
+    g_free(vec->combinations[i].stride2);
+    g_free(vec->combinations[i].ndims2);
+    g_free(vec->combinations[i].i_feat_fixn1);
+    g_free(vec->combinations[i].i_feat_fixn2);
   }
-  free(vec->combinations);
-  free(vec);
+  g_free(vec->combinations);
+  g_free(vec);
 }
 
 /** Calculate number of feature combinations, and reallocate arrays if
@@ -64,15 +62,15 @@ static void calculate_combinations(struct combination_vector *vec,
     int i;
     int maxcom = MAX(vec->allocated * 3 / 2, vec->length);
     maxcom = MAX(maxcom, 10);
-    vec->combinations = realloc(vec->combinations,
+    vec->combinations = g_realloc(vec->combinations,
                                 sizeof(struct combination) * maxcom);
     for (i = vec->allocated; i < maxcom; i++) {
       struct combination *com = &vec->combinations[i];
-      com->stride1 = malloc(sizeof(int) * mdt->nfeat);
-      com->stride2 = malloc(sizeof(int) * mdt->nfeat);
-      com->ndims2 = malloc(sizeof(int) * mdt->nfeat);
-      com->i_feat_fixn1 = malloc(sizeof(int) * mdt->nfeat);
-      com->i_feat_fixn2 = malloc(sizeof(int) * mdt->nfeat);
+      com->stride1 = g_malloc(sizeof(int) * mdt->nfeat);
+      com->stride2 = g_malloc(sizeof(int) * mdt->nfeat);
+      com->ndims2 = g_malloc(sizeof(int) * mdt->nfeat);
+      com->i_feat_fixn1 = g_malloc(sizeof(int) * mdt->nfeat);
+      com->i_feat_fixn2 = g_malloc(sizeof(int) * mdt->nfeat);
     }
     vec->allocated = maxcom;
   }
@@ -136,33 +134,33 @@ static void smthfrq(const double apriori[], double frq[], int i_val_fix[],
 
 /** If combination 'comb' is a subset of combination ic2, update inds1 and
     return true; otherwise, return false. */
-static mbool get_inds_combination(const struct combination *comb,
-                                  int n_feat_fix, const int i_feat_fix[],
-                                  const int i_val_fix[], int inds1[])
+static gboolean get_inds_combination(const struct combination *comb,
+                                     int n_feat_fix, const int i_feat_fix[],
+                                     const int i_val_fix[], int inds1[])
 {
   int i, j;
   for (i = 0; i < n_feat_fix - 1; i++) {
-    mbool success = 0;
+    gboolean success = FALSE;
     for (j = 0; j < n_feat_fix && !success; j++) {
       if (comb->i_feat_fixn1[i] == i_feat_fix[j]) {
         /* successful: feature i from combination i1 occurs in combination
            ic2: remember the index for the feature value */
         inds1[i] = i_val_fix[j];
-        success = 1;
+        success = TRUE;
       }
     }
     if (!success) {
       /* not successful: i1 combination does not occur within ic2
          combination: */
-      return 0;
+      return FALSE;
     }
   }
-  return 1;
+  return TRUE;
 }
 
 
 /** Return the a priori distribution, A^n in Eq. 12. */
-static void getapriori(mbool entropy_weighing, const double bin1[],
+static void getapriori(gboolean entropy_weighing, const double bin1[],
                        const struct combination_vector *vec, int nbinx,
                        const int i_feat_fix[], const int i_val_fix[],
                        int ncomb1, int n_feat_fix, const int i_start_fix[],
@@ -177,7 +175,7 @@ static void getapriori(mbool entropy_weighing, const double bin1[],
     float emax;
     int i, i1, *inds1;
 
-    inds1 = malloc(sizeof(int) * n_feat_fix);
+    inds1 = g_malloc(sizeof(int) * n_feat_fix);
 
     for (i = 0; i < nbinx; i++) {
       apriori[i] = 0.0;
@@ -219,7 +217,7 @@ static void getapriori(mbool entropy_weighing, const double bin1[],
     /* normalize (because weights w do not generally sum to 1): */
     normalize_freq(apriori, nbinx);
 
-    free(inds1);
+    g_free(inds1);
   }
 }
 
@@ -277,7 +275,7 @@ static void prepare_level(int level, struct combination_vector *vec, int *nelm2,
       /* save the feature combination for the next level: */
       comb->i_feat_fixn2[i] = i_feat_fix[i];
     }
-    free(i_feat_fix);
+    g_free(i_feat_fix);
     comb->ndims2[level - 1] = f_int1_get(&mdtin->nbins, mdtin->nfeat - 1);
 
     *nelm2 += make_mdt_stride_full(comb->ndims2, level, comb->stride2);
@@ -286,7 +284,7 @@ static void prepare_level(int level, struct combination_vector *vec, int *nelm2,
 
   if (*nelm2 > *maxelm2) {
     *maxelm2 = MAX(*maxelm2 * 3 / 2, *nelm2);
-    *bin2 = realloc(*bin2, sizeof(double) * (*maxelm2));
+    *bin2 = g_realloc(*bin2, sizeof(double) * (*maxelm2));
   }
 }
 
@@ -296,7 +294,7 @@ static void build_level_combination(int level, struct combination_vector *vec,
                                     int n_bins_fix[], int i_val_fix[],
                                     int i_start_fix[],
                                     const struct mdt_type *mdtin,
-                                    mbool entropy_weighing, int ncomb1,
+                                    gboolean entropy_weighing, int ncomb1,
                                     int nelm2, double apriori[], double frq[],
                                     double prior_weight, double bin2[])
 {
@@ -359,12 +357,12 @@ static void build_level_combination(int level, struct combination_vector *vec,
 /** Do one level of smoothing */
 static void super_smooth_level(const struct mdt_type *mdtin,
                                struct mdt_type *mdtout, float prior_weight,
-                               mbool entropy_weighing, int level, int *ncomb1,
-                               struct combination_vector *vec, int i_feat_fix[],
-                               int n_bins_fix[], int i_val_fix[],
-                               int i_start_fix[], double apriori[],
-                               double frq[], double **bin2, int *nelm2,
-                               int *maxelm2)
+                               gboolean entropy_weighing, int level,
+                               int *ncomb1, struct combination_vector *vec,
+                               int i_feat_fix[], int n_bins_fix[],
+                               int i_val_fix[], int i_start_fix[],
+                               double apriori[], double frq[], double **bin2,
+                               int *nelm2, int *maxelm2)
 {
   int n_feat_fix, i;
 
@@ -387,7 +385,7 @@ static void super_smooth_level(const struct mdt_type *mdtin,
 /** Super-duper multi-level hierarchical recursive multi-dimensional
     smoothing of sparse MDT frequency tables. */
 void mdt_super_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
-                      float prior_weight, mbool entropy_weighing)
+                      float prior_weight, gboolean entropy_weighing)
 {
   int level, ncomb1, *i_feat_fix, *n_bins_fix, *i_val_fix, *i_start_fix,
       nelm2 = 0, maxelm2 = 0, nbinx;
@@ -396,12 +394,12 @@ void mdt_super_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 
   copy_mdt(mdtin, mdtout);
   nbinx = f_int1_get(&mdtin->nbins, mdtin->nfeat - 1);
-  i_feat_fix = malloc(sizeof(int) * mdtin->nfeat);
-  n_bins_fix = malloc(sizeof(int) * mdtin->nfeat);
-  i_start_fix = malloc(sizeof(int) * mdtin->nfeat);
-  i_val_fix = malloc(sizeof(int) * mdtin->nfeat);
-  apriori = malloc(sizeof(double) * nbinx);
-  frq = malloc(sizeof(double) * nbinx);
+  i_feat_fix = g_malloc(sizeof(int) * mdtin->nfeat);
+  n_bins_fix = g_malloc(sizeof(int) * mdtin->nfeat);
+  i_start_fix = g_malloc(sizeof(int) * mdtin->nfeat);
+  i_val_fix = g_malloc(sizeof(int) * mdtin->nfeat);
+  apriori = g_malloc(sizeof(double) * nbinx);
+  frq = g_malloc(sizeof(double) * nbinx);
   bin2 = NULL;
 
   /* initialize variables 'from the previous level' */
@@ -414,11 +412,11 @@ void mdt_super_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
   }
 
   free_combination_vector(vec);
-  free(i_feat_fix);
-  free(n_bins_fix);
-  free(i_start_fix);
-  free(i_val_fix);
-  free(apriori);
-  free(frq);
-  free(bin2);
+  g_free(i_feat_fix);
+  g_free(n_bins_fix);
+  g_free(i_start_fix);
+  g_free(i_val_fix);
+  g_free(apriori);
+  g_free(frq);
+  g_free(bin2);
 }

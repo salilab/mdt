@@ -1,7 +1,14 @@
-Import('env', 'modconfig', 'pythoninc', 'configure_for_pyext')
+Import('env', 'modconfig', 'pythoninc', 'configure_for_pyext',
+       'is_wine_platform')
 
 # Get a modified build environment suitable for building Python extensions:
-e = configure_for_pyext(env, modconfig)
+e = env.Copy()
+if not is_wine_platform(modconfig):
+    e.ParseConfig('pkg-config --cflags glib-2.0')
+e.Append(CPPPATH=modconfig['include'] + [pythoninc])
+e.Append(LIBPATH=['../src'] + modconfig['libpath'])
+e.Append(LIBS=modconfig['libs'] + ['mdt'])
+e = configure_for_pyext(e, modconfig)
 
 # On Mac, add an explicit dependency on the C shared library, since this
 # isn't done by default:
@@ -11,10 +18,7 @@ if modconfig['exetype'].startswith('mac10'):
 # Build the Python extension from SWIG interface file:
 lib = e.SharedLibrary('_mdt', 'mdt.i',
                       SWIGFLAGS='-python -noproxy ' + \
-                                '-nodefaultctor -nodefaultdtor',
-                      CPPPATH=modconfig['include']+[pythoninc],
-                      LIBS=modconfig['libs']+['mdt'],
-                      LIBPATH=['../src']+modconfig['libpath'])
+                                '-nodefaultctor -nodefaultdtor')
 
 # Install the Python extension and any .py files:
 libinst = e.Install(modconfig['libinstall'], lib)

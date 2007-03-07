@@ -21,12 +21,12 @@ double mdt_get(const struct mdt_type *mdt, const int indices[], int n_indices,
     *ierr = 1;
     return 0.0;
   }
-  indf = malloc(sizeof(int) * n_indices);
+  indf = g_malloc(sizeof(int) * n_indices);
   for (i = 0; i < n_indices; i++) {
     indf[i] = indices[i] + 1;
   }
   indx = indmdt(indf, mdt);
-  free(indf);
+  g_free(indf);
   if (indx < 0 || indx > mdt->nelems) {
     modlogerror(routine, ME_INDEX, "Index %d out of range %d to %d", indx, 0,
                 mdt->nelems);

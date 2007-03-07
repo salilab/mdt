@@ -231,7 +231,7 @@ void mdt_section_meanstdev(const struct mdt_type *mdt,
                            int *ierr)
 {
   int istart, nbins, ifeat;
-  mbool periodic;
+  gboolean periodic;
   double *bin, dx, x0;
 
   *ierr = 0;

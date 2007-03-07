@@ -18,8 +18,8 @@ static void get_feature_indices(const struct mdt_type *mdt,
 {
   int i, j, indfeat, *ifeat;
   *n_int_features = mdt->nfeat - n_features;
-  *inew_features = malloc(sizeof(int) * n_features);
-  *int_features = malloc(sizeof(int) * (*n_int_features));
+  *inew_features = g_malloc(sizeof(int) * n_features);
+  *int_features = g_malloc(sizeof(int) * (*n_int_features));
   ifeat = f_int1_pt(&mdt->ifeat);
   for (i = 0; i < n_features; i++) {
     int match = 0;
@@ -33,8 +33,8 @@ static void get_feature_indices(const struct mdt_type *mdt,
     if (!match) {
       modlogerror(routine, ME_VALUE,
                   "Feature type %d does not exist in input MDT.", features[i]);
-      free(*inew_features);
-      free(*int_features);
+      g_free(*inew_features);
+      g_free(*int_features);
       *ierr = 1;
       return;
     }
@@ -92,7 +92,7 @@ static void integrate_mdt_table(const struct mdt_type *mdtin,
 {
   int i, *out_indf, *in_indf, *in_istart;
   double *out_bin, *in_bin;
-  in_indf = malloc(sizeof(int) * mdtin->nfeat);
+  in_indf = g_malloc(sizeof(int) * mdtin->nfeat);
   out_indf = mdt_start_indices(mdtout);
   in_istart = f_int1_pt(&mdtin->istart);
   out_bin = f_double1_pt(&mdtout->bin);
@@ -127,8 +127,8 @@ static void integrate_mdt_table(const struct mdt_type *mdtin,
   } while (roll_ind(out_indf, f_int1_pt(&mdtout->istart),
                     f_int1_pt(&mdtout->iend), mdtout->nfeat));
 
-  free(out_indf);
-  free(in_indf);
+  g_free(out_indf);
+  g_free(in_indf);
 }
 
 /** Integrate an MDT. */
@@ -167,6 +167,6 @@ void mdt_integrate(const struct mdt_type *mdtin, struct mdt_type *mdtout,
   if (!mdtout->pdf) {
     mdtout->sample_size = get_sum(f_double1_pt(&mdtout->bin), mdtout->nelems);
   }
-  free(inew_features);
-  free(int_features);
+  g_free(inew_features);
+  g_free(int_features);
 }

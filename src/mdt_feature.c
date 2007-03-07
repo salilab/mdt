@@ -8,7 +8,7 @@
 #include "mdt.h"
 
 /** Is the given feature type periodic? */
-mbool mdt_feature_is_periodic(int ifeat)
+gboolean mdt_feature_is_periodic(int ifeat)
 {
   switch(ifeat) {
   case 3: case 4: case 5: case 6: case 7: case 8: case 9: case 10:

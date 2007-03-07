@@ -7,7 +7,8 @@ pythoninc = get_python_include(modconfig)
 env = MyEnvironment(modconfig)
 
 # Make these objects available to SConscript files:
-Export('env', 'modconfig', 'pythoninc', 'configure_for_pyext')
+Export('env', 'modconfig', 'pythoninc', 'configure_for_pyext',
+       'is_wine_platform')
 
 # Subdirectories to build:
 test = SConscript('test/SConscript')

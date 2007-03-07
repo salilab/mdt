@@ -1,4 +1,13 @@
-Import('env', 'modconfig')
+Import('env', 'modconfig', 'is_wine_platform')
+
+e = env.Copy()
+if is_wine_platform(modconfig):
+    e.Append(SHLINKFLAGS=' glib-2.0.lib')
+else:
+    e.ParseConfig('pkg-config --cflags --libs glib-2.0')
+e.Append(CPPPATH=modconfig['include'])
+e.Append(LIBPATH=modconfig['libpath'])
+e.Append(LIBS=modconfig['libs'] + modconfig['libm'])
 
 # Source files
 files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',
@@ -10,15 +19,12 @@ files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',
          'mdt_feature.c', 'mdt_super_smooth.c')
 
 # Build a Windows DLL exports file from the public header file:
-env.W32Def('libmdt.def', 'mdt.h')
+e.W32Def('libmdt.def', 'mdt.h')
 
 # Build the shared library
-lib = env.SharedLibrary('mdt', files, WIN32DEFPREFIX='lib', WIN32_INSERT_DEF=1,
-                        WINDOWSEXPPREFIX='lib',
-                        CPPPATH=modconfig['include'],
-                        LIBS=modconfig['libs']+modconfig['libm'],
-                        LIBPATH=modconfig['libpath'])
+lib = e.SharedLibrary('mdt', files, WIN32DEFPREFIX='lib', WIN32_INSERT_DEF=1,
+                      WINDOWSEXPPREFIX='lib')
 
 # Install the shared library
-libinst = env.Install(modconfig['libinstall'], lib)
-env.Alias('install', libinst)
+libinst = e.Install(modconfig['libinstall'], lib)
+e.Alias('install', libinst)

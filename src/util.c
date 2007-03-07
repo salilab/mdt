@@ -5,8 +5,8 @@
 
 #include <math.h>
 #include <assert.h>
+#include <glib.h>
 #include "modeller.h"
-#include "mod_dynmem.h"
 #include "util.h"
 #include "num_recipes.h"
 
@@ -16,7 +16,7 @@ int *mdt_start_indices(const struct mdt_type *mdt)
 {
   int i, *indf;
 
-  indf = dmalloc(sizeof(int) * mdt->nfeat);
+  indf = g_malloc(sizeof(int) * mdt->nfeat);
   for (i = 0; i < mdt->nfeat; i++) {
     indf[i] = f_int1_get(&mdt->istart, i);
   }
@@ -124,7 +124,7 @@ int roll_ind_comb(int **ind, int n, int nmax)
   if (*ind == NULL) {
     /* In the case where n == 0, allocate a dummy size 1 array so that the
        pointer is not NULL */
-    *ind = indr = dmalloc(sizeof(int) * (n == 0 ? 1 : n));
+    *ind = indr = g_malloc(sizeof(int) * (n == 0 ? 1 : n));
     for (i = 0; i < n; i++) {
       indr[i] = i;
     }
@@ -207,7 +207,7 @@ static int *complem(const int i_feat_fix[], int n_feat_fix, int numb_features,
 {
   int i, *i_feat_var;
 
-  i_feat_var = dmalloc(sizeof(int) * numb_features);
+  i_feat_var = g_malloc(sizeof(int) * numb_features);
   *n_feat_var = 0;
   for (i = 0; i < numb_features - 1; i++) {
     int j, match = 0;
@@ -232,9 +232,9 @@ static void setup_mdt_feature_arrays(const struct mdt_type *mdt,
                                      int **ival, int **nbins)
 {
   int i;
-  *istart = dmalloc(sizeof(int) * nfeat);
-  *ival = dmalloc(sizeof(int) * nfeat);
-  *nbins = dmalloc(sizeof(int) * nfeat);
+  *istart = g_malloc(sizeof(int) * nfeat);
+  *ival = g_malloc(sizeof(int) * nfeat);
+  *nbins = g_malloc(sizeof(int) * nfeat);
   for (i = 0; i < nfeat; i++) {
     (*nbins)[i] = f_int1_get(&mdt->nbins, ifeat[i]);
     (*ival)[i] = (*istart)[i] = f_int1_get(&mdt->istart, ifeat[i]);
@@ -287,11 +287,11 @@ void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
   } while (roll_ind(i_val_var, istart, var_feature_bins, n_feat_var));
 
   /* Clean up */
-  free(i_feat_var);
-  free(istart);
-  free(i_val_var);
-  free(indf);
-  free(var_feature_bins);
+  g_free(i_feat_var);
+  g_free(istart);
+  g_free(i_val_var);
+  g_free(indf);
+  g_free(var_feature_bins);
 }
 
 /** Return entropy of p(x/y,z,...) where y,z are the independent features.
@@ -309,7 +309,7 @@ double entrp2(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
     sumi[i] = 0.;
   }
 
-  fijk = dmalloc(sizeof(double) * nbinx);
+  fijk = g_malloc(sizeof(double) * nbinx);
   /* set the control arrays for fixed (and non-independent) feature values: */
   setup_mdt_feature_arrays(mdt, i_feat_fix, n_feat_fix, &istart, &i_val_fix,
                            &fix_feature_bins);
@@ -358,10 +358,10 @@ double entrp2(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
   }
 
   /* clean up */
-  free(fijk);
-  free(fix_feature_bins);
-  free(i_val_fix);
-  free(istart);
+  g_free(fijk);
+  g_free(fix_feature_bins);
+  g_free(i_val_fix);
+  g_free(istart);
 
   return entrp;
 }
@@ -396,7 +396,7 @@ double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
     return 0.;
   }
 
-  fijk = dmalloc(sizeof(double) * nbinx);
+  fijk = g_malloc(sizeof(double) * nbinx);
   /* set the control arrays for non-independent feature values: */
   setup_mdt_feature_arrays(mdt, i_feat_fix, n_feat_fix, &istart, &i_val_fix,
                            &fix_feature_bins);
@@ -427,10 +427,10 @@ double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
   } while (roll_ind(i_val_fix, istart, fix_feature_bins, n_feat_fix));
 
   /* clean up */
-  free(fijk);
-  free(fix_feature_bins);
-  free(i_val_fix);
-  free(istart);
+  g_free(fijk);
+  g_free(fix_feature_bins);
+  g_free(i_val_fix);
+  g_free(istart);
 
   /* test for the sum over j: */
   if (fabs((sumjmdt - summdt) / (summdt + tiny)) > fract) {

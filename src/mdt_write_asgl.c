@@ -5,12 +5,10 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <glib.h>
 #include "modeller.h"
-#include "mod_dynmem.h"
 #include "mdt.h"
 #include "util.h"
-
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
 
 /** Write the raw data to be plotted with ASGL. */
 static void wrdata(const char *datfil, int dimensions, const double bin[],
@@ -38,16 +36,16 @@ static char *get_mdt_symb(const struct mdt_type *mdt,
   /* For type 3, generate symbol from range data */
   if (mlib->itsymb[ifeat] == 3) {
     if (ibin == mlib->ndimen[ifeat] - 1) {
-      return dstrdup("U");
+      return g_strdup("U");
     } else {
       float rang1 = f_float2_get(&mlib->rang1, ibin, ifeat);
       if (ndecimal > 0) {
-        char *fmt = dstrdup_printf("%%.%df", ndecimal);
-        char *str = dstrdup_printf(fmt, rang1);
-        free(fmt);
+        char *fmt = g_strdup_printf("%%.%df", ndecimal);
+        char *str = g_strdup_printf(fmt, rang1);
+        g_free(fmt);
         return str;
       } else {
-        return dstrdup_printf("%d", (int)rang1);
+        return g_strdup_printf("%d", (int)rang1);
       }
     }
   } else {
@@ -114,7 +112,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
     for (i = 0; i < nbiny; i += every_y_numbered) {
       char *symb = get_mdt_symb(mdt, mlib, ifeat - 1, i, y_decimal);
       fprintf(fp, " '%s'", symb);
-      free(symb);
+      g_free(symb);
     }
     fputs("\n", fp);
   }
@@ -136,7 +134,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
   for (i = 0; i < nbinx; i += every_x_numbered) {
     char *symb = get_mdt_symb(mdt, mlib, ifeat - 1, i, x_decimal);
     fprintf(fp, " '%s'", symb);
-    free(symb);
+    g_free(symb);
   }
   fputs("\nWORLD\nAXES2D\nRESET_CAPTIONS\n", fp);
 
@@ -147,7 +145,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
   featnam = mdt_library_featnam_get(mlib, ifeat - 1);
   fprintf(fp, "CAPTION CAPTION_POSITION 2, ;\n"
               "     CAPTION_TEXT '%s'\n", featnam);
-  free(featnam);
+  g_free(featnam);
 
   if (dimensions == 1) {
     fputs("CAPTION CAPTION_POSITION 3, ;\n"
@@ -157,7 +155,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
     featnam = mdt_library_featnam_get(mlib, ifeat - 1);
     fprintf(fp, "CAPTION CAPTION_POSITION 3, ;\n"
                 "     CAPTION_TEXT '%s'\n", featnam);
-    free(featnam);
+    g_free(featnam);
   }
 
   for (i = mdt->nfeat - dimensions - 1; i >= 0; i--) {
@@ -168,8 +166,8 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
     fprintf(fp, "CAPTION CAPTION_POSITION 1, ;\n"
                 "     CAPTION_TEXT '%s : %s'\n", strlen(symb) == 0 ? "u" : symb,
                 featnam);
-    free(symb);
-    free(featnam);
+    g_free(symb);
+    g_free(featnam);
   }
 
   if (dimensions == 1) {
@@ -218,7 +216,7 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
       iposc++;
 
       /* get the file name for the numbers: */
-      datfil = dstrdup_printf("%s.%d", asglroot, nhist);
+      datfil = g_strdup_printf("%s.%d", asglroot, nhist);
 
       /* append TOP commands to the ASGL file: */
       appasgl(fp, mdt, mlib, datfil, ipos, indf, dimensions, every_x_numbered,
@@ -227,7 +225,7 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
 
       /* write the numbers file */
       wrdata(datfil, dimensions, &bin[i1], nbinx, nbiny, ierr);
-      free(datfil);
+      g_free(datfil);
 
       /* new page?
          substitute nhist with ipos if you want the page jump to be decided
@@ -245,7 +243,7 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
   } while (roll_ind(indf, f_int1_pt(&mdt->istart), f_int1_pt(&mdt->iend),
                     mdt->nfeat - dimensions) && *ierr == 0);
 
-  free(indf);
+  g_free(indf);
   if (*ierr) {
     return;
   }
@@ -282,9 +280,9 @@ void mdt_write_asgl(const struct mdt_type *mdt, const struct mdt_library *mlib,
     return;
   }
 
-  topfile = dstrdup_printf("%s.top", asglroot);
+  topfile = g_strdup_printf("%s.top", asglroot);
   fp = open_file(topfile, "w", &file_info);
-  free(topfile);
+  g_free(topfile);
 
   if (fp) {
     write_script_file(fp, mdt, mlib, dimensions, nbinx, nbiny,

@@ -5,7 +5,6 @@
 
 #include <stdlib.h>
 #include "modeller.h"
-#include "mod_dynmem.h"
 #include "mdt.h"
 #include "util.h"
 
@@ -31,7 +30,7 @@ float mdt_entropy_hx(const struct mdt_type *mdt, int *ierr)
   }
 
   /* get pdf p(x) irrespective of the values of the independent variables */
-  frq = dmalloc(sizeof(double) * nbinx);
+  frq = g_malloc(sizeof(double) * nbinx);
   getfrq(mdt, NULL, 0, NULL, nbinx, frq);
 
   /* get its entropy: */
@@ -51,6 +50,6 @@ float mdt_entropy_hx(const struct mdt_type *mdt, int *ierr)
   }
 
   modlognote("entropy_hx_mdt_> h(x) = %.4g", hx);
-  free(frq);
+  g_free(frq);
   return hx;
 }

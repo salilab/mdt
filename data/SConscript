@@ -1,0 +1,8 @@
+Import('env', 'modconfig')
+
+# Source files
+files = ['anggrp.lib', 'bndgrp.lib', 'impgrp.lib', 'trpcls.lib']
+
+# Install the files
+inst = env.Install(modconfig['modlib'], files)
+env.Alias('install', inst)

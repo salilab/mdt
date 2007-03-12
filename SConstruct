@@ -15,6 +15,7 @@ test = SConscript('test/SConscript')
 pyext = SConscript('pyext/SConscript')
 src = SConscript('src/SConscript')
 data = SConscript('data/SConscript')
+doc = SConscript('doc/SConscript')
 
 # testcases first require Python extensions to be built:
 env.Depends(test, pyext)

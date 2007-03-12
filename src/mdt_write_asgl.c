@@ -31,8 +31,9 @@ static void wrdata(const char *datfil, int dimensions, const double bin[],
 /** Get the symbol name for a bin. */
 static char *get_mdt_symb(const struct mdt_type *mdt,
                           const struct mdt_library *mlib,
-                          int ifeat, int ibin, int ndecimal)
+                          int nfeat, int ibin, int ndecimal)
 {
+  int ifeat = f_int1_get(&mdt->ifeat, nfeat);
   /* For type 3, generate symbol from range data */
   if (mlib->itsymb[ifeat] == 3) {
     if (ibin == mlib->ndimen[ifeat] - 1) {
@@ -49,7 +50,7 @@ static char *get_mdt_symb(const struct mdt_type *mdt,
       }
     }
   } else {
-    return mdt_symb_get(mdt, mlib, ifeat, ibin);
+    return mdt_symb_get(mdt, mlib, nfeat, ibin);
   }
 }
 
@@ -110,7 +111,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
     ifeat = ifeatpt[mdt->nfeat - 2];
     fputs("SET Y_LABELS", fp);
     for (i = 0; i < nbiny; i += every_y_numbered) {
-      char *symb = get_mdt_symb(mdt, mlib, ifeat - 1, i, y_decimal);
+      char *symb = get_mdt_symb(mdt, mlib, mdt->nfeat - 2, i, y_decimal);
       fprintf(fp, " '%s'", symb);
       g_free(symb);
     }
@@ -132,7 +133,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
   ifeat = ifeatpt[mdt->nfeat - 1];
   fputs("SET X_LABELS", fp);
   for (i = 0; i < nbinx; i += every_x_numbered) {
-    char *symb = get_mdt_symb(mdt, mlib, ifeat - 1, i, x_decimal);
+    char *symb = get_mdt_symb(mdt, mlib, mdt->nfeat - 1, i, x_decimal);
     fprintf(fp, " '%s'", symb);
     g_free(symb);
   }
@@ -162,7 +163,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
     char *symb;
     ifeat = ifeatpt[i];
     featnam = mdt_library_featnam_get(mlib, ifeat - 1);
-    symb = mdt_symb_get(mdt, mlib, ifeat - 1, indf[i] - 1);
+    symb = mdt_symb_get(mdt, mlib, i, indf[i] - 1);
     fprintf(fp, "CAPTION CAPTION_POSITION 1, ;\n"
                 "     CAPTION_TEXT '%s : %s'\n", strlen(symb) == 0 ? "u" : symb,
                 featnam);

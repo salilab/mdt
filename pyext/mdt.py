@@ -377,16 +377,23 @@ class mdt(mdt_section):
                    every_x_numbered=1, every_y_numbered=1, x_decimal=1,
                    y_decimal=1):
         """Make input files for ASGL.
+           @param asglroot: filename prefix for ASGL TOP script and data files.
            @param text: ASGL command lines that are written for each plot.
-           @param plot_type: select 'HIST2D' or 'PLOT2D' when C{dimensions}=2.
+           @param dimensions: whether to make 1D or 2D plots.
+           @param plot_position: position of the plot on the page, in
+                  ASGL convention.
+           @param plots_per_page: number of plots per page.
            @param plot_density_cutoff: the minimal sum of the bin values that
                   each plot has to have before it is actually written out;
                   otherwise it is ignored. This helps to avoid wasting paper
                   on empty plots when the MDT array data are sparse.
+           @param plot_type: select 'HIST2D' or 'PLOT2D' when C{dimensions}=2.
+           @param every_x_numbered: spacing for labels on the X axis.
+           @param every_y_numbered: spacing for labels on the Y axis.
            @param x_decimal: the number of decimal places used to write
                              X feature values.
            @param y_decimal: the number of decimal places used to write
-                             y feature values.
+                             Y feature values.
         """
         return _mdt.mdt_write_asgl(self._modpt, self._mlib.modpt, asglroot,
                                    text, dimensions, every_x_numbered,
@@ -395,17 +402,22 @@ class mdt(mdt_section):
                                    x_decimal, y_decimal)
 
 
-    def add_alignment(self, aln, distngh=6.0, sdchngh=False, surftyp=1,
-                      accessibility_type=8,
+    def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
                       residue_span_range=(-9999, 2, 2, 99999), pairs=1,
                       triples=1, io=None, edat=None):
-        """Add data from an alignment to this MDT."""
+        """Add data from a Modeller alignment to this MDT.
+           @param aln: Modeller alignment.
+           @param distngh: distance below which residues are considered
+                  neighbors.
+           @param surftyp: 1 for PSA contact area, 2 for surface area.
+           @param accessibility_type: PSA accessibility type (1-10).
+        """
         if io is None:
             io = self._mlib.env.io
         if edat is None:
             edat = self._mlib.env.edat
         _mdt.mdt_add_alignment(self._modpt, self._mlib.modpt, aln.modpt,
-                               distngh, sdchngh, surftyp, accessibility_type,
+                               distngh, False, surftyp, accessibility_type,
                                residue_span_range, pairs, triples, io.modpt,
                                edat.modpt, self._mlib.env.libs.modpt)
 

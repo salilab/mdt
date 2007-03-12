@@ -395,7 +395,8 @@ class mdt(mdt_section):
                                    x_decimal, y_decimal)
 
 
-    def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
+    def add_alignment(self, aln, distngh=6.0, sdchngh=False, surftyp=1,
+                      accessibility_type=8,
                       residue_span_range=(-9999, 2, 2, 99999), pairs=1,
                       triples=1, io=None, edat=None):
         """Add data from an alignment to this MDT."""
@@ -403,11 +404,10 @@ class mdt(mdt_section):
             io = self._mlib.env.io
         if edat is None:
             edat = self._mlib.env.edat
-        _modeller.add_alignment_mdt(self._modpt, self._mlib.modpt, aln.modpt,
-                                    distngh, surftyp, accessibility_type,
-                                    residue_span_range, pairs, triples,
-                                    io.modpt, edat.modpt,
-                                    self._mlib.env.libs.modpt)
+        _mdt.mdt_add_alignment(self._modpt, self._mlib.modpt, aln.modpt,
+                               distngh, sdchngh, surftyp, accessibility_type,
+                               residue_span_range, pairs, triples, io.modpt,
+                               edat.modpt, self._mlib.env.libs.modpt)
 
     def __getitem__(self, indx):
         if not isinstance(indx, (list, tuple)):

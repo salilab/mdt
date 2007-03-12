@@ -98,6 +98,14 @@ void mdt_section_meanstdev(const struct mdt_type *mdt,
 /** Is the given feature type periodic? */
 gboolean mdt_feature_is_periodic(int ifeat);
 
+/** Add data from an alignment to an MDT. */
+void mdt_add_alignment(struct mdt_type *mdt, const struct mdt_library *mlib,
+                       struct alignment *aln, float distngh, gboolean sdchngh,
+                       int surftyp, int iacc1typ,
+                       const int residue_span_range[4], int pairs, int triples,
+                       struct io_data *io, struct energy_data *edat,
+                       struct libraries *libs, int *ierr);
+
 #ifdef __cplusplus
 }
 #endif

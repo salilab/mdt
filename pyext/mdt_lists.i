@@ -1,13 +1,13 @@
 #ifdef SWIGPYTHON
-%define TO_VARLIST(type, checkfn, convertfn, errmsg)
-%ignore to_varlist_ ## type ##;
+%define TO_LIST(type, checkfn, convertfn, errmsg)
+%ignore to_list_ ## type ##;
 %inline %{
-static type *to_varlist_ ## type ##(PyObject *pyinput, int *sizevar, char *displayname) {
+static type *to_list_ ## type ##(PyObject *pyinput, int fixsize, int *sizevar, char *displayname) {
   Py_ssize_t seqlen;
   int i, intseqlen;
   type *outlist;
   /* Treat a single value the same as a 1-element list */
-  if (checkfn(pyinput)) {
+  if (checkfn(pyinput) && sizevar) {
     outlist = malloc(sizeof(type));
     *sizevar = 1;
     outlist[0] = (type)convertfn(pyinput);
@@ -25,7 +25,14 @@ static type *to_varlist_ ## type ##(PyObject *pyinput, int *sizevar, char *displ
                  displayname);
     return NULL;
   }
-  *sizevar = intseqlen = (int)seqlen;
+  intseqlen = (int)seqlen;
+  if (sizevar) {
+    *sizevar = intseqlen;
+  } else if (intseqlen != fixsize) {
+    PyErr_Format(PyExc_ValueError, "%s must be a sequence of length %d",
+                 displayname, fixsize);
+    return NULL;
+  }
   /* malloc(0) is undefined, so make sure we use a non-zero size */
   outlist = malloc(sizeof(type) * (intseqlen == 0 ? 1 : intseqlen));
 
@@ -46,17 +53,22 @@ static type *to_varlist_ ## type ##(PyObject *pyinput, int *sizevar, char *displ
 %}
 %enddef
 
-TO_VARLIST(float, PyNumber_Check, PyFloat_AsDouble, "%s[%d] should be a number")
-TO_VARLIST(int, PyInt_Check, PyInt_AsLong, "%s[%d] should be an integer")
+TO_LIST(float, PyNumber_Check, PyFloat_AsDouble, "%s[%d] should be a number")
+TO_LIST(int, PyInt_Check, PyInt_AsLong, "%s[%d] should be an integer")
 
 
 %typemap(in) (const float VARLIST[], int N_VARLIST) {
-    $1 = to_varlist_float($input, &$2, "$1_name");
+    $1 = to_list_float($input, 0, &$2, "$1_name");
     if (!$1) SWIG_fail;
 }
 
 %typemap(in) (const int VARLIST[], int N_VARLIST) {
-    $1 = to_varlist_int($input, &$2, "$1_name");
+    $1 = to_list_int($input, 0, &$2, "$1_name");
+    if (!$1) SWIG_fail;
+}
+
+%typemap(in) const int [ANY] {
+    $1 = to_list_int($input, $1_dim0, NULL, "$1_name");
     if (!$1) SWIG_fail;
 }
 #endif 
@@ -71,5 +83,11 @@ TO_VARLIST(int, PyInt_Check, PyInt_AsLong, "%s[%d] should be an integer")
     if ($1) free($1);
 }
 %typemap(arginit) (const int VARLIST[], int N_VARLIST) {
+  $1 = NULL;
+}
+%typemap(freearg) const int [ANY] {
+    if ($1) free($1);
+}
+%typemap(arginit) const int [ANY] {
   $1 = NULL;
 }

@@ -2,6 +2,7 @@
 %include "typemaps.i"
 
 %{
+#include <glib.h>
 #include "../src/mdt.h"
 #include "error_types.h"
 #include "mod_error.h"

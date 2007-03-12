@@ -8,7 +8,7 @@ static type *to_list_ ## type ##(PyObject *pyinput, int fixsize, int *sizevar, c
   type *outlist;
   /* Treat a single value the same as a 1-element list */
   if (checkfn(pyinput) && sizevar) {
-    outlist = malloc(sizeof(type));
+    outlist = g_malloc(sizeof(type));
     *sizevar = 1;
     outlist[0] = (type)convertfn(pyinput);
     return outlist;
@@ -34,7 +34,7 @@ static type *to_list_ ## type ##(PyObject *pyinput, int fixsize, int *sizevar, c
     return NULL;
   }
   /* malloc(0) is undefined, so make sure we use a non-zero size */
-  outlist = malloc(sizeof(type) * (intseqlen == 0 ? 1 : intseqlen));
+  outlist = g_malloc(sizeof(type) * (intseqlen == 0 ? 1 : intseqlen));
 
   for (i = 0; i < intseqlen; i++) {
     PyObject *o = PySequence_GetItem(pyinput, i);
@@ -44,7 +44,7 @@ static type *to_list_ ## type ##(PyObject *pyinput, int fixsize, int *sizevar, c
     } else {
       Py_XDECREF(o);
       PyErr_Format(PyExc_ValueError, errmsg, displayname, i);
-      free(outlist);
+      g_free(outlist);
       return NULL;
     }
   }
@@ -74,19 +74,19 @@ TO_LIST(int, PyInt_Check, PyInt_AsLong, "%s[%d] should be an integer")
 #endif 
 
 %typemap(freearg) (const float VARLIST[], int N_VARLIST) {
-    if ($1) free($1);
+    g_free($1);
 }
 %typemap(arginit) (const float VARLIST[], int N_VARLIST) {
   $1 = NULL;
 }
 %typemap(freearg) (const int VARLIST[], int N_VARLIST) {
-    if ($1) free($1);
+    g_free($1);
 }
 %typemap(arginit) (const int VARLIST[], int N_VARLIST) {
   $1 = NULL;
 }
 %typemap(freearg) const int [ANY] {
-    if ($1) free($1);
+    g_free($1);
 }
 %typemap(arginit) const int [ANY] {
   $1 = NULL;

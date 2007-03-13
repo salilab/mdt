@@ -8,6 +8,11 @@
 
 #include <glib.h>
 
+/* Allow building with glib < 2.6 */
+#ifndef G_GNUC_INTERNAL
+#define G_GNUC_INTERNAL
+#endif
+
 G_BEGIN_DECLS
 
 /** Return the number of combinations of n. */

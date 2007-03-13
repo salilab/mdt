@@ -22,6 +22,8 @@
    MDT works by accumulating the table M{N} by processing each sequence or
    alignment in turn. See L{mdt.add_alignment}.
 
+   See U{some studies with MDT<https://salilab.org/internal/manuals/mdt/manual.pdf>} for copious examples.
+
    @author: Andrej Sali, Ben Webb
    @copyright: 1989-2007 Andrej Sali
 

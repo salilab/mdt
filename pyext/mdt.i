@@ -11,8 +11,7 @@
 %include "fortran-pointers.i"
 %include "mdt_exceptions.i"
 %include "mdt_lists.i"
-
-typedef int gboolean;
+%include "mdt_glib.i"
 
 %apply double *OUTPUT { double * };
 %apply (const float VARLIST[], int N_VARLIST) { (const float dx_dy[], int n_dx_dy) };

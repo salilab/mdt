@@ -8,9 +8,7 @@
 
 #include <glib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+G_BEGIN_DECLS
 
 /** Return the number of combinations of n. */
 G_GNUC_INTERNAL
@@ -20,7 +18,6 @@ int nperm(int n);
 G_GNUC_INTERNAL
 float gammq(float a, float x);
 
-#ifdef __cplusplus
-}
-#endif
+G_END_DECLS
+
 #endif  /* __NUM_RECIPES_H */

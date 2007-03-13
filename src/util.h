@@ -9,9 +9,7 @@
 #include <glib.h>
 #include "mod_types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+G_BEGIN_DECLS
 
 /** Return the indices of the "top-left" corner of the MDT. This must be freed
     by the user after use. */
@@ -100,7 +98,6 @@ void make_mdt_stride(struct mdt_type *mdt);
 G_GNUC_INTERNAL
 int make_mdt_stride_full(const int nbins[], int nfeat, int stride[]);
 
-#ifdef __cplusplus
-}
-#endif
+G_END_DECLS
+
 #endif  /* __MDT_UTIL_H */

@@ -9,9 +9,7 @@
 #include <glib.h>
 #include "mod_types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+G_BEGIN_DECLS
 
 /** Smooth a histogram or the 2D plot with a uniform prior */
 void mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
@@ -106,7 +104,6 @@ void mdt_add_alignment(struct mdt_type *mdt, const struct mdt_library *mlib,
                        struct io_data *io, struct energy_data *edat,
                        struct libraries *libs, int *ierr);
 
-#ifdef __cplusplus
-}
-#endif
+G_END_DECLS
+
 #endif  /* __MDT_MDT_H */

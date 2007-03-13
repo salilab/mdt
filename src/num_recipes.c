@@ -20,7 +20,7 @@ int nperm(int n)
 }
 
 /** Return the logarithm of the gamma function. */
-float gammln(float xx)
+static float gammln(float xx)
 {
   float x, tmp, ser;
   static const float cof[6] = {76.18009173, -86.50532033, 24.01409822,

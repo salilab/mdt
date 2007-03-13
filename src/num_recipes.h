@@ -6,14 +6,18 @@
 #ifndef __NUM_RECIPES_H
 #define __NUM_RECIPES_H
 
+#include <glib.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /** Return the number of combinations of n. */
+G_GNUC_INTERNAL
 int nperm(int n);
 
 /** Return the complement of incomplete gamma function. */
+G_GNUC_INTERNAL
 float gammq(float a, float x);
 
 #ifdef __cplusplus

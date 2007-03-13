@@ -3,8 +3,10 @@ Import('env', 'modconfig', 'pythoninc', 'configure_for_pyext',
 
 # Get a modified build environment suitable for building Python extensions:
 e = env.Copy()
-if not is_wine_platform(modconfig):
-    e.ParseConfig('pkg-config --cflags glib-2.0')
+if is_wine_platform(modconfig):
+    e.Append(SHLINKFLAGS=' glib-2.0.lib')
+else:
+    e.ParseConfig('pkg-config --cflags --libs glib-2.0')
 e.Append(CPPPATH=modconfig['include'] + [pythoninc])
 e.Append(LIBPATH=['../src'] + modconfig['libpath'])
 e.Append(LIBS=modconfig['libs'] + ['mdt'])

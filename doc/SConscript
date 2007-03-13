@@ -1,3 +1,4 @@
 Import('env')
 
-env.DVI(target='manual.dvi', source='manual.tex')
+if hasattr(env, 'PDF'):
+    env.PDF(target='manual.pdf', source='manual.tex')

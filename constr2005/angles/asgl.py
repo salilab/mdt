@@ -1,13 +1,12 @@
 from modeller import *
-from modeller import mdt
+import mdt
 
 env = environ()
 mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', '../lib/mdt2.bin')
 mlib.angle_classes.read('${LIB}/anggrp.lib')
 
 m = mdt.mdt(mlib, file='mdt.mdt')
-m = m.reshape(new_feature_order=(35,111,112), ind_start=(1,1,1),
-              ind_end=(1,-1,-1))
+m = m.reshape(features=(35,111,112), offset=(0,0,0), shape=(1,-1,-1))
 
 text = """
 SET X_LABEL_STYLE = 2, X_TICK_LABEL = -999 -999

@@ -11,7 +11,7 @@ mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', '../../lib/mdt2.bin', deltai=1)
 
 # feature 66 is the subsequent residue type, relative to the omega class
 # (feature 62)
-m = mdt.mdt(mlib, feature_types=(35,66,62))
+m = mdt.mdt(mlib, features=(35,66,62))
 
 a = alignment(env)
 while (a.read_one(file='../../lib/pdb_60.pir')):

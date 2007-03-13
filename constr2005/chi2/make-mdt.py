@@ -1,5 +1,5 @@
 from modeller import *
-from modeller import mdt
+import mdt
 
 # See ../bonds/make_mdt.py for additional comments
 
@@ -9,7 +9,7 @@ env.io.atom_files_directory = '/diva3/database/pdb/uncompressed_files'
 
 mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', '../lib/mdt2.bin')
 
-m = mdt.mdt(mlib, feature_types=(35,1,5))
+m = mdt.mdt(mlib, features=(35,1,5))
 
 a = alignment(env)
 while (a.read_one(file='../lib/pdb_60.pir')):

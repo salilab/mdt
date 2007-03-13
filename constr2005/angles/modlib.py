@@ -1,5 +1,5 @@
 from modeller import *
-from modeller import mdt
+import mdt
 
 env = environ()
 mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', '../lib/mdt2.bin')

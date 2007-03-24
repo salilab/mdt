@@ -77,26 +77,24 @@ static void do_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 }
 
 
-/** Normalize an MDT. */
-void mdt_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
-                   const struct mdt_library *mlib, int dimensions,
-                   const float dx_dy[], int n_dx_dy, gboolean to_zero,
-                   gboolean to_pdf, int *ierr)
+/** Normalize an MDT. Return TRUE on success. */
+gboolean mdt_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+                       const struct mdt_library *mlib, int dimensions,
+                       const float dx_dy[], int n_dx_dy, gboolean to_zero,
+                       gboolean to_pdf, GError **err)
 {
   static const char *routine = "mdt_normalize";
   float dxdy;
   int nbins, nbinx, nbiny, *indf;
 
-  *ierr = 0;
   if (n_dx_dy != dimensions) {
-    modlogerror(routine, ME_VALUE, "dx_dy must contain %d elements, "
-                "to agree with 'dimensions'.", dimensions);
-    *ierr = 1;
-    return;
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "%s: dx_dy must contain %d elements, "
+                "to agree with 'dimensions'.", routine, dimensions);
+    return FALSE;
   }
-  get_binx_biny(dimensions, mdtin, routine, &nbinx, &nbiny, ierr);
-  if (*ierr != 0) {
-    return;
+  if (!get_binx_biny(dimensions, mdtin, routine, &nbinx, &nbiny, err)) {
+    return FALSE;
   }
   nbins = nbinx * nbiny;
   if (to_pdf) {
@@ -117,4 +115,5 @@ void mdt_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
                mdtin->nfeat - dimensions);
   free(indf);
   mdtout->pdf = 1;
+  return TRUE;
 }

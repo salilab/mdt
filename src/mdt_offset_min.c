@@ -25,17 +25,15 @@ static double get_bin_minval(const double *bin, int num)
   return minval;
 }
 
-/** Offset an MDT by the minimum value. */
-void mdt_offset_min(struct mdt_type *mdt, int dimensions, int *ierr)
+/** Offset an MDT by the minimum value. Return TRUE on success. */
+gboolean mdt_offset_min(struct mdt_type *mdt, int dimensions, GError **err)
 {
   static const char *routine = "mdt_offset_min";
   int nbins, nbinx, nbiny, *indf;
   double *bin;
 
-  *ierr = 0;
-  get_binx_biny(dimensions, mdt, routine, &nbinx, &nbiny, ierr);
-  if (*ierr != 0) {
-    return;
+  if (!get_binx_biny(dimensions, mdt, routine, &nbinx, &nbiny, err)) {
+    return FALSE;
   }
   nbins = nbinx * nbiny;
 
@@ -62,4 +60,5 @@ void mdt_offset_min(struct mdt_type *mdt, int dimensions, int *ierr)
                     mdt->nfeat - dimensions));
 
   free(indf);
+  return TRUE;
 }

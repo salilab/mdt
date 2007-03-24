@@ -93,27 +93,28 @@ static void wrres(const int i_feat_fix[], int n_feat_fix, double df,
 }
 
 
-/** Write chi^2, entropies and dependencies of pdf p(x/y,z,...) to the log. */
-void mdt_entropy_full(const struct mdt_type *mdt,
-                      const struct mdt_library *mlib, int *ierr)
+/** Write chi^2, entropies and dependencies of pdf p(x/y,z,...) to the log.
+    Return TRUE on success. */
+gboolean mdt_entropy_full(const struct mdt_type *mdt,
+                          const struct mdt_library *mlib, GError **err)
 {
   static const double small = 1.e-8;
   const char *routine = "mdt_entropy_full";
   double summdt, dfu, expctd, chi2u, chi2up, sumfrq, hx, hx0, ux0, *frq;
   float *sumi;
+  GError *tmperr = NULL;
   int nbinx, i, *i_feat_fix, n_feat_fix;
 
-  *ierr = 0;
   nbinx = f_int1_get(&mdt->nbins, mdt->nfeat - 1);
 
   /* the number of points in mdt */
   summdt = get_sum(f_double1_pt(&mdt->bin), mdt->nelems);
 
   if (summdt < small) {
-    modlogerror(routine, ME_GENERIC,
-                "MDT is empty; sum over all elements = %.4g", summdt);
-    *ierr = 1;
-    return;
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                "%s: MDT is empty; sum over all elements = %.4g", routine,
+                summdt);
+    return FALSE;
   }
 
   /* get pdf p(x) irrespective of the values of the independent variables */
@@ -177,8 +178,8 @@ void mdt_entropy_full(const struct mdt_type *mdt,
 
       /* get the chi^2, etc for pdf p(x/y,z,...): */
       chisq = chisqr(summdt, i_feat_fix, mdt, n_feat_fix, nbinx, sumi, &df,
-                     &prob, &ccc, &cramrv, ierr);
-      if (*ierr != 0) break;
+                     &prob, &ccc, &cramrv, &tmperr);
+      if (tmperr) break;
 
       /* get the uncertainty coefficient of pdf p(x/y,z,...) (comparison
          of p(x/yz) with p(x)): */
@@ -190,8 +191,14 @@ void mdt_entropy_full(const struct mdt_type *mdt,
       wrres(i_feat_fix, n_feat_fix, df, chisq, prob, hxy, uxy, uuxy);
     }
     g_free(i_feat_fix);
-    if (*ierr != 0) break;
+    if (tmperr) break;
   }
   g_free(frq);
   g_free(sumi);
+  if (tmperr) {
+    g_propagate_error(err, tmperr);
+    return FALSE;
+  } else {
+    return TRUE;
+  }
 }

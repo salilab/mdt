@@ -10,15 +10,14 @@
 
 /** Get an element from an MDT. */
 double mdt_get(const struct mdt_type *mdt, const int indices[], int n_indices,
-               int *ierr)
+               GError **err)
 {
   const static char *routine = "mdt_get";
   int i, *indf, indx;
-  *ierr = 0;
   if (n_indices != mdt->nfeat) {
-    modlogerror(routine, ME_VALUE, "Number of indices (%d) must match "
-                "dimension of MDT (%d)", n_indices, mdt->nfeat);
-    *ierr = 1;
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "%s: Number of indices (%d) must match dimension of MDT (%d)",
+                routine, n_indices, mdt->nfeat);
     return 0.0;
   }
   indf = g_malloc(sizeof(int) * n_indices);
@@ -28,9 +27,9 @@ double mdt_get(const struct mdt_type *mdt, const int indices[], int n_indices,
   indx = indmdt(indf, mdt);
   g_free(indf);
   if (indx < 0 || indx > mdt->nelems) {
-    modlogerror(routine, ME_INDEX, "Index %d out of range %d to %d", indx, 0,
+    g_set_error(err, MDT_ERROR, MDT_ERROR_INDEX,
+                "%s: Index %d out of range %d to %d", routine, indx, 0,
                 mdt->nelems);
-    *ierr = 1;
     return 0.0;
   } else {
     double *bin = f_double1_pt(&mdt->bin);

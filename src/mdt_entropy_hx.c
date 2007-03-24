@@ -9,23 +9,22 @@
 #include "util.h"
 
 /** Get the entropy of the dependent variable. */
-float mdt_entropy_hx(const struct mdt_type *mdt, int *ierr)
+float mdt_entropy_hx(const struct mdt_type *mdt, GError **err)
 {
   int i, nbinx;
   double summdt, sumfrq, *frq, hx;
   static const double small = 1.e-8;
   const char *routine = "mdt_entropy_hx";
 
-  *ierr = 0;
   nbinx = f_int1_get(&mdt->nbins, mdt->nfeat - 1);
 
   /* the number of points in mdt */
   summdt = get_sum(f_double1_pt(&mdt->bin), mdt->nelems);
 
   if (summdt < small) {
-    modlogerror(routine, ME_GENERIC,
-                "MDT is empty; sum over all elements = %.4g", summdt);
-    *ierr = 1;
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                "%s: MDT is empty; sum over all elements = %.4g", routine,
+                summdt);
     return 0;
   }
 

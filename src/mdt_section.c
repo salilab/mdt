@@ -11,20 +11,19 @@
 
 /** Given the indices of an MDT section, return the start and end indices
     into the bin array. */
-static void get_mdt_section_bins(const struct mdt_type *mdt,
-                                 const int indices[], int n_indices,
-                                 int *istart, int *nbins, int *ierr)
+static gboolean get_mdt_section_bins(const struct mdt_type *mdt,
+                                     const int indices[], int n_indices,
+                                     int *istart, int *nbins, GError **err)
 {
   static const char *routine = "get_mdt_section_bins";
   int i, *indf;
 
-  *ierr = 0;
   if (n_indices < 0 || n_indices >= mdt->nfeat) {
-    modlogerror(routine, ME_VALUE, "Incorrect number of features (%d);\n"
-                "must be less than the dimension of the MDT (%d)", n_indices,
-                mdt->nfeat);
-    *ierr = 1;
-    return;
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE, 
+                "%s: Incorrect number of features (%d);\n"
+                "must be less than the dimension of the MDT (%d)", routine,
+                n_indices, mdt->nfeat);
+    return FALSE;
   }
 
   indf = mdt_start_indices(mdt);
@@ -34,16 +33,17 @@ static void get_mdt_section_bins(const struct mdt_type *mdt,
   *istart = indmdt(indf, mdt);
   free(indf);
   if (*istart < 0 || *istart >= mdt->nelems) {
-    modlogerror(routine, ME_INDEX, "Index %d out of range %d to %d",
-                *istart, 0, mdt->nelems);
-    *ierr = 1;
-    return;
+    g_set_error(err, MDT_ERROR, MDT_ERROR_INDEX,
+                "%s: Index %d out of range %d to %d", routine, *istart, 0,
+                mdt->nelems);
+    return FALSE;
   }
 
   *nbins = 1;
   for (i = n_indices; i < mdt->nfeat; i++) {
     (*nbins) *= f_int1_get(&mdt->nbins, i);
   }
+  return TRUE;
 }
 
 
@@ -196,13 +196,11 @@ static void hist_avrstdev_deg(const double f[], int n, float x0, float dx,
 
 /** Sum an MDT section. */
 double mdt_section_sum(const struct mdt_type *mdt, const int indices[],
-                       int n_indices, int *ierr)
+                       int n_indices, GError **err)
 {
   int istart, nbins;
   double *bin;
-  *ierr = 0;
-  get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, ierr);
-  if (*ierr) {
+  if (!get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, err)) {
     return 0.0;
   }
   bin = f_double1_pt(&mdt->bin);
@@ -211,13 +209,11 @@ double mdt_section_sum(const struct mdt_type *mdt, const int indices[],
 
 /** Get the entropy of an MDT section. */
 double mdt_section_entropy(const struct mdt_type *mdt, const int indices[],
-                           int n_indices, int *ierr)
+                           int n_indices, GError **err)
 {
   int istart, nbins;
   double *bin;
-  *ierr = 0;
-  get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, ierr);
-  if (*ierr) {
+  if (!get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, err)) {
     return 0.0;
   }
   bin = f_double1_pt(&mdt->bin);
@@ -228,15 +224,14 @@ double mdt_section_entropy(const struct mdt_type *mdt, const int indices[],
 void mdt_section_meanstdev(const struct mdt_type *mdt,
                            const struct mdt_library *mlib, const int indices[],
                            int n_indices, double *mean, double *stdev,
-                           int *ierr)
+                           GError **err)
 {
   int istart, nbins, ifeat;
   gboolean periodic;
   double *bin, dx, x0;
 
-  *ierr = 0;
-  get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, ierr);
-  if (*ierr) {
+  if (!get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, err)) {
+    *mean = *stdev = 0.;
     return;
   }
   bin = f_double1_pt(&mdt->bin);

@@ -148,18 +148,19 @@ int roll_ind_comb(int **ind, int n, int nmax)
 }
 
 
-/** Get the number of bins in the 1 or 2 dependent features */
-void get_binx_biny(int dimensions, const struct mdt_type *mdt,
-                   const char *routine, int *nbinx, int *nbiny, int *ierr)
+/** Get the number of bins in the 1 or 2 dependent features. Return TRUE on
+    success. */
+gboolean get_binx_biny(int dimensions, const struct mdt_type *mdt,
+                       const char *routine, int *nbinx, int *nbiny,
+                       GError **err)
 {
   if (dimensions < 1 || dimensions > 2 || dimensions > mdt->nfeat) {
-    modlogerror(routine, ME_VALUE,
-                "'dimensions' is %d; it must be either 1 or 2, and not more "
-                "than the dimensionality of this MDT (%d)", dimensions,
-                mdt->nfeat);
-    *ierr = 1;
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "%s: 'dimensions' is %d; it must be either 1 or 2, and not "
+                "more than the dimensionality of this MDT (%d)", routine,
+                dimensions, mdt->nfeat);
+    return FALSE;
   } else {
-    *ierr = 0;
     if (dimensions == 1) {
       *nbinx = f_int1_get(&mdt->nbins, mdt->nfeat - 1);
       *nbiny = 1;
@@ -167,6 +168,7 @@ void get_binx_biny(int dimensions, const struct mdt_type *mdt,
       *nbinx = f_int1_get(&mdt->nbins, mdt->nfeat - 1);
       *nbiny = f_int1_get(&mdt->nbins, mdt->nfeat - 2);
     }
+    return TRUE;
   }
 }
 
@@ -369,7 +371,7 @@ double entrp2(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
 /** Get the chi^2, etc for pdf p(x/y,z,...) */
 double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
               int n_feat_fix, int nbinx, float sumi[], double *df, double *prob,
-              double *ccc, double *cramrv, int *ierr)
+              double *ccc, double *cramrv, GError **err)
 {
   static const char *routine = "chiqrt";
   static const double small = 1.0e-6, tiny = 1.0e-30, fract = 0.001;
@@ -377,8 +379,6 @@ double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
   float s, sumjmdt;
   double *fijk, chi2;
   int nni, nnj, minnn;
-
-  *ierr = 0;
 
   /* a self-consistency test and getting nni: */
   nni = 0;
@@ -390,9 +390,9 @@ double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
     }
   }
   if (fabs((s - summdt) / (s + tiny)) > fract) {
-    modlogerror(routine, ME_GENERIC,
-                "Inconsistency in chi-square calculation: %f %f", s, summdt);
-    *ierr = 1;
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                "%s: Inconsistency in chi-square calculation: %f %f", routine,
+                s, summdt);
     return 0.;
   }
 
@@ -434,10 +434,9 @@ double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
 
   /* test for the sum over j: */
   if (fabs((sumjmdt - summdt) / (summdt + tiny)) > fract) {
-    modlogerror(routine, ME_GENERIC,
-                "Inconsistency in chi-square calculation: %f %f", sumjmdt,
-                summdt);
-    *ierr = 1;
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                "%s: Inconsistency in chi-square calculation: %f %f", routine,
+                sumjmdt, summdt);
     return 0.;
   }
 
@@ -483,4 +482,42 @@ int make_mdt_stride_full(const int nbins[], int nfeat, int stride[])
     stride[i] = stride[i + 1] * nbins[i + 1];
   }
   return stride[0] * nbins[0];
+}
+
+/** Open a file, and uncompress it if necessary. */
+FILE *mdt_open_file(const char *path, const char *mode,
+                    struct mod_file *file_info, GError **err)
+{
+  FILE *fp;
+  fp = open_file(path, mode, file_info);
+  if (!fp) {
+    char *moderr = get_mod_error();
+    if (moderr) {
+      g_set_error(err, MDT_ERROR, MDT_ERROR_IO, moderr);
+    }
+  }
+  return fp;
+}
+
+/** Close an open file, and do any other necessary tidy-up if it was
+    compressed. The initial value of err is used (if an error was already
+    set, it is not modified, but emergency cleanup is done here). */
+gboolean mdt_close_file(FILE *fp, struct mod_file *file_info, GError **err)
+{
+  int ierr;
+  if (err && *err) {
+    ierr = 1;
+  } else {
+    ierr = 0;
+  }
+  close_file(fp, file_info, &ierr);
+  if (ierr) {
+    char *moderr = get_mod_error();
+    if (moderr) {
+      g_set_error(err, MDT_ERROR, MDT_ERROR_IO, moderr);
+    }
+    return FALSE;
+  } else {
+    return TRUE;
+  }
 }

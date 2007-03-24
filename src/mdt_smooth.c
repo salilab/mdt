@@ -8,19 +8,18 @@
 #include "mdt.h"
 #include "util.h"
 
-/** Smooth a histogram or the 2D plot with a uniform prior */
-void mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
-                int dimensions, float weight, int *ierr)
+/** Smooth a histogram or the 2D plot with a uniform prior.
+    Return TRUE on success. */
+gboolean mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+                    int dimensions, float weight, GError **err)
 {
   static const float divisor = 1e-15;
   static const char *routine = "mdt_smooth";
   int nbins, nbinx, nbiny, *indf;
   double *in_bin, *out_bin;
 
-  *ierr = 0;
-  get_binx_biny(dimensions, mdtin, routine, &nbinx, &nbiny, ierr);
-  if (*ierr != 0) {
-    return;
+  if (!get_binx_biny(dimensions, mdtin, routine, &nbinx, &nbiny, err)) {
+    return FALSE;
   }
   nbins = nbinx * nbiny;
 
@@ -65,4 +64,5 @@ void mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 
   mdtout->pdf = 1;
   free(indf);
+  return TRUE;
 }

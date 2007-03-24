@@ -64,10 +64,10 @@ static void reshape_mdt_table(const struct mdt_type *mdtin,
 }
 
 /** Get mapping from old to new features */
-static void get_position_mappings(const struct mdt_type *mdt,
-                                  const int features[], int old_position[],
-                                  int new_position[], const char *routine,
-                                  int *ierr)
+static gboolean get_position_mappings(const struct mdt_type *mdt,
+                                      const int features[], int old_position[],
+                                      int new_position[], const char *routine,
+                                      GError **err)
 {
   int i, j, *ifeat;
   ifeat = f_int1_pt(&mdt->ifeat);
@@ -82,20 +82,21 @@ static void get_position_mappings(const struct mdt_type *mdt,
       }
     }
     if (!match) {
-      modlogerror(routine, ME_VALUE,
-                  "Feature type %d does not exist in input MDT.", features[i]);
-      *ierr = 1;
-      return;
+      g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                  "%s: Feature type %d does not exist in input MDT.",
+                  routine, features[i]);
+      return FALSE;
     }
   }
+  return TRUE;
 }
  
 
 /** Check new offset and shape */
-static void check_start_end(const struct mdt_type *mdt, const int offset[],
-                            const int shape[], const int old_position[],
-                            const int features[], const char *routine,
-                            int *ierr)
+static gboolean check_start_end(const struct mdt_type *mdt, const int offset[],
+                                const int shape[], const int old_position[],
+                                const int features[], const char *routine,
+                                GError **err)
 {
   int i, *iend, *istart, *nbins;
   iend = f_int1_pt(&mdt->iend);
@@ -110,48 +111,42 @@ static void check_start_end(const struct mdt_type *mdt, const int offset[],
     }
     if (offset[i] + 1 < istart[old_position[i]] || end < offset[i] + 1
         || end > nbins[old_position[i]]) {
-      modlogerror(routine, ME_GENERIC,
-                  "For feature %d, new start %d and size %d are out of range.",
-                  features[i], offset[i], shape[i]);
-      *ierr = 1;
-      return;
+      g_set_error(err, MDT_ERROR, MDT_ERROR_INDEX,
+                  "%s: For feature %d, new start %d and size %d are out "
+                  "of range.", routine, features[i], offset[i], shape[i]);
+      return FALSE;
     }
   }
+  return TRUE;
 }
 
 
-/** Reshape an MDT. */
-void mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
-                 const int features[], int n_features, const int offset[],
-                 int n_offset, const int shape[], int n_shape, int *ierr)
+/** Reshape an MDT. Return TRUE on success. */
+gboolean mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+                     const int features[], int n_features, const int offset[],
+                     int n_offset, const int shape[], int n_shape, GError **err)
 {
   const char *routine = "mdt_reshape";
   int *old_position, *new_position;
 
-  *ierr = 0;
   if (n_features != mdtin->nfeat || n_offset != mdtin->nfeat
       || n_shape != mdtin->nfeat) {
-    modlogerror(routine, ME_VALUE, "features, offset and shape must all match"
-                " the dimension of the MDT (%d)", mdtin->nfeat);
-    *ierr = 1;
-    return;
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "%s: features, offset and shape must all match"
+                " the dimension of the MDT (%d)", routine, mdtin->nfeat);
+    return FALSE;
   }
 
   old_position = g_malloc(sizeof(int) * mdtin->nfeat);
   new_position = g_malloc(sizeof(int) * mdtin->nfeat);
 
-  get_position_mappings(mdtin, features, old_position, new_position, routine,
-                        ierr);
-  if (*ierr) {
+  if (!get_position_mappings(mdtin, features, old_position, new_position,
+                             routine, err)
+      || !check_start_end(mdtin, offset, shape, old_position, features, routine,
+                          err)) {
     g_free(old_position);
     g_free(new_position);
-    return;
-  }
-  check_start_end(mdtin, offset, shape, old_position, features, routine, ierr);
-  if (*ierr) {
-    g_free(old_position);
-    g_free(new_position);
-    return;
+    return FALSE;
   }
 
   copy_mdt(mdtin, mdtout);
@@ -167,4 +162,5 @@ void mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 
   g_free(old_position);
   g_free(new_position);
+  return TRUE;
 }

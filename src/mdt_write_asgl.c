@@ -11,20 +11,21 @@
 #include "util.h"
 
 /** Write the raw data to be plotted with ASGL. */
-static void wrdata(const char *datfil, int dimensions, const double bin[],
-                   int nbinx, int nbiny, int *ierr)
+static gboolean wrdata(const char *datfil, int dimensions, const double bin[],
+                       int nbinx, int nbiny, GError **err)
 {
   FILE *fp;
   struct mod_file file_info;
-  fp = open_file(datfil, "w", &file_info);
+  fp = mdt_open_file(datfil, "w", &file_info, err);
   if (fp) {
     int i;
     for (i = 0; i < nbinx * nbiny; i++) {
       fprintf(fp, "%#14.5g\n", bin[i]);
     }
-    close_file(fp, &file_info, ierr);
+    mdt_close_file(fp, &file_info, err);
+    return (*err == NULL);
   } else {
-    *ierr = 1;
+    return FALSE;
   }
 }
 
@@ -186,7 +187,7 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
                               int plots_per_page, int plot_position,
                               int every_x_numbered, int every_y_numbered,
                               const char *text, const char *plot_type,
-                              int x_decimal, int y_decimal, int *ierr)
+                              int x_decimal, int y_decimal, GError **err)
 {
   int *indf, nbins, npage, nhist, nempty, iposc, idrawn;
   double *bin;
@@ -225,7 +226,7 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
               y_decimal, sum);
 
       /* write the numbers file */
-      wrdata(datfil, dimensions, &bin[i1], nbinx, nbiny, ierr);
+      wrdata(datfil, dimensions, &bin[i1], nbinx, nbiny, err);
       g_free(datfil);
 
       /* new page?
@@ -242,10 +243,10 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
       nempty++;
     }
   } while (roll_ind(indf, f_int1_pt(&mdt->istart), f_int1_pt(&mdt->iend),
-                    mdt->nfeat - dimensions) && *ierr == 0);
+                    mdt->nfeat - dimensions) && *err == NULL);
 
   g_free(indf);
-  if (*ierr) {
+  if (*err) {
     return;
   }
 
@@ -261,13 +262,15 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
              "Number of pages           : %d", nhist, idrawn, nempty, npage);
 }
 
-/** Write input files to plot the given MDT with ASGL. */
-void mdt_write_asgl(const struct mdt_type *mdt, const struct mdt_library *mlib,
-                    const char *asglroot, const char *text, int dimensions,
-                    int every_x_numbered, int every_y_numbered,
-                    double plot_density_cutoff, int plots_per_page,
-                    int plot_position, const char *plot_type, int x_decimal,
-                    int y_decimal, int *ierr)
+/** Write input files to plot the given MDT with ASGL. Return TRUE on
+    success. */
+gboolean mdt_write_asgl(const struct mdt_type *mdt,
+                        const struct mdt_library *mlib, const char *asglroot,
+                        const char *text, int dimensions, int every_x_numbered,
+                        int every_y_numbered, double plot_density_cutoff,
+                        int plots_per_page, int plot_position,
+                        const char *plot_type, int x_decimal, int y_decimal,
+                        GError **err)
 {
   const static char *routine = "mdt_write_asgl";
   char *topfile;
@@ -275,23 +278,27 @@ void mdt_write_asgl(const struct mdt_type *mdt, const struct mdt_library *mlib,
   FILE *fp;
   struct mod_file file_info;
 
-  *ierr = 0;
-  get_binx_biny(dimensions, mdt, routine, &nbinx, &nbiny, ierr);
-  if (*ierr != 0) {
-    return;
+  if (!get_binx_biny(dimensions, mdt, routine, &nbinx, &nbiny, err)) {
+    return FALSE;
   }
 
   topfile = g_strdup_printf("%s.top", asglroot);
-  fp = open_file(topfile, "w", &file_info);
+  fp = mdt_open_file(topfile, "w", &file_info, err);
   g_free(topfile);
 
   if (fp) {
+    GError *tmperr = NULL;
     write_script_file(fp, mdt, mlib, dimensions, nbinx, nbiny,
                       plot_density_cutoff, asglroot, plots_per_page,
                       plot_position, every_x_numbered, every_y_numbered, text,
-                      plot_type, x_decimal, y_decimal, ierr);
-    close_file(fp, &file_info, ierr);
-  } else {
-    *ierr = 1;
+                      plot_type, x_decimal, y_decimal, &tmperr);
+    mdt_close_file(fp, &file_info, &tmperr);
+    if (tmperr) {
+      g_propagate_error(err, tmperr);
+      return FALSE;
+    } else {
+      return TRUE;
+    }
   }
+  return FALSE;
 }

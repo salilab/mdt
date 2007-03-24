@@ -7,6 +7,8 @@
 #define __MDT_UTIL_H
 
 #include <glib.h>
+#include <stdio.h>
+#include "mdt_error.h"
 #include "mod_types.h"
 
 /* Allow building with glib < 2.6 */
@@ -62,10 +64,12 @@ int roll_inds(int indf[], const int istart[], const int iend[], int nfeat,
 G_GNUC_INTERNAL
 int roll_ind_comb(int **ind, int n, int nmax);
 
-/** Get the number of bins in the 1 or 2 dependent features */
+/** Get the number of bins in the 1 or 2 dependent features. Return TRUE on
+    success. */
 G_GNUC_INTERNAL
-void get_binx_biny(int dimensions, const struct mdt_type *mdt,
-                   const char *routine, int *nbinx, int *nbiny, int *ierr);
+gboolean get_binx_biny(int dimensions, const struct mdt_type *mdt,
+                       const char *routine, int *nbinx, int *nbiny,
+                       GError **err);
 
 /** Return the sum of a set. */
 G_GNUC_INTERNAL
@@ -92,7 +96,7 @@ double entrp2(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
 G_GNUC_INTERNAL
 double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
               int n_feat_fix, int nbinx, float sumi[], double *df, double *prob,
-              double *ccc, double *cramrv, int *ierr);
+              double *ccc, double *cramrv, GError **err);
 
 /** Make the stride array for faster indmdt lookup */
 G_GNUC_INTERNAL
@@ -102,6 +106,17 @@ void make_mdt_stride(struct mdt_type *mdt);
     the MDT. */
 G_GNUC_INTERNAL
 int make_mdt_stride_full(const int nbins[], int nfeat, int stride[]);
+
+/** Open a file, and uncompress it if necessary. */
+G_GNUC_INTERNAL
+FILE *mdt_open_file(const char *path, const char *mode,
+                    struct mod_file *file_info, GError **err);
+
+/** Close an open file, and do any other necessary tidy-up if it was
+    compressed. The initial value of err is used (if an error was already
+    set, it is not modified, but emergency cleanup is done here). */
+G_GNUC_INTERNAL
+gboolean mdt_close_file(FILE *fp, struct mod_file *file_info, GError **err);
 
 G_END_DECLS
 

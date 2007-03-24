@@ -10,11 +10,11 @@
 #include "util.h"
 
 /** Get the MDT array positions of new features and integrated features */
-static void get_feature_indices(const struct mdt_type *mdt,
-                                const int features[], int n_features,
-                                int **inew_features, int *n_int_features,
-                                int **int_features, const char *routine,
-                                int *ierr)
+static gboolean get_feature_indices(const struct mdt_type *mdt,
+                                    const int features[], int n_features,
+                                    int **inew_features, int *n_int_features,
+                                    int **int_features, const char *routine,
+                                    GError **err)
 {
   int i, j, indfeat, *ifeat;
   *n_int_features = mdt->nfeat - n_features;
@@ -31,12 +31,12 @@ static void get_feature_indices(const struct mdt_type *mdt,
       }
     }
     if (!match) {
-      modlogerror(routine, ME_VALUE,
-                  "Feature type %d does not exist in input MDT.", features[i]);
+      g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                  "%s: Feature type %d does not exist in input MDT.", routine,
+                  features[i]);
       g_free(*inew_features);
       g_free(*int_features);
-      *ierr = 1;
-      return;
+      return FALSE;
     }
   }
 
@@ -56,6 +56,7 @@ static void get_feature_indices(const struct mdt_type *mdt,
       (*int_features)[indfeat++] = i;
     }
   }
+  return TRUE;
 }
 
 /** Copy a subset of the mdtin feature indices to mdtout */
@@ -131,28 +132,25 @@ static void integrate_mdt_table(const struct mdt_type *mdtin,
   g_free(in_indf);
 }
 
-/** Integrate an MDT. */
-void mdt_integrate(const struct mdt_type *mdtin, struct mdt_type *mdtout,
-                   const int features[], int n_features, int *ierr)
+/** Integrate an MDT. Return TRUE on success. */
+gboolean mdt_integrate(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+                       const int features[], int n_features, GError **err)
 {
   static const char *routine = "mdt_integrate";
   int *inew_features, *int_features, n_int_features;
 
-  *ierr = 0;
-
   if (n_features <= 0 || n_features >= mdtin->nfeat) {
-    *ierr = 1;
-    modlogerror(routine, ME_VALUE, "Number of features to be integrated (%d)"
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "%s: Number of features to be integrated (%d)"
                 " must be less than the current number of"
                 " features in the MDT (%d) and greater than zero.",
-                n_features, mdtin->nfeat);
-    return;
+                routine, n_features, mdtin->nfeat);
+    return FALSE;
   }
 
-  get_feature_indices(mdtin, features, n_features, &inew_features,
-                      &n_int_features, &int_features, routine, ierr);
-  if (*ierr) {
-    return;
+  if (!get_feature_indices(mdtin, features, n_features, &inew_features,
+                           &n_int_features, &int_features, routine, err)) {
+    return FALSE;
   }
 
   copy_mdt(mdtin, mdtout);
@@ -169,4 +167,5 @@ void mdt_integrate(const struct mdt_type *mdtin, struct mdt_type *mdtout,
   }
   g_free(inew_features);
   g_free(int_features);
+  return TRUE;
 }

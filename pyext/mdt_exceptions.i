@@ -3,59 +3,37 @@
 /* Generic error */
 static PyObject *mdterror;
 
-
 /** Raise an exception if an error code was returned. */
-static void handle_error(void)
+static void handle_error(GError *err)
 {
-  char *mod_err = get_mod_error();
-
-  if (mod_err) {
-    PyObject *py_err_type;
-    int mod_err_type = get_mod_error_type();
-    switch(mod_err_type) {
-    case ME_EOF:
-      py_err_type = PyExc_EOFError;
-      break;
-    case ME_INDEX:
-      py_err_type = PyExc_IndexError;
-      break;
-    case ME_IO:
+  PyObject *py_err_type = mdterror;
+  if (err->domain == MDT_ERROR) {
+    switch(err->code) {
+    case MDT_ERROR_IO:
       py_err_type = PyExc_IOError;
       break;
-    case ME_MEMORY:
-      py_err_type = PyExc_MemoryError;
-      break;
-    case ME_NOTIMP:
-      py_err_type = PyExc_NotImplementedError;
-      break;
-    case ME_TYPE:
-      py_err_type = PyExc_TypeError;
-      break;
-    case ME_VALUE:
+    case MDT_ERROR_VALUE:
       py_err_type = PyExc_ValueError;
       break;
-    case ME_ZERODIV:
-      py_err_type = PyExc_ZeroDivisionError;
+    case MDT_ERROR_INDEX:
+      py_err_type = PyExc_IndexError;
       break;
-    default:
-      py_err_type = mdterror;
     }
-    PyErr_SetString(py_err_type, mod_err);
-  } else if (!PyErr_Occurred()) {
-    PyErr_SetString(mdterror,
-                    "INTERNAL ERROR: error code set, but no error information");
   }
+  PyErr_SetString(py_err_type, err->message);
+  g_error_free(err);
 }
 #endif /* SWIGPYTHON */
 %}
 
-%typemap(in, numinputs=0) int *ierr (int temp) {
+%typemap(in, numinputs=0) GError **err (GError *temp) {
+  temp = NULL;
   $1 = &temp;
 }
 
-%typemap(argout) int *ierr {
-  if (*$1 != 0) {
-    handle_error();
+%typemap(argout) GError **err {
+  if (*$1) {
+    handle_error(*$1);
 #ifdef SWIGPYTHON
     Py_DECREF(resultobj);
 #endif

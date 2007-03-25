@@ -16,6 +16,43 @@ static void handle_modeller_error(GError **err)
   g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, get_mod_error());
 }
 
+/** Get all MDT indices */
+static int *mdt_indices(gboolean *outrange, const struct alignment *aln,
+                        int is1, int ip1, int is2, int ir1, int ir2, int ir1p,
+                        int ir2p, int ia1, int ia1p,
+                        const struct mdt_library *mlib, int ip2,
+                        const struct mdt_type *mdt, int ibnd1, int ibnd1p,
+                        int is3, int ir3, int ir3p,
+                        const struct libraries *libs,
+                        const struct energy_data *edat, int *ierr)
+{
+  int i, *indf, *ifeat, *istart, *iend;
+  *ierr = 0;
+  *outrange = FALSE;
+  indf = g_malloc(sizeof(int) * mdt->nfeat);
+
+  ifeat = f_int1_pt(&mdt->ifeat);
+  istart = f_int1_pt(&mdt->istart);
+  iend = f_int1_pt(&mdt->iend);
+  for (i = 0; i < mdt->nfeat && *ierr == 0 && *outrange == FALSE; i++) {
+    int ifi = ifeat[i];
+    indf[i] = mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
+                        ia1p, mlib, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, libs,
+                        edat, ierr);
+    if (*ierr == 0 && (indf[i] < istart[i] || indf[i] > iend[i])) {
+      *outrange = TRUE;
+    }
+  }
+
+  if (*ierr == 0) {
+    return indf;
+  } else {
+    g_free(indf);
+    return NULL;
+  }
+}
+
+
 /** Update an MDT with feature data. */
 static gboolean update_mdt(struct mdt_type *mdt, const struct mdt_library *mlib,
                            const struct alignment *aln, int is1, int ip1,
@@ -28,12 +65,12 @@ static gboolean update_mdt(struct mdt_type *mdt, const struct mdt_library *mlib,
   static const char *routine = "update_mdt";
   double *bin;
   gboolean outrange;
-  int imda, *indf, n_indf, ierr;
+  int imda, *indf, ierr;
 
   /* obtain the indices for the feature values in this routine call: */
-  mdt_indices(&outrange, &indf, &n_indf, aln, is1, ip1, is2, ir1, ir2, ir1p,
-              ir2p, ia1, ia1p, mlib, ip2, mdt, ibnd1, ibnd1p, is3, ir3, ir3p,
-              libs, edat, &ierr);
+  indf = mdt_indices(&outrange, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
+                     ia1p, mlib, ip2, mdt, ibnd1, ibnd1p, is3, ir3, ir3p, libs,
+                     edat, &ierr);
   if (ierr) {
     handle_modeller_error(err);
     return FALSE;
@@ -41,13 +78,13 @@ static gboolean update_mdt(struct mdt_type *mdt, const struct mdt_library *mlib,
 
   /* Ignore if any of the indices properly out of range: */
   if (outrange) {
-    free(indf);
+    g_free(indf);
     return TRUE;
   }
 
   /* obtain the element index for the mdt vector: */
   imda = indmdt(indf, mdt);
-  free(indf);
+  g_free(indf);
   if (imda < 0 || imda >= mdt->nelems) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_INDEX,
                 "%s: MDT index is out of range: %d %d", routine, imda,

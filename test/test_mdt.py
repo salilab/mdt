@@ -129,6 +129,19 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m2[0,2], 0.0, 0.0005)
         self.assertInTolerance(m3[0,2], 1.0, 0.0005)
 
+    def test_feature_iatta(self):
+        """Check for atom type feature"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.atom_classes.read('${LIB}/atmcls-melo.lib')
+        m = mdt.mdt(mlib, features=79)
+        aln = alignment(env, file='test/data/alignment.ali')
+        m.add_alignment(aln)
+        self.assertInTolerance(m[0], 103.0, 0.0005)
+        self.assertInTolerance(m[1], 3.0, 0.0005)
+        self.assertInTolerance(m[2], 97.0, 0.0005)
+        self.assertEqual(m.shape, (41,))
+
     def test_integrate(self):
         """Make sure MDT integration works"""
         env = self.get_environ()

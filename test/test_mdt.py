@@ -17,10 +17,10 @@ class MDTTests(ModellerTest):
             ind = 21
         return ind
 
-    def get_mdt_library(self):
+    def get_mdt_library(self, **vars):
         """Read in MDT library and bin definitions"""
         env = self.get_environ()
-        return mdt.mdt_library(env, '${LIB}/mdt.ini', '${LIB}/mdt.bin')
+        return mdt.mdt_library(env, '${LIB}/mdt.ini', '${LIB}/mdt.bin', **vars)
 
     def get_test_mdt(self, features):
         """Build a simple test MDT"""
@@ -100,6 +100,34 @@ class MDTTests(ModellerTest):
         m.add_alignment(aln)
         for i in range(22):
             self.assertEqual(known_dist[i], int(m[i]))
+
+    def test_deltaij(self):
+        """Test residue type at deltai,j features"""
+        env = self.get_environ()
+        aln = alignment(env)
+        aln.append_sequence("AFVVTDNCIKXCKYTDCVEVCPVDCFYEG")
+        aln.append_sequence("DNCIKXCCYCDCVEPCPVDCFGEGAFVVT")
+        # When deltai=j=0, features 66,67 (residue type in A,B at deltai)
+        # and 77,78 (residue type in A,B at deltaj) should match 1,2:
+        mlib = self.get_mdt_library(deltai=0, deltaj=0)
+        m1 = mdt.mdt(mlib, features=(1,2))
+        m1.add_alignment(aln)
+        m2 = mdt.mdt(mlib, features=(66,67))
+        m2.add_alignment(aln)
+        m3 = mdt.mdt(mlib, features=(77,78))
+        m3.add_alignment(aln)
+        self.assertMDTDataEqual(m1, m2)
+        self.assertMDTDataEqual(m1, m3)
+        # When deltai=j != 0, 66,67 should still match 77,78, but not the
+        # original MDT (m3)
+        mlib = self.get_mdt_library(deltai=3, deltaj=3)
+        m1 = mdt.mdt(mlib, features=(66,67))
+        m1.add_alignment(aln)
+        m2 = mdt.mdt(mlib, features=(77,78))
+        m2.add_alignment(aln)
+        self.assertMDTDataEqual(m1, m2)
+        self.assertInTolerance(m2[0,2], 0.0, 0.0005)
+        self.assertInTolerance(m3[0,2], 1.0, 0.0005)
 
     def test_integrate(self):
         """Make sure MDT integration works"""

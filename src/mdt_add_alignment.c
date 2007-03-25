@@ -31,9 +31,8 @@ static int ires_get(int ires, int nres, int igaptyp, const int *irestyp,
 
 static int irestab(const struct f_int2_array *ialn, int naln, int iseq,
                    const int *irestyp, int nres, int ip, int delta,
-                   gboolean delta_ali, int ndimen)
+                   gboolean delta_ali, int ndimen, int igaptyp)
 {
-  static const int igaptyp = 21;
   if (delta_ali) {
     int ipos = ip + delta;
     if (ipos < 1 || ipos > naln) {
@@ -66,19 +65,19 @@ static int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 66:
     return irestab(&aln->ialn, aln->naln, is1, f_int1_pt(&seq1->irestyp),
                    seq1->nres, ip1, mlib->deltai, mlib->deltai_ali,
-                   mlib->ndimen[ifi-1]);
+                   mlib->ndimen[ifi-1], libs->igaptyp);
   case 67:
     return irestab(&aln->ialn, aln->naln, is2, f_int1_pt(&seq2->irestyp),
                    seq2->nres, ip1, mlib->deltai, mlib->deltai_ali,
-                   mlib->ndimen[ifi-1]);
+                   mlib->ndimen[ifi-1], libs->igaptyp);
   case 77:
     return irestab(&aln->ialn, aln->naln, is1, f_int1_pt(&seq1->irestyp),
                    seq1->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
-                   mlib->ndimen[ifi-1]);
+                   mlib->ndimen[ifi-1], libs->igaptyp);
   case 78:
     return irestab(&aln->ialn, aln->naln, is2, f_int1_pt(&seq2->irestyp),
                    seq2->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
-                   mlib->ndimen[ifi-1]);
+                   mlib->ndimen[ifi-1], libs->igaptyp);
   default:
     return mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
                      mlib, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, libs, edat,

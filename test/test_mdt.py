@@ -142,6 +142,19 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[2], 97.0, 0.0005)
         self.assertEqual(m.shape, (41,))
 
+    def test_feature_atmacc(self):
+        """Check atom accessibility features"""
+        m = self.get_test_mdt(features=80)
+        self.assertEqual(m.shape, (121,))
+        self.assertInTolerance(m[30], 5.0, 0.0005)
+        self.assertInTolerance(m[31], 2.0, 0.0005)
+        self.assertInTolerance(m[32], 8.0, 0.0005)
+        m = self.get_test_mdt(features=81)
+        self.assertEqual(m.shape, (61,))
+        self.assertInTolerance(m[30], 2.0, 0.0005)
+        self.assertInTolerance(m[31], 3.0, 0.0005)
+        self.assertInTolerance(m[32], 5.0, 0.0005)
+
     def test_integrate(self):
         """Make sure MDT integration works"""
         env = self.get_environ()

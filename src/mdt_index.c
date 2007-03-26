@@ -82,6 +82,12 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 79:
     return itable(f_int1_pt(&struc1->iatta), struc1->cd.natm, ia1,
                   mlib->ndimen[ifi-1]);
+  case 80:
+    return itable(f_int1_pt(&struc1->iatmacc), struc1->cd.natm, ia1,
+                  mlib->ndimen[ifi-1]);
+  case 81:
+    return itable(f_int1_pt(&struc1->ifatmacc), struc1->cd.natm, ia1,
+                  mlib->ndimen[ifi-1]);
   case 83:
     return itable(f_int1_pt(&struc1->iatta), struc1->cd.natm, ia1p,
                   mlib->ndimen[ifi-1]);

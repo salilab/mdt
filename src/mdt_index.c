@@ -3,6 +3,7 @@
  *             Part of MDT, Copyright(c) 1989-2007 Andrej Sali
  */
 
+#include <math.h>
 #include "modeller.h"
 #include "util.h"
 #include "mdt_index.h"
@@ -153,6 +154,34 @@ static const int *property_ifatmacc(const struct alignment *aln, int is,
   return prop[is].ifatmacc;
 }
 
+static float dist1(float x1, float y1, float z1, float x2, float y2, float z2)
+{
+  float xd, yd, zd;
+  xd = x1 - x2;
+  yd = y1 - y2;
+  zd = z1 - z2;
+  return sqrt(xd * xd + yd * yd + zd * zd);
+}
+
+/** Return the bin index for the distance between two specified atoms in the
+    same protein. */
+static int idist0(int ia1, int ia1p, const struct structure *struc,
+                  const struct mdt_library *mlib, int ifi, int nrang)
+{
+  if (ia1 > 0 && ia1p > 0) {
+    float d, *x, *y, *z;
+    x = f_float1_pt(&struc->cd.x);
+    y = f_float1_pt(&struc->cd.y);
+    z = f_float1_pt(&struc->cd.z);
+    ia1--;
+    ia1p--;
+    d = dist1(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p]);
+    return iclsbin(d, mlib, ifi, nrang);
+  } else {
+    return nrang + 1;
+  }
+}
+
 int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                  int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,
                  int ia1p, const struct mdt_library *mlib, int ip2,
@@ -197,6 +226,8 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
       return 0.;
     }
     return itable(binprop, struc1->cd.natm, ia1, mlib->ndimen[ifi-1]);
+  case 82: case 103:
+    return idist0(ia1, ia1p, struc1, mlib, ifi, mlib->ndimen[ifi-1]);
   case 83:
     return itable(f_int1_pt(&struc1->iatta), struc1->cd.natm, ia1p,
                   mlib->ndimen[ifi-1]);

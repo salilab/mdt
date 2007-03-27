@@ -20,6 +20,8 @@ G_BEGIN_DECLS
 struct mdt_properties {
   /** Bin indices for atom accessibility */
   int *iatmacc;
+  /** Bin indices for fractional atom accessibility */
+  int *ifatmacc;
 };
 
 /** Make a new mdt_properties structure */

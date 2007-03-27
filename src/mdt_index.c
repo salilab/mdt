@@ -15,6 +15,7 @@ struct mdt_properties *mdt_properties_new(const struct alignment *aln)
   prop = g_malloc(sizeof(struct mdt_properties) * aln->naln);
   for (i = 0; i < aln->naln; i++) {
     prop[i].iatmacc = NULL;
+    prop[i].ifatmacc = NULL;
   }
   return prop;
 }
@@ -26,6 +27,7 @@ void mdt_properties_free(struct mdt_properties *prop,
   int i;
   for (i = 0; i < aln->naln; i++) {
     g_free(prop[i].iatmacc);
+    g_free(prop[i].ifatmacc);
   }
   g_free(prop);
 }
@@ -115,6 +117,42 @@ static const int *property_iatmacc(const struct alignment *aln, int is,
   return prop[is].iatmacc;
 }
 
+/** Get/calculate the array of fractional atom accessibility bin indices */
+static const int *property_ifatmacc(const struct alignment *aln, int is,
+                                    struct mdt_properties *prop,
+                                    const struct mdt_library *mlib, int ifi,
+                                    const struct libraries *libs, GError **err)
+{
+  is--;
+  if (!prop[is].ifatmacc) {
+    int i, *ifatmacc;
+    struct sequence *seq = alignment_sequence_get(aln, is);
+    struct structure *struc = alignment_structure_get(aln, is);
+
+    ifatmacc = g_malloc(sizeof(int) * struc->cd.natm);
+    for (i = 0; i < struc->cd.natm; i++) {
+      int iattyp, ierr;
+      float r, fatmacc;
+
+      /* Get integer atom type */
+      iattyp = coordinates_atom_type_get(&struc->cd, seq, i, libs, &ierr);
+      if (ierr) {
+        handle_modeller_error(err);
+        g_free(ifatmacc);
+        return NULL;
+      }
+      /* Get VDW atom radius */
+      r = f_float2_get(&libs->vdwcnt, iattyp - 1, libs->tpl.submodel - 1);
+      /* Calculate fractional atom accessibility from raw values */
+      fatmacc = f_float1_get(&struc->cd.atmacc, i) / (4. * G_PI * r * r);
+      /* Get the corresponding bin index */
+      ifatmacc[i] = iclsbin(fatmacc, mlib, ifi, mlib->ndimen[ifi-1] - 1);
+    }
+    prop[is].ifatmacc = ifatmacc;
+  }
+  return prop[is].ifatmacc;
+}
+
 int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                  int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,
                  int ia1p, const struct mdt_library *mlib, int ip2,
@@ -124,6 +162,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                  struct mdt_properties *prop, GError **err)
 {
   int ret, ierr = 0;
+  const int *binprop;
   struct structure *struc1;
   struct sequence *seq1, *seq2;
   struc1 = alignment_structure_get(aln, is1-1);
@@ -153,8 +192,11 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return itable(property_iatmacc(aln, is1, prop, mlib, ifi),
                   struc1->cd.natm, ia1, mlib->ndimen[ifi-1]);
   case 81:
-    return itable(f_int1_pt(&struc1->ifatmacc), struc1->cd.natm, ia1,
-                  mlib->ndimen[ifi-1]);
+    binprop = property_ifatmacc(aln, is1, prop, mlib, ifi, libs, err);
+    if (!binprop) {
+      return 0.;
+    }
+    return itable(binprop, struc1->cd.natm, ia1, mlib->ndimen[ifi-1]);
   case 83:
     return itable(f_int1_pt(&struc1->iatta), struc1->cd.natm, ia1p,
                   mlib->ndimen[ifi-1]);

@@ -155,6 +155,14 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[31], 3.0, 0.0005)
         self.assertInTolerance(m[32], 5.0, 0.0005)
 
+    def test_feature_alpha_dihedral(self):
+        """Check alpha dihedral feature"""
+        m = self.get_test_mdt(features=88)
+        self.assertEqual(m.shape, (37,))
+        self.assertInTolerance(m[30], 3.0, 0.0005)
+        self.assertInTolerance(m[31], 4.0, 0.0005)
+        self.assertInTolerance(m[32], 2.0, 0.0005)
+
     def test_integrate(self):
         """Make sure MDT integration works"""
         env = self.get_environ()

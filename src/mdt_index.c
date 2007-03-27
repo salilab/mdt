@@ -192,9 +192,10 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
 {
   int ret, ierr = 0;
   const int *binprop;
-  struct structure *struc1;
+  struct structure *struc1, *struc2;
   struct sequence *seq1, *seq2;
   struc1 = alignment_structure_get(aln, is1-1);
+  struc2 = alignment_structure_get(aln, is2-1);
   seq1 = alignment_sequence_get(aln, is1-1);
   seq2 = alignment_sequence_get(aln, is2-1);
   switch(ifi) {
@@ -230,6 +231,12 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return idist0(ia1, ia1p, struc1, mlib, ifi, mlib->ndimen[ifi-1]);
   case 83:
     return itable(f_int1_pt(&struc1->iatta), struc1->cd.natm, ia1p,
+                  mlib->ndimen[ifi-1]);
+  case 93: case 95: case 97: case 99:
+    return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1,
+                  mlib->ndimen[ifi-1]);
+  case 94: case 96: case 98: case 100:
+    return itable(f_int1_pt(&struc2->iacc), seq2->nres, ir2,
                   mlib->ndimen[ifi-1]);
   default:
     ret = mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,

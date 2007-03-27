@@ -1,7 +1,8 @@
 Import('env', 'modconfig')
 
 # Source files
-files = ['anggrp.lib', 'bndgrp.lib', 'impgrp.lib', 'trpcls.lib']
+files = ['anggrp.lib', 'bndgrp.lib', 'impgrp.lib', 'trpcls.lib',
+         'atmcls-hbda.lib']
 
 # Install the files
 inst = env.Install(modconfig['modlib'], files)

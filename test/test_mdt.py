@@ -142,6 +142,25 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[2], 97.0, 0.0005)
         self.assertEqual(m.shape, (41,))
 
+    def test_feature_hbond(self):
+        """Check hydrogen bond features"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.hbond_classes.read('data/atmcls-hbda.lib')
+        m = mdt.mdt(mlib, features=84)
+        m2 = mdt.mdt(mlib, features=85)
+        m3 = mdt.mdt(mlib, features=86)
+        aln = alignment(env, file='test/data/alignment.ali')
+        m.add_alignment(aln)
+        m2.add_alignment(aln)
+        m3.add_alignment(aln)
+        self.assertInTolerance(m[0], 301.0, 0.0005)
+        self.assertInTolerance(m[1], 137.0, 0.0005)
+        self.assertInTolerance(m2[0], 257.0, 0.0005)
+        self.assertInTolerance(m2[1], 224.0, 0.0005)
+        self.assertInTolerance(m3[0], 1.0, 0.0005)
+        self.assertInTolerance(m3[1], 0.0, 0.0005)
+
     def test_feature_atmacc(self):
         """Check atom accessibility features"""
         m = self.get_test_mdt(features=80)

@@ -163,6 +163,14 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[31], 4.0, 0.0005)
         self.assertInTolerance(m[32], 2.0, 0.0005)
 
+    def test_feature_distance(self):
+        """Check atom-atom distance feature"""
+        m = self.get_test_mdt(features=82)
+        self.assertEqual(m.shape, (61,))
+        self.assertInTolerance(m[30], 10057.0, 0.0005)
+        self.assertInTolerance(m[31], 10214.0, 0.0005)
+        self.assertInTolerance(m[32], 10095.0, 0.0005)
+
     def test_integrate(self):
         """Make sure MDT integration works"""
         env = self.get_environ()

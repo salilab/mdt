@@ -118,6 +118,10 @@ FILE *mdt_open_file(const char *path, const char *mode,
 G_GNUC_INTERNAL
 gboolean mdt_close_file(FILE *fp, struct mod_file *file_info, GError **err);
 
+/** Convert a Modeller error code into a GError */
+G_GNUC_INTERNAL
+void handle_modeller_error(GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_UTIL_H */

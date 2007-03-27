@@ -39,7 +39,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                  int ibnd1, int ibnd1p, int is3, int ir3, int ir3p,
                  const struct libraries *libs,
                  const struct energy_data *edat,
-                 struct mdt_properties *prop, int *ierr);
+                 struct mdt_properties *prop, GError **err);
 
 G_END_DECLS
 

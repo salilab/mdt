@@ -521,3 +521,9 @@ gboolean mdt_close_file(FILE *fp, struct mod_file *file_info, GError **err)
     return TRUE;
   }
 }
+
+/** Convert a Modeller error into a GError */
+void handle_modeller_error(GError **err)
+{
+  g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, get_mod_error());
+}

@@ -12,11 +12,6 @@
 #include "util.h"
 #include "mdt_index.h"
 
-static void handle_modeller_error(GError **err)
-{
-  g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, get_mod_error());
-}
-
 /** Get all MDT indices */
 static int *mdt_indices(gboolean *outrange, const struct alignment *aln,
                         int is1, int ip1, int is2, int ir1, int ir2, int ir1p,
@@ -26,31 +21,31 @@ static int *mdt_indices(gboolean *outrange, const struct alignment *aln,
                         int is3, int ir3, int ir3p,
                         const struct libraries *libs,
                         const struct energy_data *edat,
-                        struct mdt_properties *prop, int *ierr)
+                        struct mdt_properties *prop, GError **err)
 {
   int i, *indf, *ifeat, *istart, *iend;
-  *ierr = 0;
+  GError *tmperr = NULL;
   *outrange = FALSE;
   indf = g_malloc(sizeof(int) * mdt->nfeat);
 
   ifeat = f_int1_pt(&mdt->ifeat);
   istart = f_int1_pt(&mdt->istart);
   iend = f_int1_pt(&mdt->iend);
-  for (i = 0; i < mdt->nfeat && *ierr == 0 && *outrange == FALSE; i++) {
+  for (i = 0; i < mdt->nfeat && !tmperr && *outrange == FALSE; i++) {
     int ifi = ifeat[i];
     indf[i] = my_mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
                            ia1p, mlib, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, libs,
-                           edat, prop, ierr);
-    if (*ierr == 0 && (indf[i] < istart[i] || indf[i] > iend[i])) {
+                           edat, prop, &tmperr);
+    if (!tmperr && (indf[i] < istart[i] || indf[i] > iend[i])) {
       *outrange = TRUE;
     }
   }
 
-  if (*ierr == 0) {
-    return indf;
-  } else {
-    g_free(indf);
+  if (tmperr) {
+    g_propagate_error(err, tmperr);
     return NULL;
+  } else {
+    return indf;
   }
 }
 
@@ -68,14 +63,13 @@ static gboolean update_mdt(struct mdt_type *mdt, const struct mdt_library *mlib,
   static const char *routine = "update_mdt";
   double *bin;
   gboolean outrange;
-  int imda, *indf, ierr;
+  int imda, *indf;
 
   /* obtain the indices for the feature values in this routine call: */
   indf = mdt_indices(&outrange, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
                      ia1p, mlib, ip2, mdt, ibnd1, ibnd1p, is3, ir3, ir3p, libs,
-                     edat, prop, &ierr);
-  if (ierr) {
-    handle_modeller_error(err);
+                     edat, prop, err);
+  if (!indf) {
     return FALSE;
   }
 

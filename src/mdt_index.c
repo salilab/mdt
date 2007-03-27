@@ -4,6 +4,7 @@
  */
 
 #include "modeller.h"
+#include "util.h"
 #include "mdt_index.h"
 
 /** Make a new mdt_properties structure */
@@ -120,8 +121,9 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                  int ibnd1, int ibnd1p, int is3, int ir3, int ir3p,
                  const struct libraries *libs,
                  const struct energy_data *edat,
-                 struct mdt_properties *prop, int *ierr)
+                 struct mdt_properties *prop, GError **err)
 {
+  int ret, ierr = 0;
   struct structure *struc1;
   struct sequence *seq1, *seq2;
   struc1 = alignment_structure_get(aln, is1-1);
@@ -157,8 +159,12 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return itable(f_int1_pt(&struc1->iatta), struc1->cd.natm, ia1p,
                   mlib->ndimen[ifi-1]);
   default:
-    return mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
-                     mlib, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, libs, edat,
-                     ierr);
+    ret = mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
+                    mlib, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, libs, edat,
+                    &ierr);
+    if (ierr) {
+      handle_modeller_error(err);
+    }
+    return ret;
   }
 }

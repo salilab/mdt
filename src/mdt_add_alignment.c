@@ -637,7 +637,7 @@ gboolean mdt_add_alignment(struct mdt_type *mdt, const struct mdt_library *mlib,
   mdt->n_proteins += nseqacc;
 
   modlognote("Pre-calculating");
-  mdt_precalc(mdt, mlib, aln, libs, &ierr);
+  mdt_precalc(mdt, &mlib->base, aln, libs, &ierr);
   if (ierr) {
     handle_modeller_error(err);
     ret = FALSE;

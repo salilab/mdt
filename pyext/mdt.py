@@ -47,7 +47,7 @@ class mdt_library(modobject):
 
     def __new__(cls, *args, **vars):
         obj = modobject.__new__(cls)
-        obj.__modpt = _modeller.new_mdt_library()
+        obj.__modpt = _mdt.mdt_library_new()
         return obj
 
     def __init__(self, env, file, binfile, residue_grouping=1,
@@ -60,20 +60,22 @@ class mdt_library(modobject):
            @param binfile: file defining bin ranges
         """
         self.env = env.copy()
-        _modeller.read_mdt_library(self.modpt, file)
+        _modeller.read_mdt_library(self.basept, file)
         _mdt.mdt_library_deltai_set(self.modpt, deltai)
         _mdt.mdt_library_deltaj_set(self.modpt, deltaj)
         _mdt.mdt_library_deltai_ali_set(self.modpt, deltai_ali)
         _mdt.mdt_library_deltaj_ali_set(self.modpt, deltaj_ali)
-        _modeller.readbin_mdt_library(self.modpt, self.env.libs.modpt,
+        _modeller.readbin_mdt_library(self.basept, self.env.libs.modpt,
                                       binfile, residue_grouping, distance_atoms,
                                       special_atoms, hbond_cutoff)
 
     def __del__(self):
-        _modeller.free_mdt_library(self.modpt)
+        _mdt.mdt_library_free(self.modpt)
 
     def __get_modpt(self):
         return self.__modpt
+    def __get_basept(self):
+        return _mdt.mdt_library_base_get(self.__modpt)
     def __get_deltai(self):
         return _mdt.mdt_library_deltai_get(self.modpt)
     def __get_deltaj(self):
@@ -96,6 +98,7 @@ class mdt_library(modobject):
         return hbond_classes(self)
 
     modpt = property(__get_modpt)
+    basept = property(__get_basept)
     atom_classes = property(__get_atom_classes, doc="Atom classes")
     bond_classes = property(__get_bond_classes, doc="Bond classes")
     angle_classes = property(__get_angle_classes, doc="Angle classes")
@@ -123,7 +126,7 @@ class bond_classes(object):
 
     def read(self, filename):
         """Read bond class information from a file"""
-        return _modeller.readclass_mdt_library(self._mlib.modpt, filename,
+        return _modeller.readclass_mdt_library(self._mlib.basept, filename,
                                                self.__n_atom)
 
 
@@ -135,7 +138,7 @@ class triplet_classes(bond_classes):
 
     def read(self, filename):
         """Read atom triplet information from a file"""
-        return _modeller.readtriplet_mdt_library(self._mlib.modpt, filename)
+        return _modeller.readtriplet_mdt_library(self._mlib.basept, filename)
 
 
 class hbond_classes(bond_classes):
@@ -146,7 +149,7 @@ class hbond_classes(bond_classes):
 
     def read(self, filename):
         """Read hydrogen bond atom class information from a file"""
-        return _modeller.readhbond_mdt_library(self._mlib.modpt, filename)
+        return _modeller.readhbond_mdt_library(self._mlib.basept, filename)
 
 
 class mdt_section(modobject):
@@ -213,7 +216,7 @@ class mdt(mdt_section):
 
     def read(self, file):
         """Read an MDT from C{file}."""
-        _modeller.read_mdt(self._modpt, self._mlib.modpt, file)
+        _modeller.read_mdt(self._modpt, self._mlib.basept, file)
 
     def copy(self):
         """@return: a copy of this MDT.
@@ -224,7 +227,7 @@ class mdt(mdt_section):
 
     def make(self, features):
         """Clear the MDT, and set the features"""
-        _modeller.make_mdt(self._modpt, self._mlib.modpt, features)
+        _modeller.make_mdt(self._modpt, self._mlib.basept, features)
 
     def write(self, file, write_preamble=True):
         """Write an MDT to C{file}. If C{write_preamble} is False, it will

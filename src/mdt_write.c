@@ -30,8 +30,9 @@ static void write_mdt_header(FILE *fp, const struct mdt_type *mdt,
     int ifeat;
     char *featnam;
     ifeat = f_int1_get(&mdt->ifeat, i) - 1;
-    featnam = mdt_library_featnam_get(mlib, ifeat);
-    fprintf(fp, "%3d %8d %5d %s\n", i+1, ifeat+1, mlib->ndimen[ifeat], featnam);
+    featnam = mdt_library_featnam_get(&mlib->base, ifeat);
+    fprintf(fp, "%3d %8d %5d %s\n", i+1, ifeat+1, mlib->base.ndimen[ifeat],
+            featnam);
     free(featnam);
   }
 

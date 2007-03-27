@@ -8,6 +8,7 @@
 
 #include <glib.h>
 #include "mod_types.h"
+#include "mdt_types.h"
 
 /* Allow building with glib < 2.6 */
 #ifndef G_GNUC_INTERNAL

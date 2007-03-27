@@ -8,6 +8,7 @@
 
 #include <glib.h>
 #include "mdt_error.h"
+#include "mdt_types.h"
 #include "mod_types.h"
 
 G_BEGIN_DECLS

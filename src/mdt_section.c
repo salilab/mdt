@@ -239,10 +239,10 @@ void mdt_section_meanstdev(const struct mdt_type *mdt,
   periodic = mdt_feature_is_periodic(ifeat);
 
   /* histogram bin size in real units: */
-  dx = f_float2_get(&mlib->rang2, 0, ifeat-1)
-       - f_float2_get(&mlib->rang1, 0, ifeat-1);
+  dx = f_float2_get(&mlib->base.rang2, 0, ifeat-1)
+       - f_float2_get(&mlib->base.rang1, 0, ifeat-1);
   /* position of the center of the first bin in real units: */
-  x0 = f_float2_get(&mlib->rang1, 0, ifeat-1) + 0.5 * dx;
+  x0 = f_float2_get(&mlib->base.rang1, 0, ifeat-1) + 0.5 * dx;
 
   if (periodic) {
     hist_avrstdev_deg(&bin[istart], nbins, x0, dx, mean, stdev);

@@ -34,13 +34,14 @@ static char *get_mdt_symb(const struct mdt_type *mdt,
                           const struct mdt_library *mlib,
                           int nfeat, int ibin, int ndecimal)
 {
+  const struct mod_mdt_library *base = &mlib->base;
   int ifeat = f_int1_get(&mdt->ifeat, nfeat);
   /* For type 3, generate symbol from range data */
-  if (mlib->itsymb[ifeat] == 3) {
-    if (ibin == mlib->ndimen[ifeat] - 1) {
+  if (base->itsymb[ifeat] == 3) {
+    if (ibin == base->ndimen[ifeat] - 1) {
       return g_strdup("U");
     } else {
-      float rang1 = f_float2_get(&mlib->rang1, ibin, ifeat);
+      float rang1 = f_float2_get(&base->rang1, ibin, ifeat);
       if (ndecimal > 0) {
         char *fmt = g_strdup_printf("%%.%df", ndecimal);
         char *str = g_strdup_printf(fmt, rang1);
@@ -51,7 +52,7 @@ static char *get_mdt_symb(const struct mdt_type *mdt,
       }
     }
   } else {
-    return mdt_symb_get(mdt, mlib, nfeat, ibin);
+    return mdt_symb_get(mdt, base, nfeat, ibin);
   }
 }
 
@@ -63,14 +64,15 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
                     int nbiny, const char *text, const char *plot_type,
                     int x_decimal, int y_decimal, double sum)
 {
+  const struct mod_mdt_library *base = &mlib->base;
   char *featnam;
   int i, ifeat, *ifeatpt, itsymbx, itsymby;
   ifeatpt = f_int1_pt(&mdt->ifeat);
 
   ifeat = ifeatpt[mdt->nfeat - 1];
-  itsymbx = mlib->itsymb[ifeat - 1];
+  itsymbx = base->itsymb[ifeat - 1];
   ifeat = ifeatpt[mdt->nfeat > 1 ? mdt->nfeat - 2 : 0];
-  itsymby = mlib->itsymb[ifeat - 1];
+  itsymby = base->itsymb[ifeat - 1];
 
   fputs("# -------------------------------------------------\n", fp);
   if (dimensions == 1) {
@@ -144,7 +146,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
               "     CAPTION_TEXT '%.1f POINTS'\n", sum);
 
   ifeat = ifeatpt[mdt->nfeat - 1];
-  featnam = mdt_library_featnam_get(mlib, ifeat - 1);
+  featnam = mdt_library_featnam_get(base, ifeat - 1);
   fprintf(fp, "CAPTION CAPTION_POSITION 2, ;\n"
               "     CAPTION_TEXT '%s'\n", featnam);
   g_free(featnam);
@@ -154,7 +156,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
           "     CAPTION_TEXT 'FREQUENCY'\n", fp);
   } else {
     ifeat = ifeatpt[mdt->nfeat - 2];
-    featnam = mdt_library_featnam_get(mlib, ifeat - 1);
+    featnam = mdt_library_featnam_get(base, ifeat - 1);
     fprintf(fp, "CAPTION CAPTION_POSITION 3, ;\n"
                 "     CAPTION_TEXT '%s'\n", featnam);
     g_free(featnam);
@@ -163,8 +165,8 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
   for (i = mdt->nfeat - dimensions - 1; i >= 0; i--) {
     char *symb;
     ifeat = ifeatpt[i];
-    featnam = mdt_library_featnam_get(mlib, ifeat - 1);
-    symb = mdt_symb_get(mdt, mlib, i, indf[i] - 1);
+    featnam = mdt_library_featnam_get(base, ifeat - 1);
+    symb = mdt_symb_get(mdt, base, i, indf[i] - 1);
     fprintf(fp, "CAPTION CAPTION_POSITION 1, ;\n"
                 "     CAPTION_TEXT '%s : %s'\n", strlen(symb) == 0 ? "u" : symb,
                 featnam);

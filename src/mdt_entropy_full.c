@@ -28,7 +28,7 @@ static void wrhead(double hx, const struct mdt_type *mdt,
   for (i = 0; i < mdt->nfeat; i++) {
     char *featnam;
     int ifeat = f_int1_get(&mdt->ifeat, i) - 1;
-    featnam = mdt_library_featnam_get(mlib, ifeat);
+    featnam = mdt_library_featnam_get(&mlib->base, ifeat);
     modlognote("%3d   %6d %s", i+1, ifeat+1, featnam);
     g_free(featnam);
   }

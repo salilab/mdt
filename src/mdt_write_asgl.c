@@ -35,11 +35,10 @@ static char *get_mdt_symb(const struct mdt_type *mdt,
                           int nfeat, int ibin, int ndecimal)
 {
   const struct mdt_feature *feat;
-  const struct mod_mdt_library *base = &mlib->base;
   int ifeat = f_int1_get(&mdt->ifeat, nfeat) - 1;
   feat = &mlib->base.features[ifeat];
   /* For type 3, generate symbol from range data */
-  if (base->itsymb[ifeat] == 3) {
+  if (feat->itsymb == 3) {
     if (ibin == feat->nbins - 1) {
       return g_strdup("U");
     } else {
@@ -70,10 +69,10 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
   int i, ifeat, *ifeatpt, itsymbx, itsymby;
   ifeatpt = f_int1_pt(&mdt->ifeat);
 
-  ifeat = ifeatpt[mdt->nfeat - 1];
-  itsymbx = base->itsymb[ifeat - 1];
-  ifeat = ifeatpt[mdt->nfeat > 1 ? mdt->nfeat - 2 : 0];
-  itsymby = base->itsymb[ifeat - 1];
+  ifeat = ifeatpt[mdt->nfeat - 1] - 1;
+  itsymbx = base->features[ifeat].itsymb;
+  ifeat = ifeatpt[mdt->nfeat > 1 ? mdt->nfeat - 2 : 0] - 1;
+  itsymby = base->features[ifeat].itsymb;
 
   fputs("# -------------------------------------------------\n", fp);
   if (dimensions == 1) {

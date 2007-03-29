@@ -52,7 +52,7 @@ static char *get_mdt_symb(const struct mdt_type *mdt,
       }
     }
   } else {
-    return mdt_symb_get(mdt, base, nfeat, ibin);
+    return g_strdup(base->features[ifeat].bins[ibin].symbol);
   }
 }
 
@@ -166,7 +166,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
     char *symb;
     ifeat = ifeatpt[i];
     featnam = mdt_library_featnam_get(base, ifeat - 1);
-    symb = mdt_symb_get(mdt, base, i, indf[i] - 1);
+    symb = get_mdt_symb(mdt, mlib, i, indf[i] - 1, 0);
     fprintf(fp, "CAPTION CAPTION_POSITION 1, ;\n"
                 "     CAPTION_TEXT '%s : %s'\n", strlen(symb) == 0 ? "u" : symb,
                 featnam);

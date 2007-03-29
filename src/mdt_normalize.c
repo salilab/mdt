@@ -16,9 +16,10 @@ static float get_dxdy(const float dx_dy[], const struct mdt_type *mdtin,
   float dx;
 
   if (dx_dy[0] == undefined) {
+    struct mdt_feature *feat;
     int ifeat = f_int1_get(&mdtin->ifeat, mdtin->nfeat-1) - 1;
-    dx = f_float2_get(&mlib->base.rang2, 0, ifeat)
-         - f_float2_get(&mlib->base.rang1, 0, ifeat);
+    feat = &mlib->base.features[ifeat];
+    dx = feat->bins[0].rang2 - feat->bins[0].rang1;
   } else {
     dx = dx_dy[0];
   }
@@ -26,9 +27,10 @@ static float get_dxdy(const float dx_dy[], const struct mdt_type *mdtin,
   if (dimensions == 2) {
     float dy;
     if (dx_dy[1] == undefined) {
+      struct mdt_feature *feat;
       int ifeat = f_int1_get(&mdtin->ifeat, mdtin->nfeat-2) - 1;
-      dy = f_float2_get(&mlib->base.rang2, 0, ifeat)
-           - f_float2_get(&mlib->base.rang1, 0, ifeat);
+      feat = &mlib->base.features[ifeat];
+      dy = feat->bins[0].rang2 - feat->bins[0].rang1;
     } else {
       dy = dx_dy[1];
     }

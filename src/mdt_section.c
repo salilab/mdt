@@ -228,6 +228,7 @@ void mdt_section_meanstdev(const struct mdt_type *mdt,
 {
   int istart, nbins, ifeat;
   gboolean periodic;
+  struct mdt_feature *feat;
   double *bin, dx, x0;
 
   if (!get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, err)) {
@@ -236,13 +237,13 @@ void mdt_section_meanstdev(const struct mdt_type *mdt,
   }
   bin = f_double1_pt(&mdt->bin);
   ifeat = f_int1_get(&mdt->ifeat, mdt->nfeat - 1);
+  feat = &mlib->base.features[ifeat - 1];
   periodic = mdt_feature_is_periodic(ifeat);
 
   /* histogram bin size in real units: */
-  dx = f_float2_get(&mlib->base.rang2, 0, ifeat-1)
-       - f_float2_get(&mlib->base.rang1, 0, ifeat-1);
+  dx = feat->bins[0].rang2 - feat->bins[0].rang1;
   /* position of the center of the first bin in real units: */
-  x0 = f_float2_get(&mlib->base.rang1, 0, ifeat-1) + 0.5 * dx;
+  x0 = feat->bins[0].rang1 + 0.5 * dx;
 
   if (periodic) {
     hist_avrstdev_deg(&bin[istart], nbins, x0, dx, mean, stdev);

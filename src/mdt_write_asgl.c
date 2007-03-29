@@ -34,14 +34,16 @@ static char *get_mdt_symb(const struct mdt_type *mdt,
                           const struct mdt_library *mlib,
                           int nfeat, int ibin, int ndecimal)
 {
+  const struct mdt_feature *feat;
   const struct mod_mdt_library *base = &mlib->base;
-  int ifeat = f_int1_get(&mdt->ifeat, nfeat);
+  int ifeat = f_int1_get(&mdt->ifeat, nfeat) - 1;
+  feat = &mlib->base.features[ifeat];
   /* For type 3, generate symbol from range data */
   if (base->itsymb[ifeat] == 3) {
-    if (ibin == base->ndimen[ifeat] - 1) {
+    if (ibin == feat->nbins - 1) {
       return g_strdup("U");
     } else {
-      float rang1 = f_float2_get(&base->rang1, ibin, ifeat);
+      float rang1 = feat->bins[ibin].rang1;
       if (ndecimal > 0) {
         char *fmt = g_strdup_printf("%%.%df", ndecimal);
         char *str = g_strdup_printf(fmt, rang1);
@@ -52,7 +54,7 @@ static char *get_mdt_symb(const struct mdt_type *mdt,
       }
     }
   } else {
-    return g_strdup(base->features[ifeat].bins[ibin].symbol);
+    return g_strdup(feat->bins[ibin].symbol);
   }
 }
 
@@ -65,7 +67,6 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
                     int x_decimal, int y_decimal, double sum)
 {
   const struct mod_mdt_library *base = &mlib->base;
-  char *featnam;
   int i, ifeat, *ifeatpt, itsymbx, itsymby;
   ifeatpt = f_int1_pt(&mdt->ifeat);
 
@@ -145,33 +146,27 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
   fprintf(fp, "CAPTION CAPTION_POSITION 1, ;\n"
               "     CAPTION_TEXT '%.1f POINTS'\n", sum);
 
-  ifeat = ifeatpt[mdt->nfeat - 1];
-  featnam = mdt_library_featnam_get(base, ifeat - 1);
+  ifeat = ifeatpt[mdt->nfeat - 1] - 1;
   fprintf(fp, "CAPTION CAPTION_POSITION 2, ;\n"
-              "     CAPTION_TEXT '%s'\n", featnam);
-  g_free(featnam);
+              "     CAPTION_TEXT '%s'\n", base->features[ifeat].name);
 
   if (dimensions == 1) {
     fputs("CAPTION CAPTION_POSITION 3, ;\n"
           "     CAPTION_TEXT 'FREQUENCY'\n", fp);
   } else {
-    ifeat = ifeatpt[mdt->nfeat - 2];
-    featnam = mdt_library_featnam_get(base, ifeat - 1);
+    ifeat = ifeatpt[mdt->nfeat - 2] - 1;
     fprintf(fp, "CAPTION CAPTION_POSITION 3, ;\n"
-                "     CAPTION_TEXT '%s'\n", featnam);
-    g_free(featnam);
+                "     CAPTION_TEXT '%s'\n", base->features[ifeat].name);
   }
 
   for (i = mdt->nfeat - dimensions - 1; i >= 0; i--) {
     char *symb;
-    ifeat = ifeatpt[i];
-    featnam = mdt_library_featnam_get(base, ifeat - 1);
+    ifeat = ifeatpt[i] - 1;
     symb = get_mdt_symb(mdt, mlib, i, indf[i] - 1, 0);
     fprintf(fp, "CAPTION CAPTION_POSITION 1, ;\n"
                 "     CAPTION_TEXT '%s : %s'\n", strlen(symb) == 0 ? "u" : symb,
-                featnam);
+                base->features[ifeat].name);
     g_free(symb);
-    g_free(featnam);
   }
 
   if (dimensions == 1) {

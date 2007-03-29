@@ -26,11 +26,10 @@ static void wrhead(double hx, const struct mdt_type *mdt,
              "Features tabulated in the multidimensional table\n\n"
              "  #  FEATURE NAME");
   for (i = 0; i < mdt->nfeat; i++) {
-    char *featnam;
+    struct mdt_feature *feat;
     int ifeat = f_int1_get(&mdt->ifeat, i) - 1;
-    featnam = mdt_library_featnam_get(&mlib->base, ifeat);
-    modlognote("%3d   %6d %s", i+1, ifeat+1, featnam);
-    g_free(featnam);
+    feat = &mlib->base.features[ifeat];
+    modlognote("%3d   %6d %s", i+1, ifeat+1, feat->name);
   }
 
   modlognote("\n  The last feature is the dependent one (x).");

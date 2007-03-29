@@ -28,12 +28,10 @@ static void write_mdt_header(FILE *fp, const struct mdt_type *mdt,
 
   for (i = 0; i < mdt->nfeat; i++) {
     int ifeat;
-    char *featnam;
+    struct mdt_feature *feat;
     ifeat = f_int1_get(&mdt->ifeat, i) - 1;
-    featnam = mdt_library_featnam_get(&mlib->base, ifeat);
-    fprintf(fp, "%3d %8d %5d %s\n", i+1, ifeat+1, mlib->base.ndimen[ifeat],
-            featnam);
-    free(featnam);
+    feat = &mlib->base.features[ifeat];
+    fprintf(fp, "%3d %8d %5d %s\n", i+1, ifeat+1, feat->nbins, feat->name);
   }
 
   fprintf(fp, "\n\nSUBSET OF VALUES (WITH RESPECT TO THE BIN FILE)\n"

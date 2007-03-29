@@ -165,14 +165,14 @@ class MDTTests(ModellerTest):
         """Check atom accessibility features"""
         m = self.get_test_mdt(features=80)
         self.assertEqual(m.shape, (121,))
-        self.assertInTolerance(m[30], 5.0, 0.0005)
-        self.assertInTolerance(m[31], 2.0, 0.0005)
-        self.assertInTolerance(m[32], 8.0, 0.0005)
+        self.assertInTolerance(m[0], 425.0, 1.0005)
+        self.assertInTolerance(m[1], 35.0, 2.0005)
+        self.assertInTolerance(m[2], 17.0, 0.0005)
         m = self.get_test_mdt(features=81)
         self.assertEqual(m.shape, (61,))
-        self.assertInTolerance(m[30], 2.0, 0.0005)
-        self.assertInTolerance(m[31], 3.0, 0.0005)
-        self.assertInTolerance(m[32], 5.0, 0.0005)
+        self.assertInTolerance(m[0], 457.0, 1.0005)
+        self.assertInTolerance(m[1], 39.0, 1.0005)
+        self.assertInTolerance(m[2], 35.0, 2.0005)
 
     def test_feature_alpha_dihedral(self):
         """Check alpha dihedral feature"""

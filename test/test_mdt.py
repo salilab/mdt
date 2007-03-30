@@ -87,6 +87,20 @@ class MDTTests(ModellerTest):
         m2 = mdt.mdt(mlib, file='test.mdt')
         self.assertMDTsEqual(m, m2)
 
+    def test_bin_info(self):
+        """Test query of bin symbol and range"""
+        m = self.get_test_mdt(features=66)
+        for (n, bin) in enumerate(m.features[0].bins):
+            self.assertEqual(bin.range, (n, n+1))
+        symbols = [bin.symbol for bin in m.features[0].bins]
+        self.assertEqual(symbols, ['ALA', 'CYS', 'ASP', 'GLU', 'PHE', 'GLY',
+                                   'HIS', 'ILE', 'LYS', 'LEU', 'MET', 'ASN',
+                                   'PRO', 'GLN', 'ARG', 'SER', 'THR', 'VAL',
+                                   'TRP', 'TYR', 'GAP', 'u'])
+        m2 = m.reshape(features=66, offset=1, shape=20)
+        for (n, bin) in enumerate(m2.features[0].bins):
+            self.assertEqual(bin.symbol, m.features[0].bins[n+1].symbol)
+
     def test_1d_mdt(self):
         """Make sure a 1D MDT matches known residue data"""
         env = self.get_environ()

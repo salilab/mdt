@@ -5,6 +5,7 @@
 #include <glib.h>
 #include "../src/mdt.h"
 #include "error_types.h"
+#include "modeller.h"
 #include "mod_error.h"
 %}
 

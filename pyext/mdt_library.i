@@ -1,3 +1,9 @@
+struct mdt_bin {
+%immutable;
+  float rang1, rang2;
+  char *symbol;
+};
+
 struct mod_mdt_library {
 };
 

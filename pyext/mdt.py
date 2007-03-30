@@ -521,17 +521,19 @@ class bin(object):
         self.__indx = indx
 
     def __get_symb(self):
-        nfeat = self.__feature._indx
-        mdt = self.__feature._mdt._modpt
-        mlib = self.__feature._mdt._mlib.modpt
-        return _modeller.mdt_symb_get(mdt, mlib, nfeat, self.__indx)
+        return _mdt.mdt_bin_symbol_get(self.modpt)
 
     def __get_range(self):
+        return ( _mdt.mdt_bin_rang1_get(self.modpt),
+                 _mdt.mdt_bin_rang2_get(self.modpt) )
+
+    def __get_modpt(self):
         nfeat = self.__feature._indx
         mdt = self.__feature._mdt._modpt
         mlib = self.__feature._mdt._mlib.modpt
-        return _modeller.mdt_range_get(mdt, mlib, nfeat, self.__indx)
+        return _mdt.mdt_library_bin_get(mdt, mlib, nfeat, self.__indx)
 
+    modpt = property(__get_modpt)
     symbol = property(__get_symb, doc="Bin symbol")
     range = property(__get_range, doc="Bin range")
 

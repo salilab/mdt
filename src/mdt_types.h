@@ -30,12 +30,8 @@ struct mdt_atom_class {
   struct mdt_atom_type *types;
   /** Class name */
   char *name;
-  /* Hydrogen bond donor valency */
-  float hb_donor;
-  /* Hydrogen bond acceptor valency */
-  float hb_acceptor;
-  /* Hydrogen bond charge */
-  float hb_charge;
+  /* Hydrogen bond properties (donor/acceptor valency, and charge) */
+  float hb_property[3];
 };
 
 /** List of atom classes */

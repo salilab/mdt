@@ -22,7 +22,13 @@ G_BEGIN_DECLS
 G_GNUC_INTERNAL
 int numb_hda(int ia, const int hb_iattyp[], const struct coordinates *cd,
              const struct mdt_atom_class_list *atclass, float hbond_cutoff,
-             gboolean acceptor, int nbins);
+             int hbprop_type, int nbins);
+
+/** Calculate H-bond protein satisfaction for the whole protein. */
+G_GNUC_INTERNAL
+float hb_satisfaction(const struct coordinates *cd, const int iatta[],
+                      const struct mdt_atom_class_list *atclass,
+                      float hbond_cutoff);
 
 G_END_DECLS
 

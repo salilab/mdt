@@ -21,6 +21,8 @@ G_BEGIN_DECLS
 struct mdt_properties {
   /** Bin indices for hydrogen bond atom type */
   int *hb_iatta;
+  /** Hydrogen bond satisfaction index */
+  float *hbpot;
   /** Bin indices for atom type */
   int *iatta;
   /** Bin indices for atom accessibility */

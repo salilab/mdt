@@ -18,18 +18,17 @@ static float dist1(float x1, float y1, float z1, float x2, float y2, float z2)
   return sqrt(xdiff * xdiff + ydiff * ydiff + zdiff * zdiff);
 }
 
-static float get_ndon_acc(const struct mdt_atom_class_list *atclass, int iat,
-                          gboolean acceptor)
+static float get_hbprop(const struct mdt_atom_class_list *atclass, int iat,
+                        int hbprop_type)
 {
   struct mdt_atom_class *c = &atclass->classes[iat];
-  return (acceptor ? ABS(c->hb_acceptor) : ABS(c->hb_donor));
+  return ABS(c->hb_property[hbprop_type]);
 }
 
-/** Return the indices of the "top-left" corner of the MDT. This must be freed
-    by the user after use. */
+/** Return the number of H-bonds with a given atom, ia. */
 int numb_hda(int ia, const int hb_iattyp[], const struct coordinates *cd,
              const struct mdt_atom_class_list *atclass, float hbond_cutoff,
-             gboolean acceptor, int nbins)
+             int hbprop_type, int nbins)
 {
   float *x, *y, *z;
   int i, num = 0;
@@ -40,7 +39,7 @@ int numb_hda(int ia, const int hb_iattyp[], const struct coordinates *cd,
   for (i = 0; i < cd->natm; i++) {
     if (i != ia) {
       int iat = hb_iattyp[i] - 1;
-      if (iat >= 0 && get_ndon_acc(atclass, iat, acceptor) > 0.) {
+      if (iat >= 0 && get_hbprop(atclass, iat, hbprop_type) > 0.) {
         float d = dist1(x[i], y[i], z[i], x[ia], y[ia], z[ia]);
         if (d > 2.5 && d < hbond_cutoff) {
           num++;
@@ -50,4 +49,28 @@ int numb_hda(int ia, const int hb_iattyp[], const struct coordinates *cd,
   }
   
   return MIN(num, nbins);
+}
+
+/** Calculate H-bond protein satisfaction for the whole protein. */
+float hb_satisfaction(const struct coordinates *cd, const int hb_iattyp[],
+                      const struct mdt_atom_class_list *atclass,
+                      float hbond_cutoff)
+{
+  float satis = 0.;
+  int ia;
+
+  for (ia = 0; ia < cd->natm; ia++) {
+    int iprop;
+    int iat = hb_iattyp[ia] - 1;
+    /* Loop over donors and acceptors */
+    for (iprop = 0; iprop <= 1; iprop++) {
+      float hbprop;
+      int nhda;
+      hbprop = atclass->classes[iat].hb_property[iprop];
+      nhda = numb_hda(ia, hb_iattyp, cd, atclass, hbond_cutoff, iprop, 9999);
+      satis += MAX(0., hbprop - nhda);
+    }
+  }
+
+  return (cd->natm > 0 ? satis / cd->natm : 0.);
 }

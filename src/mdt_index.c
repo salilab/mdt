@@ -18,6 +18,7 @@ struct mdt_properties *mdt_properties_new(const struct alignment *aln)
   prop = g_malloc(sizeof(struct mdt_properties) * aln->naln);
   for (i = 0; i < aln->naln; i++) {
     prop[i].hb_iatta = NULL;
+    prop[i].hbpot = NULL;
     prop[i].iatta = NULL;
     prop[i].iatmacc = NULL;
     prop[i].ifatmacc = NULL;
@@ -32,6 +33,7 @@ void mdt_properties_free(struct mdt_properties *prop,
   int i;
   for (i = 0; i < aln->naln; i++) {
     g_free(prop[i].hb_iatta);
+    g_free(prop[i].hbpot);
     g_free(prop[i].iatta);
     g_free(prop[i].iatmacc);
     g_free(prop[i].ifatmacc);
@@ -204,6 +206,23 @@ static const int *property_hb_iatta(const struct alignment *aln, int is,
   return prop[is].hb_iatta;
 }
 
+/** Get/calculate the hydrogen bond satisfaction index */
+static float property_hbpot(const struct alignment *aln, int is,
+                            struct mdt_properties *prop,
+                            const struct mdt_library *mlib, int ifi,
+                            const struct libraries *libs)
+{
+  struct structure *struc = alignment_structure_get(aln, is);
+  const int *iatta = property_hb_iatta(aln, is, prop, mlib, ifi, libs);
+  is--;
+  if (!prop[is].hbpot) {
+    prop[is].hbpot = g_malloc(sizeof(float));
+    *(prop[is].hbpot) = hb_satisfaction(&struc->cd, iatta, mlib->hbond,
+                                        mlib->base.hbond_cutoff);
+  }
+  return *(prop[is].hbpot);
+}
+
 /** Get/calculate the array of atom accessibility bin indices */
 static const int *property_iatmacc(const struct alignment *aln, int is,
                                    struct mdt_properties *prop,
@@ -339,11 +358,18 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 84:
     return numb_hda(ia1, property_hb_iatta(aln, is1, prop, mlib, ifi, libs),
                     &struc1->cd, mlib->hbond, mlib->base.hbond_cutoff,
-                    FALSE, feat->nbins);
+                    0, feat->nbins);
   case 85:
     return numb_hda(ia1, property_hb_iatta(aln, is1, prop, mlib, ifi, libs),
                     &struc1->cd, mlib->hbond, mlib->base.hbond_cutoff,
-                    TRUE, feat->nbins);
+                    1, feat->nbins);
+  case 86:
+    return iclsbin(property_hbpot(aln, is1, prop, mlib, ifi, libs), mlib, ifi,
+                   feat->nbins - 1);
+  case 87:
+    return numb_hda(ia1, property_hb_iatta(aln, is1, prop, mlib, ifi, libs),
+                    &struc1->cd, mlib->hbond, mlib->base.hbond_cutoff,
+                    2, feat->nbins);
   case 93: case 95: case 97: case 99:
     return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);
   case 94: case 96: case 98: case 100:

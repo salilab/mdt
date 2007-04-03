@@ -78,7 +78,6 @@ static gboolean read_atmgrp_hbond(GScanner *scanner,
 {
   gboolean retval = TRUE;
   int i;
-  float hbprop[3];
   for (i = 0; i < 3 && retval; i++) {
     float sign;
     GTokenType token = g_scanner_get_next_token(scanner);
@@ -89,16 +88,11 @@ static gboolean read_atmgrp_hbond(GScanner *scanner,
       sign = 1.0;
     }
     if (token == G_TOKEN_FLOAT) {
-      hbprop[i] = sign * scanner->value.v_float;
+      aclass->hb_property[i] = sign * scanner->value.v_float;
     } else {
       mod_g_scanner_unexp(scanner, G_TOKEN_FLOAT, NULL, NULL, err);
       retval = FALSE;
     }
-  }
-  if (retval) {
-    aclass->hb_donor = hbprop[0];
-    aclass->hb_acceptor = hbprop[1];
-    aclass->hb_charge = hbprop[2];
   }
   return retval;
 }

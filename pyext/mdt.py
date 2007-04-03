@@ -154,7 +154,7 @@ class hbond_classes(bond_classes):
 
     def read(self, filename):
         """Read hydrogen bond atom class information from a file"""
-        return _modeller.readhbond_mdt_library(self._mlib.basept, filename)
+        return _mdt.mdt_hbond_read(filename, self._mlib.modpt)
 
 
 class mdt_section(modobject):

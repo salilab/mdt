@@ -22,6 +22,10 @@ gboolean mdt_atom_classes_read(const gchar *filename,
                                struct mdt_library *mlib, int natom,
                                GError **err);
 
+/** Read hydrogen bond class information from a file; return TRUE on success. */
+gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib, 
+                        GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_ATOMCLASS_H */

@@ -94,19 +94,51 @@ static gboolean read_atmgrp(GScanner *scanner, GArray *classes, GArray **types,
   }
 }
 
+static gboolean read_atom_hbond(GScanner *scanner, struct mdt_atom_type *atype,
+                                GError **err)
+{
+  gboolean retval = TRUE;
+  int i;
+  float hbprop[3];
+  for (i = 0; i < 3 && retval; i++) {
+    float sign;
+    GTokenType token = g_scanner_get_next_token(scanner);
+    if (token == '-' || token == '+') {
+      sign = (token == '+' ? 1.0 : -1.0);
+      token = g_scanner_get_next_token(scanner);
+    } else {
+      sign = 1.0;
+    }
+    if (token == G_TOKEN_FLOAT) {
+      hbprop[i] = sign * scanner->value.v_float;
+    } else {
+      mod_g_scanner_unexp(scanner, G_TOKEN_FLOAT, NULL, NULL, err);
+      retval = FALSE;
+    }
+  }
+  if (retval) {
+    atype->hb_donor = hbprop[0];
+    atype->hb_acceptor = hbprop[1];
+    atype->hb_charge = hbprop[2];
+  }
+  return retval;
+}
+
 static gboolean read_atom(GScanner *scanner,
                           struct mdt_atom_class_list *atclass,
-                          GArray *classes, GArray *types, GError **err)
+                          GArray *classes, GArray *types, gboolean read_hbond,
+                          GError **err)
 {
   int i;
   struct mdt_atom_type atype;
+  gboolean retval = TRUE;
   if (classes->len == 0) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, "ATOM before ATMGRP");
     return FALSE;
   }
 
   atype.names = g_malloc(sizeof(char *) * (atclass->natom + 1));
-  for (i = 0; i < atclass->natom + 1; i++) {
+  for (i = 0; i < atclass->natom + 1 && retval; i++) {
     if (g_scanner_get_next_token(scanner) == G_TOKEN_STRING) {
       atype.names[i] = g_strdup(scanner->value.v_string);
     } else {
@@ -114,19 +146,26 @@ static gboolean read_atom(GScanner *scanner,
       for (j = 0; j < i; j++) {
         g_free(atype.names[j]);
       }
-      g_free(atype.names);
       mod_g_scanner_unexp(scanner, G_TOKEN_STRING, NULL, NULL, err);
-      return FALSE;
+      retval = FALSE;
     }
   }
-  g_array_append_val(types, atype);
-  return TRUE;
+  if (retval && read_hbond) {
+    retval = read_atom_hbond(scanner, &atype, err);
+  }
+
+  if (retval) {
+    g_array_append_val(types, atype);
+  } else {
+    g_free(atype.names);
+  }
+  return retval;
 }
 
 static gboolean scan_atom_classes_file(const char *filename, const char *text,
                                        unsigned filelen,
                                        struct mdt_atom_class_list *atclass, 
-                                       GError **err)
+                                       gboolean read_hbond, GError **err)
 {
   static const char *grpnames[] = { "ATMGRP", "BNDGRP", "ANGGRP", "DIHGRP" };
   static const char *atnames[] = { "ATOM", "BOND", "ANGLE", "DIHEDRAL" };
@@ -141,13 +180,14 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
   g_scanner_add_symbol(scanner, sym[0], GINT_TO_POINTER(0));
   g_scanner_add_symbol(scanner, sym[1], GINT_TO_POINTER(1));
   scanner->input_name = filename;
+  scanner->config->int_2_float = TRUE;
   g_scanner_input_text(scanner, text, filelen);
   while (g_scanner_get_next_token(scanner) != G_TOKEN_EOF && retval) {
     if (scanner->token == G_TOKEN_SYMBOL) {
       if (GPOINTER_TO_INT(scanner->value.v_symbol) == 0) {
         retval = read_atmgrp(scanner, classes, &types, err);
       } else {
-        retval = read_atom(scanner, atclass, classes, types, err);
+        retval = read_atom(scanner, atclass, classes, types, read_hbond, err);
       }
     } else {
       mod_g_scanner_unexp(scanner, G_TOKEN_SYMBOL, NULL, "ATOM or ATMGRP",
@@ -166,22 +206,11 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
   return retval;
 }
 
-static void update_mdt_feat_atclass(struct mdt_library *mlib,
+static void update_mdt_feat_atclass(struct mdt_feature *feat,
                                     const struct mdt_atom_class_list *atclass,
                                     int natom)
 {
-  int ifeat, i;
-  struct mdt_feature *feat;
-
-  /* MDT features; 79 = atom, 109 = bond, 111 = angle, 113 = dihedral types */
-  if (natom == 1) {
-    ifeat = 78;
-  } else {
-    ifeat = 104 + natom * 2;
-  }
-
-  /* Set MDT symbols */
-  feat = &mlib->base.features[ifeat];
+  int i;
   mdt_feature_nbins_set(feat, atclass->nclass + 1);
   for (i = 0; i < atclass->nclass; i++) {
     g_free(feat->bins[i].symbol);
@@ -191,10 +220,10 @@ static void update_mdt_feat_atclass(struct mdt_library *mlib,
   feat->bins[atclass->nclass].symbol = g_strdup("U");
 }
 
-/** Read atom class information from a file; return TRUE on success. */
-gboolean mdt_atom_classes_read(const gchar *filename,
-                               struct mdt_library *mlib, int natom,
-                               GError **err)
+static gboolean read_atom_class_file(const gchar *filename,
+                                     struct mdt_library *mlib,
+                                     struct mdt_atom_class_list *atclass,
+                                     gboolean read_hbond, GError **err)
 {
   struct mod_file file_info;
   FILE *fp;
@@ -213,13 +242,43 @@ gboolean mdt_atom_classes_read(const gchar *filename,
     handle_modeller_error(err);
     return FALSE;
   } else {
-    retval = scan_atom_classes_file(filename, text, filelen,
-                                    mlib->atclass[natom - 1], err);
+    retval = scan_atom_classes_file(filename, text, filelen, atclass,
+                                    read_hbond, err);
     g_free(text);
-    if (retval) {
-      update_mdt_feat_atclass(mlib, mlib->atclass[natom - 1], natom);
-    }
   }
 
   return mdt_close_file(fp, &file_info, err) && retval;
+}
+
+/** Read atom class information from a file; return TRUE on success. */
+gboolean mdt_atom_classes_read(const gchar *filename,
+                               struct mdt_library *mlib, int natom,
+                               GError **err)
+{
+  gboolean retval;
+  retval = read_atom_class_file(filename, mlib, mlib->atclass[natom - 1],
+                                FALSE, err);
+  if (retval) {
+    int ifeat;
+    struct mdt_feature *feat;
+
+    /* MDT features; 79 = atom, 109 = bond, 111 = angle, 113 = dihedral types */
+    if (natom == 1) {
+      ifeat = 78;
+    } else {
+      ifeat = 104 + natom * 2;
+    }
+
+    /* Set MDT symbols */
+    feat = &mlib->base.features[ifeat];
+    update_mdt_feat_atclass(feat, mlib->atclass[natom - 1], natom);
+  }
+  return retval;
+}
+
+/** Read hydrogen bond class information from a file; return TRUE on success. */
+gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib, 
+                        GError **err)
+{
+  return read_atom_class_file(filename, mlib, mlib->hbond, TRUE, err);
 }

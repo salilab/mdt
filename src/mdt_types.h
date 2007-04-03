@@ -58,6 +58,8 @@ struct mdt_library {
   gboolean deltai_ali, deltaj_ali;
   /** Atom, bond, angle, dihedral classes */
   struct mdt_atom_class_list *atclass[4];
+  /** Hydrogen bond classes */
+  struct mdt_atom_class_list *hbond;
 };
 
 /** Make a new mdt_library structure */

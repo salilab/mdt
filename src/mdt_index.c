@@ -8,6 +8,7 @@
 #include "modeller.h"
 #include "util.h"
 #include "mdt_index.h"
+#include "mdt_hydrogen_bonds.h"
 
 /** Make a new mdt_properties structure */
 struct mdt_properties *mdt_properties_new(const struct alignment *aln)
@@ -16,6 +17,7 @@ struct mdt_properties *mdt_properties_new(const struct alignment *aln)
   int i;
   prop = g_malloc(sizeof(struct mdt_properties) * aln->naln);
   for (i = 0; i < aln->naln; i++) {
+    prop[i].hb_iatta = NULL;
     prop[i].iatta = NULL;
     prop[i].iatmacc = NULL;
     prop[i].ifatmacc = NULL;
@@ -29,6 +31,7 @@ void mdt_properties_free(struct mdt_properties *prop,
 {
   int i;
   for (i = 0; i < aln->naln; i++) {
+    g_free(prop[i].hb_iatta);
     g_free(prop[i].iatta);
     g_free(prop[i].iatmacc);
     g_free(prop[i].ifatmacc);
@@ -162,21 +165,43 @@ static void atmcls_special(struct structure *struc, const struct sequence *seq,
   }
 }
 
+static int *make_atom_type(const struct alignment *aln, int is,
+                                 const struct mdt_library *mlib,
+                                 const struct mdt_atom_class_list *atclass,
+                                 int ifi, const struct libraries *libs)
+{
+  int *iatta;
+  struct structure *struc = alignment_structure_get(aln, is);
+  struct sequence *seq = alignment_sequence_get(aln, is);
+  iatta = g_malloc(sizeof(int) * struc->cd.natm);
+  atmcls_special(struc, seq, iatta, atclass, mlib, libs);
+  return iatta;
+}
+
 /** Get/calculate the array of atom type bin indices */
 static const int *property_iatta(const struct alignment *aln, int is,
                                  struct mdt_properties *prop,
                                  const struct mdt_library *mlib, int ifi,
-                                 const struct mdt_feature *feat,
                                  const struct libraries *libs)
 {
   is--;
   if (!prop[is].iatta) {
-    struct structure *struc = alignment_structure_get(aln, is);
-    struct sequence *seq = alignment_sequence_get(aln, is);
-    prop[is].iatta = g_malloc(sizeof(int) * struc->cd.natm);
-    atmcls_special(struc, seq, prop[is].iatta, mlib->atclass[0], mlib, libs);
+    prop[is].iatta = make_atom_type(aln, is, mlib, mlib->atclass[0], ifi, libs);
   }
   return prop[is].iatta;
+}
+
+/** Get/calculate the array of hydrogen bond atom type bin indices */
+static const int *property_hb_iatta(const struct alignment *aln, int is,
+                                    struct mdt_properties *prop,
+                                    const struct mdt_library *mlib, int ifi,
+                                    const struct libraries *libs)
+{
+  is--;
+  if (!prop[is].hb_iatta) {
+    prop[is].hb_iatta = make_atom_type(aln, is, mlib, mlib->hbond, ifi, libs);
+  }
+  return prop[is].hb_iatta;
 }
 
 /** Get/calculate the array of atom accessibility bin indices */
@@ -295,7 +320,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                    seq2->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
                    feat->nbins, libs->igaptyp);
   case 79:
-    return itable(property_iatta(aln, is1, prop, mlib, ifi, feat, libs),
+    return itable(property_iatta(aln, is1, prop, mlib, ifi, libs),
                   struc1->cd.natm, ia1, feat->nbins);
   case 80:
     return itable(property_iatmacc(aln, is1, prop, mlib, ifi, feat),
@@ -309,8 +334,16 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 82: case 103:
     return idist0(ia1, ia1p, struc1, mlib, ifi, feat->nbins);
   case 83:
-    return itable(f_int1_pt(&struc1->iatta), struc1->cd.natm, ia1p,
-                  feat->nbins);
+    return itable(property_iatta(aln, is1, prop, mlib, ifi, libs),
+                  struc1->cd.natm, ia1p, feat->nbins);
+  case 84:
+    return numb_hda(ia1, property_hb_iatta(aln, is1, prop, mlib, ifi, libs),
+                    &struc1->cd, mlib->hbond, mlib->base.hbond_cutoff,
+                    FALSE, feat->nbins);
+  case 85:
+    return numb_hda(ia1, property_hb_iatta(aln, is1, prop, mlib, ifi, libs),
+                    &struc1->cd, mlib->hbond, mlib->base.hbond_cutoff,
+                    TRUE, feat->nbins);
   case 93: case 95: case 97: case 99:
     return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);
   case 94: case 96: case 98: case 100:

@@ -11,57 +11,57 @@
 # 4) various amides NH seem to be an acceptor too (according to statistics,
 #    partly because they may be mislabeled in structures, ie N, Q sidechains)
 #
-#                            Donor Acceptor 
-#                              Valencies      Charge
+#                                Donor Acceptor 
+#                                  Valencies      Charge
 #
-ATMGRP N
-ATOM            *       N       1       1       0
-ATMGRP  O
-ATOM            *       O       0       2       0
-ATMGRP  SG
-ATOM            CYS     SG      1       0       0
-ATMGRP  OD1/2
-ATOM            ASP     OD1     0       2       -0.5
-ATOM            ASP     OD2     0       2       -0.5
-ATMGRP  OE1/2
-ATOM            GLU     OE1     0       2       -0.5
-ATOM            GLU     OE2     0       2       -0.5
-ATMGRP  ND1
-ATOM            HSD     ND1     1       0        0
-ATMGRP  NE2
-ATOM            HSD     NE2     1       0        0
-ATMGRP  NZ
-ATOM            LYS     NZ      3       0       +1
-ATMGRP  SD
-ATOM            MET     SD      0       0       0
-ATMGRP  OD1
-ATOM            ASN     OD1     0       2       0
-ATMGRP  ND2
-ATOM            ASN     ND2     2       1       0
-ATMGRP  OE1
-ATOM            GLN     OE1     0       2       0
-ATMGRP  NE2
-ATOM            GLN     NE2     2       1       0
-ATMGRP  NE
-ATOM            ARG     NE      1       0       0
-ATMGRP  NH1/2
-ATOM            ARG     NH1     2       0       +0.5
-ATOM            ARG     NH2     2       0       +0.5
-ATMGRP  OG
-ATOM            SER     OG      1       2       0
-ATMGRP  OG1
-ATOM            THR     OG1     1       2       0
-ATMGRP  NE1
-ATOM            TRP     NE1     1       0       0
-ATMGRP  OH
-ATOM            TYR     OH      1       0       0
-ATMGRP  SG2
-ATOM            CSS     SG      0       0       0
-ATMGRP  NH3
-ATOM            *       NH3     2       0       +1
-ATMGRP  OT1/2
-ATOM            *       OT1     0       2       -0.5
-ATOM            *       OT2     0       2       -0.5
-ATMGRP  *:*
-ATOM            *       *       0       0       0
-ATOM            *       *       0       0       0
+ATMGRP 'N'
+  ATOM            '*'       'N'       1       1       0
+ATMGRP  'O'
+  ATOM            '*'       'O'       0       2       0
+ATMGRP  'SG'
+  ATOM            'CYS'     'SG'      1       0       0
+ATMGRP  'OD1/2'
+  ATOM            'ASP'     'OD1'     0       2       -0.5
+  ATOM            'ASP'     'OD2'     0       2       -0.5
+ATMGRP  'OE1/2'
+  ATOM            'GLU'     'OE1'     0       2       -0.5
+  ATOM            'GLU'     'OE2'     0       2       -0.5
+ATMGRP  'ND1'
+  ATOM            'HSD'     'ND1'     1       0        0
+ATMGRP  'NE2'
+  ATOM            'HSD'     'NE2'     1       0        0
+ATMGRP  'NZ'
+  ATOM            'LYS'     'NZ'      3       0       +1
+ATMGRP  'SD'
+  ATOM            'MET'     'SD'      0       0       0
+ATMGRP  'OD1'
+  ATOM            'ASN'     'OD1'     0       2       0
+ATMGRP  'ND2'
+  ATOM            'ASN'     'ND2'     2       1       0
+ATMGRP  'OE1'
+  ATOM            'GLN'     'OE1'     0       2       0
+ATMGRP  'NE2'
+  ATOM            'GLN'     'NE2'     2       1       0
+ATMGRP  'NE'
+  ATOM            'ARG'     'NE'      1       0       0
+ATMGRP  'NH1/2'
+  ATOM            'ARG'     'NH1'     2       0       +0.5
+  ATOM            'ARG'     'NH2'     2       0       +0.5
+ATMGRP  'OG'
+  ATOM            'SER'     'OG'      1       2       0
+ATMGRP  'OG1'
+  ATOM            'THR'     'OG1'     1       2       0
+ATMGRP  'NE1'
+  ATOM            'TRP'     'NE1'     1       0       0
+ATMGRP  'OH'
+  ATOM            'TYR'     'OH'      1       0       0
+ATMGRP  'SG2'
+  ATOM            'CSS'     'SG'      0       0       0
+ATMGRP  'NH3'
+  ATOM            '*'       'NH3'     2       0       +1
+ATMGRP  'OT1/2'
+  ATOM            '*'       'OT1'     0       2       -0.5
+  ATOM            '*'       'OT2'     0       2       -0.5
+ATMGRP  '*:*'
+  ATOM            '*'       '*'       0       0       0
+  ATOM            '*'       '*'       0       0       0

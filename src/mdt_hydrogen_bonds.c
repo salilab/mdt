@@ -21,18 +21,13 @@ static float dist1(float x1, float y1, float z1, float x2, float y2, float z2)
 static float get_ndon_acc(const struct mdt_atom_class_list *atclass, int iat,
                           gboolean acceptor)
 {
-  int i, j;
-  for (i = 0; i < atclass->nclass; i++) {
-    struct mdt_atom_class *c = &atclass->classes[i];
-    for (j = 0; j < c->ntypes; j++) {
-      struct mdt_atom_type *t = &c->types[j];
-      iat--;
-      if (iat < 0) {
-        return (acceptor ? ABS(t->hb_acceptor) : ABS(t->hb_donor));
-      }
-    }
+  struct mdt_atom_class *c = &atclass->classes[iat];
+  if (c->ntypes == 0) {
+    return 0.;
+  } else {
+    struct mdt_atom_type *t = &c->types[0];
+    return (acceptor ? ABS(t->hb_acceptor) : ABS(t->hb_donor));
   }
-  return 0;
 }
 
 /** Return the indices of the "top-left" corner of the MDT. This must be freed

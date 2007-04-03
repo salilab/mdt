@@ -52,6 +52,8 @@ struct mdt_library {
   int deltai, deltaj;
   /** TRUE if deltas refer to align. positions, or FALSE if residue positions */
   gboolean deltai_ali, deltaj_ali;
+  /** Cutoff distance for hydrogen bonds */
+  float hbond_cutoff;
   /** Atom, bond, angle, dihedral classes */
   struct mdt_atom_class_list *atclass[4];
   /** Hydrogen bond classes */

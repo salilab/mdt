@@ -65,9 +65,10 @@ class mdt_library(modobject):
         _mdt.mdt_library_deltaj_set(self.modpt, deltaj)
         _mdt.mdt_library_deltai_ali_set(self.modpt, deltai_ali)
         _mdt.mdt_library_deltaj_ali_set(self.modpt, deltaj_ali)
+        _mdt.mdt_library_hbond_cutoff_set(self.modpt, hbond_cutoff)
         _modeller.readbin_mdt_library(self.basept, self.env.libs.modpt,
                                       binfile, residue_grouping, distance_atoms,
-                                      special_atoms, hbond_cutoff)
+                                      special_atoms)
 
     def __del__(self):
         _mdt.mdt_library_free(self.modpt)

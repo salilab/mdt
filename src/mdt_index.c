@@ -218,7 +218,7 @@ static float property_hbpot(const struct alignment *aln, int is,
   if (!prop[is].hbpot) {
     prop[is].hbpot = g_malloc(sizeof(float));
     *(prop[is].hbpot) = hb_satisfaction(&struc->cd, iatta, mlib->hbond,
-                                        mlib->base.hbond_cutoff);
+                                        mlib->hbond_cutoff);
   }
   return *(prop[is].hbpot);
 }
@@ -357,18 +357,18 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                   struc1->cd.natm, ia1p, feat->nbins);
   case 84:
     return numb_hda(ia1, property_hb_iatta(aln, is1, prop, mlib, ifi, libs),
-                    &struc1->cd, mlib->hbond, mlib->base.hbond_cutoff,
+                    &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     0, feat->nbins);
   case 85:
     return numb_hda(ia1, property_hb_iatta(aln, is1, prop, mlib, ifi, libs),
-                    &struc1->cd, mlib->hbond, mlib->base.hbond_cutoff,
+                    &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     1, feat->nbins);
   case 86:
     return iclsbin(property_hbpot(aln, is1, prop, mlib, ifi, libs), mlib, ifi,
                    feat->nbins - 1);
   case 87:
     return numb_hda(ia1, property_hb_iatta(aln, is1, prop, mlib, ifi, libs),
-                    &struc1->cd, mlib->hbond, mlib->base.hbond_cutoff,
+                    &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     2, feat->nbins);
   case 93: case 95: case 97: case 99:
     return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);

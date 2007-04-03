@@ -12,6 +12,7 @@ struct mdt_library {
   struct mod_mdt_library base;
 %mutable;
   int deltai, deltaj;
+  float hbond_cutoff;
   gboolean deltai_ali, deltaj_ali;
 };
 

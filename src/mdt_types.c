@@ -17,6 +17,7 @@ struct mdt_library *mdt_library_new(void)
   mod_mdt_library_init(&mlib->base);
   mlib->deltai = mlib->deltaj = 1;
   mlib->deltai_ali = mlib->deltaj_ali = FALSE;
+  mlib->hbond_cutoff = 3.5;
   for (i = 0; i < 4; i++) {
     mlib->atclass[i] = mdt_atom_class_list_new(i + 1);
   }

@@ -19,6 +19,8 @@ G_BEGIN_DECLS
 
 /** Properties for calculating MDT indices */
 struct mdt_properties {
+  /** Bin indices for atom type */
+  int *iatta;
   /** Bin indices for atom accessibility */
   int *iatmacc;
   /** Bin indices for fractional atom accessibility */

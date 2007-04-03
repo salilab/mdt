@@ -16,6 +16,38 @@
 
 G_BEGIN_DECLS
 
+/** Atom type */
+struct mdt_atom_type {
+  /** Atom names */
+  char **names;
+  /* Hydrogen bond donor valency */
+  float hb_donor;
+  /* Hydrogen bond acceptor valency */
+  float hb_acceptor;
+  /* Hydrogen bond charge */
+  float hb_charge;
+};
+
+/** Atom class, which can contain multiple atom types */
+struct mdt_atom_class {
+  /** Number of atom types */
+  int ntypes;
+  /** Atom types */
+  struct mdt_atom_type *types;
+  /** Class name */
+  char *name;
+};
+
+/** List of atom classes */
+struct mdt_atom_class_list {
+  /** Number of atoms in each atom type (1=atom, 2=bond, 3=angle, 4=dihedral) */
+  int natom;
+  /** Number of classes */
+  int nclass;
+  /** Classes */
+  struct mdt_atom_class *classes;
+};
+
 /** Library of feature data used by MDTs */
 struct mdt_library {
   /** Base Modeller type */
@@ -24,6 +56,8 @@ struct mdt_library {
   int deltai, deltaj;
   /** TRUE if deltas refer to align. positions, or FALSE if residue positions */
   gboolean deltai_ali, deltaj_ali;
+  /** Atom, bond, angle, dihedral classes */
+  struct mdt_atom_class_list *atclass[4];
 };
 
 /** Make a new mdt_library structure */

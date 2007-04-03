@@ -1,6 +1,7 @@
 /* Definitions to be able to use some glib stuff in our headers */
 
 typedef int gboolean;
+typedef char gchar;
 
 /* Guard C code in headers, while including them from C++ */
 #ifdef  __cplusplus

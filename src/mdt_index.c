@@ -3,6 +3,7 @@
  *             Part of MDT, Copyright(c) 1989-2007 Andrej Sali
  */
 
+#include <string.h>
 #include <math.h>
 #include "modeller.h"
 #include "util.h"
@@ -15,6 +16,7 @@ struct mdt_properties *mdt_properties_new(const struct alignment *aln)
   int i;
   prop = g_malloc(sizeof(struct mdt_properties) * aln->naln);
   for (i = 0; i < aln->naln; i++) {
+    prop[i].iatta = NULL;
     prop[i].iatmacc = NULL;
     prop[i].ifatmacc = NULL;
   }
@@ -27,6 +29,7 @@ void mdt_properties_free(struct mdt_properties *prop,
 {
   int i;
   for (i = 0; i < aln->naln; i++) {
+    g_free(prop[i].iatta);
     g_free(prop[i].iatmacc);
     g_free(prop[i].ifatmacc);
   }
@@ -100,6 +103,80 @@ static void alliclsbin(int nvec, const float *x, int *ix,
   for (i = 0; i < nvec; i++) {
     ix[i] = iclsbin(x[i], mlib, ifi, nrang);
   }
+}
+
+static int iatmcls(int irestyp, const char *atmnam, 
+                   const struct mdt_atom_class_list *atclass,
+                   const struct libraries *libs)
+{
+  gboolean allres, allatm;
+  char *resnam;
+  int iclass;
+
+  allres = (irestyp == 0);
+  allatm = (strcmp(atmnam, "*") == 0);
+
+  if (allres) {
+    resnam = g_strdup("*");
+  } else {
+    resnam = residue_name_from_type(irestyp, libs);
+  }
+
+  for (iclass = 0; iclass < atclass->nclass; iclass++) {
+    int i;
+    const struct mdt_atom_class *atc = &atclass->classes[iclass];
+    for (i = 0; i < atc->ntypes; i++) {
+      const struct mdt_atom_type *att = &atc->types[i];
+      if ((allres || strcmp(att->names[0], "*") == 0
+          || strcmp(att->names[0], resnam) == 0)
+          && (allatm || strcmp(att->names[1], "*") == 0
+              || strcmp(att->names[1], atmnam) == 0)) {
+        g_free(resnam);
+        return iclass + 1;
+      }
+    }
+  }
+
+  if (!residue_is_hetatm(irestyp, libs) && !mod_atom_is_hydrogen(atmnam)) {
+    modlogwarning("iatmcls", "Model atom not classified: %s:%s", resnam,
+                  atmnam);
+  }
+  g_free(resnam);
+  return 0;
+}
+
+static void atmcls_special(struct structure *struc, const struct sequence *seq,
+                           int iatta[],
+                           const struct mdt_atom_class_list *atclass,
+                           const struct mdt_library *mlib,
+                           const struct libraries *libs)
+{
+  int i, *irestyp, *iresatm;
+  iresatm = f_int1_pt(&struc->cd.iresatm);
+  irestyp = f_int1_pt(&seq->irestyp);
+  for (i = 0; i < struc->cd.natm; i++) {
+    int irest = irestyp[iresatm[i] - 1];
+    char *atmnam = get_coord_atmnam(&struc->cd, i);
+    iatta[i] = iatmcls(irest, atmnam, atclass, libs);
+    g_free(atmnam);
+  }
+}
+
+/** Get/calculate the array of atom type bin indices */
+static const int *property_iatta(const struct alignment *aln, int is,
+                                 struct mdt_properties *prop,
+                                 const struct mdt_library *mlib, int ifi,
+                                 const struct mdt_feature *feat,
+                                 const struct libraries *libs)
+{
+  is--;
+  if (!prop[is].iatta) {
+    struct structure *struc = alignment_structure_get(aln, is);
+    struct sequence *seq = alignment_sequence_get(aln, is);
+    prop[is].iatta = g_malloc(sizeof(int) * struc->cd.natm);
+    atmcls_special(struc, seq, prop[is].iatta, mlib->atclass[0], mlib, libs);
+  }
+  return prop[is].iatta;
 }
 
 /** Get/calculate the array of atom accessibility bin indices */
@@ -218,8 +295,8 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                    seq2->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
                    feat->nbins, libs->igaptyp);
   case 79:
-    return itable(f_int1_pt(&struc1->iatta), struc1->cd.natm, ia1,
-                  feat->nbins);
+    return itable(property_iatta(aln, is1, prop, mlib, ifi, feat, libs),
+                  struc1->cd.natm, ia1, feat->nbins);
   case 80:
     return itable(property_iatmacc(aln, is1, prop, mlib, ifi, feat),
                   struc1->cd.natm, ia1, feat->nbins);

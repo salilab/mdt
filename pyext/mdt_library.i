@@ -17,3 +17,6 @@ struct mdt_library {
 
 struct mdt_library *mdt_library_new(void);
 void mdt_library_free(struct mdt_library *mlib);
+gboolean mdt_atom_classes_read(const gchar *filename,
+                               struct mdt_library *mlib, int natom,
+                               GError **err);

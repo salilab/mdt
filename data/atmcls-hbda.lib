@@ -14,54 +14,54 @@
 #                                Donor Acceptor 
 #                                  Valencies      Charge
 #
-ATMGRP 'N'
-  ATOM            '*'       'N'       1       1       0
-ATMGRP  'O'
-  ATOM            '*'       'O'       0       2       0
-ATMGRP  'SG'
-  ATOM            'CYS'     'SG'      1       0       0
-ATMGRP  'OD1/2'
-  ATOM            'ASP'     'OD1'     0       2       -0.5
-  ATOM            'ASP'     'OD2'     0       2       -0.5
-ATMGRP  'OE1/2'
-  ATOM            'GLU'     'OE1'     0       2       -0.5
-  ATOM            'GLU'     'OE2'     0       2       -0.5
-ATMGRP  'ND1'
-  ATOM            'HSD'     'ND1'     1       0        0
-ATMGRP  'NE2'
-  ATOM            'HSD'     'NE2'     1       0        0
-ATMGRP  'NZ'
-  ATOM            'LYS'     'NZ'      3       0       +1
-ATMGRP  'SD'
-  ATOM            'MET'     'SD'      0       0       0
-ATMGRP  'OD1'
-  ATOM            'ASN'     'OD1'     0       2       0
-ATMGRP  'ND2'
-  ATOM            'ASN'     'ND2'     2       1       0
-ATMGRP  'OE1'
-  ATOM            'GLN'     'OE1'     0       2       0
-ATMGRP  'NE2'
-  ATOM            'GLN'     'NE2'     2       1       0
-ATMGRP  'NE'
-  ATOM            'ARG'     'NE'      1       0       0
-ATMGRP  'NH1/2'
-  ATOM            'ARG'     'NH1'     2       0       +0.5
-  ATOM            'ARG'     'NH2'     2       0       +0.5
-ATMGRP  'OG'
-  ATOM            'SER'     'OG'      1       2       0
-ATMGRP  'OG1'
-  ATOM            'THR'     'OG1'     1       2       0
-ATMGRP  'NE1'
-  ATOM            'TRP'     'NE1'     1       0       0
-ATMGRP  'OH'
-  ATOM            'TYR'     'OH'      1       0       0
-ATMGRP  'SG2'
-  ATOM            'CSS'     'SG'      0       0       0
-ATMGRP  'NH3'
-  ATOM            '*'       'NH3'     2       0       +1
-ATMGRP  'OT1/2'
-  ATOM            '*'       'OT1'     0       2       -0.5
-  ATOM            '*'       'OT2'     0       2       -0.5
-ATMGRP  '*:*'
-  ATOM            '*'       '*'       0       0       0
-  ATOM            '*'       '*'       0       0       0
+ATMGRP 'N'                            1       1       0
+  ATOM            '*'       'N'
+ATMGRP  'O'                           0       2       0
+  ATOM            '*'       'O'
+ATMGRP  'SG'                          1       0       0
+  ATOM            'CYS'     'SG'
+ATMGRP  'OD1/2'                       0       2       -0.5
+  ATOM            'ASP'     'OD1'
+  ATOM            'ASP'     'OD2'
+ATMGRP  'OE1/2'                       0       2       -0.5
+  ATOM            'GLU'     'OE1'
+  ATOM            'GLU'     'OE2'
+ATMGRP  'ND1'                         1       0        0
+  ATOM            'HSD'     'ND1'
+ATMGRP  'NE2'                         1       0        0
+  ATOM            'HSD'     'NE2'
+ATMGRP  'NZ'                          3       0       +1
+  ATOM            'LYS'     'NZ'
+ATMGRP  'SD'                          0       0       0
+  ATOM            'MET'     'SD'
+ATMGRP  'OD1'                         0       2       0
+  ATOM            'ASN'     'OD1'
+ATMGRP  'ND2'                         2       1       0
+  ATOM            'ASN'     'ND2'
+ATMGRP  'OE1'                         0       2       0
+  ATOM            'GLN'     'OE1'
+ATMGRP  'NE2'                         2       1       0
+  ATOM            'GLN'     'NE2'
+ATMGRP  'NE'                          1       0       0
+  ATOM            'ARG'     'NE'
+ATMGRP  'NH1/2'                       2       0       +0.5
+  ATOM            'ARG'     'NH1'
+  ATOM            'ARG'     'NH2'
+ATMGRP  'OG'                          1       2       0
+  ATOM            'SER'     'OG'
+ATMGRP  'OG1'                         1       2       0
+  ATOM            'THR'     'OG1'
+ATMGRP  'NE1'                         1       0       0
+  ATOM            'TRP'     'NE1'
+ATMGRP  'OH'                          1       0       0
+  ATOM            'TYR'     'OH'
+ATMGRP  'SG2'                         0       0       0
+  ATOM            'CSS'     'SG'
+ATMGRP  'NH3'                         2       0       +1
+  ATOM            '*'       'NH3'
+ATMGRP  'OT1/2'                       0       2       -0.5
+  ATOM            '*'       'OT1'
+  ATOM            '*'       'OT2'
+ATMGRP  '*:*'                         0       0       0
+  ATOM            '*'       '*'
+  ATOM            '*'       '*'

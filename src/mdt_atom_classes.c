@@ -73,29 +73,8 @@ static void mod_g_scanner_unexp(GScanner *scanner, GTokenType expected_token,
                         NULL, NULL, TRUE);
 }
 
-static gboolean read_atmgrp(GScanner *scanner, GArray *classes, GArray **types,
-                            GError **err)
-{
-  if (g_scanner_get_next_token(scanner) == G_TOKEN_STRING) {
-    struct mdt_atom_class newclass;
-    if (classes->len > 0) {
-      struct mdt_atom_class *c = &g_array_index(classes, struct mdt_atom_class,
-                                                classes->len - 1);
-      c->ntypes = (*types)->len;
-      c->types = (struct mdt_atom_type *)g_array_free(*types, FALSE);
-      *types = g_array_new(FALSE, FALSE, sizeof(struct mdt_atom_type));
-    }
-    newclass.name = g_strdup(scanner->value.v_string);
-    g_array_append_val(classes, newclass);
-    return TRUE;
-  } else {
-    mod_g_scanner_unexp(scanner, G_TOKEN_STRING, NULL, NULL, err);
-    return FALSE;
-  }
-}
-
-static gboolean read_atom_hbond(GScanner *scanner, struct mdt_atom_type *atype,
-                                GError **err)
+static gboolean read_atmgrp_hbond(GScanner *scanner,
+                                  struct mdt_atom_class *aclass, GError **err)
 {
   gboolean retval = TRUE;
   int i;
@@ -117,17 +96,41 @@ static gboolean read_atom_hbond(GScanner *scanner, struct mdt_atom_type *atype,
     }
   }
   if (retval) {
-    atype->hb_donor = hbprop[0];
-    atype->hb_acceptor = hbprop[1];
-    atype->hb_charge = hbprop[2];
+    aclass->hb_donor = hbprop[0];
+    aclass->hb_acceptor = hbprop[1];
+    aclass->hb_charge = hbprop[2];
   }
   return retval;
 }
 
+static gboolean read_atmgrp(GScanner *scanner, GArray *classes, GArray **types,
+                            gboolean read_hbond, GError **err)
+{
+  if (g_scanner_get_next_token(scanner) == G_TOKEN_STRING) {
+    struct mdt_atom_class newclass;
+    if (classes->len > 0) {
+      struct mdt_atom_class *c = &g_array_index(classes, struct mdt_atom_class,
+                                                classes->len - 1);
+      c->ntypes = (*types)->len;
+      c->types = (struct mdt_atom_type *)g_array_free(*types, FALSE);
+      *types = g_array_new(FALSE, FALSE, sizeof(struct mdt_atom_type));
+    }
+    newclass.name = g_strdup(scanner->value.v_string);
+    if (read_hbond && !read_atmgrp_hbond(scanner, &newclass, err)) {
+      g_free(newclass.name);
+      return FALSE;
+    }
+    g_array_append_val(classes, newclass);
+    return TRUE;
+  } else {
+    mod_g_scanner_unexp(scanner, G_TOKEN_STRING, NULL, NULL, err);
+    return FALSE;
+  }
+}
+
 static gboolean read_atom(GScanner *scanner,
                           struct mdt_atom_class_list *atclass,
-                          GArray *classes, GArray *types, gboolean read_hbond,
-                          GError **err)
+                          GArray *classes, GArray *types, GError **err)
 {
   int i;
   struct mdt_atom_type atype;
@@ -149,9 +152,6 @@ static gboolean read_atom(GScanner *scanner,
       mod_g_scanner_unexp(scanner, G_TOKEN_STRING, NULL, NULL, err);
       retval = FALSE;
     }
-  }
-  if (retval && read_hbond) {
-    retval = read_atom_hbond(scanner, &atype, err);
   }
 
   if (retval) {
@@ -185,9 +185,9 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
   while (g_scanner_get_next_token(scanner) != G_TOKEN_EOF && retval) {
     if (scanner->token == G_TOKEN_SYMBOL) {
       if (GPOINTER_TO_INT(scanner->value.v_symbol) == 0) {
-        retval = read_atmgrp(scanner, classes, &types, err);
+        retval = read_atmgrp(scanner, classes, &types, read_hbond, err);
       } else {
-        retval = read_atom(scanner, atclass, classes, types, read_hbond, err);
+        retval = read_atom(scanner, atclass, classes, types, err);
       }
     } else {
       mod_g_scanner_unexp(scanner, G_TOKEN_SYMBOL, NULL, "ATOM or ATMGRP",

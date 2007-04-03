@@ -20,12 +20,6 @@ G_BEGIN_DECLS
 struct mdt_atom_type {
   /** Atom names */
   char **names;
-  /* Hydrogen bond donor valency */
-  float hb_donor;
-  /* Hydrogen bond acceptor valency */
-  float hb_acceptor;
-  /* Hydrogen bond charge */
-  float hb_charge;
 };
 
 /** Atom class, which can contain multiple atom types */
@@ -36,6 +30,12 @@ struct mdt_atom_class {
   struct mdt_atom_type *types;
   /** Class name */
   char *name;
+  /* Hydrogen bond donor valency */
+  float hb_donor;
+  /* Hydrogen bond acceptor valency */
+  float hb_acceptor;
+  /* Hydrogen bond charge */
+  float hb_charge;
 };
 
 /** List of atom classes */

@@ -22,12 +22,7 @@ static float get_ndon_acc(const struct mdt_atom_class_list *atclass, int iat,
                           gboolean acceptor)
 {
   struct mdt_atom_class *c = &atclass->classes[iat];
-  if (c->ntypes == 0) {
-    return 0.;
-  } else {
-    struct mdt_atom_type *t = &c->types[0];
-    return (acceptor ? ABS(t->hb_acceptor) : ABS(t->hb_donor));
-  }
+  return (acceptor ? ABS(c->hb_acceptor) : ABS(c->hb_donor));
 }
 
 /** Return the indices of the "top-left" corner of the MDT. This must be freed

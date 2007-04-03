@@ -13,7 +13,7 @@ struct mdt_library {
 %mutable;
   int deltai, deltaj;
   float hbond_cutoff;
-  gboolean deltai_ali, deltaj_ali;
+  gboolean special_atoms, deltai_ali, deltaj_ali;
 };
 
 struct mdt_library *mdt_library_new(void);

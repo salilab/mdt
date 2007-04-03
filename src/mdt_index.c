@@ -196,7 +196,7 @@ static gboolean atmcls_special(struct structure *struc,
     g_free(atmnam);
   }
 
-  if (mlib->base.special_atoms) {
+  if (mlib->special_atoms) {
     int *iss, nss, ierr, *iatmr1 = f_int1_pt(&struc->cd.iatmr1);
     /* Take case of the atoms in the disulfide bonded Cys residues: */
     mod_find_ss(&iss, &nss, struc, seq, &ierr);

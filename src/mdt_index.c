@@ -165,6 +165,29 @@ static void atmcls_special(struct structure *struc, const struct sequence *seq,
     iatta[i] = iatmcls(irest, atmnam, atclass, libs);
     g_free(atmnam);
   }
+
+  if (mlib->base.special_atoms) {
+    int *iatmr1 = f_int1_pt(&struc->cd.iatmr1);
+    /* also, the first N in the chain is different: */
+    for (i = 0; i < iatmr1[0]; i++) {
+      char *atmnam = get_coord_atmnam(&struc->cd, i);
+      if (strcmp(atmnam, "N") == 0) {
+        iatta[i] = iatmcls(0, "NH3", atclass, libs);
+      }
+      g_free(atmnam);
+    }
+
+    /* also, the O in the last residue are different: */
+    for (i = iatmr1[seq->nres - 1]; i < struc->cd.natm; i++) {
+      char *atmnam = get_coord_atmnam(&struc->cd, i);
+      if (strcmp(atmnam, "OT") == 0 || strcmp(atmnam, "OT1") == 0
+          || strcmp(atmnam, "OT2") == 0 || strcmp(atmnam, "OXT") == 0
+          || strcmp(atmnam, "O") == 0) {
+        iatta[i] = iatmcls(0, "OT1", atclass, libs);
+      }
+      g_free(atmnam);
+    }
+  }
 }
 
 static int *make_atom_type(const struct alignment *aln, int is,

@@ -150,11 +150,41 @@ static int iatmcls(int irestyp, const char *atmnam,
   return 0;
 }
 
-static void atmcls_special(struct structure *struc, const struct sequence *seq,
-                           int iatta[],
-                           const struct mdt_atom_class_list *atclass,
-                           const struct mdt_library *mlib,
-                           const struct libraries *libs)
+static void atmclass_disulfide(const int iss[], int nss,
+                               const struct structure *struc,
+                               const struct sequence *seq,
+                               const struct mdt_atom_class_list *atclass,
+                               int iatta[], const struct libraries *libs)
+{
+  int cycint, i, *iatmr1;
+
+  cycint = residue_type_from_name("CSS", libs);
+
+  iatmr1 = f_int1_pt(&struc->cd.iatmr1);
+  for (i = 0; i < nss; i++) {
+    int ir1;
+    for (ir1 = 0; ir1 < 2; i++) {
+      int iatm, istart, iend, ir = iss[i * 2 + ir1];
+      istart = iatmr1[ir - 1] - 1;
+      if (ir < seq->nres) {
+        iend = iatmr1[ir];
+      } else {
+        iend = struc->cd.natm;
+      }
+      for (iatm = istart; iatm < iend; iatm++) {
+        char *atmnam = get_coord_atmnam(&struc->cd, iatm);
+        iatta[iatm] = iatmcls(cycint, atmnam, atclass, libs);
+        g_free(atmnam);
+      }
+    }
+  }
+}
+
+static gboolean atmcls_special(struct structure *struc,
+                               const struct sequence *seq, int iatta[],
+                               const struct mdt_atom_class_list *atclass,
+                               const struct mdt_library *mlib,
+                               const struct libraries *libs, GError **err)
 {
   int i, *irestyp, *iresatm;
   iresatm = f_int1_pt(&struc->cd.iresatm);
@@ -167,7 +197,18 @@ static void atmcls_special(struct structure *struc, const struct sequence *seq,
   }
 
   if (mlib->base.special_atoms) {
-    int *iatmr1 = f_int1_pt(&struc->cd.iatmr1);
+    int *iss, nss, ierr, *iatmr1 = f_int1_pt(&struc->cd.iatmr1);
+    /* Take case of the atoms in the disulfide bonded Cys residues: */
+    mod_find_ss(&iss, &nss, struc, seq, &ierr);
+    if (ierr != 0) {
+      handle_modeller_error(err);
+      return FALSE;
+    }
+    if (nss > 0) {
+      atmclass_disulfide(iss, nss, struc, seq, atclass, iatta, libs);
+      g_free(iss);
+    }
+
     /* also, the first N in the chain is different: */
     for (i = 0; i < iatmr1[0]; i++) {
       char *atmnam = get_coord_atmnam(&struc->cd, i);
@@ -188,30 +229,37 @@ static void atmcls_special(struct structure *struc, const struct sequence *seq,
       g_free(atmnam);
     }
   }
+  return TRUE;
 }
 
 static int *make_atom_type(const struct alignment *aln, int is,
                                  const struct mdt_library *mlib,
                                  const struct mdt_atom_class_list *atclass,
-                                 int ifi, const struct libraries *libs)
+                                 int ifi, const struct libraries *libs,
+                                 GError **err)
 {
   int *iatta;
   struct structure *struc = alignment_structure_get(aln, is);
   struct sequence *seq = alignment_sequence_get(aln, is);
   iatta = g_malloc(sizeof(int) * struc->cd.natm);
-  atmcls_special(struc, seq, iatta, atclass, mlib, libs);
-  return iatta;
+  if (!atmcls_special(struc, seq, iatta, atclass, mlib, libs, err)) {
+    g_free(iatta);
+    return NULL;
+  } else {
+    return iatta;
+  }
 }
 
 /** Get/calculate the array of atom type bin indices */
 static const int *property_iatta(const struct alignment *aln, int is,
                                  struct mdt_properties *prop,
                                  const struct mdt_library *mlib, int ifi,
-                                 const struct libraries *libs)
+                                 const struct libraries *libs, GError **err)
 {
   is--;
   if (!prop[is].iatta) {
-    prop[is].iatta = make_atom_type(aln, is, mlib, mlib->atclass[0], ifi, libs);
+    prop[is].iatta = make_atom_type(aln, is, mlib, mlib->atclass[0], ifi, libs,
+                                    err);
   }
   return prop[is].iatta;
 }
@@ -220,30 +268,36 @@ static const int *property_iatta(const struct alignment *aln, int is,
 static const int *property_hb_iatta(const struct alignment *aln, int is,
                                     struct mdt_properties *prop,
                                     const struct mdt_library *mlib, int ifi,
-                                    const struct libraries *libs)
+                                    const struct libraries *libs, GError **err)
 {
   is--;
   if (!prop[is].hb_iatta) {
-    prop[is].hb_iatta = make_atom_type(aln, is, mlib, mlib->hbond, ifi, libs);
+    prop[is].hb_iatta = make_atom_type(aln, is, mlib, mlib->hbond, ifi, libs,
+                                       err);
   }
   return prop[is].hb_iatta;
 }
 
 /** Get/calculate the hydrogen bond satisfaction index */
-static float property_hbpot(const struct alignment *aln, int is,
-                            struct mdt_properties *prop,
-                            const struct mdt_library *mlib, int ifi,
-                            const struct libraries *libs)
+static gboolean property_hbpot(const struct alignment *aln, int is,
+                               struct mdt_properties *prop,
+                               const struct mdt_library *mlib, int ifi,
+                               const struct libraries *libs, float *hbpot,
+                               GError **err)
 {
   struct structure *struc = alignment_structure_get(aln, is);
-  const int *iatta = property_hb_iatta(aln, is, prop, mlib, ifi, libs);
+  const int *iatta = property_hb_iatta(aln, is, prop, mlib, ifi, libs, err);
+  if (!iatta) {
+    return FALSE;
+  }
   is--;
   if (!prop[is].hbpot) {
     prop[is].hbpot = g_malloc(sizeof(float));
     *(prop[is].hbpot) = hb_satisfaction(&struc->cd, iatta, mlib->hbond,
                                         mlib->hbond_cutoff);
   }
-  return *(prop[is].hbpot);
+  *hbpot = *(prop[is].hbpot);
+  return TRUE;
 }
 
 /** Get/calculate the array of atom accessibility bin indices */
@@ -337,6 +391,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
 {
   int ret, ierr = 0;
   const int *binprop;
+  float fprop;
   struct structure *struc1, *struc2;
   struct sequence *seq1, *seq2;
   struct mdt_feature *feat = &mlib->base.features[ifi-1];
@@ -362,8 +417,11 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                    seq2->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
                    feat->nbins, libs->igaptyp);
   case 79:
-    return itable(property_iatta(aln, is1, prop, mlib, ifi, libs),
-                  struc1->cd.natm, ia1, feat->nbins);
+    binprop = property_iatta(aln, is1, prop, mlib, ifi, libs, err);
+    if (!binprop) {
+      return 0.;
+    }
+    return itable(binprop, struc1->cd.natm, ia1, feat->nbins);
   case 80:
     return itable(property_iatmacc(aln, is1, prop, mlib, ifi, feat),
                   struc1->cd.natm, ia1, feat->nbins);
@@ -376,22 +434,36 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 82: case 103:
     return idist0(ia1, ia1p, struc1, mlib, ifi, feat->nbins);
   case 83:
-    return itable(property_iatta(aln, is1, prop, mlib, ifi, libs),
-                  struc1->cd.natm, ia1p, feat->nbins);
+    binprop = property_iatta(aln, is1, prop, mlib, ifi, libs, err);
+    if (!binprop) {
+      return 0.;
+    }
+    return itable(binprop, struc1->cd.natm, ia1p, feat->nbins);
   case 84:
-    return numb_hda(ia1, property_hb_iatta(aln, is1, prop, mlib, ifi, libs),
-                    &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
+    binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
+    if (!binprop) {
+      return 0.;
+    }
+    return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     0, feat->nbins);
   case 85:
-    return numb_hda(ia1, property_hb_iatta(aln, is1, prop, mlib, ifi, libs),
-                    &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
+    binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
+    if (!binprop) {
+      return 0.;
+    }
+    return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     1, feat->nbins);
   case 86:
-    return iclsbin(property_hbpot(aln, is1, prop, mlib, ifi, libs), mlib, ifi,
-                   feat->nbins - 1);
+    if (!property_hbpot(aln, is1, prop, mlib, ifi, libs, &fprop, err)) {
+      return 0.;
+    }
+    return iclsbin(fprop, mlib, ifi, feat->nbins - 1);
   case 87:
-    return numb_hda(ia1, property_hb_iatta(aln, is1, prop, mlib, ifi, libs),
-                    &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
+    binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
+    if (!binprop) {
+      return 0.;
+    }
+    return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     2, feat->nbins);
   case 93: case 95: case 97: case 99:
     return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);

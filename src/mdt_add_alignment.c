@@ -396,12 +396,14 @@ static gboolean gen_bonds(struct mdt_type *mdt, const struct mdt_library *mlib,
                           const struct energy_data *edat,
                           struct mdt_properties *prop, GError **err)
 {
+  const struct mdt_bond_list *bonds;
   struct structure *struc;
   int ibnd1, is2;
 
   struc = alignment_structure_get(aln, is1-1);
   is2 = is1;
-  for (ibnd1 = 1; ibnd1 <= structure_nbonds_get(struc, npnt); ibnd1++) {
+  bonds = property_bonds(aln, is1, prop, mlib, npnt, libs);
+  for (ibnd1 = 0; ibnd1 < bonds->nbonds; ibnd1++) {
     if (!update_mdt(mdt, mlib, aln, is1, 1, is2, 1, 1, 1, 1, 1, 1, 1, ibnd1,
                     1, 1, 1, 1, libs, edat, prop, err)) {
         return FALSE;
@@ -570,7 +572,8 @@ static gboolean update_stats(struct mdt_type *mdt,
   /* Scan over all bonds: */
   case 10:
     if (acceptd[0]) {
-      if (!gen_bonds(mdt, mlib, aln, 1, 2, libs, edat, prop, err)) {
+      if (!gen_bonds(mdt, mlib, aln, 1, MDT_BOND_TYPE_BOND, libs, edat, prop,
+                     err)) {
         return FALSE;
       }
     }
@@ -579,7 +582,8 @@ static gboolean update_stats(struct mdt_type *mdt,
   /* Scan over all angles: */
   case 11:
     if (acceptd[0]) {
-      if (!gen_bonds(mdt, mlib, aln, 1, 3, libs, edat, prop, err)) {
+      if (!gen_bonds(mdt, mlib, aln, 1, MDT_BOND_TYPE_ANGLE, libs, edat, prop,
+                     err)) {
         return FALSE;
       }
     }
@@ -588,7 +592,8 @@ static gboolean update_stats(struct mdt_type *mdt,
   /* Scan over all dihedrals: */
   case 12:
     if (acceptd[0]) {
-      if (!gen_bonds(mdt, mlib, aln, 1, 4, libs, edat, prop, err)) {
+      if (!gen_bonds(mdt, mlib, aln, 1, MDT_BOND_TYPE_DIHEDRAL, libs, edat,
+                     prop, err)) {
         return FALSE;
       }
     }

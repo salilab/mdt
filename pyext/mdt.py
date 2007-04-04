@@ -127,12 +127,8 @@ class bond_classes(object):
 
     def read(self, filename):
         """Read bond class information from a file"""
-        if self.__n_atom == 1:
-            return _mdt.mdt_atom_classes_read(filename, self._mlib.modpt, 
-                                              self.__n_atom)
-        else:
-            return _modeller.readclass_mdt_library(self._mlib.basept, filename,
-                                                   self.__n_atom)
+        return _mdt.mdt_atom_classes_read(filename, self._mlib.modpt, 
+                                          self.__n_atom)
 
 
 

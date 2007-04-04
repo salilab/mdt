@@ -1,6 +1,6 @@
 /** \file mdt_index.h      Functions to calculate MDT indices.
  *
- *             Part of MODELLER, Copyright(c) 1989-2007 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2007 Andrej Sali
  */
 
 #ifndef __MDT_INDEX_H
@@ -17,8 +17,32 @@
 
 G_BEGIN_DECLS
 
+/** 3 bond types: bond, angle, dihedral */
+#define MDT_BOND_TYPE_BOND     0
+#define MDT_BOND_TYPE_ANGLE    1
+#define MDT_BOND_TYPE_DIHEDRAL 2
+#define N_MDT_BOND_TYPES       3
+
+/** A single bond/angle/dihedral in a template structure */
+struct mdt_bond {
+  /** Indices of all atoms in the bond */
+  int iata[4];
+  /** Bond type index */
+  int bndgrp;
+};
+
+/** A list of bonds */
+struct mdt_bond_list {
+  /** Number of bonds */
+  int nbonds;
+  /** The bonds */
+  struct mdt_bond *bonds;
+};
+
 /** Properties for calculating MDT indices */
 struct mdt_properties {
+  /** Lists of bonds */
+  struct mdt_bond_list *bonds[N_MDT_BOND_TYPES];
   /** Bin indices for hydrogen bond atom type */
   int *hb_iatta;
   /** Hydrogen bond satisfaction index */
@@ -49,6 +73,14 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                  const struct libraries *libs,
                  const struct energy_data *edat,
                  struct mdt_properties *prop, GError **err);
+
+/** Get/calculate the list of all bonds for a structure. */
+G_GNUC_INTERNAL
+const struct mdt_bond_list *property_bonds(const struct alignment *aln, int is,
+                                           struct mdt_properties *prop,
+                                           const struct mdt_library *mlib,
+                                           int bondtype,
+                                           const struct libraries *libs);
 
 G_END_DECLS
 

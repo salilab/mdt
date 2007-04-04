@@ -9,14 +9,18 @@
 #include "util.h"
 #include "mdt_index.h"
 #include "mdt_hydrogen_bonds.h"
+#include "mdt_stereo.h"
 
 /** Make a new mdt_properties structure */
 struct mdt_properties *mdt_properties_new(const struct alignment *aln)
 {
   struct mdt_properties *prop;
-  int i;
+  int i, j;
   prop = g_malloc(sizeof(struct mdt_properties) * aln->naln);
   for (i = 0; i < aln->naln; i++) {
+    for (j = 0; j < N_MDT_BOND_TYPES; j++) {
+      prop[i].bonds[j] = NULL;
+    }
     prop[i].hb_iatta = NULL;
     prop[i].hbpot = NULL;
     prop[i].iatta = NULL;
@@ -30,8 +34,14 @@ struct mdt_properties *mdt_properties_new(const struct alignment *aln)
 void mdt_properties_free(struct mdt_properties *prop,
                          const struct alignment *aln)
 {
-  int i;
+  int i, j;
   for (i = 0; i < aln->naln; i++) {
+    for (j = 0; j < N_MDT_BOND_TYPES; j++) {
+      if (prop[i].bonds[j]) {
+        g_free(prop[i].bonds[j]->bonds);
+      }
+      g_free(prop[i].bonds[j]);
+    }
     g_free(prop[i].hb_iatta);
     g_free(prop[i].hbpot);
     g_free(prop[i].iatta);
@@ -198,7 +208,7 @@ static gboolean atmcls_special(struct structure *struc,
 
   if (mlib->special_atoms) {
     int *iss, nss, ierr, *iatmr1 = f_int1_pt(&struc->cd.iatmr1);
-    /* Take case of the atoms in the disulfide bonded Cys residues: */
+    /* Take care of the atoms in the disulfide bonded Cys residues: */
     mod_find_ss(&iss, &nss, struc, seq, &ierr);
     if (ierr != 0) {
       handle_modeller_error(err);
@@ -353,6 +363,34 @@ static const int *property_ifatmacc(const struct alignment *aln, int is,
   return prop[is].ifatmacc;
 }
 
+/** Get/calculate the list of all bonds for a structure. */
+const struct mdt_bond_list *property_bonds(const struct alignment *aln, int is,
+                                           struct mdt_properties *prop,
+                                           const struct mdt_library *mlib,
+                                           int bondtype,
+                                           const struct libraries *libs)
+{
+  is--;
+  if (!prop[is].bonds[bondtype]) {
+    struct sequence *seq = alignment_sequence_get(aln, is);
+    struct structure *struc = alignment_structure_get(aln, is);
+    prop[is].bonds[bondtype] = get_stereo(struc, seq,
+                                          mlib->atclass[bondtype + 1],
+                                          bondtype, libs);
+  }
+  return prop[is].bonds[bondtype];
+}
+
+/** Get a single bond from a structure */
+const struct mdt_bond *property_one_bond(const struct alignment *aln, int is,
+                                         struct mdt_properties *prop,
+                                         const struct mdt_library *mlib,
+                                         int bondtype, int ibnd1,
+                                         const struct libraries *libs)
+{
+  return &property_bonds(aln, is, prop, mlib, bondtype, libs)->bonds[ibnd1];
+}
+
 static float dist1(float x1, float y1, float z1, float x2, float y2, float z2)
 {
   float xd, yd, zd;
@@ -361,6 +399,76 @@ static float dist1(float x1, float y1, float z1, float x2, float y2, float z2)
   zd = z1 - z2;
   return sqrt(xd * xd + yd * yd + zd * zd);
 }
+
+static float angle1(float x1, float y1, float z1, float x2, float y2, float z2,
+                    float x3, float y3, float z3)
+{
+  static const float tiny = 1.0e-15;
+  float d1, d2, v1x, v1y, v1z, v2x, v2y, v2z, scalprod, sizeprod, div;
+  v1x = x1-x2;
+  v1y = y1-y2;
+  v1z = z1-z2;
+  v2x = x3-x2;
+  v2y = y3-y2;
+  v2z = z3-z2;
+  d1 = sqrt(v1x * v1x + v1y * v1y + v1z * v1z);
+  d2 = sqrt(v2x * v2x + v2y * v2y + v2z * v2z);
+  scalprod = v1x*v2x+v1y*v2y+v1z*v2z;
+  sizeprod = d1 * d2;
+  div = (sizeprod > tiny ? scalprod / sizeprod : 0.0);
+  div = CLAMP(div, -1.0, 1.0);
+  return acos(div) * 180.0 / G_PI;
+}
+
+static float dihedral1(float x1, float y1, float z1, float x2, float y2,
+                       float z2, float x3, float y3, float z3, float x4,
+                       float y4, float z4)
+{
+  double rt[4][3], l1[3], l2[3], l3[3], xt1[3], xt2[3], leng1, leng2, dot1, ang,
+         sign, norm;
+
+  rt[0][0]=x1;
+  rt[0][1]=y1;
+  rt[0][2]=z1;
+  rt[1][0]=x2;
+  rt[1][1]=y2;
+  rt[1][2]=z2;
+  rt[2][0]=x3;
+  rt[2][1]=y3;
+  rt[2][2]=z3;
+  rt[3][0]=x4;
+  rt[3][1]=y4;
+  rt[3][2]=z4;
+
+  l1[0]=rt[1][0]-rt[0][0];
+  l1[1]=rt[1][1]-rt[0][1];
+  l1[2]=rt[1][2]-rt[0][2];
+  l2[0]=rt[2][0]-rt[1][0];
+  l2[1]=rt[2][1]-rt[1][1];
+  l2[2]=rt[2][2]-rt[1][2];
+  l3[0]=rt[3][0]-rt[2][0];
+  l3[1]=rt[3][1]-rt[2][1];
+  l3[2]=rt[3][2]-rt[2][2];
+
+  xt1[0]=l2[1]*l1[2]-l2[2]*l1[1];
+  xt1[1]=l2[2]*l1[0]-l2[0]*l1[2];
+  xt1[2]=l2[0]*l1[1]-l2[1]*l1[0];
+  xt2[0]=l3[1]*l2[2]-l3[2]*l2[1];
+  xt2[1]=l3[2]*l2[0]-l3[0]*l2[2];
+  xt2[2]=l3[0]*l2[1]-l3[1]*l2[0];
+  leng1 = xt1[0] * xt1[0] + xt1[1] * xt1[1] + xt1[2] * xt1[2];
+  leng2 = xt2[0] * xt2[0] + xt2[1] * xt2[1] + xt2[2] * xt2[2];
+  dot1 = xt1[0]*xt2[0]+xt1[1]*xt2[1]+xt1[2]*xt2[2];
+  norm = dot1/sqrt(leng1*leng2);
+  norm = CLAMP(norm, -1.0, 1.0);
+  ang = acos(norm);
+  sign=xt1[0]*l3[0]+xt1[1]*l3[1]+xt1[2]*l3[2];
+  if (sign < 0.0) {
+    ang = -ang;
+  }
+  return -ang * 180.0 / G_PI;
+}
+
 
 /** Return the bin index for the distance between two specified atoms in the
     same protein. */
@@ -381,6 +489,43 @@ static int idist0(int ia1, int ia1p, const struct structure *struc,
   }
 }
 
+/** Return the bin index for the angle between three specified atoms in the
+    same protein. */
+static int iangle0(int ia1, int ia2, int ia3, const struct structure *struc,
+                   const struct mdt_library *mlib, int ifi, int nrang)
+{
+  if (ia1 > 0 && ia2 > 0 && ia3 > 0) {
+    float d, *x, *y, *z;
+    x = f_float1_pt(&struc->cd.x);
+    y = f_float1_pt(&struc->cd.y);
+    z = f_float1_pt(&struc->cd.z);
+    d = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
+               y[ia3], z[ia3]);
+    return iclsbin(d, mlib, ifi, nrang);
+  } else {
+    return nrang + 1;
+  }
+}
+
+/** Return the bin index for the dihedral angle between four specified atoms
+    in the same protein. */
+static int idihedral0(int ia1, int ia2, int ia3, int ia4,
+                      const struct structure *struc,
+                      const struct mdt_library *mlib, int ifi, int nrang)
+{
+  if (ia1 > 0 && ia2 > 0 && ia3 > 0 && ia4 > 0) {
+    float d, *x, *y, *z;
+    x = f_float1_pt(&struc->cd.x);
+    y = f_float1_pt(&struc->cd.y);
+    z = f_float1_pt(&struc->cd.z);
+    d = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
+                  y[ia3], z[ia3], x[ia4], y[ia4], z[ia4]);
+    return iclsbin(d, mlib, ifi, nrang);
+  } else {
+    return nrang + 1;
+  }
+}
+
 int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                  int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,
                  int ia1p, const struct mdt_library *mlib, int ip2,
@@ -394,6 +539,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   float fprop;
   struct structure *struc1, *struc2;
   struct sequence *seq1, *seq2;
+  const struct mdt_bond *bond;
   struct mdt_feature *feat = &mlib->base.features[ifi-1];
   struc1 = alignment_structure_get(aln, is1-1);
   struc2 = alignment_structure_get(aln, is2-1);
@@ -469,6 +615,33 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);
   case 94: case 96: case 98: case 100:
     return itable(f_int1_pt(&struc2->iacc), seq2->nres, ir2, feat->nbins);
+  case 109:
+    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
+                             libs);
+    return CLAMP(bond->bndgrp, 1, feat->nbins);
+  case 110:
+    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
+                             libs);
+    return idist0(bond->iata[0] + 1, bond->iata[1] + 1, struc1, mlib, ifi,
+                  feat->nbins);
+  case 111:
+    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_ANGLE, ibnd1,
+                             libs);
+    return CLAMP(bond->bndgrp, 1, feat->nbins);
+  case 112:
+    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_ANGLE, ibnd1,
+                             libs);
+    return iangle0(bond->iata[0], bond->iata[1], bond->iata[2], struc1, mlib,
+                   ifi, feat->nbins);
+  case 113:
+    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_DIHEDRAL,
+                             ibnd1, libs);
+    return CLAMP(bond->bndgrp, 1, feat->nbins);
+  case 114:
+    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_DIHEDRAL,
+                             ibnd1, libs);
+    return idihedral0(bond->iata[0], bond->iata[1], bond->iata[2],
+                      bond->iata[3], struc1, mlib, ifi, feat->nbins);
   default:
     ret = mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
                     &mlib->base, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, libs, edat,

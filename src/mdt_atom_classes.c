@@ -124,13 +124,17 @@ static gboolean read_atmgrp(GScanner *scanner, GArray *classes, GArray **types,
 
 static gboolean read_atom(GScanner *scanner,
                           struct mdt_atom_class_list *atclass,
-                          GArray *classes, GArray *types, GError **err)
+                          GArray *classes, GArray *types, const char *sym[2],
+                          GError **err)
 {
   int i;
   struct mdt_atom_type atype;
   gboolean retval = TRUE;
   if (classes->len == 0) {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, "ATOM before ATMGRP");
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                "%s:%d:%d: %s line encountered without a preceding %s line",
+                scanner->input_name, g_scanner_cur_line(scanner),
+                g_scanner_cur_position(scanner), sym[1], sym[0]);
     return FALSE;
   }
 
@@ -181,11 +185,12 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
       if (GPOINTER_TO_INT(scanner->value.v_symbol) == 0) {
         retval = read_atmgrp(scanner, classes, &types, read_hbond, err);
       } else {
-        retval = read_atom(scanner, atclass, classes, types, err);
+        retval = read_atom(scanner, atclass, classes, types, sym, err);
       }
     } else {
-      mod_g_scanner_unexp(scanner, G_TOKEN_SYMBOL, NULL, "ATOM or ATMGRP",
-                          err);
+      char *symbols = g_strdup_printf("%s or %s", sym[0], sym[1]);
+      mod_g_scanner_unexp(scanner, G_TOKEN_SYMBOL, NULL, symbols, err);
+      g_free(symbols);
       retval = FALSE;
     }
   }

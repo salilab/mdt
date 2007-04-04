@@ -245,6 +245,40 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m2[145], 24.0, 0.0005)
         self.assertEqual(m2.shape, (289,))
 
+    def test_feature_triplet_type(self):
+        """Check triplet type features"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.triplet_classes.read('data/trpcls.lib')
+        m1 = mdt.mdt(mlib, features=101)
+        m2 = mdt.mdt(mlib, features=102)
+        m3 = mdt.mdt(mlib, features=103)
+        m4 = mdt.mdt(mlib, features=104)
+        m5 = mdt.mdt(mlib, features=106)
+        aln = alignment(env, file='test/data/tiny.ali')
+        for m in (m1, m2, m3, m4, m5):
+            m.add_alignment(aln)
+        self.assertInTolerance(m1[0], 1.0, 0.0005)
+        self.assertInTolerance(m1[1], 0.0, 0.0005)
+        self.assertInTolerance(m1[2], 1.0, 0.0005)
+        self.assertEqual(m1.shape, (236,))
+        self.assertInTolerance(m2[0], 60.0, 0.0005)
+        self.assertInTolerance(m2[1], 0.0, 0.0005)
+        self.assertInTolerance(m2[2], 60.0, 0.0005)
+        self.assertEqual(m2.shape, (236,))
+        self.assertInTolerance(m3[0], 0.0, 0.0005)
+        self.assertInTolerance(m3[1], 82.0, 0.0005)
+        self.assertInTolerance(m3[2], 226.0, 0.0005)
+        self.assertEqual(m3.shape, (10,))
+        self.assertInTolerance(m4[0], 479.0, 0.0005)
+        self.assertInTolerance(m4[1], 806.0, 0.0005)
+        self.assertInTolerance(m4[2], 471.0, 0.0005)
+        self.assertEqual(m4.shape, (7,))
+        self.assertInTolerance(m5[0], 556.0, 0.0005)
+        self.assertInTolerance(m5[1], 642.0, 0.0005)
+        self.assertInTolerance(m5[2], 522.0, 0.0005)
+        self.assertEqual(m5.shape, (7,))
+
     def test_feature_alpha_dihedral(self):
         """Check alpha dihedral feature"""
         m = self.get_test_mdt(features=88)

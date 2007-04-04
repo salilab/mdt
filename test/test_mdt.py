@@ -207,6 +207,44 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m2[44], 10.0, 0.0005)
         self.assertEqual(m2.shape, (201,))
 
+    def test_feature_angle_type(self):
+        """Check angle type features"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.angle_classes.read('data/anggrp.lib')
+        m = mdt.mdt(mlib, features=111)
+        m2 = mdt.mdt(mlib, features=112)
+        aln = alignment(env, file='test/data/alignment.ali')
+        m.add_alignment(aln)
+        m2.add_alignment(aln)
+        self.assertInTolerance(m[0], 7.0, 0.0005)
+        self.assertInTolerance(m[7], 9.0, 0.0005)
+        self.assertInTolerance(m[15], 11.0, 0.0005)
+        self.assertEqual(m.shape, (236,))
+        self.assertInTolerance(m2[176], 49.0, 0.0005)
+        self.assertInTolerance(m2[177], 42.0, 0.0005)
+        self.assertInTolerance(m2[178], 38.0, 0.0005)
+        self.assertEqual(m2.shape, (289,))
+
+    def test_feature_dihedral_type(self):
+        """Check dihedral type features"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.dihedral_classes.read('data/impgrp.lib')
+        m = mdt.mdt(mlib, features=113)
+        m2 = mdt.mdt(mlib, features=114)
+        aln = alignment(env, file='test/data/alignment.ali')
+        m.add_alignment(aln)
+        m2.add_alignment(aln)
+        self.assertInTolerance(m[0], 7.0, 0.0005)
+        self.assertInTolerance(m[2], 9.0, 0.0005)
+        self.assertInTolerance(m[4], 11.0, 0.0005)
+        self.assertEqual(m.shape, (79,))
+        self.assertInTolerance(m2[143], 60.0, 0.0005)
+        self.assertInTolerance(m2[144], 53.0, 0.0005)
+        self.assertInTolerance(m2[145], 24.0, 0.0005)
+        self.assertEqual(m2.shape, (289,))
+
     def test_feature_alpha_dihedral(self):
         """Check alpha dihedral feature"""
         m = self.get_test_mdt(features=88)

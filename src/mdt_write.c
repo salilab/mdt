@@ -16,7 +16,7 @@ static void write_mdt_header(FILE *fp, const struct mdt_type *mdt,
   int i;
   char *version = get_mod_short_version();
 
-  fprintf(fp, "REAL OUTPUT OF PROGRAM:  ** MODELLER %s **\n\n\n", version);
+  fprintf(fp, "REAL OUTPUT OF PROGRAM:  ** MDT %s **\n\n\n", version);
   fprintf(fp, "Number of alignments                 : %14d\n"
               "Number of proteins in the alignments : %14d\n"
               "Number of proteins or their pairs    : %14d\n"

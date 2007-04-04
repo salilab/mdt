@@ -1,6 +1,6 @@
 /** \file util.h           MDT utility functions.
  *
- *             Part of MODELLER, Copyright(c) 1989-2006 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2007 Andrej Sali
  */
 
 #ifndef __MDT_UTIL_H

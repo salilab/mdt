@@ -1,6 +1,6 @@
 /** \file util.c           MDT utility functions
  *
- *             Part of MDT, Copyright(c) 1989-2006 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2007 Andrej Sali
  */
 
 #include <math.h>

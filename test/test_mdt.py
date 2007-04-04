@@ -188,6 +188,25 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[1], 39.0, 1.0005)
         self.assertInTolerance(m[2], 35.0, 2.0005)
 
+    def test_feature_bond_type(self):
+        """Check bond type features"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.bond_classes.read('data/bndgrp.lib')
+        m = mdt.mdt(mlib, features=109)
+        m2 = mdt.mdt(mlib, features=110)
+        aln = alignment(env, file='test/data/alignment.ali')
+        m.add_alignment(aln)
+        m2.add_alignment(aln)
+        self.assertInTolerance(m[0], 7.0, 0.0005)
+        self.assertInTolerance(m[5], 9.0, 0.0005)
+        self.assertInTolerance(m[19], 14.0, 0.0005)
+        self.assertEqual(m.shape, (174,))
+        self.assertInTolerance(m2[0], 0.0, 0.0005)
+        self.assertInTolerance(m2[43], 3.0, 0.0005)
+        self.assertInTolerance(m2[44], 10.0, 0.0005)
+        self.assertEqual(m2.shape, (201,))
+
     def test_feature_alpha_dihedral(self):
         """Check alpha dihedral feature"""
         m = self.get_test_mdt(features=88)

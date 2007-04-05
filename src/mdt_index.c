@@ -711,9 +711,8 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return idihedral0(bond->iata[0], bond->iata[1], bond->iata[2],
                       bond->iata[3], struc1, mlib, ifi, feat->nbins);
   default:
-    ret = mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
-                    &mlib->base, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, libs, edat,
-                    &ierr);
+    ret = mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, &mlib->base,
+                    ip2, is3, ir3, ir3p, libs, edat, &ierr);
     if (ierr) {
       handle_modeller_error(err);
     }

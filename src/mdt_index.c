@@ -10,6 +10,7 @@
 #include "mdt_index.h"
 #include "mdt_hydrogen_bonds.h"
 #include "mdt_stereo.h"
+#include "mdt_triplets.h"
 
 /** Make a new mdt_properties structure */
 struct mdt_properties *mdt_properties_new(const struct alignment *aln)
@@ -21,6 +22,7 @@ struct mdt_properties *mdt_properties_new(const struct alignment *aln)
     for (j = 0; j < N_MDT_BOND_TYPES; j++) {
       prop[i].bonds[j] = NULL;
     }
+    prop[i].triplets = NULL;
     prop[i].hb_iatta = NULL;
     prop[i].hbpot = NULL;
     prop[i].iatta = NULL;
@@ -36,12 +38,19 @@ void mdt_properties_free(struct mdt_properties *prop,
 {
   int i, j;
   for (i = 0; i < aln->naln; i++) {
+    struct structure *struc = alignment_structure_get(aln, i);
     for (j = 0; j < N_MDT_BOND_TYPES; j++) {
       if (prop[i].bonds[j]) {
         g_free(prop[i].bonds[j]->bonds);
       }
       g_free(prop[i].bonds[j]);
     }
+    if (prop[i].triplets) {
+      for (j = 0; j < struc->cd.natm; j++) {
+        g_free(prop[i].triplets[j].triplets);
+      }
+    }
+    g_free(prop[i].triplets);
     g_free(prop[i].hb_iatta);
     g_free(prop[i].hbpot);
     g_free(prop[i].iatta);
@@ -382,13 +391,44 @@ const struct mdt_bond_list *property_bonds(const struct alignment *aln, int is,
 }
 
 /** Get a single bond from a structure */
-const struct mdt_bond *property_one_bond(const struct alignment *aln, int is,
-                                         struct mdt_properties *prop,
-                                         const struct mdt_library *mlib,
-                                         int bondtype, int ibnd1,
-                                         const struct libraries *libs)
+static const struct mdt_bond *property_one_bond(const struct alignment *aln,
+                                                int is,
+                                                struct mdt_properties *prop,
+                                                const struct mdt_library *mlib,
+                                                int bondtype, int ibnd1,
+                                                const struct libraries *libs)
 {
   return &property_bonds(aln, is, prop, mlib, bondtype, libs)->bonds[ibnd1];
+}
+
+
+/** Get/calculate the list of all triplets for a structure. */
+const struct mdt_triplet_list *property_triplets(const struct alignment *aln,
+                                                 int is,
+                                                 struct mdt_properties *prop,
+                                                 const struct mdt_library *mlib,
+                                                 const struct libraries *libs)
+{
+  is--;
+  if (!prop[is].triplets) {
+    struct sequence *seq = alignment_sequence_get(aln, is);
+    struct structure *struc = alignment_structure_get(aln, is);
+    prop[is].triplets = trpclass(struc, seq, mlib->trpclass, libs);
+  }
+  return prop[is].triplets;
+}
+
+/** Get a single atom triplet from a structure */
+static const struct mdt_triplet
+    *property_one_triplet(const struct alignment *aln, int is,
+                          struct mdt_properties *prop,
+                          const struct mdt_library *mlib, int ibnd1, int ia1,
+                          const struct libraries *libs)
+{
+  const struct mdt_triplet_list *trp;
+  trp = property_triplets(aln, is, prop, mlib, libs);
+
+  return &trp[ia1-1].triplets[ibnd1-1];
 }
 
 static float dist1(float x1, float y1, float z1, float x2, float y2, float z2)
@@ -494,7 +534,7 @@ static int idist0(int ia1, int ia1p, const struct structure *struc,
 static int iangle0(int ia1, int ia2, int ia3, const struct structure *struc,
                    const struct mdt_library *mlib, int ifi, int nrang)
 {
-  if (ia1 > 0 && ia2 > 0 && ia3 > 0) {
+  if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0) {
     float d, *x, *y, *z;
     x = f_float1_pt(&struc->cd.x);
     y = f_float1_pt(&struc->cd.y);
@@ -513,7 +553,7 @@ static int idihedral0(int ia1, int ia2, int ia3, int ia4,
                       const struct structure *struc,
                       const struct mdt_library *mlib, int ifi, int nrang)
 {
-  if (ia1 > 0 && ia2 > 0 && ia3 > 0 && ia4 > 0) {
+  if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0 && ia4 >= 0) {
     float d, *x, *y, *z;
     x = f_float1_pt(&struc->cd.x);
     y = f_float1_pt(&struc->cd.y);
@@ -540,6 +580,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   struct structure *struc1, *struc2;
   struct sequence *seq1, *seq2;
   const struct mdt_bond *bond;
+  const struct mdt_triplet *trp, *trp2;
   struct mdt_feature *feat = &mlib->base.features[ifi-1];
   struc1 = alignment_structure_get(aln, is1-1);
   struc2 = alignment_structure_get(aln, is2-1);
@@ -615,6 +656,33 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);
   case 94: case 96: case 98: case 100:
     return itable(f_int1_pt(&struc2->iacc), seq2->nres, ir2, feat->nbins);
+  case 101:
+    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
+    return CLAMP(trp->trpclass, 1, feat->nbins);
+  case 102:
+    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
+    return CLAMP(trp->trpclass, 1, feat->nbins);
+  case 104:
+    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
+    return iangle0(ia1-1, ia1p-1, trp->iata[0], struc1, mlib, ifi, feat->nbins);
+  case 105:
+    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
+    return iangle0(trp->iata[0], ia1-1, ia1p-1, struc1, mlib, ifi, feat->nbins);
+  case 106:
+    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
+    trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
+    return idihedral0(trp->iata[0], ia1-1, ia1p-1, trp2->iata[0], struc1,
+                      mlib, ifi, feat->nbins);
+  case 107:
+    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
+    trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
+    return idihedral0(trp->iata[1], trp2->iata[0], ia1-1, ia1p-1, struc1,
+                      mlib, ifi, feat->nbins);
+  case 108:
+    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
+    trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
+    return idihedral0(ia1-1, ia1p-1, trp->iata[0], trp2->iata[1], struc1,
+                      mlib, ifi, feat->nbins);
   case 109:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
                              libs);

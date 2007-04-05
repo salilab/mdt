@@ -60,6 +60,8 @@ struct mdt_library {
   struct mdt_atom_class_list *atclass[4];
   /** Hydrogen bond classes */
   struct mdt_atom_class_list *hbond;
+  /** Triplet classes */
+  struct mdt_atom_class_list *trpclass;
 };
 
 /** Make a new mdt_library structure */

@@ -163,7 +163,8 @@ static gboolean read_atom(GScanner *scanner,
 static gboolean scan_atom_classes_file(const char *filename, const char *text,
                                        unsigned filelen,
                                        struct mdt_atom_class_list *atclass, 
-                                       gboolean read_hbond, GError **err)
+                                       gboolean read_hbond, gboolean triplets,
+                                       GError **err)
 {
   static const char *grpnames[] = { "ATMGRP", "BNDGRP", "ANGGRP", "DIHGRP" };
   static const char *atnames[] = { "ATOM", "BOND", "ANGLE", "DIHEDRAL" };
@@ -173,8 +174,13 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
   GArray *classes = g_array_new(FALSE, FALSE, sizeof(struct mdt_atom_class));
   GArray *types = g_array_new(FALSE, FALSE, sizeof(struct mdt_atom_type));
 
-  sym[0] = grpnames[atclass->natom - 1];
-  sym[1] = atnames[atclass->natom - 1];
+  if (triplets) {
+    sym[0] = "TRPGRP";
+    sym[1] = "TRIPLET";
+  } else {
+    sym[0] = grpnames[atclass->natom - 1];
+    sym[1] = atnames[atclass->natom - 1];
+  }
   g_scanner_add_symbol(scanner, sym[0], GINT_TO_POINTER(0));
   g_scanner_add_symbol(scanner, sym[1], GINT_TO_POINTER(1));
   scanner->input_name = filename;
@@ -206,8 +212,7 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
 }
 
 static void update_mdt_feat_atclass(struct mdt_feature *feat,
-                                    const struct mdt_atom_class_list *atclass,
-                                    int natom)
+                                    const struct mdt_atom_class_list *atclass)
 {
   int i;
   mdt_feature_nbins_set(feat, atclass->nclass + 1);
@@ -222,7 +227,8 @@ static void update_mdt_feat_atclass(struct mdt_feature *feat,
 static gboolean read_atom_class_file(const gchar *filename,
                                      struct mdt_library *mlib,
                                      struct mdt_atom_class_list *atclass,
-                                     gboolean read_hbond, GError **err)
+                                     gboolean read_hbond, gboolean triplets,
+                                     GError **err)
 {
   struct mod_file file_info;
   FILE *fp;
@@ -242,7 +248,7 @@ static gboolean read_atom_class_file(const gchar *filename,
     return FALSE;
   } else {
     retval = scan_atom_classes_file(filename, text, filelen, atclass,
-                                    read_hbond, err);
+                                    read_hbond, triplets, err);
     g_free(text);
   }
 
@@ -256,7 +262,7 @@ gboolean mdt_atom_classes_read(const gchar *filename,
 {
   gboolean retval;
   retval = read_atom_class_file(filename, mlib, mlib->atclass[natom - 1],
-                                FALSE, err);
+                                FALSE, FALSE, err);
   if (retval) {
     int ifeat;
     struct mdt_feature *feat;
@@ -270,7 +276,7 @@ gboolean mdt_atom_classes_read(const gchar *filename,
 
     /* Set MDT symbols */
     feat = &mlib->base.features[ifeat];
-    update_mdt_feat_atclass(feat, mlib->atclass[natom - 1], natom);
+    update_mdt_feat_atclass(feat, mlib->atclass[natom - 1]);
   }
   return retval;
 }
@@ -279,5 +285,23 @@ gboolean mdt_atom_classes_read(const gchar *filename,
 gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib, 
                         GError **err)
 {
-  return read_atom_class_file(filename, mlib, mlib->hbond, TRUE, err);
+  return read_atom_class_file(filename, mlib, mlib->hbond, TRUE, FALSE, err);
+}
+
+/** Read triplet class information from a file; return TRUE on success. */
+gboolean mdt_triplet_read(const gchar *filename, struct mdt_library *mlib, 
+                          GError **err)
+{
+  gboolean retval;
+  retval = read_atom_class_file(filename, mlib, mlib->trpclass, FALSE, TRUE,
+                                err);
+  if (retval) {
+    int ifeat;
+    /* MDT atom triplet features; 101 and 102 */
+    for (ifeat = 100; ifeat < 102; ifeat++) {
+      struct mdt_feature *feat = &mlib->base.features[ifeat];
+      update_mdt_feat_atclass(feat, mlib->trpclass);
+    }
+  }
+  return retval;
 }

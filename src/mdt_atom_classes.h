@@ -26,6 +26,10 @@ gboolean mdt_atom_classes_read(const gchar *filename,
 gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib, 
                         GError **err);
 
+/** Read triplet class information from a file; return TRUE on success. */
+gboolean mdt_triplet_read(const gchar *filename, struct mdt_library *mlib, 
+                          GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_ATOMCLASS_H */

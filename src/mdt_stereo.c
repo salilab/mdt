@@ -14,7 +14,7 @@
 
 /** Return True iff the atom index is OK, and the coordinates are
     defined. */
-static gboolean atmdefd(int ia1, const struct coordinates *cd)
+gboolean atmdefd(int ia1, const struct coordinates *cd)
 {
   if (ia1 >= 0 && ia1 < cd->natm) {
     float *x, *y, *z;

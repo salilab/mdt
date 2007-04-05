@@ -18,6 +18,11 @@
 
 G_BEGIN_DECLS
 
+/** Return True iff the atom index is OK, and the coordinates are
+    defined. */
+G_GNUC_INTERNAL
+gboolean atmdefd(int ia1, const struct coordinates *cd);
+
 /** Get all of one type of bond (bond/angle/dihedral) for a structure. */
 G_GNUC_INTERNAL
 struct mdt_bond_list *get_stereo(const struct structure *struc,

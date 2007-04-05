@@ -17,7 +17,8 @@ files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',
          'mdt_entropy_full.c', 'mdt_normalize.c', 'mdt_integrate.c',
          'mdt_reshape.c', 'mdt_get.c', 'mdt_write_asgl.c', 'mdt_section.c',
          'mdt_feature.c', 'mdt_super_smooth.c', 'mdt_add_alignment.c',
-         'mdt_atom_classes.c', 'mdt_hydrogen_bonds.c', 'mdt_stereo.c')
+         'mdt_atom_classes.c', 'mdt_hydrogen_bonds.c', 'mdt_stereo.c',
+         'mdt_triplets.c')
 
 # Build a Windows DLL exports file from the public header files:
 e.W32Def('libmdt.def', ('mdt.h', 'mdt_error.h', 'mdt_types.h',

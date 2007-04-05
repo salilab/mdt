@@ -23,6 +23,7 @@ struct mdt_library *mdt_library_new(void)
     mlib->atclass[i] = mdt_atom_class_list_new(i + 1);
   }
   mlib->hbond = mdt_atom_class_list_new(1);
+  mlib->trpclass = mdt_atom_class_list_new(3);
   return mlib;
 }
 
@@ -35,5 +36,6 @@ void mdt_library_free(struct mdt_library *mlib)
     mdt_atom_class_list_free(mlib->atclass[i]);
   }
   mdt_atom_class_list_free(mlib->hbond);
+  mdt_atom_class_list_free(mlib->trpclass);
   g_free(mlib);
 }

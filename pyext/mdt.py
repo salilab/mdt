@@ -140,7 +140,7 @@ class triplet_classes(bond_classes):
 
     def read(self, filename):
         """Read atom triplet information from a file"""
-        return _modeller.readtriplet_mdt_library(self._mlib.basept, filename)
+        return _mdt.mdt_triplet_read(filename, self._mlib.modpt)
 
 
 class hbond_classes(bond_classes):

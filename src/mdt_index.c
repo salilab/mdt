@@ -97,8 +97,8 @@ static int irestab(const struct f_int2_array *ialn, int naln, int iseq,
 
 static int itable(const int *itab, int nr, int ir, int ndim)
 {
-  if (ir >= 1 && ir <= nr && itab[ir-1] >= 1 && itab[ir-1] <= ndim) {
-    return itab[ir-1];
+  if (ir >= 0 && ir < nr && itab[ir] >= 1 && itab[ir] <= ndim) {
+    return itab[ir];
   } else {
     return ndim;
   }
@@ -428,7 +428,7 @@ static const struct mdt_triplet
   const struct mdt_triplet_list *trp;
   trp = property_triplets(aln, is, prop, mlib, libs);
 
-  return &trp[ia1-1].triplets[ibnd1];
+  return &trp[ia1].triplets[ibnd1];
 }
 
 static float dist1(float x1, float y1, float z1, float x2, float y2, float z2)
@@ -515,13 +515,11 @@ static float dihedral1(float x1, float y1, float z1, float x2, float y2,
 static int idist0(int ia1, int ia1p, const struct structure *struc,
                   const struct mdt_library *mlib, int ifi, int nrang)
 {
-  if (ia1 > 0 && ia1p > 0) {
+  if (ia1 >= 0 && ia1p >= 0) {
     float d, *x, *y, *z;
     x = f_float1_pt(&struc->cd.x);
     y = f_float1_pt(&struc->cd.y);
     z = f_float1_pt(&struc->cd.z);
-    ia1--;
-    ia1p--;
     d = dist1(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p]);
     return iclsbin(d, mlib, ifi, nrang);
   } else {
@@ -653,9 +651,9 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     2, feat->nbins);
   case 93: case 95: case 97: case 99:
-    return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);
+    return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1-1, feat->nbins);
   case 94: case 96: case 98: case 100:
-    return itable(f_int1_pt(&struc2->iacc), seq2->nres, ir2, feat->nbins);
+    return itable(f_int1_pt(&struc2->iacc), seq2->nres, ir2-1, feat->nbins);
   case 101:
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
     return CLAMP(trp->trpclass, 1, feat->nbins);
@@ -664,24 +662,24 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return CLAMP(trp->trpclass, 1, feat->nbins);
   case 104:
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return iangle0(ia1-1, ia1p-1, trp->iata[0], struc1, mlib, ifi, feat->nbins);
+    return iangle0(ia1, ia1p, trp->iata[0], struc1, mlib, ifi, feat->nbins);
   case 105:
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
-    return iangle0(trp->iata[0], ia1-1, ia1p-1, struc1, mlib, ifi, feat->nbins);
+    return iangle0(trp->iata[0], ia1, ia1p, struc1, mlib, ifi, feat->nbins);
   case 106:
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
     trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return idihedral0(trp->iata[0], ia1-1, ia1p-1, trp2->iata[0], struc1,
+    return idihedral0(trp->iata[0], ia1, ia1p, trp2->iata[0], struc1,
                       mlib, ifi, feat->nbins);
   case 107:
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
     trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return idihedral0(trp->iata[1], trp2->iata[0], ia1-1, ia1p-1, struc1,
+    return idihedral0(trp->iata[1], trp2->iata[0], ia1, ia1p, struc1,
                       mlib, ifi, feat->nbins);
   case 108:
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
     trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return idihedral0(ia1-1, ia1p-1, trp->iata[0], trp2->iata[1], struc1,
+    return idihedral0(ia1, ia1p, trp->iata[0], trp2->iata[1], struc1,
                       mlib, ifi, feat->nbins);
   case 109:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
@@ -690,8 +688,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 110:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
                              libs);
-    return idist0(bond->iata[0] + 1, bond->iata[1] + 1, struc1, mlib, ifi,
-                  feat->nbins);
+    return idist0(bond->iata[0], bond->iata[1], struc1, mlib, ifi, feat->nbins);
   case 111:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_ANGLE, ibnd1,
                              libs);

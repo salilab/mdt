@@ -352,8 +352,8 @@ static gboolean gen_atoms(struct mdt_type *mdt, const struct mdt_library *mlib,
   s1 = alignment_structure_get(aln, is1-1);
 
   iresatm = f_int1_pt(&s1->cd.iresatm);
-  for (ia1 = 1; ia1 <= s1->cd.natm; ia1++) {
-    ir1 = iresatm[ia1-1];
+  for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
+    ir1 = iresatm[ia1];
     if (!update_mdt(mdt, mlib, aln, is1, 1, 1, ir1, 1, 1, 1, 1, ia1, 1, 1, 1,
                     1, 1, 1, libs, edat, prop, err)) {
       return FALSE;
@@ -376,10 +376,10 @@ static gboolean gen_atom_pairs(struct mdt_type *mdt,
   s1 = alignment_structure_get(aln, is1-1);
 
   iresatm = f_int1_pt(&s1->cd.iresatm);
-  for (ia1 = 1; ia1 <= s1->cd.natm; ia1++) {
-    ir1 = iresatm[ia1-1];
-    for (ia1p = ia1 + 1; ia1p <= s1->cd.natm; ia1p++) {
-      ir1p = iresatm[ia1p-1];
+  for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
+    ir1 = iresatm[ia1];
+    for (ia1p = ia1 + 1; ia1p < s1->cd.natm; ia1p++) {
+      ir1p = iresatm[ia1p];
       if (!update_mdt(mdt, mlib, aln, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
                       ia1p, 1, 1, 1, 1, 1, libs, edat, prop, err)) {
         return FALSE;
@@ -429,9 +429,9 @@ static gboolean gen_atom_triplets(struct mdt_type *mdt,
   s1 = alignment_structure_get(aln, is1-1);
   iresatm = f_int1_pt(&s1->cd.iresatm);
   trp = property_triplets(aln, is1, prop, mlib, libs);
-  for (ia1 = 1; ia1 <= s1->cd.natm; ia1++) {
-    ir1 = iresatm[ia1-1];
-    for (ibnd1 = 0; ibnd1 < trp[ia1-1].ntriplets; ibnd1++) {
+  for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
+    ir1 = iresatm[ia1];
+    for (ibnd1 = 0; ibnd1 < trp[ia1].ntriplets; ibnd1++) {
       /* Just in case you use a single atom feature at position 2 in
          protein A: */
       ia1p = ia1;
@@ -464,17 +464,17 @@ static gboolean gen_atom_triplet_pairs(struct mdt_type *mdt,
   s1 = alignment_structure_get(aln, is1-1);
   iresatm = f_int1_pt(&s1->cd.iresatm);
   trp = property_triplets(aln, is1, prop, mlib, libs);
-  for (ia1 = 1; ia1 <= s1->cd.natm; ia1++) {
-    ir1 = iresatm[ia1-1];
-    for (ibnd1 = 0; ibnd1 < trp[ia1-1].ntriplets; ibnd1++) {
-      for (ia1p = 1; ia1p <= s1->cd.natm; ia1p++) {
-        ir1p = iresatm[ia1p-1];
+  for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
+    ir1 = iresatm[ia1];
+    for (ibnd1 = 0; ibnd1 < trp[ia1].ntriplets; ibnd1++) {
+      for (ia1p = 0; ia1p < s1->cd.natm; ia1p++) {
+        ir1p = iresatm[ia1p];
 
         /* the same conditions on sequence separation as for residue pairs */
         nr = ir1p - ir1;
         if (ia1 != ia1p && ((nr >= rsrang[0] && nr <= rsrang[1])
             || (nr >= rsrang[2] && nr <= rsrang[3]))) {
-          for (ibnd1p = 0; ibnd1p < trp[ia1p-1].ntriplets; ibnd1p++) {
+          for (ibnd1p = 0; ibnd1p < trp[ia1p].ntriplets; ibnd1p++) {
             if (!update_mdt(mdt, mlib, aln, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
                             ia1p, ibnd1, ibnd1p, 1, 1, 1, libs, edat, prop,
                             err)) {

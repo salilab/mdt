@@ -129,11 +129,11 @@ static int isbeg(int is, int nseq, int iseqbeg)
 {
   switch(iseqbeg) {
   default:
-    return 1;
+    return 0;
   case 2:
     return is + 1;
   case 3:
-    return nseq;
+    return nseq - 1;
   }
 }
 
@@ -202,14 +202,14 @@ static gboolean update_multiple(struct mdt_type *mdt,
   ia1 = ia1p = 0;
 
   /* generate all indices for the protein B: */
-  for (is2 = isbeg(is1, aln->nseq, pairs); is2 <= aln->nseq; is2++) {
-    if (acceptd[is2-1]) {
+  for (is2 = isbeg(is1, aln->nseq, pairs); is2 < aln->nseq; is2++) {
+    if (acceptd[is2]) {
       /* residue indices in the first and second position for protein 2 */
       if (mdt->nresfeat != 1) {
-        ir2 = f_int2_get(&aln->ialn, ip1-1, is2-1) - 1;
+        ir2 = f_int2_get(&aln->ialn, ip1-1, is2) - 1;
       }
       if (mdt->nresfeat == 3) {
-        ir2p = f_int2_get(&aln->ialn, ip2-1, is2-1) - 1;
+        ir2p = f_int2_get(&aln->ialn, ip2-1, is2) - 1;
       }
       is3 = is2;
       ir3 = ir2;
@@ -232,13 +232,13 @@ static gboolean update_multiple(struct mdt_type *mdt,
       } else {
         /* TRIPLET OF PROTEINS:
            generate all indices for the protein C: */
-        for (is3 = isbeg(is2, aln->nseq, triples); is3 <= aln->nseq; is3++) {
-          if (acceptd[is3-1]) {
+        for (is3 = isbeg(is2, aln->nseq, triples); is3 < aln->nseq; is3++) {
+          if (acceptd[is3]) {
             if (mdt->nresfeat != 1) {
-              ir3 = f_int2_get(&aln->ialn, ip1-1, is3-1) - 1;
+              ir3 = f_int2_get(&aln->ialn, ip1-1, is3) - 1;
             }
             if (mdt->nresfeat == 3) {
-              ir3p = f_int2_get(&aln->ialn, ip2-1, is3-1) - 1;
+              ir3p = f_int2_get(&aln->ialn, ip2-1, is3) - 1;
             }
             if ((is1 != is2 && is1 != is3 && is2 != is3) || aln->nseq == 1) {
               if (!update_mdt(mdt, mlib, aln, is1, ip1, is2, ir1, ir2, ir1p,
@@ -267,17 +267,17 @@ static gboolean genpair(struct mdt_type *mdt, const struct mdt_library *mlib,
   int is1, ir1, ir1p;
 
   /* generate all indices for protein A: */
-  for (is1 = 1; is1 <= aln->nseq; is1++) {
-    if (acceptd[is1-1]) {
+  for (is1 = 0; is1 < aln->nseq; is1++) {
+    if (acceptd[is1]) {
 
       /* residue index for a residue of protein A in the 1st position: */
       if (mdt->nresfeat != 1) {
-        ir1 = f_int2_get(&aln->ialn, ip1-1, is1-1) - 1;
+        ir1 = f_int2_get(&aln->ialn, ip1-1, is1) - 1;
       }
       /* residue index for a residue of protein A in the 2nd position:
          (not used if residue relationships are not compared) */
       if (mdt->nresfeat == 3 || mdt->nresfeat == 5) {
-        ir1p = f_int2_get(&aln->ialn, ip2-1, is1-1) - 1;
+        ir1p = f_int2_get(&aln->ialn, ip2-1, is1) - 1;
       }
 
       if (mdt->nprotcmp == 1) {
@@ -349,7 +349,7 @@ static gboolean gen_atoms(struct mdt_type *mdt, const struct mdt_library *mlib,
   int ia1, ir1, *iresatm;
   struct structure *s1;
 
-  s1 = alignment_structure_get(aln, is1-1);
+  s1 = alignment_structure_get(aln, is1);
 
   iresatm = f_int1_pt(&s1->cd.iresatm);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
@@ -373,7 +373,7 @@ static gboolean gen_atom_pairs(struct mdt_type *mdt,
   int ia1, ia1p, ir1, ir1p, *iresatm;
   struct structure *s1;
 
-  s1 = alignment_structure_get(aln, is1-1);
+  s1 = alignment_structure_get(aln, is1);
 
   iresatm = f_int1_pt(&s1->cd.iresatm);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
@@ -401,7 +401,7 @@ static gboolean gen_bonds(struct mdt_type *mdt, const struct mdt_library *mlib,
   struct structure *struc;
   int ibnd1, is2;
 
-  struc = alignment_structure_get(aln, is1-1);
+  struc = alignment_structure_get(aln, is1);
   is2 = is1;
   bonds = property_bonds(aln, is1, prop, mlib, npnt, libs);
   for (ibnd1 = 0; ibnd1 < bonds->nbonds; ibnd1++) {
@@ -426,7 +426,7 @@ static gboolean gen_atom_triplets(struct mdt_type *mdt,
   struct structure *s1;
   const struct mdt_triplet_list *trp;
 
-  s1 = alignment_structure_get(aln, is1-1);
+  s1 = alignment_structure_get(aln, is1);
   iresatm = f_int1_pt(&s1->cd.iresatm);
   trp = property_triplets(aln, is1, prop, mlib, libs);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
@@ -461,7 +461,7 @@ static gboolean gen_atom_triplet_pairs(struct mdt_type *mdt,
   struct structure *s1;
   const struct mdt_triplet_list *trp;
 
-  s1 = alignment_structure_get(aln, is1-1);
+  s1 = alignment_structure_get(aln, is1);
   iresatm = f_int1_pt(&s1->cd.iresatm);
   trp = property_triplets(aln, is1, prop, mlib, libs);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
@@ -536,7 +536,7 @@ static gboolean update_stats(struct mdt_type *mdt,
      an alignment! */
   case 6:
     if (acceptd[0]) {
-      if (!gen_atoms(mdt, mlib, aln, 1, libs, edat, prop, err)) {
+      if (!gen_atoms(mdt, mlib, aln, 0, libs, edat, prop, err)) {
         return FALSE;
       }
     }
@@ -546,7 +546,7 @@ static gboolean update_stats(struct mdt_type *mdt,
      an alignment! */
   case 7:
     if (acceptd[0]) {
-      if (!gen_atom_pairs(mdt, mlib, aln, 1, libs, edat, prop, err)) {
+      if (!gen_atom_pairs(mdt, mlib, aln, 0, libs, edat, prop, err)) {
         return FALSE;
       }
     }
@@ -556,7 +556,7 @@ static gboolean update_stats(struct mdt_type *mdt,
      an alignment! */
   case 8:
     if (acceptd[0]) {
-      if (!gen_atom_triplets(mdt, mlib, aln, 1, libs, edat, prop, err)) {
+      if (!gen_atom_triplets(mdt, mlib, aln, 0, libs, edat, prop, err)) {
         return FALSE;
       }
     }
@@ -566,7 +566,7 @@ static gboolean update_stats(struct mdt_type *mdt,
      an alignment! */
   case 9:
     if (acceptd[0]) {
-      if (!gen_atom_triplet_pairs(mdt, mlib, aln, rsrang, 1, libs, edat, prop,
+      if (!gen_atom_triplet_pairs(mdt, mlib, aln, rsrang, 0, libs, edat, prop,
                                   err)) {
         return FALSE;
       }
@@ -576,7 +576,7 @@ static gboolean update_stats(struct mdt_type *mdt,
   /* Scan over all bonds: */
   case 10:
     if (acceptd[0]) {
-      if (!gen_bonds(mdt, mlib, aln, 1, MDT_BOND_TYPE_BOND, libs, edat, prop,
+      if (!gen_bonds(mdt, mlib, aln, 0, MDT_BOND_TYPE_BOND, libs, edat, prop,
                      err)) {
         return FALSE;
       }
@@ -586,7 +586,7 @@ static gboolean update_stats(struct mdt_type *mdt,
   /* Scan over all angles: */
   case 11:
     if (acceptd[0]) {
-      if (!gen_bonds(mdt, mlib, aln, 1, MDT_BOND_TYPE_ANGLE, libs, edat, prop,
+      if (!gen_bonds(mdt, mlib, aln, 0, MDT_BOND_TYPE_ANGLE, libs, edat, prop,
                      err)) {
         return FALSE;
       }
@@ -596,7 +596,7 @@ static gboolean update_stats(struct mdt_type *mdt,
   /* Scan over all dihedrals: */
   case 12:
     if (acceptd[0]) {
-      if (!gen_bonds(mdt, mlib, aln, 1, MDT_BOND_TYPE_DIHEDRAL, libs, edat,
+      if (!gen_bonds(mdt, mlib, aln, 0, MDT_BOND_TYPE_DIHEDRAL, libs, edat,
                      prop, err)) {
         return FALSE;
       }

@@ -82,11 +82,11 @@ static int irestab(const struct f_int2_array *ialn, int naln, int iseq,
     if (ipos < 1 || ipos > naln) {
       return igaptyp;
     } else {
-      int ires = f_int2_get(ialn, ipos-1, iseq-1);
+      int ires = f_int2_get(ialn, ipos-1, iseq);
       return ires_get(ires, nres, igaptyp, irestyp, ndimen);
     }
   } else {
-    int ires = f_int2_get(ialn, ip-1, iseq-1);
+    int ires = f_int2_get(ialn, ip-1, iseq);
     if (ires < 1 || ires > nres) {
       return igaptyp;
     } else {
@@ -252,10 +252,10 @@ static gboolean atmcls_special(struct structure *struc,
 }
 
 static int *make_atom_type(const struct alignment *aln, int is,
-                                 const struct mdt_library *mlib,
-                                 const struct mdt_atom_class_list *atclass,
-                                 int ifi, const struct libraries *libs,
-                                 GError **err)
+                           const struct mdt_library *mlib,
+                           const struct mdt_atom_class_list *atclass,
+                           int ifi, const struct libraries *libs,
+                           GError **err)
 {
   int *iatta;
   struct structure *struc = alignment_structure_get(aln, is);
@@ -275,7 +275,6 @@ static const int *property_iatta(const struct alignment *aln, int is,
                                  const struct mdt_library *mlib, int ifi,
                                  const struct libraries *libs, GError **err)
 {
-  is--;
   if (!prop[is].iatta) {
     prop[is].iatta = make_atom_type(aln, is, mlib, mlib->atclass[0], ifi, libs,
                                     err);
@@ -289,7 +288,6 @@ static const int *property_hb_iatta(const struct alignment *aln, int is,
                                     const struct mdt_library *mlib, int ifi,
                                     const struct libraries *libs, GError **err)
 {
-  is--;
   if (!prop[is].hb_iatta) {
     prop[is].hb_iatta = make_atom_type(aln, is, mlib, mlib->hbond, ifi, libs,
                                        err);
@@ -309,7 +307,6 @@ static gboolean property_hbpot(const struct alignment *aln, int is,
   if (!iatta) {
     return FALSE;
   }
-  is--;
   if (!prop[is].hbpot) {
     prop[is].hbpot = g_malloc(sizeof(float));
     *(prop[is].hbpot) = hb_satisfaction(&struc->cd, iatta, mlib->hbond,
@@ -325,7 +322,6 @@ static const int *property_iatmacc(const struct alignment *aln, int is,
                                    const struct mdt_library *mlib, int ifi,
                                    const struct mdt_feature *feat)
 {
-  is--;
   if (!prop[is].iatmacc) {
     struct structure *struc = alignment_structure_get(aln, is);
     prop[is].iatmacc = g_malloc(sizeof(int) * struc->cd.natm);
@@ -342,7 +338,6 @@ static const int *property_ifatmacc(const struct alignment *aln, int is,
                                     const struct mdt_feature *feat,
                                     const struct libraries *libs, GError **err)
 {
-  is--;
   if (!prop[is].ifatmacc) {
     int i, *ifatmacc;
     struct sequence *seq = alignment_sequence_get(aln, is);
@@ -379,7 +374,6 @@ const struct mdt_bond_list *property_bonds(const struct alignment *aln, int is,
                                            int bondtype,
                                            const struct libraries *libs)
 {
-  is--;
   if (!prop[is].bonds[bondtype]) {
     struct sequence *seq = alignment_sequence_get(aln, is);
     struct structure *struc = alignment_structure_get(aln, is);
@@ -409,7 +403,6 @@ const struct mdt_triplet_list *property_triplets(const struct alignment *aln,
                                                  const struct mdt_library *mlib,
                                                  const struct libraries *libs)
 {
-  is--;
   if (!prop[is].triplets) {
     struct sequence *seq = alignment_sequence_get(aln, is);
     struct structure *struc = alignment_structure_get(aln, is);
@@ -580,10 +573,10 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   const struct mdt_bond *bond;
   const struct mdt_triplet *trp, *trp2;
   struct mdt_feature *feat = &mlib->base.features[ifi-1];
-  struc1 = alignment_structure_get(aln, is1-1);
-  struc2 = alignment_structure_get(aln, is2-1);
-  seq1 = alignment_sequence_get(aln, is1-1);
-  seq2 = alignment_sequence_get(aln, is2-1);
+  struc1 = alignment_structure_get(aln, is1);
+  struc2 = alignment_structure_get(aln, is2);
+  seq1 = alignment_sequence_get(aln, is1);
+  seq2 = alignment_sequence_get(aln, is2);
   switch(ifi) {
   case 66:
     return irestab(&aln->ialn, aln->naln, is1, f_int1_pt(&seq1->irestyp),
@@ -708,9 +701,9 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return idihedral0(bond->iata[0], bond->iata[1], bond->iata[2],
                       bond->iata[3], struc1, mlib, ifi, feat->nbins);
   default:
-    ret = mdt_index(ifi, aln, is1, ip1, is2, ir1 + 1, ir2 + 1, ir1p + 1,
-                    ir2p + 1, &mlib->base, ip2, is3, ir3 + 1, ir3p + 1, libs,
-                    edat, &ierr);
+    ret = mdt_index(ifi, aln, is1 + 1, ip1, is2 + 1, ir1 + 1, ir2 + 1, ir1p + 1,
+                    ir2p + 1, &mlib->base, ip2, is3 + 1, ir3 + 1, ir3p + 1,
+                    libs, edat, &ierr);
     if (ierr) {
       handle_modeller_error(err);
     }

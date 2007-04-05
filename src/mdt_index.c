@@ -651,9 +651,9 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     2, feat->nbins);
   case 93: case 95: case 97: case 99:
-    return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1-1, feat->nbins);
+    return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);
   case 94: case 96: case 98: case 100:
-    return itable(f_int1_pt(&struc2->iacc), seq2->nres, ir2-1, feat->nbins);
+    return itable(f_int1_pt(&struc2->iacc), seq2->nres, ir2, feat->nbins);
   case 101:
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
     return CLAMP(trp->trpclass, 1, feat->nbins);
@@ -708,8 +708,9 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return idihedral0(bond->iata[0], bond->iata[1], bond->iata[2],
                       bond->iata[3], struc1, mlib, ifi, feat->nbins);
   default:
-    ret = mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, &mlib->base,
-                    ip2, is3, ir3, ir3p, libs, edat, &ierr);
+    ret = mdt_index(ifi, aln, is1, ip1, is2, ir1 + 1, ir2 + 1, ir1p + 1,
+                    ir2p + 1, &mlib->base, ip2, is3, ir3 + 1, ir3p + 1, libs,
+                    edat, &ierr);
     if (ierr) {
       handle_modeller_error(err);
     }

@@ -164,7 +164,7 @@ static gboolean update_single(struct mdt_type *mdt,
 
   /* residue properties tabulated */
   case 2:
-    if (ir1 > 0) {
+    if (ir1 >= 0) {
       if (!update_mdt(mdt, mlib, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ip2,
                       ia1, ia1p, 1, 1, is3, ir3, ir3p, libs, edat, prop, err)) {
         return FALSE;
@@ -174,7 +174,7 @@ static gboolean update_single(struct mdt_type *mdt,
 
   /* residue rels compared */
   case 3:
-    if (ir1 > 0 && ir1p > 0) {
+    if (ir1 >= 0 && ir1p >= 0) {
       if (!update_mdt(mdt, mlib, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p,
                       ip2, ia1, ia1p, 1, 1, is3, ir3, ir3p, libs, edat, prop,
                       err)) {
@@ -206,10 +206,10 @@ static gboolean update_multiple(struct mdt_type *mdt,
     if (acceptd[is2-1]) {
       /* residue indices in the first and second position for protein 2 */
       if (mdt->nresfeat != 1) {
-        ir2 = f_int2_get(&aln->ialn, ip1-1, is2-1);
+        ir2 = f_int2_get(&aln->ialn, ip1-1, is2-1) - 1;
       }
       if (mdt->nresfeat == 3) {
-        ir2p = f_int2_get(&aln->ialn, ip2-1, is2-1);
+        ir2p = f_int2_get(&aln->ialn, ip2-1, is2-1) - 1;
       }
       is3 = is2;
       ir3 = ir2;
@@ -235,10 +235,10 @@ static gboolean update_multiple(struct mdt_type *mdt,
         for (is3 = isbeg(is2, aln->nseq, triples); is3 <= aln->nseq; is3++) {
           if (acceptd[is3-1]) {
             if (mdt->nresfeat != 1) {
-              ir3 = f_int2_get(&aln->ialn, ip1-1, is3-1);
+              ir3 = f_int2_get(&aln->ialn, ip1-1, is3-1) - 1;
             }
             if (mdt->nresfeat == 3) {
-              ir3p = f_int2_get(&aln->ialn, ip2-1, is3-1);
+              ir3p = f_int2_get(&aln->ialn, ip2-1, is3-1) - 1;
             }
             if ((is1 != is2 && is1 != is3 && is2 != is3) || aln->nseq == 1) {
               if (!update_mdt(mdt, mlib, aln, is1, ip1, is2, ir1, ir2, ir1p,
@@ -272,12 +272,12 @@ static gboolean genpair(struct mdt_type *mdt, const struct mdt_library *mlib,
 
       /* residue index for a residue of protein A in the 1st position: */
       if (mdt->nresfeat != 1) {
-        ir1 = f_int2_get(&aln->ialn, ip1-1, is1-1);
+        ir1 = f_int2_get(&aln->ialn, ip1-1, is1-1) - 1;
       }
       /* residue index for a residue of protein A in the 2nd position:
          (not used if residue relationships are not compared) */
       if (mdt->nresfeat == 3 || mdt->nresfeat == 5) {
-        ir1p = f_int2_get(&aln->ialn, ip2-1, is1-1);
+        ir1p = f_int2_get(&aln->ialn, ip2-1, is1-1) - 1;
       }
 
       if (mdt->nprotcmp == 1) {
@@ -353,7 +353,7 @@ static gboolean gen_atoms(struct mdt_type *mdt, const struct mdt_library *mlib,
 
   iresatm = f_int1_pt(&s1->cd.iresatm);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
-    ir1 = iresatm[ia1];
+    ir1 = iresatm[ia1] - 1;
     if (!update_mdt(mdt, mlib, aln, is1, 1, 1, ir1, 1, 1, 1, 1, ia1, 1, 1, 1,
                     1, 1, 1, libs, edat, prop, err)) {
       return FALSE;
@@ -377,9 +377,9 @@ static gboolean gen_atom_pairs(struct mdt_type *mdt,
 
   iresatm = f_int1_pt(&s1->cd.iresatm);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
-    ir1 = iresatm[ia1];
+    ir1 = iresatm[ia1] - 1;
     for (ia1p = ia1 + 1; ia1p < s1->cd.natm; ia1p++) {
-      ir1p = iresatm[ia1p];
+      ir1p = iresatm[ia1p] - 1;
       if (!update_mdt(mdt, mlib, aln, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
                       ia1p, 1, 1, 1, 1, 1, libs, edat, prop, err)) {
         return FALSE;
@@ -430,7 +430,7 @@ static gboolean gen_atom_triplets(struct mdt_type *mdt,
   iresatm = f_int1_pt(&s1->cd.iresatm);
   trp = property_triplets(aln, is1, prop, mlib, libs);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
-    ir1 = iresatm[ia1];
+    ir1 = iresatm[ia1] - 1;
     for (ibnd1 = 0; ibnd1 < trp[ia1].ntriplets; ibnd1++) {
       /* Just in case you use a single atom feature at position 2 in
          protein A: */
@@ -465,10 +465,10 @@ static gboolean gen_atom_triplet_pairs(struct mdt_type *mdt,
   iresatm = f_int1_pt(&s1->cd.iresatm);
   trp = property_triplets(aln, is1, prop, mlib, libs);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
-    ir1 = iresatm[ia1];
+    ir1 = iresatm[ia1] - 1;
     for (ibnd1 = 0; ibnd1 < trp[ia1].ntriplets; ibnd1++) {
       for (ia1p = 0; ia1p < s1->cd.natm; ia1p++) {
-        ir1p = iresatm[ia1p];
+        ir1p = iresatm[ia1p] - 1;
 
         /* the same conditions on sequence separation as for residue pairs */
         nr = ir1p - ir1;

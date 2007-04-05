@@ -206,10 +206,10 @@ static gboolean update_multiple(struct mdt_type *mdt,
     if (acceptd[is2]) {
       /* residue indices in the first and second position for protein 2 */
       if (mdt->nresfeat != 1) {
-        ir2 = f_int2_get(&aln->ialn, ip1-1, is2) - 1;
+        ir2 = f_int2_get(&aln->ialn, ip1, is2) - 1;
       }
       if (mdt->nresfeat == 3) {
-        ir2p = f_int2_get(&aln->ialn, ip2-1, is2) - 1;
+        ir2p = f_int2_get(&aln->ialn, ip2, is2) - 1;
       }
       is3 = is2;
       ir3 = ir2;
@@ -235,10 +235,10 @@ static gboolean update_multiple(struct mdt_type *mdt,
         for (is3 = isbeg(is2, aln->nseq, triples); is3 < aln->nseq; is3++) {
           if (acceptd[is3]) {
             if (mdt->nresfeat != 1) {
-              ir3 = f_int2_get(&aln->ialn, ip1-1, is3) - 1;
+              ir3 = f_int2_get(&aln->ialn, ip1, is3) - 1;
             }
             if (mdt->nresfeat == 3) {
-              ir3p = f_int2_get(&aln->ialn, ip2-1, is3) - 1;
+              ir3p = f_int2_get(&aln->ialn, ip2, is3) - 1;
             }
             if ((is1 != is2 && is1 != is3 && is2 != is3) || aln->nseq == 1) {
               if (!update_mdt(mdt, mlib, aln, is1, ip1, is2, ir1, ir2, ir1p,
@@ -272,12 +272,12 @@ static gboolean genpair(struct mdt_type *mdt, const struct mdt_library *mlib,
 
       /* residue index for a residue of protein A in the 1st position: */
       if (mdt->nresfeat != 1) {
-        ir1 = f_int2_get(&aln->ialn, ip1-1, is1) - 1;
+        ir1 = f_int2_get(&aln->ialn, ip1, is1) - 1;
       }
       /* residue index for a residue of protein A in the 2nd position:
          (not used if residue relationships are not compared) */
       if (mdt->nresfeat == 3 || mdt->nresfeat == 5) {
-        ir1p = f_int2_get(&aln->ialn, ip2-1, is1) - 1;
+        ir1p = f_int2_get(&aln->ialn, ip2, is1) - 1;
       }
 
       if (mdt->nprotcmp == 1) {
@@ -311,12 +311,12 @@ static gboolean gen_residue_pairs(struct mdt_type *mdt,
 {
   int ip1, ip2;
 
-  for (ip1 = 1; ip1 <= aln->naln - 1; ip1++) {
+  for (ip1 = 0; ip1 < aln->naln - 1; ip1++) {
 
     /* only if any of the residue relationships is asymmetric, go NxN
        (mainchain H-bonds are an example) */
     if (mdt->symmetric) {
-      for (ip2 = ip1 + rsrang[2]; ip2 <= MIN(aln->naln, ip1 + rsrang[3]);
+      for (ip2 = ip1 + rsrang[2]; ip2 <= MIN(aln->naln - 1, ip1 + rsrang[3]);
            ip2++) {
         if (!genpair(mdt, mlib, aln, ip1, ip2, libs, edat, acceptd, pairs,
                      triples, prop, err)) {
@@ -324,8 +324,8 @@ static gboolean gen_residue_pairs(struct mdt_type *mdt,
         }
       }
     } else {
-      for (ip2 = MAX(1, ip1 - rsrang[3]);
-           ip2 <= MIN(aln->naln, ip1 + rsrang[3]); ip2++) {
+      for (ip2 = MAX(0, ip1 - rsrang[3]);
+           ip2 <= MIN(aln->naln - 1, ip1 + rsrang[3]); ip2++) {
         if (abs(ip1 - ip2) >= rsrang[1]) {
           if (!genpair(mdt, mlib, aln, ip1, ip2, libs, edat, acceptd, pairs,
                        triples, prop, err)) {
@@ -516,7 +516,7 @@ static gboolean update_stats(struct mdt_type *mdt,
 
   /* Single residues or selected (one per residue) atoms */
   case 2: case 4:
-    for (ip1 = 1; ip1 <= aln->naln; ip1++) {
+    for (ip1 = 0; ip1 < aln->naln; ip1++) {
       if (!genpair(mdt, mlib, aln, ip1, ip1, libs, edat, acceptd, pairs,
                    triples, prop, err)) {
         return FALSE;

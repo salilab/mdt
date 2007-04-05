@@ -79,14 +79,14 @@ static int irestab(const struct f_int2_array *ialn, int naln, int iseq,
 {
   if (delta_ali) {
     int ipos = ip + delta;
-    if (ipos < 1 || ipos > naln) {
+    if (ipos < 0 || ipos >= naln) {
       return igaptyp;
     } else {
-      int ires = f_int2_get(ialn, ipos-1, iseq);
+      int ires = f_int2_get(ialn, ipos, iseq);
       return ires_get(ires, nres, igaptyp, irestyp, ndimen);
     }
   } else {
-    int ires = f_int2_get(ialn, ip-1, iseq);
+    int ires = f_int2_get(ialn, ip, iseq);
     if (ires < 1 || ires > nres) {
       return igaptyp;
     } else {
@@ -701,9 +701,9 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return idihedral0(bond->iata[0], bond->iata[1], bond->iata[2],
                       bond->iata[3], struc1, mlib, ifi, feat->nbins);
   default:
-    ret = mdt_index(ifi, aln, is1 + 1, ip1, is2 + 1, ir1 + 1, ir2 + 1, ir1p + 1,
-                    ir2p + 1, &mlib->base, ip2, is3 + 1, ir3 + 1, ir3p + 1,
-                    libs, edat, &ierr);
+    ret = mdt_index(ifi, aln, is1 + 1, ip1 + 1, is2 + 1, ir1 + 1, ir2 + 1,
+                    ir1p + 1, ir2p + 1, &mlib->base, ip2 + 1, is3 + 1, ir3 + 1,
+                    ir3p + 1, libs, edat, &ierr);
     if (ierr) {
       handle_modeller_error(err);
     }

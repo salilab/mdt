@@ -428,7 +428,7 @@ static const struct mdt_triplet
   const struct mdt_triplet_list *trp;
   trp = property_triplets(aln, is, prop, mlib, libs);
 
-  return &trp[ia1-1].triplets[ibnd1-1];
+  return &trp[ia1-1].triplets[ibnd1];
 }
 
 static float dist1(float x1, float y1, float z1, float x2, float y2, float z2)

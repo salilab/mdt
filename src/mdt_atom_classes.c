@@ -59,12 +59,12 @@ static void my_handler(GScanner *scanner, gchar *message, gboolean error)
   if (error) {
     g_set_error((GError **)scanner->user_data, MDT_ERROR, MDT_ERROR_FAILED,
                 mymsg);
-  } 
+  }
   g_free(mymsg);
-} 
+}
 
 static void mod_g_scanner_unexp(GScanner *scanner, GTokenType expected_token,
-                                const gchar *identifier_spec, 
+                                const gchar *identifier_spec,
                                 const gchar *symbol_spec, GError **err)
 {
   scanner->msg_handler = my_handler;
@@ -97,8 +97,8 @@ static gboolean read_atmgrp_hbond(GScanner *scanner,
   return retval;
 }
 
-static gboolean read_atmgrp(GScanner *scanner, GArray *classes, GArray **types,
-                            gboolean read_hbond, GError **err)
+static gboolean read_atmgrp(GScanner *scanner, GArray *classes,
+                            GArray **types, gboolean read_hbond, GError **err)
 {
   if (g_scanner_get_next_token(scanner) == G_TOKEN_STRING) {
     struct mdt_atom_class newclass;
@@ -162,7 +162,7 @@ static gboolean read_atom(GScanner *scanner,
 
 static gboolean scan_atom_classes_file(const char *filename, const char *text,
                                        unsigned filelen,
-                                       struct mdt_atom_class_list *atclass, 
+                                       struct mdt_atom_class_list *atclass,
                                        gboolean read_hbond, gboolean triplets,
                                        GError **err)
 {
@@ -282,14 +282,14 @@ gboolean mdt_atom_classes_read(const gchar *filename,
 }
 
 /** Read hydrogen bond class information from a file; return TRUE on success. */
-gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib, 
+gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib,
                         GError **err)
 {
   return read_atom_class_file(filename, mlib, mlib->hbond, TRUE, FALSE, err);
 }
 
 /** Read triplet class information from a file; return TRUE on success. */
-gboolean mdt_triplet_read(const gchar *filename, struct mdt_library *mlib, 
+gboolean mdt_triplet_read(const gchar *filename, struct mdt_library *mlib,
                           GError **err)
 {
   gboolean retval;

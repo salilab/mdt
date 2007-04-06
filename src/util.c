@@ -134,11 +134,11 @@ int roll_ind_comb(int **ind, int n, int nmax)
   } else {
     indr = *ind;
     for (i = n - 1; i >= 0; i--) {
-      if (indr[i] < nmax - 1 - (n-i)) {
+      if (indr[i] < nmax - 1 - (n - i)) {
         int k;
         indr[i]++;
         for (k = i + 1; k < n; k++) {
-          indr[k] = indr[k-1] + 1;
+          indr[k] = indr[k - 1] + 1;
         }
         return 1;
       }
@@ -230,8 +230,8 @@ static int *complem(const int i_feat_fix[], int n_feat_fix, int numb_features,
 
 /** Allocate and set control arrays for a subset of the MDT features */
 static void setup_mdt_feature_arrays(const struct mdt_type *mdt,
-                                     const int ifeat[], int nfeat, int **istart,
-                                     int **ival, int **nbins)
+                                     const int ifeat[], int nfeat,
+                                     int **istart, int **ival, int **nbins)
 {
   int i;
   *istart = g_malloc(sizeof(int) * nfeat);
@@ -298,8 +298,9 @@ void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
 
 /** Return entropy of p(x/y,z,...) where y,z are the independent features.
     See pages 480-483 in Numerical Recipes for equations. */
-double entrp2(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
-              int n_feat_fix, int nbinx, float sumi[])
+double entrp2(double summdt, const int i_feat_fix[],
+              const struct mdt_type *mdt, int n_feat_fix, int nbinx,
+              float sumi[])
 {
   static const char *routine = "entrp2";
   static const double small = 1.0e-3, tiny = 1.0e-6;
@@ -369,9 +370,10 @@ double entrp2(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
 }
 
 /** Get the chi^2, etc for pdf p(x/y,z,...) */
-double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
-              int n_feat_fix, int nbinx, float sumi[], double *df, double *prob,
-              double *ccc, double *cramrv, GError **err)
+double chisqr(double summdt, const int i_feat_fix[],
+              const struct mdt_type *mdt, int n_feat_fix, int nbinx,
+              float sumi[], double *df, double *prob, double *ccc,
+              double *cramrv, GError **err)
 {
   static const char *routine = "chiqrt";
   static const double small = 1.0e-6, tiny = 1.0e-30, fract = 0.001;

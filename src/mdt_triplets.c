@@ -51,7 +51,7 @@ static void get_triplets(int iatm, const struct structure *struc,
     for (itype = 0; itype < c->ntypes; itype++) {
       struct mdt_atom_type *t = &c->types[itype];
 
-      /* Does the residue type match? */ 
+      /* Does the residue type match? */
       if (strcmp(resnam, t->names[0]) == 0 || strcmp(t->names[0], "*") == 0) {
         char *atmnam = get_coord_atmnam(&struc->cd, iatm);
         /* Does the lead atom type match? */

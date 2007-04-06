@@ -65,11 +65,11 @@ static int ires_get(int ires, int nres, int igaptyp, const int *irestyp,
 {
   if (ires < 1 || ires > nres) {
     return igaptyp;
-  } else if (irestyp[ires-1] >= 21 || irestyp[ires-1] <= 0) {
-    modlogwarning("irestab", "ires, irestp: %d %d", ires, irestyp[ires-1]);
+  } else if (irestyp[ires - 1] >= 21 || irestyp[ires - 1] <= 0) {
+    modlogwarning("irestab", "ires, irestp: %d %d", ires, irestyp[ires - 1]);
     return ndimen;
   } else {
-    return irestyp[ires-1];
+    return irestyp[ires - 1];
   }
 }
 
@@ -107,7 +107,7 @@ static int itable(const int *itab, int nr, int ir, int ndim)
 static int iclsbin(float x, const struct mdt_library *mlib, int ifi, int nrang)
 {
   int i;
-  const struct mdt_feature *feat = &mlib->base.features[ifi-1];
+  const struct mdt_feature *feat = &mlib->base.features[ifi - 1];
   const struct mdt_bin *bin = feat->bins;
   for (i = 0; i < nrang; i++, bin++) {
     if (x >= bin->rang1 && x <= bin->rang2) {
@@ -129,7 +129,7 @@ static void alliclsbin(int nvec, const float *x, int *ix,
   }
 }
 
-static int iatmcls(int irestyp, const char *atmnam, 
+static int iatmcls(int irestyp, const char *atmnam,
                    const struct mdt_atom_class_list *atclass,
                    const struct libraries *libs)
 {
@@ -152,7 +152,7 @@ static int iatmcls(int irestyp, const char *atmnam,
     for (i = 0; i < atc->ntypes; i++) {
       const struct mdt_atom_type *att = &atc->types[i];
       if ((allres || strcmp(att->names[0], "*") == 0
-          || strcmp(att->names[0], resnam) == 0)
+           || strcmp(att->names[0], resnam) == 0)
           && (allatm || strcmp(att->names[1], "*") == 0
               || strcmp(att->names[1], atmnam) == 0)) {
         g_free(resnam);
@@ -254,8 +254,7 @@ static gboolean atmcls_special(struct structure *struc,
 static int *make_atom_type(const struct alignment *aln, int is,
                            const struct mdt_library *mlib,
                            const struct mdt_atom_class_list *atclass,
-                           int ifi, const struct libraries *libs,
-                           GError **err)
+                           int ifi, const struct libraries *libs, GError **err)
 {
   int *iatta;
   struct structure *struc = alignment_structure_get(aln, is);
@@ -325,8 +324,8 @@ static const int *property_iatmacc(const struct alignment *aln, int is,
   if (!prop[is].iatmacc) {
     struct structure *struc = alignment_structure_get(aln, is);
     prop[is].iatmacc = g_malloc(sizeof(int) * struc->cd.natm);
-    alliclsbin(struc->cd.natm, f_float1_pt(&struc->cd.atmacc), prop[is].iatmacc,
-               mlib, ifi, feat->nbins - 1);
+    alliclsbin(struc->cd.natm, f_float1_pt(&struc->cd.atmacc),
+               prop[is].iatmacc, mlib, ifi, feat->nbins - 1);
   }
   return prop[is].iatmacc;
 }
@@ -400,7 +399,8 @@ static const struct mdt_bond *property_one_bond(const struct alignment *aln,
 const struct mdt_triplet_list *property_triplets(const struct alignment *aln,
                                                  int is,
                                                  struct mdt_properties *prop,
-                                                 const struct mdt_library *mlib,
+                                                 const struct mdt_library
+                                                 *mlib,
                                                  const struct libraries *libs)
 {
   if (!prop[is].triplets) {
@@ -413,10 +413,10 @@ const struct mdt_triplet_list *property_triplets(const struct alignment *aln,
 
 /** Get a single atom triplet from a structure */
 static const struct mdt_triplet
-    *property_one_triplet(const struct alignment *aln, int is,
-                          struct mdt_properties *prop,
-                          const struct mdt_library *mlib, int ibnd1, int ia1,
-                          const struct libraries *libs)
+*property_one_triplet(const struct alignment *aln, int is,
+                      struct mdt_properties *prop,
+                      const struct mdt_library *mlib, int ibnd1, int ia1,
+                      const struct libraries *libs)
 {
   const struct mdt_triplet_list *trp;
   trp = property_triplets(aln, is, prop, mlib, libs);
@@ -438,15 +438,15 @@ static float angle1(float x1, float y1, float z1, float x2, float y2, float z2,
 {
   static const float tiny = 1.0e-15;
   float d1, d2, v1x, v1y, v1z, v2x, v2y, v2z, scalprod, sizeprod, div;
-  v1x = x1-x2;
-  v1y = y1-y2;
-  v1z = z1-z2;
-  v2x = x3-x2;
-  v2y = y3-y2;
-  v2z = z3-z2;
+  v1x = x1 - x2;
+  v1y = y1 - y2;
+  v1z = z1 - z2;
+  v2x = x3 - x2;
+  v2y = y3 - y2;
+  v2z = z3 - z2;
   d1 = sqrt(v1x * v1x + v1y * v1y + v1z * v1z);
   d2 = sqrt(v2x * v2x + v2y * v2y + v2z * v2z);
-  scalprod = v1x*v2x+v1y*v2y+v1z*v2z;
+  scalprod = v1x * v2x + v1y * v2y + v1z * v2z;
   sizeprod = d1 * d2;
   div = (sizeprod > tiny ? scalprod / sizeprod : 0.0);
   div = CLAMP(div, -1.0, 1.0);
@@ -457,45 +457,45 @@ static float dihedral1(float x1, float y1, float z1, float x2, float y2,
                        float z2, float x3, float y3, float z3, float x4,
                        float y4, float z4)
 {
-  double rt[4][3], l1[3], l2[3], l3[3], xt1[3], xt2[3], leng1, leng2, dot1, ang,
-         sign, norm;
+  double rt[4][3], l1[3], l2[3], l3[3], xt1[3], xt2[3], leng1, leng2, dot1,
+      ang, sign, norm;
 
-  rt[0][0]=x1;
-  rt[0][1]=y1;
-  rt[0][2]=z1;
-  rt[1][0]=x2;
-  rt[1][1]=y2;
-  rt[1][2]=z2;
-  rt[2][0]=x3;
-  rt[2][1]=y3;
-  rt[2][2]=z3;
-  rt[3][0]=x4;
-  rt[3][1]=y4;
-  rt[3][2]=z4;
+  rt[0][0] = x1;
+  rt[0][1] = y1;
+  rt[0][2] = z1;
+  rt[1][0] = x2;
+  rt[1][1] = y2;
+  rt[1][2] = z2;
+  rt[2][0] = x3;
+  rt[2][1] = y3;
+  rt[2][2] = z3;
+  rt[3][0] = x4;
+  rt[3][1] = y4;
+  rt[3][2] = z4;
 
-  l1[0]=rt[1][0]-rt[0][0];
-  l1[1]=rt[1][1]-rt[0][1];
-  l1[2]=rt[1][2]-rt[0][2];
-  l2[0]=rt[2][0]-rt[1][0];
-  l2[1]=rt[2][1]-rt[1][1];
-  l2[2]=rt[2][2]-rt[1][2];
-  l3[0]=rt[3][0]-rt[2][0];
-  l3[1]=rt[3][1]-rt[2][1];
-  l3[2]=rt[3][2]-rt[2][2];
+  l1[0] = rt[1][0] - rt[0][0];
+  l1[1] = rt[1][1] - rt[0][1];
+  l1[2] = rt[1][2] - rt[0][2];
+  l2[0] = rt[2][0] - rt[1][0];
+  l2[1] = rt[2][1] - rt[1][1];
+  l2[2] = rt[2][2] - rt[1][2];
+  l3[0] = rt[3][0] - rt[2][0];
+  l3[1] = rt[3][1] - rt[2][1];
+  l3[2] = rt[3][2] - rt[2][2];
 
-  xt1[0]=l2[1]*l1[2]-l2[2]*l1[1];
-  xt1[1]=l2[2]*l1[0]-l2[0]*l1[2];
-  xt1[2]=l2[0]*l1[1]-l2[1]*l1[0];
-  xt2[0]=l3[1]*l2[2]-l3[2]*l2[1];
-  xt2[1]=l3[2]*l2[0]-l3[0]*l2[2];
-  xt2[2]=l3[0]*l2[1]-l3[1]*l2[0];
+  xt1[0] = l2[1] * l1[2] - l2[2] * l1[1];
+  xt1[1] = l2[2] * l1[0] - l2[0] * l1[2];
+  xt1[2] = l2[0] * l1[1] - l2[1] * l1[0];
+  xt2[0] = l3[1] * l2[2] - l3[2] * l2[1];
+  xt2[1] = l3[2] * l2[0] - l3[0] * l2[2];
+  xt2[2] = l3[0] * l2[1] - l3[1] * l2[0];
   leng1 = xt1[0] * xt1[0] + xt1[1] * xt1[1] + xt1[2] * xt1[2];
   leng2 = xt2[0] * xt2[0] + xt2[1] * xt2[1] + xt2[2] * xt2[2];
-  dot1 = xt1[0]*xt2[0]+xt1[1]*xt2[1]+xt1[2]*xt2[2];
-  norm = dot1/sqrt(leng1*leng2);
+  dot1 = xt1[0] * xt2[0] + xt1[1] * xt2[1] + xt1[2] * xt2[2];
+  norm = dot1 / sqrt(leng1 * leng2);
   norm = CLAMP(norm, -1.0, 1.0);
   ang = acos(norm);
-  sign=xt1[0]*l3[0]+xt1[1]*l3[1]+xt1[2]*l3[2];
+  sign = xt1[0] * l3[0] + xt1[1] * l3[1] + xt1[2] * l3[2];
   if (sign < 0.0) {
     ang = -ang;
   }
@@ -572,12 +572,12 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   struct sequence *seq1, *seq2;
   const struct mdt_bond *bond;
   const struct mdt_triplet *trp, *trp2;
-  struct mdt_feature *feat = &mlib->base.features[ifi-1];
+  struct mdt_feature *feat = &mlib->base.features[ifi - 1];
   struc1 = alignment_structure_get(aln, is1);
   struc2 = alignment_structure_get(aln, is2);
   seq1 = alignment_sequence_get(aln, is1);
   seq2 = alignment_sequence_get(aln, is2);
-  switch(ifi) {
+  switch (ifi) {
   case 66:
     return irestab(&aln->ialn, aln->naln, is1, f_int1_pt(&seq1->irestyp),
                    seq1->nres, ip1, mlib->deltai, mlib->deltai_ali,
@@ -609,7 +609,8 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
       return 0.;
     }
     return itable(binprop, struc1->cd.natm, ia1, feat->nbins);
-  case 82: case 103:
+  case 82:
+  case 103:
     return idist0(ia1, ia1p, struc1, mlib, ifi, feat->nbins);
   case 83:
     binprop = property_iatta(aln, is1, prop, mlib, ifi, libs, err);
@@ -643,9 +644,15 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     }
     return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     2, feat->nbins);
-  case 93: case 95: case 97: case 99:
+  case 93:
+  case 95:
+  case 97:
+  case 99:
     return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);
-  case 94: case 96: case 98: case 100:
+  case 94:
+  case 96:
+  case 98:
+  case 100:
     return itable(f_int1_pt(&struc2->iacc), seq2->nres, ir2, feat->nbins);
   case 101:
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
@@ -681,7 +688,8 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 110:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
                              libs);
-    return idist0(bond->iata[0], bond->iata[1], struc1, mlib, ifi, feat->nbins);
+    return idist0(bond->iata[0], bond->iata[1], struc1, mlib, ifi,
+                  feat->nbins);
   case 111:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_ANGLE, ibnd1,
                              libs);

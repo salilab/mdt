@@ -92,9 +92,9 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
 
   if (dimensions == 1) {
     fprintf(fp, "SET X_LABEL_STYLE = 1\n"
-                "SET X_TICK = 1 1 -999\n"
-                "SET POSITION %d 0\n"
-                "SET XY_COLUMNS 0 1\n", ipos);
+            "SET X_TICK = 1 1 -999\n"
+            "SET POSITION %d 0\nSET XY_COLUMNS 0 1\n", ipos);
+
     if (itsymbx == 2 || itsymbx == 3) {
       fprintf(fp, "SET WORLD_WINDOW 0.5 0 %7.1f %7.1f\n", nbinx + 1.5, -999.);
     } else {
@@ -102,13 +102,13 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
     }
   } else {
     fprintf(fp, "SET X_LABEL_STYLE = 1\n"
-                "SET POSITION %5d 1\n"
-                "SET Y_LABEL_STYLE = 1\n"
-                "SET Y_TICK_LABEL = 1\n", ipos);
+            "SET POSITION %5d 1\n"
+            "SET Y_LABEL_STYLE = 1\nSET Y_TICK_LABEL = 1\n", ipos);
     if (itsymbx == 2 || itsymbx == 3) {
       fputs("SET Y_TICK = 0.5 1 -999\nSET X_TICK = 0.5 1 -999\n", fp);
     } else {
-      fprintf(fp, "SET Y_TICK = 1 1 %3d\nSET X_TICK = 1 1 %3d\n", nbiny, nbinx);
+      fprintf(fp, "SET Y_TICK = 1 1 %3d\nSET X_TICK = 1 1 %3d\n", nbiny,
+              nbinx);
     }
     fprintf(fp, "SET WORLD_WINDOW 0 0 %5d %5d\n", nbinx + 1, nbiny + 1);
     ifeat = ifeatpt[mdt->nfeat - 2];
@@ -123,7 +123,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
 
   /* BAR_XSHIFT does not have any effect in DPLOT, so this part is the same
      for both HIST2D and DPLOT; the first tick must be labelled: */
-  if (itsymbx == 2 ||  itsymbx == 3) {
+  if (itsymbx == 2 || itsymbx == 3) {
     fprintf(fp, "SET X_TICK_LABEL = 1 %3d, BAR_XSHIFT = 0.5\n",
             every_x_numbered);
   } else {
@@ -143,11 +143,11 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
   fputs("\nWORLD\nAXES2D\nRESET_CAPTIONS\n", fp);
 
   fprintf(fp, "CAPTION CAPTION_POSITION 1, ;\n"
-              "     CAPTION_TEXT '%.1f POINTS'\n", sum);
+          "     CAPTION_TEXT '%.1f POINTS'\n", sum);
 
   ifeat = ifeatpt[mdt->nfeat - 1] - 1;
   fprintf(fp, "CAPTION CAPTION_POSITION 2, ;\n"
-              "     CAPTION_TEXT '%s'\n", base->features[ifeat].name);
+          "     CAPTION_TEXT '%s'\n", base->features[ifeat].name);
 
   if (dimensions == 1) {
     fputs("CAPTION CAPTION_POSITION 3, ;\n"
@@ -155,7 +155,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
   } else {
     ifeat = ifeatpt[mdt->nfeat - 2] - 1;
     fprintf(fp, "CAPTION CAPTION_POSITION 3, ;\n"
-                "     CAPTION_TEXT '%s'\n", base->features[ifeat].name);
+            "     CAPTION_TEXT '%s'\n", base->features[ifeat].name);
   }
 
   for (i = mdt->nfeat - dimensions - 1; i >= 0; i--) {
@@ -163,8 +163,8 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
     ifeat = ifeatpt[i] - 1;
     symb = get_mdt_symb(mdt, mlib, i, indf[i] - 1, 0);
     fprintf(fp, "CAPTION CAPTION_POSITION 1, ;\n"
-                "     CAPTION_TEXT '%s : %s'\n", strlen(symb) == 0 ? "u" : symb,
-                base->features[ifeat].name);
+            "     CAPTION_TEXT '%s : %s'\n", strlen(symb) == 0 ? "u" : symb,
+            base->features[ifeat].name);
     g_free(symb);
   }
 

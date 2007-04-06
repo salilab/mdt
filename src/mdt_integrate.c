@@ -119,12 +119,12 @@ static void integrate_mdt_table(const struct mdt_type *mdtin,
       int i1 = indmdt(in_indf, mdtin);
       out_bin[i2] += in_bin[i1];
 
-    /* roll the indices of the "integrated" features one forward: */
+      /* roll the indices of the "integrated" features one forward: */
     } while (roll_inds(in_indf, f_int1_pt(&mdtin->istart),
                        f_int1_pt(&mdtin->iend), mdtin->nfeat,
                        int_features, n_int_features));
 
-  /* roll the indices of the "non-integrated" features one forward: */
+    /* roll the indices of the "non-integrated" features one forward: */
   } while (roll_ind(out_indf, f_int1_pt(&mdtout->istart),
                     f_int1_pt(&mdtout->iend), mdtout->nfeat));
 

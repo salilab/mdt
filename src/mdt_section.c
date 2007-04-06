@@ -19,7 +19,7 @@ static gboolean get_mdt_section_bins(const struct mdt_type *mdt,
   int i, *indf;
 
   if (n_indices < 0 || n_indices >= mdt->nfeat) {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE, 
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
                 "%s: Incorrect number of features (%d);\n"
                 "must be less than the dimension of the MDT (%d)", routine,
                 n_indices, mdt->nfeat);
@@ -56,7 +56,7 @@ static double entropy_hist(const double x[], int n)
   area = get_sum(x, n);
   if (fabs(area) < divisor && n > 0) {
     /* the curve is probably all 0. */
-      return log(n);
+    return log(n);
   } else {
     int i;
     double accum;

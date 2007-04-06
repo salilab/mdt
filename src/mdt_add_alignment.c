@@ -35,8 +35,8 @@ static int *mdt_indices(gboolean *outrange, const struct alignment *aln,
   for (i = 0; i < mdt->nfeat && !tmperr && *outrange == FALSE; i++) {
     int ifi = ifeat[i];
     indf[i] = my_mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
-                           ia1p, mlib, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, libs,
-                           edat, prop, &tmperr);
+                           ia1p, mlib, ip2, ibnd1, ibnd1p, is3, ir3, ir3p,
+                           libs, edat, prop, &tmperr);
     if (!tmperr && (indf[i] < istart[i] || indf[i] > iend[i])) {
       *outrange = TRUE;
     }
@@ -52,7 +52,8 @@ static int *mdt_indices(gboolean *outrange, const struct alignment *aln,
 
 
 /** Update an MDT with feature data. */
-static gboolean update_mdt(struct mdt_type *mdt, const struct mdt_library *mlib,
+static gboolean update_mdt(struct mdt_type *mdt,
+                           const struct mdt_library *mlib,
                            const struct alignment *aln, int is1, int ip1,
                            int is2, int ir1, int ir2, int ir1p, int ir2p,
                            int ip2, int ia1, int ia1p, int ibnd1, int ibnd1p,
@@ -100,7 +101,7 @@ static gboolean update_mdt(struct mdt_type *mdt, const struct mdt_library *mlib,
 static void update_protein_pairs(struct mdt_type *mdt, int nseqacc, int pairs,
                                  int triples)
 {
-  switch(mdt->nprotcmp) {
+  switch (mdt->nprotcmp) {
   case 1:
     mdt->n_protein_pairs += nseqacc;
     break;
@@ -127,7 +128,7 @@ static void update_protein_pairs(struct mdt_type *mdt, int nseqacc, int pairs,
 /** Get start sequence for multiple protein features. */
 static int isbeg(int is, int nseq, int iseqbeg)
 {
-  switch(iseqbeg) {
+  switch (iseqbeg) {
   default:
     return 0;
   case 2:
@@ -153,8 +154,8 @@ static gboolean update_single(struct mdt_type *mdt,
   ir2p = ir3p = ir1p;
   ia1 = ia1p = 0;
 
-  switch(mdt->nresfeat) {
-  /* whole protein properties tabulated: */
+  switch (mdt->nresfeat) {
+    /* whole protein properties tabulated: */
   case 1:
     if (!update_mdt(mdt, mlib, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ip2,
                     ia1, ia1p, 1, 1, is3, ir3, ir3p, libs, edat, prop, err)) {
@@ -162,17 +163,18 @@ static gboolean update_single(struct mdt_type *mdt,
     }
     break;
 
-  /* residue properties tabulated */
+    /* residue properties tabulated */
   case 2:
     if (ir1 >= 0) {
       if (!update_mdt(mdt, mlib, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ip2,
-                      ia1, ia1p, 1, 1, is3, ir3, ir3p, libs, edat, prop, err)) {
+                      ia1, ia1p, 1, 1, is3, ir3, ir3p, libs, edat, prop,
+                      err)) {
         return FALSE;
       }
     }
     break;
 
-  /* residue rels compared */
+    /* residue rels compared */
   case 3:
     if (ir1 >= 0 && ir1p >= 0) {
       if (!update_mdt(mdt, mlib, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p,
@@ -281,11 +283,12 @@ static gboolean genpair(struct mdt_type *mdt, const struct mdt_library *mlib,
       }
 
       if (mdt->nprotcmp == 1) {
-        if (!update_single(mdt, mlib, aln, is1, ip1, ip2, ir1, ir1p, libs, edat,
-                           prop, err)) {
+        if (!update_single
+            (mdt, mlib, aln, is1, ip1, ip2, ir1, ir1p, libs, edat, prop,
+             err)) {
           return FALSE;
         }
-       } else {
+      } else {
         if (!update_multiple(mdt, mlib, aln, is1, ip1, ip2, ir1, ir1p, pairs,
                              triples, libs, edat, acceptd, prop, err)) {
           return FALSE;
@@ -407,7 +410,7 @@ static gboolean gen_bonds(struct mdt_type *mdt, const struct mdt_library *mlib,
   for (ibnd1 = 0; ibnd1 < bonds->nbonds; ibnd1++) {
     if (!update_mdt(mdt, mlib, aln, is1, 1, is2, 1, 1, 1, 1, 1, 1, 1, ibnd1,
                     1, 1, 1, 1, libs, edat, prop, err)) {
-        return FALSE;
+      return FALSE;
     }
   }
   return TRUE;
@@ -473,7 +476,7 @@ static gboolean gen_atom_triplet_pairs(struct mdt_type *mdt,
         /* the same conditions on sequence separation as for residue pairs */
         nr = ir1p - ir1;
         if (ia1 != ia1p && ((nr >= rsrang[0] && nr <= rsrang[1])
-            || (nr >= rsrang[2] && nr <= rsrang[3]))) {
+                            || (nr >= rsrang[2] && nr <= rsrang[3]))) {
           for (ibnd1p = 0; ibnd1p < trp[ia1p].ntriplets; ibnd1p++) {
             if (!update_mdt(mdt, mlib, aln, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
                             ia1p, ibnd1, ibnd1p, 1, 1, 1, libs, edat, prop,
@@ -505,8 +508,8 @@ static gboolean update_stats(struct mdt_type *mdt,
 
   update_protein_pairs(mdt, nseqacc, pairs, triples);
 
-  switch(mdt->nresfeat) {
-  /* Whole proteins */
+  switch (mdt->nresfeat) {
+    /* Whole proteins */
   case 1:
     if (!genpair(mdt, mlib, aln, 1, 1, libs, edat, acceptd, pairs, triples,
                  prop, err)) {
@@ -514,8 +517,9 @@ static gboolean update_stats(struct mdt_type *mdt,
     }
     break;
 
-  /* Single residues or selected (one per residue) atoms */
-  case 2: case 4:
+    /* Single residues or selected (one per residue) atoms */
+  case 2:
+  case 4:
     for (ip1 = 0; ip1 < aln->naln; ip1++) {
       if (!genpair(mdt, mlib, aln, ip1, ip1, libs, edat, acceptd, pairs,
                    triples, prop, err)) {
@@ -524,16 +528,17 @@ static gboolean update_stats(struct mdt_type *mdt,
     }
     break;
 
-  /* intra-molecular residue or selected (one per residue) atom pairs */
-  case 3: case 5:
+    /* intra-molecular residue or selected (one per residue) atom pairs */
+  case 3:
+  case 5:
     if (!gen_residue_pairs(mdt, mlib, aln, rsrang, libs, edat, acceptd, pairs,
                            triples, prop, err)) {
       return FALSE;
     }
     break;
 
-  /* Single protein, all atoms; using only the first protein in
-     an alignment! */
+    /* Single protein, all atoms; using only the first protein in
+       an alignment! */
   case 6:
     if (acceptd[0]) {
       if (!gen_atoms(mdt, mlib, aln, 0, libs, edat, prop, err)) {
@@ -542,8 +547,8 @@ static gboolean update_stats(struct mdt_type *mdt,
     }
     break;
 
-  /* Single protein, all atom pairs; using only the first protein in
-     an alignment! */
+    /* Single protein, all atom pairs; using only the first protein in
+       an alignment! */
   case 7:
     if (acceptd[0]) {
       if (!gen_atom_pairs(mdt, mlib, aln, 0, libs, edat, prop, err)) {
@@ -552,8 +557,8 @@ static gboolean update_stats(struct mdt_type *mdt,
     }
     break;
 
-  /* Single protein, all atom triplets; using only the first protein in
-     an alignment! */
+    /* Single protein, all atom triplets; using only the first protein in
+       an alignment! */
   case 8:
     if (acceptd[0]) {
       if (!gen_atom_triplets(mdt, mlib, aln, 0, libs, edat, prop, err)) {
@@ -562,8 +567,8 @@ static gboolean update_stats(struct mdt_type *mdt,
     }
     break;
 
-  /* Single protein, all atom triplet pairs; using only the first protein in
-     an alignment! */
+    /* Single protein, all atom triplet pairs; using only the first protein in
+       an alignment! */
   case 9:
     if (acceptd[0]) {
       if (!gen_atom_triplet_pairs(mdt, mlib, aln, rsrang, 0, libs, edat, prop,
@@ -573,7 +578,7 @@ static gboolean update_stats(struct mdt_type *mdt,
     }
     break;
 
-  /* Scan over all bonds: */
+    /* Scan over all bonds: */
   case 10:
     if (acceptd[0]) {
       if (!gen_bonds(mdt, mlib, aln, 0, MDT_BOND_TYPE_BOND, libs, edat, prop,
@@ -583,7 +588,7 @@ static gboolean update_stats(struct mdt_type *mdt,
     }
     break;
 
-  /* Scan over all angles: */
+    /* Scan over all angles: */
   case 11:
     if (acceptd[0]) {
       if (!gen_bonds(mdt, mlib, aln, 0, MDT_BOND_TYPE_ANGLE, libs, edat, prop,
@@ -593,7 +598,7 @@ static gboolean update_stats(struct mdt_type *mdt,
     }
     break;
 
-  /* Scan over all dihedrals: */
+    /* Scan over all dihedrals: */
   case 12:
     if (acceptd[0]) {
       if (!gen_bonds(mdt, mlib, aln, 0, MDT_BOND_TYPE_DIHEDRAL, libs, edat,
@@ -608,7 +613,8 @@ static gboolean update_stats(struct mdt_type *mdt,
 
 
 /** Add data from an alignment to an MDT. Return TRUE on success. */
-gboolean mdt_add_alignment(struct mdt_type *mdt, const struct mdt_library *mlib,
+gboolean mdt_add_alignment(struct mdt_type *mdt,
+                           const struct mdt_library *mlib,
                            struct alignment *aln, float distngh,
                            gboolean sdchngh, int surftyp, int iacc1typ,
                            const int residue_span_range[4], int pairs,

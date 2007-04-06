@@ -18,9 +18,9 @@ static void write_mdt_header(FILE *fp, const struct mdt_type *mdt,
 
   fprintf(fp, "REAL OUTPUT OF PROGRAM:  ** MDT %s **\n\n\n", version);
   fprintf(fp, "Number of alignments                 : %14d\n"
-              "Number of proteins in the alignments : %14d\n"
-              "Number of proteins or their pairs    : %14d\n"
-              "Sample size                          : %#14.6g\n\n",
+          "Number of proteins in the alignments : %14d\n"
+          "Number of proteins or their pairs    : %14d\n"
+          "Sample size                          : %#14.6g\n\n",
           mdt->nalns, mdt->n_proteins, mdt->n_protein_pairs, mdt->sample_size);
 
   fprintf(fp, "FEATURES TABULATED IN THIS MULTIDIMENSIONAL TABLE:\n\n");
@@ -31,7 +31,7 @@ static void write_mdt_header(FILE *fp, const struct mdt_type *mdt,
     struct mdt_feature *feat;
     ifeat = f_int1_get(&mdt->ifeat, i) - 1;
     feat = &mlib->base.features[ifeat];
-    fprintf(fp, "%3d %8d %5d %s\n", i+1, ifeat+1, feat->nbins, feat->name);
+    fprintf(fp, "%3d %8d %5d %s\n", i + 1, ifeat + 1, feat->nbins, feat->name);
   }
 
   fprintf(fp, "\n\nSUBSET OF VALUES (WITH RESPECT TO THE BIN FILE)\n"
@@ -39,7 +39,7 @@ static void write_mdt_header(FILE *fp, const struct mdt_type *mdt,
           "  # ISTART   IEND\n");
 
   for (i = 0; i < mdt->nfeat; i++) {
-    fprintf(fp, "%3d %6d %6d\n", i+1, f_int1_get(&mdt->istart, i),
+    fprintf(fp, "%3d %6d %6d\n", i + 1, f_int1_get(&mdt->istart, i),
             f_int1_get(&mdt->iend, i));
   }
 

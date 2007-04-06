@@ -41,7 +41,8 @@ static void reshape_mdt_indices(const struct mdt_type *mdtin,
 
 /** Do the hard work of reshaping the table. */
 static void reshape_mdt_table(const struct mdt_type *mdtin,
-                              struct mdt_type *mdtout, const int new_position[])
+                              struct mdt_type *mdtout,
+                              const int new_position[])
 {
   int *out_indf, *in_indf;
   double *out_bin, *in_bin;
@@ -90,7 +91,7 @@ static gboolean get_position_mappings(const struct mdt_type *mdt,
   }
   return TRUE;
 }
- 
+
 
 /** Check new offset and shape */
 static gboolean check_start_end(const struct mdt_type *mdt, const int offset[],
@@ -124,7 +125,8 @@ static gboolean check_start_end(const struct mdt_type *mdt, const int offset[],
 /** Reshape an MDT. Return TRUE on success. */
 gboolean mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
                      const int features[], int n_features, const int offset[],
-                     int n_offset, const int shape[], int n_shape, GError **err)
+                     int n_offset, const int shape[], int n_shape,
+                     GError **err)
 {
   const char *routine = "mdt_reshape";
   int *old_position, *new_position;
@@ -142,8 +144,8 @@ gboolean mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 
   if (!get_position_mappings(mdtin, features, old_position, new_position,
                              routine, err)
-      || !check_start_end(mdtin, offset, shape, old_position, features, routine,
-                          err)) {
+      || !check_start_end(mdtin, offset, shape, old_position, features,
+                          routine, err)) {
     g_free(old_position);
     g_free(new_position);
     return FALSE;

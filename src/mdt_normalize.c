@@ -17,7 +17,7 @@ static float get_dxdy(const float dx_dy[], const struct mdt_type *mdtin,
 
   if (dx_dy[0] == undefined) {
     struct mdt_feature *feat;
-    int ifeat = f_int1_get(&mdtin->ifeat, mdtin->nfeat-1) - 1;
+    int ifeat = f_int1_get(&mdtin->ifeat, mdtin->nfeat - 1) - 1;
     feat = &mlib->base.features[ifeat];
     dx = feat->bins[0].rang2 - feat->bins[0].rang1;
   } else {
@@ -28,7 +28,7 @@ static float get_dxdy(const float dx_dy[], const struct mdt_type *mdtin,
     float dy;
     if (dx_dy[1] == undefined) {
       struct mdt_feature *feat;
-      int ifeat = f_int1_get(&mdtin->ifeat, mdtin->nfeat-2) - 1;
+      int ifeat = f_int1_get(&mdtin->ifeat, mdtin->nfeat - 2) - 1;
       feat = &mlib->base.features[ifeat];
       dy = feat->bins[0].rang2 - feat->bins[0].rang1;
     } else {
@@ -74,7 +74,7 @@ static void do_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
       }
     }
 
-  /* roll the indices of the "constant" features one forward: */
+    /* roll the indices of the "constant" features one forward: */
   } while (roll_ind(indf, istart, iend, nfeat));
 }
 

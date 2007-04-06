@@ -23,8 +23,9 @@ int nperm(int n)
 static float gammln(float xx)
 {
   float x, tmp, ser;
-  static const float cof[6] = {76.18009173, -86.50532033, 24.01409822,
-		               -1.231739516, 0.120858003e-2, -0.536382e-5};
+  static const float cof[6] = { 76.18009173, -86.50532033, 24.01409822,
+    -1.231739516, 0.120858003e-2, -0.536382e-5
+  };
   static const float stp = 2.50662827465;
   int j;
 
@@ -47,10 +48,10 @@ static void gcf(float *gammcf, float a, float x, float *gln)
   static const float eps = 3.0e-7;
   int n;
   float gold = 0.0, g, fac = 1.0, b1 = 1.0, b0 = 0.0, anf, ana, an, a1,
-        a0 = 1.0;
+      a0 = 1.0;
 
   *gln = gammln(a);
-  a1=x;
+  a1 = x;
   for (n = 1; n <= itmax; n++) {
     an = (float)n;
     ana = an - a;
@@ -93,7 +94,7 @@ static void gser(float *gamser, float a, float x, float *gln)
     del = sum = 1. / a;
     for (n = 1; n <= itmax; n++) {
       ap += 1.0;
-      del *= x/ap;
+      del *= x / ap;
       sum += del;
       if (fabs(del) < fabs(sum) * eps) {
         *gamser = sum * exp(-x + a * log(x) - (*gln));

@@ -29,20 +29,20 @@ static void wrhead(double hx, const struct mdt_type *mdt,
     struct mdt_feature *feat;
     int ifeat = f_int1_get(&mdt->ifeat, i) - 1;
     feat = &mlib->base.features[ifeat];
-    modlognote("%3d   %6d %s", i+1, ifeat+1, feat->name);
+    modlognote("%3d   %6d %s", i + 1, ifeat + 1, feat->name);
   }
 
   modlognote("\n  The last feature is the dependent one (x).");
 
   modlognote("\n\nThe subset of values (with respect to the BIN file)"
-             "\nthat are actually present in this analysis:"
-             "\n\n  # NBINS");
+             "\nthat are actually present in this analysis:\n\n  # NBINS");
   for (i = 0; i < mdt->nfeat; i++) {
-    modlognote("%3d %7d", i+1, f_int1_get(&mdt->nbins, i));
+    modlognote("%3d %7d", i + 1, f_int1_get(&mdt->nbins, i));
   }
 
   modlognote("\n\nNumber of all MDT table elements :%12d"
-             "\nNumber of all MDT table points   :%12.2f", mdt->nelems, summdt);
+             "\nNumber of all MDT table points   :%12.2f", mdt->nelems,
+             summdt);
 
   modlogout("\n\n\nDegrees of freedom for the p(x) chi^2 test    : %14.4f\n"
             "chi^2 for comparison of p(x) with uniform pdf : %14.4f\n"
@@ -83,7 +83,7 @@ static void wrres(const int i_feat_fix[], int n_feat_fix, double df,
   int i;
   GString *str = g_string_new(NULL);
   for (i = 0; i < n_feat_fix; i++) {
-    g_string_append_printf(str, "%3d", i_feat_fix[i]+1);
+    g_string_append_printf(str, "%3d", i_feat_fix[i] + 1);
   }
   g_string_truncate(str, 21);
   modlogout("%-21s%10.2f %10.4g %10.4g %7.4f %7.4f %7.4f", str->str, df, chisq,
@@ -163,8 +163,8 @@ gboolean mdt_entropy_full(const struct mdt_type *mdt,
 
     /* the number of different combinations of n_feat_fix features from the
        set of numb_features-1 possible features */
-    ncomb2 = nperm(mdt->nfeat-1) / (nperm(n_feat_fix)
-             * nperm(mdt->nfeat - 1 - n_feat_fix));
+    ncomb2 = nperm(mdt->nfeat - 1) / (nperm(n_feat_fix)
+                                      * nperm(mdt->nfeat - 1 - n_feat_fix));
 
     /* generate all combinations of independent features
        (there are n_feat_fix of these features, ncomb2 combinations); */
@@ -178,19 +178,23 @@ gboolean mdt_entropy_full(const struct mdt_type *mdt,
       /* get the chi^2, etc for pdf p(x/y,z,...): */
       chisq = chisqr(summdt, i_feat_fix, mdt, n_feat_fix, nbinx, sumi, &df,
                      &prob, &ccc, &cramrv, &tmperr);
-      if (tmperr) break;
+      if (tmperr) {
+        break;
+      }
 
       /* get the uncertainty coefficient of pdf p(x/y,z,...) (comparison
          of p(x/yz) with p(x)): */
-      uxy = (hx-hxy) / hx;
+      uxy = (hx - hxy) / hx;
       /* get the equivalent measure for comparison with uniform pdf: */
-      uuxy = (hx0-hxy) / hx0;
+      uuxy = (hx0 - hxy) / hx0;
 
       /* write out: */
       wrres(i_feat_fix, n_feat_fix, df, chisq, prob, hxy, uxy, uuxy);
     }
     g_free(i_feat_fix);
-    if (tmperr) break;
+    if (tmperr) {
+      break;
+    }
   }
   g_free(frq);
   g_free(sumi);

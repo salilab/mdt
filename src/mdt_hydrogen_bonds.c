@@ -46,7 +46,7 @@ int numb_hda(int ia, const int hb_iattyp[], const struct coordinates *cd,
       }
     }
   }
-  
+
   return MIN(num, nbins);
 }
 

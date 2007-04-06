@@ -37,8 +37,7 @@ gboolean mdt_offset_min(struct mdt_type *mdt, int dimensions, GError **err)
   }
   nbins = nbinx * nbiny;
 
-  modlognote("transform_mdt_> parameters:\n"
-             "                y = y - min(y)");
+  modlognote("transform_mdt_> parameters:\n" "                y = y - min(y)");
 
   indf = mdt_start_indices(mdt);
   bin = f_double1_pt(&mdt->bin);

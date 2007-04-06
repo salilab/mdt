@@ -8,8 +8,8 @@
 #include "mdt.h"
 
 /** Transform an MDT with an inverse function */
-void mdt_inverse_transform(struct mdt_type *mdt, float offset, float multiplier,
-                           float undefined)
+void mdt_inverse_transform(struct mdt_type *mdt, float offset,
+                           float multiplier, float undefined)
 {
   static const float divisor = 1e-15;
   int i;

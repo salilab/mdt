@@ -30,7 +30,8 @@ struct combination_vector {
 };
 
 /** Create and return a new combination_vector */
-static struct combination_vector *new_combination_vector(void) {
+static struct combination_vector *new_combination_vector(void)
+{
   struct combination_vector *vec = g_malloc(sizeof(struct combination_vector));
   vec->combinations = NULL;
   vec->length = vec->allocated = 0;
@@ -38,7 +39,8 @@ static struct combination_vector *new_combination_vector(void) {
 }
 
 /** Free memory used by a combination vector */
-static void free_combination_vector(struct combination_vector *vec) {
+static void free_combination_vector(struct combination_vector *vec)
+{
   int i;
   for (i = 0; i < vec->allocated; i++) {
     g_free(vec->combinations[i].stride1);
@@ -57,13 +59,13 @@ static void calculate_combinations(struct combination_vector *vec,
                                    const struct mdt_type *mdt, int n_feat_fix)
 {
   vec->length = nperm(mdt->nfeat - 1)
-                / (nperm(n_feat_fix) * nperm(mdt->nfeat - 1 - n_feat_fix));
+      / (nperm(n_feat_fix) * nperm(mdt->nfeat - 1 - n_feat_fix));
   if (vec->length > vec->allocated) {
     int i;
     int maxcom = MAX(vec->allocated * 3 / 2, vec->length);
     maxcom = MAX(maxcom, 10);
     vec->combinations = g_realloc(vec->combinations,
-                                sizeof(struct combination) * maxcom);
+                                  sizeof(struct combination) * maxcom);
     for (i = vec->allocated; i < maxcom; i++) {
       struct combination *com = &vec->combinations[i];
       com->stride1 = g_malloc(sizeof(int) * mdt->nfeat);
@@ -112,8 +114,8 @@ static void smthfrq(const double apriori[], double frq[], int i_val_fix[],
      will be normalized to the even distribution by normalize_freq,
      so all is ok, even when apriori is 0. */
 
-  /*  sumfrq can be zero when there are no points in the data, in which
-      case w2 = 0 and pdf frq(1:nbinx) does not matter: */
+  /* sumfrq can be zero when there are no points in the data, in which
+     case w2 = 0 and pdf frq(1:nbinx) does not matter: */
 
   sumfrq = normalize_freq(frq, nbinx);
 
@@ -185,8 +187,7 @@ static void getapriori(gboolean entropy_weighing, const double bin1[],
     /* for ALL combinations from the previous level: */
     for (i1 = 0; i1 < ncomb1; i1++) {
       const struct combination *comb = &vec->combinations[i1];
-      if (get_inds_combination(comb, n_feat_fix, i_feat_fix, i_val_fix,
-                               inds1)) {
+      if (get_inds_combination(comb, n_feat_fix, i_feat_fix, i_val_fix, inds1)) {
         float w;
         int is1;
         /* calculate the weight (prop. to negentropy) of the ncmbtst-th
@@ -247,8 +248,8 @@ static void finish_level(int level, int n_feat_fix, int nelm2,
 
 
 /** Prepare arrays for smoothing at level level */
-static void prepare_level(int level, struct combination_vector *vec, int *nelm2,
-                          int *maxelm2, double **bin2,
+static void prepare_level(int level, struct combination_vector *vec,
+                          int *nelm2, int *maxelm2, double **bin2,
                           const struct mdt_type *mdtin, int n_feat_fix)
 {
   int *i_feat_fix = NULL, ic2;
@@ -290,9 +291,9 @@ static void prepare_level(int level, struct combination_vector *vec, int *nelm2,
 
 /** Scan all generated combinations of independent features at level level */
 static void build_level_combination(int level, struct combination_vector *vec,
-                                    int icomb, int n_feat_fix, int i_feat_fix[],
-                                    int n_bins_fix[], int i_val_fix[],
-                                    int i_start_fix[],
+                                    int icomb, int n_feat_fix,
+                                    int i_feat_fix[], int n_bins_fix[],
+                                    int i_val_fix[], int i_start_fix[],
                                     const struct mdt_type *mdtin,
                                     gboolean entropy_weighing, int ncomb1,
                                     int nelm2, double apriori[], double frq[],
@@ -375,7 +376,8 @@ static void super_smooth_level(const struct mdt_type *mdtin,
   for (i = 0; i < vec->length; i++) {
     build_level_combination(level, vec, i, n_feat_fix, i_feat_fix, n_bins_fix,
                             i_val_fix, i_start_fix, mdtin, entropy_weighing,
-                            *ncomb1, *nelm2, apriori, frq, prior_weight, *bin2);
+                            *ncomb1, *nelm2, apriori, frq, prior_weight,
+                            *bin2);
   }
 
   finish_level(level, n_feat_fix, *nelm2, vec, mdtout, ncomb1, *bin2);

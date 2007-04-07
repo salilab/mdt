@@ -10,6 +10,7 @@
 #include "mdt_index.h"
 #include "mdt_stereo.h"
 
+/** Test a Modeller coordinate to see if it is 'defined' */
 #define DEFINED(x) ((x) != -999.0)
 
 /** Return True iff the atom index is OK, and the coordinates are

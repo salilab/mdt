@@ -13,19 +13,29 @@
 
 /** All information needed for a single combination of features */
 struct combination {
+  /** MDT stride for previous level */
   int *stride1;
+  /** MDT stride for current level */
   int *stride2;
+  /** Number of bins in MDT at this level */
   int *ndims2;
+  /** Indices of fixed features for the previous level */
   int *i_feat_fixn1;
+  /** Indices of fixed features for the current level */
   int *i_feat_fixn2;
+  /** Start index into total bin array for this level */
   int i1add;
+  /** End index into total bin array for this level */
   int i2add;
 };
 
 /** A vector of combination structures */
 struct combination_vector {
+  /** The combination data */
   struct combination *combinations;
+  /** Number of combination structs */
   int length;
+  /** Allocated number of combination structs */
   int allocated;
 };
 

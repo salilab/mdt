@@ -15,24 +15,21 @@ static void reshape_mdt_indices(const struct mdt_type *mdtin,
                                 const int old_position[])
 {
   int i;
-  int *in_iend = f_int1_pt(&mdtin->iend);
-  int *istart = f_int1_pt(&mdtout->istart);
-  int *iend = f_int1_pt(&mdtout->iend);
-  int *ifeat = f_int1_pt(&mdtout->ifeat);
-  int *nbins = f_int1_pt(&mdtout->nbins);
 
   mdtout->nelems = 1;
   for (i = 0; i < mdtin->nfeat; i++) {
-    istart[i] = offset[i] + 1;
+    const struct mdt_feature *infeat = &mdtin->features[old_position[i]];
+    struct mdt_feature *feat = &mdtout->features[i];
+    feat->istart = offset[i] + 1;
     if (shape[i] <= 0) {
-      iend[i] = in_iend[old_position[i]] + shape[i];
+      feat->iend = infeat->iend + shape[i];
     } else {
-      iend[i] = offset[i] + shape[i];
+      feat->iend = offset[i] + shape[i];
     }
 
-    ifeat[i] = features[i];
-    nbins[i] = iend[i] - istart[i] + 1;
-    mdtout->nelems *= nbins[i];
+    feat->ifeat = features[i];
+    feat->nbins = feat->iend - feat->istart + 1;
+    mdtout->nelems *= feat->nbins;
   }
 
   make_mdt_stride(mdtout);
@@ -45,9 +42,6 @@ static void reshape_mdt_table(const struct mdt_type *mdtin,
                               const int new_position[])
 {
   int *out_indf, *in_indf;
-  double *out_bin, *in_bin;
-  out_bin = f_double1_pt(&mdtout->bin);
-  in_bin = f_double1_pt(&mdtin->bin);
   out_indf = mdt_start_indices(mdtout);
   in_indf = g_malloc(sizeof(int) * mdtin->nfeat);
   do {
@@ -57,9 +51,8 @@ static void reshape_mdt_table(const struct mdt_type *mdtin,
     }
     i1 = indmdt(in_indf, mdtin);
     i2 = indmdt(out_indf, mdtout);
-    out_bin[i2] = in_bin[i1];
-  } while (roll_ind(out_indf, f_int1_pt(&mdtout->istart),
-                    f_int1_pt(&mdtout->iend), mdtout->nfeat));
+    mdtout->bin[i2] = mdtin->bin[i1];
+  } while (roll_ind_mdt(out_indf, mdtout, mdtout->nfeat));
   g_free(in_indf);
   g_free(out_indf);
 }
@@ -70,12 +63,11 @@ static gboolean get_position_mappings(const struct mdt_type *mdt,
                                       int new_position[], const char *routine,
                                       GError **err)
 {
-  int i, j, *ifeat;
-  ifeat = f_int1_pt(&mdt->ifeat);
+  int i, j;
   for (i = 0; i < mdt->nfeat; i++) {
     int match = 0;
     for (j = 0; j < mdt->nfeat; j++) {
-      if (features[i] == ifeat[j]) {
+      if (features[i] == mdt->features[j].ifeat) {
         old_position[i] = j;
         new_position[j] = i;
         match = 1;
@@ -99,19 +91,17 @@ static gboolean check_start_end(const struct mdt_type *mdt, const int offset[],
                                 const int features[], const char *routine,
                                 GError **err)
 {
-  int i, *iend, *istart, *nbins;
-  iend = f_int1_pt(&mdt->iend);
-  istart = f_int1_pt(&mdt->istart);
-  nbins = f_int1_pt(&mdt->nbins);
+  int i;
   for (i = 0; i < mdt->nfeat; i++) {
+    const struct mdt_feature *oldfeat = &mdt->features[old_position[i]];
     int end;
     if (shape[i] <= 0) {
-      end = iend[old_position[i]] + shape[i];
+      end = oldfeat->iend + shape[i];
     } else {
       end = offset[i] + shape[i];
     }
-    if (offset[i] + 1 < istart[old_position[i]] || end < offset[i] + 1
-        || end > nbins[old_position[i]]) {
+    if (offset[i] + 1 < oldfeat->istart || end < offset[i] + 1
+        || end > oldfeat->nbins) {
       g_set_error(err, MDT_ERROR, MDT_ERROR_INDEX,
                   "%s: For feature %d, new start %d and size %d are out "
                   "of range.", routine, features[i], offset[i], shape[i]);
@@ -159,7 +149,7 @@ gboolean mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 
   /* a little heuristic here: */
   if (!mdtout->pdf) {
-    mdtout->sample_size = get_sum(f_double1_pt(&mdtout->bin), mdtout->nelems);
+    mdtout->sample_size = get_sum(mdtout->bin, mdtout->nelems);
   }
 
   g_free(old_position);

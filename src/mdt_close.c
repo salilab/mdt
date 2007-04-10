@@ -51,7 +51,6 @@ gboolean mdt_close(struct mdt_type *mdt, int dimensions, GError **err)
 {
   static const char *routine = "mdt_close";
   int nbins, nbinx, nbiny, *indf;
-  double *bin;
 
   if (!get_binx_biny(dimensions, mdt, routine, &nbinx, &nbiny, err)) {
     return FALSE;
@@ -61,19 +60,17 @@ gboolean mdt_close(struct mdt_type *mdt, int dimensions, GError **err)
   modlognote("transform_mdt_> close the ends of a spline");
 
   indf = mdt_start_indices(mdt);
-  bin = f_double1_pt(&mdt->bin);
 
   do {
     int i1 = indmdt(indf, mdt);
     if (dimensions == 1) {
-      close_1d(&bin[i1], nbins);
+      close_1d(&mdt->bin[i1], nbins);
     } else {
-      close_2d(&bin[i1], nbinx, nbiny);
+      close_2d(&mdt->bin[i1], nbinx, nbiny);
     }
 /* roll the indices of the "constant" features one forward: */
-  } while (roll_ind(indf, f_int1_pt(&mdt->istart), f_int1_pt(&mdt->iend),
-                    mdt->nfeat - dimensions));
+  } while (roll_ind_mdt(indf, mdt, mdt->nfeat - dimensions));
 
-  free(indf);
+  g_free(indf);
   return TRUE;
 }

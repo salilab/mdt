@@ -26,13 +26,12 @@ double mdt_get(const struct mdt_type *mdt, const int indices[], int n_indices,
   }
   indx = indmdt(indf, mdt);
   g_free(indf);
-  if (indx < 0 || indx > mdt->nelems) {
+  if (indx < 0 || indx >= mdt->nelems) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_INDEX,
                 "%s: Index %d out of range %d to %d", routine, indx, 0,
                 mdt->nelems);
     return 0.0;
   } else {
-    double *bin = f_double1_pt(&mdt->bin);
-    return bin[indx];
+    return mdt->bin[indx];
   }
 }

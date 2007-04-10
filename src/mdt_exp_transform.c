@@ -12,15 +12,13 @@ void mdt_exp_transform(struct mdt_type *mdt, float offset, float expoffset,
                        float multiplier, float power)
 {
   int i;
-  double *bin;
 
   modlognote("transform_mdt_> parameters: %10.5f %10.5f %10.5f %10.5f\n"
              "                y = a + exp[b + c*y^d]", offset, expoffset,
              multiplier, power);
 
-  bin = f_double1_pt(&mdt->bin);
-
   for (i = 0; i < mdt->nelems; i++) {
-    bin[i] = offset + exp(expoffset + multiplier * pow(bin[i], power));
+    mdt->bin[i] = offset + exp(expoffset
+                               + multiplier * pow(mdt->bin[i], power));
   }
 }

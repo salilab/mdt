@@ -26,8 +26,8 @@ static void wrhead(double hx, const struct mdt_type *mdt,
              "Features tabulated in the multidimensional table\n\n"
              "  #  FEATURE NAME");
   for (i = 0; i < mdt->nfeat; i++) {
-    struct mdt_feature *feat;
-    int ifeat = f_int1_get(&mdt->ifeat, i) - 1;
+    struct mdt_libfeature *feat;
+    int ifeat = mdt->features[i].ifeat - 1;
     feat = &mlib->base.features[ifeat];
     modlognote("%3d   %6d %s", i + 1, ifeat + 1, feat->name);
   }
@@ -37,7 +37,7 @@ static void wrhead(double hx, const struct mdt_type *mdt,
   modlognote("\n\nThe subset of values (with respect to the BIN file)"
              "\nthat are actually present in this analysis:\n\n  # NBINS");
   for (i = 0; i < mdt->nfeat; i++) {
-    modlognote("%3d %7d", i + 1, f_int1_get(&mdt->nbins, i));
+    modlognote("%3d %7d", i + 1, mdt->features[i].nbins);
   }
 
   modlognote("\n\nNumber of all MDT table elements :%12d"
@@ -104,10 +104,10 @@ gboolean mdt_entropy_full(const struct mdt_type *mdt,
   GError *tmperr = NULL;
   int nbinx, i, *i_feat_fix, n_feat_fix;
 
-  nbinx = f_int1_get(&mdt->nbins, mdt->nfeat - 1);
+  nbinx = mdt->features[mdt->nfeat - 1].nbins;
 
   /* the number of points in mdt */
-  summdt = get_sum(f_double1_pt(&mdt->bin), mdt->nelems);
+  summdt = get_sum(mdt->bin, mdt->nelems);
 
   if (summdt < small) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,

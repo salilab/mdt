@@ -16,7 +16,6 @@ gboolean mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
   static const float divisor = 1e-15;
   static const char *routine = "mdt_smooth";
   int nbins, nbinx, nbiny, *indf;
-  double *in_bin, *out_bin;
 
   if (!get_binx_biny(dimensions, mdtin, routine, &nbinx, &nbiny, err)) {
     return FALSE;
@@ -26,8 +25,6 @@ gboolean mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
   copy_mdt(mdtin, mdtout);
 
   indf = mdt_start_indices(mdtin);
-  in_bin = f_double1_pt(&mdtin->bin);
-  out_bin = f_double1_pt(&mdtout->bin);
 
   do {
     int i1, i2, i;
@@ -38,7 +35,7 @@ gboolean mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 
     norm = 0.;
     for (i = i1; i < i2; i++) {
-      norm += in_bin[i];
+      norm += mdtin->bin[i];
     }
 
 /*  The final distribution is: P = w1 * P(uniform) + w2 * P(data)
@@ -55,12 +52,11 @@ gboolean mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
     w2 = (norm > divisor ? w2 / norm : 0.);
 
     for (i = i1; i < i2; i++) {
-      out_bin[i] = wunifp + w2 * in_bin[i];
+      mdtout->bin[i] = wunifp + w2 * mdtin->bin[i];
     }
 
 /* roll the indices of the "constant" features one forward: */
-  } while (roll_ind(indf, f_int1_pt(&mdtin->istart), f_int1_pt(&mdtin->iend),
-                    mdtin->nfeat - dimensions));
+  } while (roll_ind_mdt(indf, mdtin, mdtin->nfeat - dimensions));
 
   mdtout->pdf = 1;
   free(indf);

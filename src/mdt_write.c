@@ -28,8 +28,8 @@ static void write_mdt_header(FILE *fp, const struct mdt_type *mdt,
 
   for (i = 0; i < mdt->nfeat; i++) {
     int ifeat;
-    struct mdt_feature *feat;
-    ifeat = f_int1_get(&mdt->ifeat, i) - 1;
+    struct mdt_libfeature *feat;
+    ifeat = mdt->features[i].ifeat - 1;
     feat = &mlib->base.features[ifeat];
     fprintf(fp, "%3d %8d %5d %s\n", i + 1, ifeat + 1, feat->nbins, feat->name);
   }
@@ -39,13 +39,13 @@ static void write_mdt_header(FILE *fp, const struct mdt_type *mdt,
           "  # ISTART   IEND\n");
 
   for (i = 0; i < mdt->nfeat; i++) {
-    fprintf(fp, "%3d %6d %6d\n", i + 1, f_int1_get(&mdt->istart, i),
-            f_int1_get(&mdt->iend, i));
+    const struct mdt_feature *feat = &mdt->features[i];
+    fprintf(fp, "%3d %6d %6d\n", i + 1, feat->istart, feat->iend);
   }
 
   fprintf(fp, "\n\nMDT TABLE START:%9d\n", mdt->nelems);
 
-  free(version);
+  g_free(version);
 }
 
 /** Write MDT footer to a file */
@@ -58,10 +58,9 @@ static void write_mdt_footer(FILE *fp, const struct mdt_type *mdt)
 static void write_mdt_data(FILE *fp, const struct mdt_type *mdt)
 {
   int i;
-  double *bin = f_double1_pt(&mdt->bin);
 
   for (i = 0; i < mdt->nelems; i++) {
-    fprintf(fp, "%#15.5g\n", bin[i]);
+    fprintf(fp, "%#15.5g\n", mdt->bin[i]);
   }
 }
 

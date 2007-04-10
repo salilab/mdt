@@ -34,8 +34,8 @@ static char *get_mdt_symb(const struct mdt_type *mdt,
                           const struct mdt_library *mlib,
                           int nfeat, int ibin, int ndecimal)
 {
-  const struct mdt_feature *feat;
-  int ifeat = f_int1_get(&mdt->ifeat, nfeat) - 1;
+  const struct mdt_libfeature *feat;
+  int ifeat = mdt->features[nfeat].ifeat - 1;
   feat = &mlib->base.features[ifeat];
   /* For type 3, generate symbol from range data */
   if (feat->itsymb == 3) {
@@ -66,12 +66,11 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
                     int x_decimal, int y_decimal, double sum)
 {
   const struct mod_mdt_library *base = &mlib->base;
-  int i, ifeat, *ifeatpt, itsymbx, itsymby;
-  ifeatpt = f_int1_pt(&mdt->ifeat);
+  int i, ifeat, itsymbx, itsymby;
 
-  ifeat = ifeatpt[mdt->nfeat - 1] - 1;
+  ifeat = mdt->features[mdt->nfeat - 1].ifeat - 1;
   itsymbx = base->features[ifeat].itsymb;
-  ifeat = ifeatpt[mdt->nfeat > 1 ? mdt->nfeat - 2 : 0] - 1;
+  ifeat = mdt->features[mdt->nfeat > 1 ? mdt->nfeat -2 : 0].ifeat - 1;
   itsymby = base->features[ifeat].itsymb;
 
   fputs("# -------------------------------------------------\n", fp);
@@ -111,7 +110,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
               nbinx);
     }
     fprintf(fp, "SET WORLD_WINDOW 0 0 %5d %5d\n", nbinx + 1, nbiny + 1);
-    ifeat = ifeatpt[mdt->nfeat - 2];
+    ifeat = mdt->features[mdt->nfeat - 2].ifeat - 1;
     fputs("SET Y_LABELS", fp);
     for (i = 0; i < nbiny; i += every_y_numbered) {
       char *symb = get_mdt_symb(mdt, mlib, mdt->nfeat - 2, i, y_decimal);
@@ -133,7 +132,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
   fputs(text, fp);
   fputs("\n", fp);
 
-  ifeat = ifeatpt[mdt->nfeat - 1];
+  ifeat = mdt->features[mdt->nfeat - 1].ifeat - 1;
   fputs("SET X_LABELS", fp);
   for (i = 0; i < nbinx; i += every_x_numbered) {
     char *symb = get_mdt_symb(mdt, mlib, mdt->nfeat - 1, i, x_decimal);
@@ -145,7 +144,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
   fprintf(fp, "CAPTION CAPTION_POSITION 1, ;\n"
           "     CAPTION_TEXT '%.1f POINTS'\n", sum);
 
-  ifeat = ifeatpt[mdt->nfeat - 1] - 1;
+  ifeat = mdt->features[mdt->nfeat - 1].ifeat - 1;
   fprintf(fp, "CAPTION CAPTION_POSITION 2, ;\n"
           "     CAPTION_TEXT '%s'\n", base->features[ifeat].name);
 
@@ -153,14 +152,14 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
     fputs("CAPTION CAPTION_POSITION 3, ;\n"
           "     CAPTION_TEXT 'FREQUENCY'\n", fp);
   } else {
-    ifeat = ifeatpt[mdt->nfeat - 2] - 1;
+    ifeat = mdt->features[mdt->nfeat - 2].ifeat - 1;
     fprintf(fp, "CAPTION CAPTION_POSITION 3, ;\n"
             "     CAPTION_TEXT '%s'\n", base->features[ifeat].name);
   }
 
   for (i = mdt->nfeat - dimensions - 1; i >= 0; i--) {
     char *symb;
-    ifeat = ifeatpt[i] - 1;
+    ifeat = mdt->features[i].ifeat - 1;
     symb = get_mdt_symb(mdt, mlib, i, indf[i] - 1, 0);
     fprintf(fp, "CAPTION CAPTION_POSITION 1, ;\n"
             "     CAPTION_TEXT '%s : %s'\n", strlen(symb) == 0 ? "u" : symb,
@@ -186,9 +185,7 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
                               int x_decimal, int y_decimal, GError **err)
 {
   int *indf, nbins, npage, nhist, nempty, iposc, idrawn;
-  double *bin;
 
-  bin = f_double1_pt(&mdt->bin);
   indf = mdt_start_indices(mdt);
   nbins = nbinx * nbiny;
   /* initialize plotting counters */
@@ -203,7 +200,7 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
     i1 = indmdt(indf, mdt);
 
     /* is it dense enough to be worth processing at all? */
-    sum = get_sum(&bin[i1], nbins);
+    sum = get_sum(&mdt->bin[i1], nbins);
     if (sum >= plot_density_cutoff) {
       int ipos;
       char *datfil;
@@ -222,7 +219,7 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
               y_decimal, sum);
 
       /* write the numbers file */
-      wrdata(datfil, dimensions, &bin[i1], nbinx, nbiny, err);
+      wrdata(datfil, dimensions, &mdt->bin[i1], nbinx, nbiny, err);
       g_free(datfil);
 
       /* new page?
@@ -238,8 +235,7 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
     } else {
       nempty++;
     }
-  } while (roll_ind(indf, f_int1_pt(&mdt->istart), f_int1_pt(&mdt->iend),
-                    mdt->nfeat - dimensions) && *err == NULL);
+  } while (roll_ind_mdt(indf, mdt, mdt->nfeat - dimensions) && *err == NULL);
 
   g_free(indf);
   if (*err) {

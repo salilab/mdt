@@ -18,7 +18,7 @@ int *mdt_start_indices(const struct mdt_type *mdt)
 
   indf = g_malloc(sizeof(int) * mdt->nfeat);
   for (i = 0; i < mdt->nfeat; i++) {
-    indf[i] = f_int1_get(&mdt->istart, i);
+    indf[i] = mdt->features[i].istart;
   }
   return indf;
 }
@@ -40,8 +40,15 @@ void weights(float weight, int nbins, float norm, float *w1, float *w2)
     indices are indf. */
 int indmdt(const int *indf, const struct mdt_type *mdt)
 {
-  return indmdt_full(indf, f_int1_pt(&mdt->stride), mdt->nfeat,
-                     f_int1_pt(&mdt->istart));
+  int i, ind, nfeat = mdt->nfeat;
+  const struct mdt_feature *feat = mdt->features;
+  ind = indf[nfeat - 1] - feat[nfeat - 1].istart;
+
+  for (i = nfeat - 2; i >= 0; i--) {
+    int indval = indf[i] - feat[i].istart;
+    ind += feat[i].stride * indval;
+  }
+  return ind;
 }
 
 
@@ -80,23 +87,42 @@ int roll_ind(int indf[], const int istart[], const int iend[], int nfeat)
   return 0;
 }
 
-/** Like roll_ind(), but only for the selected inds[n_inds] features */
-int roll_inds(int indf[], const int istart[], const int iend[], int nfeat,
-              const int inds[], int n_inds)
+/** Update the indices for the next point in the MDT. Return false if no
+    more points are available. */
+int roll_ind_mdt(int indf[], const struct mdt_type *mdt, int nfeat)
 {
-  int iind, i;
-  assert(n_inds > 0 && n_inds <= nfeat);
-  iind = n_inds - 1;
-  while (iind >= 0) {
-    i = inds[iind];
-    assert(i >= 0 && i < nfeat);
-    if (indf[i] + 1 <= iend[i]) {
+  int i = nfeat - 1;
+  while (i >= 0) {
+    if (indf[i] + 1 <= mdt->features[i].iend) {
       indf[i]++;
       return 1;
     } else if (i == 0) {
       return 0;
     } else {
-      indf[i] = istart[i];
+      indf[i] = mdt->features[i].istart;
+      i--;
+    }
+  }
+  return 0;
+}
+
+/** Like roll_ind(), but only for the selected inds[n_inds] features */
+int roll_inds(int indf[], const struct mdt_type *mdt, const int inds[],
+              int n_inds)
+{
+  int iind, i;
+  assert(n_inds > 0 && n_inds <= mdt->nfeat);
+  iind = n_inds - 1;
+  while (iind >= 0) {
+    i = inds[iind];
+    assert(i >= 0 && i < mdt->nfeat);
+    if (indf[i] + 1 <= mdt->features[i].iend) {
+      indf[i]++;
+      return 1;
+    } else if (i == 0) {
+      return 0;
+    } else {
+      indf[i] = mdt->features[i].istart;
       iind--;
     }
   }
@@ -162,11 +188,11 @@ gboolean get_binx_biny(int dimensions, const struct mdt_type *mdt,
     return FALSE;
   } else {
     if (dimensions == 1) {
-      *nbinx = f_int1_get(&mdt->nbins, mdt->nfeat - 1);
+      *nbinx = mdt->features[mdt->nfeat - 1].nbins;
       *nbiny = 1;
     } else {
-      *nbinx = f_int1_get(&mdt->nbins, mdt->nfeat - 1);
-      *nbiny = f_int1_get(&mdt->nbins, mdt->nfeat - 2);
+      *nbinx = mdt->features[mdt->nfeat - 1].nbins;
+      *nbiny = mdt->features[mdt->nfeat - 2].nbins;
     }
     return TRUE;
   }
@@ -238,8 +264,9 @@ static void setup_mdt_feature_arrays(const struct mdt_type *mdt,
   *ival = g_malloc(sizeof(int) * nfeat);
   *nbins = g_malloc(sizeof(int) * nfeat);
   for (i = 0; i < nfeat; i++) {
-    (*nbins)[i] = f_int1_get(&mdt->nbins, ifeat[i]);
-    (*ival)[i] = (*istart)[i] = f_int1_get(&mdt->istart, ifeat[i]);
+    const struct mdt_feature *feat = &mdt->features[ifeat[i]];
+    (*nbins)[i] = feat->nbins;
+    (*ival)[i] = (*istart)[i] = feat->istart;
   }
 }
 
@@ -251,7 +278,6 @@ void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
 {
   int *indf, *i_val_var, *i_feat_var, *var_feature_bins, *istart, n_feat_var,
       i, i1;
-  double *bin;
 
   /* Find the dependent features */
   i_feat_var = complem(i_feat_fix, n_feat_fix, mdt->nfeat, &n_feat_var);
@@ -272,7 +298,6 @@ void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
     frq[i] = 0.;
   }
 
-  bin = f_double1_pt(&mdt->bin);
   /* for all combinations of the values of the variable features: */
   do {
     /* copy new values of variable features into the indf array
@@ -284,7 +309,7 @@ void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
     /* for each x, sum mdt over all possible values for n_feat_var features */
     i1 = indmdt(indf, mdt);
     for (i = 0; i < nbinx; i++) {
-      frq[i] += bin[i1 + i];
+      frq[i] += mdt->bin[i1 + i];
     }
   } while (roll_ind(i_val_var, istart, var_feature_bins, n_feat_var));
 
@@ -468,8 +493,16 @@ double chisqr(double summdt, const int i_feat_fix[],
 /** Make the stride array for faster indmdt lookup */
 void make_mdt_stride(struct mdt_type *mdt)
 {
-  int nelems = make_mdt_stride_full(f_int1_pt(&mdt->nbins), mdt->nfeat,
-                                    f_int1_pt(&mdt->stride));
+  int i, nelems;
+
+  mdt->features[mdt->nfeat - 1].stride = 1;
+  for (i = mdt->nfeat - 2; i >= 0; i--) {
+    mdt->features[i].stride = mdt->features[i + 1].stride
+        * mdt->features[i + 1].nbins;
+  }
+
+  /* number of elements in the full MDT array: */
+  nelems = mdt->features[0].stride * mdt->features[0].nbins;
   assert(mdt->nelems == nelems);
 }
 

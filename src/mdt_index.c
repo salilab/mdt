@@ -107,7 +107,7 @@ static int itable(const int *itab, int nr, int ir, int ndim)
 static int iclsbin(float x, const struct mdt_library *mlib, int ifi, int nrang)
 {
   int i;
-  const struct mdt_feature *feat = &mlib->base.features[ifi - 1];
+  const struct mdt_libfeature *feat = &mlib->base.features[ifi - 1];
   const struct mdt_bin *bin = feat->bins;
   for (i = 0; i < nrang; i++, bin++) {
     if (x >= bin->rang1 && x <= bin->rang2) {
@@ -319,7 +319,7 @@ static gboolean property_hbpot(const struct alignment *aln, int is,
 static const int *property_iatmacc(const struct alignment *aln, int is,
                                    struct mdt_properties *prop,
                                    const struct mdt_library *mlib, int ifi,
-                                   const struct mdt_feature *feat)
+                                   const struct mdt_libfeature *feat)
 {
   if (!prop[is].iatmacc) {
     struct structure *struc = alignment_structure_get(aln, is);
@@ -334,7 +334,7 @@ static const int *property_iatmacc(const struct alignment *aln, int is,
 static const int *property_ifatmacc(const struct alignment *aln, int is,
                                     struct mdt_properties *prop,
                                     const struct mdt_library *mlib, int ifi,
-                                    const struct mdt_feature *feat,
+                                    const struct mdt_libfeature *feat,
                                     const struct libraries *libs, GError **err)
 {
   if (!prop[is].ifatmacc) {
@@ -572,7 +572,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   struct sequence *seq1, *seq2;
   const struct mdt_bond *bond;
   const struct mdt_triplet *trp, *trp2;
-  struct mdt_feature *feat = &mlib->base.features[ifi - 1];
+  struct mdt_libfeature *feat = &mlib->base.features[ifi - 1];
   struc1 = alignment_structure_get(aln, is1);
   struc2 = alignment_structure_get(aln, is2);
   seq1 = alignment_sequence_get(aln, is1);

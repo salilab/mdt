@@ -24,20 +24,18 @@ static int *mdt_indices(gboolean *outrange, const struct alignment *aln,
                         const struct energy_data *edat,
                         struct mdt_properties *prop, GError **err)
 {
-  int i, *indf, *ifeat, *istart, *iend;
+  int i, *indf;
   GError *tmperr = NULL;
   *outrange = FALSE;
   indf = g_malloc(sizeof(int) * mdt->nfeat);
 
-  ifeat = f_int1_pt(&mdt->ifeat);
-  istart = f_int1_pt(&mdt->istart);
-  iend = f_int1_pt(&mdt->iend);
   for (i = 0; i < mdt->nfeat && !tmperr && *outrange == FALSE; i++) {
-    int ifi = ifeat[i];
+    const struct mdt_feature *feat = &mdt->features[i];
+    int ifi = feat->ifeat;
     indf[i] = my_mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
                            ia1p, mlib, ip2, ibnd1, ibnd1p, is3, ir3, ir3p,
                            libs, edat, prop, &tmperr);
-    if (!tmperr && (indf[i] < istart[i] || indf[i] > iend[i])) {
+    if (!tmperr && (indf[i] < feat->istart || indf[i] > feat->iend)) {
       *outrange = TRUE;
     }
   }
@@ -63,7 +61,6 @@ static gboolean update_mdt(struct mdt_type *mdt,
                            struct mdt_properties *prop, GError **err)
 {
   static const char *routine = "update_mdt";
-  double *bin;
   gboolean outrange;
   int imda, *indf;
 
@@ -91,8 +88,7 @@ static gboolean update_mdt(struct mdt_type *mdt,
     return FALSE;
   }
 
-  bin = f_double1_pt(&mdt->bin);
-  bin[imda] += 1.0;
+  mdt->bin[imda] += 1.0;
   mdt->sample_size += 1.0;
   return TRUE;
 }

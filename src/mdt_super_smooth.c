@@ -253,7 +253,7 @@ static void finish_level(int level, int n_feat_fix, int nelm2,
       comb->i_feat_fixn1[ifeat] = comb->i_feat_fixn2[ifeat];
     }
   }
-  memcpy(f_double1_pt(&mdt->bin), bin2, nelm2 * sizeof(double));
+  memcpy(mdt->bin, bin2, nelm2 * sizeof(double));
 }
 
 
@@ -282,12 +282,12 @@ static void prepare_level(int level, struct combination_vector *vec,
     comb->i2add = *nelm2;
 
     for (i = 0; i < n_feat_fix; i++) {
-      comb->ndims2[i] = f_int1_get(&mdtin->nbins, i_feat_fix[i]);
+      comb->ndims2[i] = mdtin->features[i_feat_fix[i]].nbins;
       /* save the feature combination for the next level: */
       comb->i_feat_fixn2[i] = i_feat_fix[i];
     }
     g_free(i_feat_fix);
-    comb->ndims2[level - 1] = f_int1_get(&mdtin->nbins, mdtin->nfeat - 1);
+    comb->ndims2[level - 1] = mdtin->features[mdtin->nfeat - 1].nbins;
 
     *nelm2 += make_mdt_stride_full(comb->ndims2, level, comb->stride2);
     ic2++;
@@ -312,10 +312,10 @@ static void build_level_combination(int level, struct combination_vector *vec,
   int i, nbinx;
   struct combination *comb = &vec->combinations[icomb];
 
-  nbinx = f_int1_get(&mdtin->nbins, mdtin->nfeat - 1);
+  nbinx = mdtin->features[mdtin->nfeat - 1].nbins;
   for (i = 0; i < n_feat_fix; i++) {
     i_feat_fix[i] = comb->i_feat_fixn2[i];
-    n_bins_fix[i] = f_int1_get(&mdtin->nbins, i_feat_fix[i]);
+    n_bins_fix[i] = mdtin->features[i_feat_fix[i]].nbins;
   }
   for (i = 0; i < mdtin->nfeat; i++) {
     i_val_fix[i] = 1;
@@ -341,7 +341,7 @@ static void build_level_combination(int level, struct combination_vector *vec,
        in the previous LEVEL cycle);
        apriori will be 1/nbinx, if prior_weight = 0 and no data:
        this routine does the job of Eq. 12: */
-    getapriori(entropy_weighing, f_double1_pt(&mdtin->bin), vec, nbinx,
+    getapriori(entropy_weighing, mdtin->bin, vec, nbinx,
                i_feat_fix, i_val_fix, ncomb1, n_feat_fix, i_start_fix,
                mdtin->nfeat, apriori);
 
@@ -405,7 +405,7 @@ void mdt_super_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
   struct combination_vector *vec = new_combination_vector();
 
   copy_mdt(mdtin, mdtout);
-  nbinx = f_int1_get(&mdtin->nbins, mdtin->nfeat - 1);
+  nbinx = mdtin->features[mdtin->nfeat - 1].nbins;
   i_feat_fix = g_malloc(sizeof(int) * mdtin->nfeat);
   n_bins_fix = g_malloc(sizeof(int) * mdtin->nfeat);
   i_start_fix = g_malloc(sizeof(int) * mdtin->nfeat);

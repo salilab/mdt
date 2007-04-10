@@ -44,10 +44,15 @@ int indmdt_full(const int *indf, const int stride[], int nfeat,
 G_GNUC_INTERNAL
 int roll_ind(int indf[], const int istart[], const int iend[], int nfeat);
 
+/** Update the indices for the next point in the MDT. Return false if no
+    more points are available. */
+G_GNUC_INTERNAL
+int roll_ind_mdt(int indf[], const struct mdt_type *mdt, int nfeat);
+
 /** Like roll_ind(), but only for the selected inds[n_inds] features */
 G_GNUC_INTERNAL
-int roll_inds(int indf[], const int istart[], const int iend[], int nfeat,
-              const int inds[], int n_inds);
+int roll_inds(int indf[], const struct mdt_type *mdt, const int inds[],
+              int n_inds);
 
 /** Roll n indices in ind so that all combinations of n different indices
     are generated, where the possible values for each index are 1+x to nmax-y.

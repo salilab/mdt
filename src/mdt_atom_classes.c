@@ -211,11 +211,11 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
   return retval;
 }
 
-static void update_mdt_feat_atclass(struct mdt_feature *feat,
+static void update_mdt_feat_atclass(struct mdt_libfeature *feat,
                                     const struct mdt_atom_class_list *atclass)
 {
   int i;
-  mdt_feature_nbins_set(feat, atclass->nclass + 1);
+  mdt_libfeature_nbins_set(feat, atclass->nclass + 1);
   for (i = 0; i < atclass->nclass; i++) {
     g_free(feat->bins[i].symbol);
     feat->bins[i].symbol = g_strdup(atclass->classes[i].name);
@@ -265,7 +265,7 @@ gboolean mdt_atom_classes_read(const gchar *filename,
                                 FALSE, FALSE, err);
   if (retval) {
     int ifeat;
-    struct mdt_feature *feat;
+    struct mdt_libfeature *feat;
 
     /* MDT features; 79 = atom, 109 = bond, 111 = angle, 113 = dihedral types */
     if (natom == 1) {
@@ -299,7 +299,7 @@ gboolean mdt_triplet_read(const gchar *filename, struct mdt_library *mlib,
     int ifeat;
     /* MDT atom triplet features; 101 and 102 */
     for (ifeat = 100; ifeat < 102; ifeat++) {
-      struct mdt_feature *feat = &mlib->base.features[ifeat];
+      struct mdt_libfeature *feat = &mlib->base.features[ifeat];
       update_mdt_feat_atclass(feat, mlib->trpclass);
     }
   }

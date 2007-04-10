@@ -483,16 +483,17 @@ class feature(object):
         self._indx = indx
 
     def __get_ifeat(self):
-        ifeat = _mdt.mdt_type_ifeat_get(self._mdt._modpt)
-        return _modeller.f_int1_get(ifeat, self._indx)
+        return _mdt.mdt_feature_ifeat_get(self.modpt)
     def __get_bins(self):
         return bin_list(self)
     def __get_offset(self):
-        offset = _mdt.mdt_type_istart_get(self._mdt._modpt)
-        return _modeller.f_int1_get(offset, self._indx) - 1
+        return _mdt.mdt_feature_istart_get(self.modpt) - 1
     def __get_periodic(self):
         return _mdt.mdt_feature_is_periodic(self.ifeat)
+    def __get_modpt(self):
+        return _mdt.mdt_type_feature_get(self._mdt._modpt, self._indx)
 
+    modpt = property(__get_modpt)
     ifeat = property(__get_ifeat, doc="Integer type")
     bins = property(__get_bins, doc="Feature bins")
     offset = property(__get_offset, doc="Offset of first bin")
@@ -508,8 +509,7 @@ class bin_list(modlist.fixlist):
         modlist.fixlist.__init__(self)
 
     def __len__(self):
-        nbins = _mdt.mdt_type_nbins_get(self._mdt._modpt)
-        return _modeller.f_int1_get(nbins, self.__feature._indx)
+        return _mdt.mdt_feature_nbins_get(self.__feature.modpt)
 
     def _getfunc(self, indx):
         return bin(self.__feature, indx)

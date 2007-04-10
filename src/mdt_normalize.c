@@ -16,8 +16,8 @@ static float get_dxdy(const float dx_dy[], const struct mdt_type *mdtin,
   float dx;
 
   if (dx_dy[0] == undefined) {
-    struct mdt_feature *feat;
-    int ifeat = f_int1_get(&mdtin->ifeat, mdtin->nfeat - 1) - 1;
+    struct mdt_libfeature *feat;
+    int ifeat = mdtin->features[mdtin->nfeat - 1].ifeat - 1;
     feat = &mlib->base.features[ifeat];
     dx = feat->bins[0].rang2 - feat->bins[0].rang1;
   } else {
@@ -27,8 +27,8 @@ static float get_dxdy(const float dx_dy[], const struct mdt_type *mdtin,
   if (dimensions == 2) {
     float dy;
     if (dx_dy[1] == undefined) {
-      struct mdt_feature *feat;
-      int ifeat = f_int1_get(&mdtin->ifeat, mdtin->nfeat - 2) - 1;
+      struct mdt_libfeature *feat;
+      int ifeat = mdtin->features[mdtin->nfeat - 2].ifeat - 1;
       feat = &mlib->base.features[ifeat];
       dy = feat->bins[0].rang2 - feat->bins[0].rang1;
     } else {
@@ -46,36 +46,32 @@ static void do_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
                          int nfeat)
 {
   static const float divisor = 1e-15;
-  double *in_bin = f_double1_pt(&mdtin->bin);
-  double *out_bin = f_double1_pt(&mdtout->bin);
-  int *istart = f_int1_pt(&mdtin->istart);
-  int *iend = f_int1_pt(&mdtin->iend);
 
   do {
     double norm;
     int i1 = indmdt(indf, mdtin);
     int i2 = i1 + nbins;
 
-    norm = get_sum(in_bin, nbins) * dxdy;
+    norm = get_sum(mdtin->bin, nbins) * dxdy;
     if (norm > divisor) {
       int i;
       for (i = i1; i < i2; i++) {
-        out_bin[i] = in_bin[i] / norm;
+        mdtout->bin[i] = mdtin->bin[i] / norm;
       }
     } else if (to_zero) {
       int i;
       for (i = i1; i < i2; i++) {
-        out_bin[i] = 0.0;
+        mdtout->bin[i] = 0.0;
       }
     } else {
       int i;
       for (i = i1; i < i2; i++) {
-        out_bin[i] = 1.0 / ((float)nbins * dxdy);
+        mdtout->bin[i] = 1.0 / ((float)nbins * dxdy);
       }
     }
 
     /* roll the indices of the "constant" features one forward: */
-  } while (roll_ind(indf, istart, iend, nfeat));
+  } while (roll_ind_mdt(indf, mdtin, nfeat));
 }
 
 

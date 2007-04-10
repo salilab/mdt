@@ -13,18 +13,15 @@ void mdt_inverse_transform(struct mdt_type *mdt, float offset,
 {
   static const float divisor = 1e-15;
   int i;
-  double *bin;
 
   modlognote("transform_mdt_> parameters: %10.5f %10.5f\n"
              "                y = a + b/y", offset, multiplier);
 
-  bin = f_double1_pt(&mdt->bin);
-
   for (i = 0; i < mdt->nelems; i++) {
-    if (abs(bin[i]) < divisor) {
-      bin[i] = undefined;
+    if (abs(mdt->bin[i]) < divisor) {
+      mdt->bin[i] = undefined;
     } else {
-      bin[i] = offset + multiplier / bin[i];
+      mdt->bin[i] = offset + multiplier / mdt->bin[i];
     }
   }
 }

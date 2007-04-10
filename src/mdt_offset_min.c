@@ -30,7 +30,6 @@ gboolean mdt_offset_min(struct mdt_type *mdt, int dimensions, GError **err)
 {
   static const char *routine = "mdt_offset_min";
   int nbins, nbinx, nbiny, *indf;
-  double *bin;
 
   if (!get_binx_biny(dimensions, mdt, routine, &nbinx, &nbiny, err)) {
     return FALSE;
@@ -40,7 +39,6 @@ gboolean mdt_offset_min(struct mdt_type *mdt, int dimensions, GError **err)
   modlognote("transform_mdt_> parameters:\n" "                y = y - min(y)");
 
   indf = mdt_start_indices(mdt);
-  bin = f_double1_pt(&mdt->bin);
 
   do {
     int i1, i2, i;
@@ -48,15 +46,14 @@ gboolean mdt_offset_min(struct mdt_type *mdt, int dimensions, GError **err)
 
     i1 = indmdt(indf, mdt);
     i2 = i1 + nbins;
-    minval = get_bin_minval(&bin[i1], nbins);
+    minval = get_bin_minval(&mdt->bin[i1], nbins);
 
     for (i = i1; i < i2; i++) {
-      bin[i] -= minval;
+      mdt->bin[i] -= minval;
     }
 
 /* roll the indices of the "constant" features one forward: */
-  } while (roll_ind(indf, f_int1_pt(&mdt->istart), f_int1_pt(&mdt->iend),
-                    mdt->nfeat - dimensions));
+  } while (roll_ind_mdt(indf, mdt, mdt->nfeat - dimensions));
 
   free(indf);
   return TRUE;

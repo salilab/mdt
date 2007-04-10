@@ -13,19 +13,16 @@ void mdt_log_transform(struct mdt_type *mdt, float offset, float multiplier,
                        float undefined)
 {
   int i;
-  double *bin;
 
   modlognote("transform_mdt_> parameters: %10.5f %10.5f\n"
              "                y = Ln[a + b*y]", offset, multiplier);
 
-  bin = f_double1_pt(&mdt->bin);
-
   for (i = 0; i < mdt->nelems; i++) {
-    double arg = offset + multiplier * bin[i];
+    double arg = offset + multiplier * mdt->bin[i];
     if (arg < 1e-10) {
-      bin[i] = undefined;
+      mdt->bin[i] = undefined;
     } else {
-      bin[i] = log(arg);
+      mdt->bin[i] = log(arg);
     }
   }
 }

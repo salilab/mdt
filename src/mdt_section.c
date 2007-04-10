@@ -41,7 +41,7 @@ static gboolean get_mdt_section_bins(const struct mdt_type *mdt,
 
   *nbins = 1;
   for (i = n_indices; i < mdt->nfeat; i++) {
-    (*nbins) *= f_int1_get(&mdt->nbins, i);
+    (*nbins) *= mdt->features[i].nbins;
   }
   return TRUE;
 }
@@ -199,12 +199,10 @@ double mdt_section_sum(const struct mdt_type *mdt, const int indices[],
                        int n_indices, GError **err)
 {
   int istart, nbins;
-  double *bin;
   if (!get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, err)) {
     return 0.0;
   }
-  bin = f_double1_pt(&mdt->bin);
-  return get_sum(&bin[istart], nbins);
+  return get_sum(&mdt->bin[istart], nbins);
 }
 
 /** Get the entropy of an MDT section. */
@@ -212,12 +210,10 @@ double mdt_section_entropy(const struct mdt_type *mdt, const int indices[],
                            int n_indices, GError **err)
 {
   int istart, nbins;
-  double *bin;
   if (!get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, err)) {
     return 0.0;
   }
-  bin = f_double1_pt(&mdt->bin);
-  return entropy_hist(&bin[istart], nbins);
+  return entropy_hist(&mdt->bin[istart], nbins);
 }
 
 /** Get the mean and standard deviation of an MDT section. */
@@ -228,15 +224,14 @@ void mdt_section_meanstdev(const struct mdt_type *mdt,
 {
   int istart, nbins, ifeat;
   gboolean periodic;
-  struct mdt_feature *feat;
-  double *bin, dx, x0;
+  struct mdt_libfeature *feat;
+  double dx, x0;
 
   if (!get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, err)) {
     *mean = *stdev = 0.;
     return;
   }
-  bin = f_double1_pt(&mdt->bin);
-  ifeat = f_int1_get(&mdt->ifeat, mdt->nfeat - 1);
+  ifeat = mdt->features[mdt->nfeat - 1].ifeat;
   feat = &mlib->base.features[ifeat - 1];
   periodic = mdt_feature_is_periodic(ifeat);
 
@@ -246,8 +241,8 @@ void mdt_section_meanstdev(const struct mdt_type *mdt,
   x0 = feat->bins[0].rang1 + 0.5 * dx;
 
   if (periodic) {
-    hist_avrstdev_deg(&bin[istart], nbins, x0, dx, mean, stdev);
+    hist_avrstdev_deg(&mdt->bin[istart], nbins, x0, dx, mean, stdev);
   } else {
-    hist_avrstdev(&bin[istart], nbins, x0, dx, mean, stdev);
+    hist_avrstdev(&mdt->bin[istart], nbins, x0, dx, mean, stdev);
   }
 }

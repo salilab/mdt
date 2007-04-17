@@ -15,7 +15,7 @@ m = mdt.mdt(mlib, features=(35,109,110))
 
 # make the MDT table using the pdb_60 sample chains:
 a = alignment(env)
-while (a.read_one(file='../lib/pdb_60.pir')):
+while (a.read_one(file='../cluster-PDB/pdb_60.pir')):
     m.add_alignment(a)
 
 # write out the MDT table:

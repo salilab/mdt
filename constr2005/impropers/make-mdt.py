@@ -14,7 +14,7 @@ mlib.dihedral_classes.read('${LIB}/impgrp.lib')
 m = mdt.mdt(mlib, features=(35,113,114))
 
 a = alignment(env)
-while (a.read_one(file='../lib/pdb_60.pir')):
+while (a.read_one(file='../cluster-PDB/pdb_60.pir')):
     m.add_alignment(a)
 
 m.write('mdt.mdt')

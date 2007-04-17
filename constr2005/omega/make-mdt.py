@@ -13,7 +13,7 @@ mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', '../lib/mdt2.bin', deltai=1)
 m = mdt.mdt(mlib, features=(35,66,28))
 
 a = alignment(env)
-while (a.read_one(file='../lib/pdb_60.pir')):
+while (a.read_one(file='../cluster-PDB/pdb_60.pir')):
     m.add_alignment(a)
 
 m.write('mdt.mdt')

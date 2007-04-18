@@ -177,13 +177,12 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m3[1], 0.0, 0.0005)
 
     def test_feature_iresol(self):
-        """Check resolution feature"""
+        """Check resolution features"""
         m = self.get_test_mdt(features=35)
+        m2 = self.get_test_mdt(features=38)
         self.assertEqual(m.shape, (4,))
         self.assertEqual([b for b in m], [0., 2., 0., 0.])
-        m = self.get_test_mdt(features=38)
-        self.assertEqual(m.shape, (4,))
-        self.assertEqual([b for b in m], [0., 0., 0., 2.])
+        self.assertMDTDataEqual(m, m2)
 
     def test_feature_atmacc(self):
         """Check atom accessibility features"""

@@ -70,7 +70,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
 
   ifeat = mdt->features[mdt->nfeat - 1].ifeat - 1;
   itsymbx = base->features[ifeat].itsymb;
-  ifeat = mdt->features[mdt->nfeat > 1 ? mdt->nfeat -2 : 0].ifeat - 1;
+  ifeat = mdt->features[mdt->nfeat > 1 ? mdt->nfeat - 2 : 0].ifeat - 1;
   itsymby = base->features[ifeat].itsymb;
 
   fputs("# -------------------------------------------------\n", fp);

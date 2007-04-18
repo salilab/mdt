@@ -25,6 +25,7 @@ struct mdt_properties *mdt_properties_new(const struct alignment *aln)
     prop[i].triplets = NULL;
     prop[i].hb_iatta = NULL;
     prop[i].hbpot = NULL;
+    prop[i].iresol = 0;
     prop[i].iatta = NULL;
     prop[i].iatmacc = NULL;
     prop[i].ifatmacc = NULL;
@@ -315,6 +316,29 @@ static gboolean property_hbpot(const struct alignment *aln, int is,
   return TRUE;
 }
 
+/** Get/calculate the resolution bin index */
+static int property_iresol(const struct alignment *aln, int is,
+                           struct mdt_properties *prop,
+                           const struct mdt_library *mlib, int ifi,
+                           const struct mdt_libfeature *feat)
+{
+  if (prop[is].iresol == 0) {
+    struct sequence *seq = alignment_sequence_get(aln, is);
+    float resol;
+    int iresol;
+
+    /* artificially change the resolution of the NMR structures
+       from the defined -1.00 to 0.45, to decrease the number of
+       bins required to hold all defined resolutions while still
+       separating NMR from X-ray structures: */
+    resol = (seq->resol == -1.00 ? 0.45 : seq->resol);
+
+    alliclsbin(1, &resol, &iresol, mlib, ifi, feat->nbins - 1);
+    prop[is].iresol = iresol;
+  }
+  return prop[is].iresol;
+}
+
 /** Get/calculate the array of atom accessibility bin indices */
 static const int *property_iatmacc(const struct alignment *aln, int is,
                                    struct mdt_properties *prop,
@@ -567,6 +591,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
 {
   int ret, ierr = 0;
   const int *binprop;
+  int iresol;
   float fprop;
   struct structure *struc1, *struc2;
   struct sequence *seq1, *seq2;
@@ -578,6 +603,12 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   seq1 = alignment_sequence_get(aln, is1);
   seq2 = alignment_sequence_get(aln, is2);
   switch (ifi) {
+  case 35:
+    iresol = property_iresol(aln, is1, prop, mlib, ifi, feat);
+    return itable(&iresol, 1, 0, feat->nbins);
+  case 38:
+    iresol = property_iresol(aln, is2, prop, mlib, ifi, feat);
+    return itable(&iresol, 1, 0, feat->nbins);
   case 66:
     return irestab(&aln->ialn, aln->naln, is1, f_int1_pt(&seq1->irestyp),
                    seq1->nres, ip1, mlib->deltai, mlib->deltai_ali,

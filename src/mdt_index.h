@@ -65,6 +65,8 @@ struct mdt_properties {
   int *hb_iatta;
   /** Hydrogen bond satisfaction index */
   float *hbpot;
+  /** Bin index for resolution */
+  int iresol;
   /** Bin indices for atom type */
   int *iatta;
   /** Bin indices for atom accessibility */

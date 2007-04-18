@@ -4,6 +4,7 @@ from modeller.test import ModellerTest
 import mdt
 import math
 import os
+import sys
 
 class MDTTests(ModellerTest):
 
@@ -174,6 +175,15 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m2[1], 223.0, 0.0005)
         self.assertInTolerance(m3[0], 1.0, 0.0005)
         self.assertInTolerance(m3[1], 0.0, 0.0005)
+
+    def test_feature_iresol(self):
+        """Check resolution feature"""
+        m = self.get_test_mdt(features=35)
+        self.assertEqual(m.shape, (4,))
+        self.assertEqual([b for b in m], [0., 2., 0., 0.])
+        m = self.get_test_mdt(features=38)
+        self.assertEqual(m.shape, (4,))
+        self.assertEqual([b for b in m], [0., 0., 0., 2.])
 
     def test_feature_atmacc(self):
         """Check atom accessibility features"""

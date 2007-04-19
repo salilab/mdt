@@ -637,7 +637,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 81:
     binprop = property_ifatmacc(aln, is1, prop, mlib, ifi, feat, libs, err);
     if (!binprop) {
-      return 0.;
+      return 0;
     }
     return itable(binprop, struc1->cd.natm, ia1, feat->nbins);
   case 82:
@@ -646,32 +646,32 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 83:
     binprop = property_iatta(aln, is1, prop, mlib, ifi, libs, err);
     if (!binprop) {
-      return 0.;
+      return 0;
     }
     return itable(binprop, struc1->cd.natm, ia1p, feat->nbins);
   case 84:
     binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
     if (!binprop) {
-      return 0.;
+      return 0;
     }
     return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     0, feat->nbins);
   case 85:
     binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
     if (!binprop) {
-      return 0.;
+      return 0;
     }
     return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     1, feat->nbins);
   case 86:
     if (!property_hbpot(aln, is1, prop, mlib, ifi, libs, &fprop, err)) {
-      return 0.;
+      return 0;
     }
     return iclsbin(fprop, mlib, ifi, feat->nbins - 1);
   case 87:
     binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
     if (!binprop) {
-      return 0.;
+      return 0;
     }
     return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     2, feat->nbins);

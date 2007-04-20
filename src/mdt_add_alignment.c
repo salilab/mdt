@@ -93,6 +93,27 @@ static gboolean update_mdt(struct mdt_type *mdt,
   return TRUE;
 }
 
+/** Check to make sure that all features are single protein features */
+static gboolean check_single_protein_features(const struct mdt_type *mdt,
+                                              const struct mdt_library *mlib,
+                                              GError **err)
+{
+  int i;
+  for (i = 0; i < mdt->nfeat; i++) {
+    struct mdt_feature *feat = &mdt->features[i];
+    struct mdt_libfeature *libfeat;
+    libfeat = &mlib->base.features[feat->ifeat - 1];
+    if (libfeat->iknown > 1) {
+      g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                  "This combination of features requires a single protein "
+                  "scan, but feature number %d (%d) requires multiple "
+                  "proteins", i + 1, feat->ifeat);
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
 /** Update the number of protein pairs in the MDT. */
 static void update_protein_pairs(struct mdt_type *mdt, int nseqacc, int pairs,
                                  int triples)
@@ -350,6 +371,9 @@ static gboolean gen_atoms(struct mdt_type *mdt, const struct mdt_library *mlib,
 
   s1 = alignment_structure_get(aln, is1);
 
+  if (!check_single_protein_features(mdt, mlib, err)) {
+    return FALSE;
+  }
   iresatm = f_int1_pt(&s1->cd.iresatm);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
     ir1 = iresatm[ia1] - 1;
@@ -374,6 +398,9 @@ static gboolean gen_atom_pairs(struct mdt_type *mdt,
 
   s1 = alignment_structure_get(aln, is1);
 
+  if (!check_single_protein_features(mdt, mlib, err)) {
+    return FALSE;
+  }
   iresatm = f_int1_pt(&s1->cd.iresatm);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
     ir1 = iresatm[ia1] - 1;
@@ -400,6 +427,9 @@ static gboolean gen_bonds(struct mdt_type *mdt, const struct mdt_library *mlib,
   struct structure *struc;
   int ibnd1, is2;
 
+  if (!check_single_protein_features(mdt, mlib, err)) {
+    return FALSE;
+  }
   struc = alignment_structure_get(aln, is1);
   is2 = is1;
   bonds = property_bonds(aln, is1, prop, mlib, npnt, libs);
@@ -425,6 +455,9 @@ static gboolean gen_atom_triplets(struct mdt_type *mdt,
   struct structure *s1;
   const struct mdt_triplet_list *trp;
 
+  if (!check_single_protein_features(mdt, mlib, err)) {
+    return FALSE;
+  }
   s1 = alignment_structure_get(aln, is1);
   iresatm = f_int1_pt(&s1->cd.iresatm);
   trp = property_triplets(aln, is1, prop, mlib, libs);

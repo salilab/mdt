@@ -304,6 +304,10 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[31], 10214.0, 0.0005)
         self.assertInTolerance(m[32], 10095.0, 0.0005)
 
+    def test_feature_combination(self):
+        """Check that invalid feature combinations are rejected"""
+        self.assertRaises(ValueError, self.get_test_mdt, features=(17,82))
+
     def test_integrate(self):
         """Make sure MDT integration works"""
         env = self.get_environ()

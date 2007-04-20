@@ -12,6 +12,7 @@
 #include "mdt.h"
 #include "util.h"
 #include "mdt_index.h"
+#include "mdt_property.h"
 
 /** Get all MDT indices */
 static int *mdt_indices(gboolean *outrange, const struct alignment *aln,

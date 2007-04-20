@@ -55,7 +55,7 @@ struct mdt_bond_list {
   struct mdt_bond *bonds;
 };
 
-/** Properties for calculating MDT indices */
+/** Precalculated properties for calculating MDT indices */
 struct mdt_properties {
   /** Lists of bonds */
   struct mdt_bond_list *bonds[N_MDT_BOND_TYPES];
@@ -75,15 +75,6 @@ struct mdt_properties {
   int *ifatmacc;
 };
 
-/** Make a new mdt_properties structure */
-G_GNUC_INTERNAL
-struct mdt_properties *mdt_properties_new(const struct alignment *aln);
-
-/** Free an mdt_properties structure */
-G_GNUC_INTERNAL
-void mdt_properties_free(struct mdt_properties *prop,
-                         const struct alignment *aln);
-
 /** Calculate a single MDT feature index */
 G_GNUC_INTERNAL
 int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
@@ -94,21 +85,9 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                  const struct energy_data *edat,
                  struct mdt_properties *prop, GError **err);
 
-/** Get/calculate the list of all bonds for a structure. */
+/** Convert a raw number to the corresponding MDT bin index */
 G_GNUC_INTERNAL
-const struct mdt_bond_list *property_bonds(const struct alignment *aln, int is,
-                                           struct mdt_properties *prop,
-                                           const struct mdt_library *mlib,
-                                           int bondtype,
-                                           const struct libraries *libs);
-
-/** Get/calculate the list of all triplets for a structure. */
-G_GNUC_INTERNAL
-const struct mdt_triplet_list *property_triplets(const struct alignment *aln,
-                                                 int is,
-                                                 struct mdt_properties *prop,
-                                                 const struct mdt_library *mlib,
-                                                 const struct libraries *libs);
+int iclsbin(float x, const struct mdt_library *mlib, int ifi, int nrang);
 
 G_END_DECLS
 

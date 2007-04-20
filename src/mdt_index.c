@@ -129,6 +129,7 @@ static int idihedral0(int ia1, int ia2, int ia3, int ia4,
   }
 }
 
+/** Get the index into the MDT for the given alignment feature */
 int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                  int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,
                  int ia1p, const struct mdt_library *mlib, int ip2,
@@ -288,6 +289,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return idihedral0(bond->iata[0], bond->iata[1], bond->iata[2],
                       bond->iata[3], struc1, mlib, ifi, feat->nbins);
   default:
+    /* If we don't implement this feature, maybe Modeller does */
     ret = mdt_index(ifi, aln, is1 + 1, ip1 + 1, is2 + 1, ir1 + 1, ir2 + 1,
                     ir1p + 1, ir2p + 1, &mlib->base, ip2 + 1, is3 + 1, ir3 + 1,
                     ir3p + 1, libs, edat, &ierr);

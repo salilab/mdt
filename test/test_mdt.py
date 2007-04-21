@@ -176,6 +176,11 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m3[0], 1.0, 0.0005)
         self.assertInTolerance(m3[1], 0.0, 0.0005)
 
+    def test_feature_radius_gyration(self):
+        """Check radius of gyration feature"""
+        m = self.get_test_mdt(features=115)
+        self.assertEqual(m[7], 1.0)
+
     def test_feature_iresol(self):
         """Check resolution features"""
         m = self.get_test_mdt(features=35)

@@ -28,7 +28,7 @@ struct mdt_properties *mdt_properties_new(const struct alignment *aln)
     prop[i].hb_iatta = NULL;
     prop[i].hbpot = NULL;
     prop[i].iresol = 0;
-    prop[i].radius_gyration = -1.0;
+    prop[i].radius_gyration = -1;
     prop[i].iatta = NULL;
     prop[i].iatmacc = NULL;
     prop[i].ifatmacc = NULL;
@@ -282,49 +282,64 @@ int property_iresol(const struct alignment *aln, int is,
   return prop[is].iresol;
 }
 
+/** Get center of mass */
+static void get_mass_center(const float x[], const float y[], const float z[],
+                            int natm, float *cx, float *cy, float *cz)
+{
+  int i;
+  *cx = *cy = *cz = 0.;
+  for (i = 0; i < natm; i++) {
+    *cx += x[i];
+    *cy += y[i];
+    *cz += z[i];
+  }
+  if (natm > 0) {
+    *cx /= natm;
+    *cy /= natm;
+    *cz /= natm;
+  }
+}
+
+/** Get radius of gyration */
+static float get_radius_gyration(const float x[], const float y[],
+                                 const float z[], int natm, float cx,
+                                 float cy, float cz)
+{
+  int i;
+  float sum = 0.;
+  for (i = 0; i < natm; i++) {
+    float dx, dy, dz;
+    dx = x[i] - cx;
+    dy = y[i] - cy;
+    dz = z[i] - cz;
+    sum += dx * dx + dy * dy + dz * dz;
+  }
+  if (natm > 0) {
+    sum /= natm;
+  }
+  return sqrt(sum);
+}
+
 /** Get/calculate the radius of gyration bin index */
 int property_radius_gyration(const struct alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
                              const struct mdt_libfeature *feat)
 {
-  int bin_index;
-  if (prop[is].radius_gyration == -1.0) {
+  if (prop[is].radius_gyration == -1) {
     struct structure *struc = alignment_structure_get(aln, is);
-    int i;
-    float *x, *y, *z, cx, cy, cz, sum;
+    float *x, *y, *z, radius_gyration, cx, cy, cz;
     x = f_float1_pt(&struc->cd.x);
     y = f_float1_pt(&struc->cd.y);
     z = f_float1_pt(&struc->cd.z);
     /* get center of mass */
-    cx = cy = cz = 0.;
-    for (i = 0; i < struc->cd.natm; i++) {
-      cx += x[i];
-      cy += y[i];
-      cz += z[i];
-    }
-    if (struc->cd.natm > 0) {
-      cx /= struc->cd.natm;
-      cy /= struc->cd.natm;
-      cz /= struc->cd.natm;
-    }
+    get_mass_center(x, y, z, struc->cd.natm, &cx, &cy, &cz);
     /* get radius of gyration */
-    sum = 0.;
-    for (i = 0; i < struc->cd.natm; i++) {
-      float dx, dy, dz;
-      dx = x[i] - cx;
-      dy = y[i] - cy;
-      dz = z[i] - cz;
-      sum += dx * dx + dy * dy + dz * dz;
-    }
-    if (struc->cd.natm > 0) {
-      sum /= struc->cd.natm;
-    }
-    prop[is].radius_gyration = sqrt(sum);
+    radius_gyration = get_radius_gyration(x, y, z, struc->cd.natm, cx, cy, cz);
+    alliclsbin(1, &radius_gyration, &prop[is].radius_gyration, mlib, ifi,
+               feat->nbins - 1);
   }
-  alliclsbin(1, &prop[is].radius_gyration, &bin_index, mlib, ifi,
-             feat->nbins - 1);
-  return bin_index;
+  return prop[is].radius_gyration;
 }
 
 /** Get/calculate the array of atom accessibility bin indices */

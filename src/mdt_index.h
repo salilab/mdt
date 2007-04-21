@@ -55,7 +55,7 @@ struct mdt_bond_list {
   struct mdt_bond *bonds;
 };
 
-/** Precalculated properties for calculating MDT indices */
+/** Precalculated per-sequence properties for calculating MDT indices */
 struct mdt_properties {
   /** Lists of bonds */
   struct mdt_bond_list *bonds[N_MDT_BOND_TYPES];
@@ -67,8 +67,8 @@ struct mdt_properties {
   float *hbpot;
   /** Bin index for resolution */
   int iresol;
-  /** Radius of gyration */
-  float radius_gyration;
+  /** Radius of gyration bin index */
+  int radius_gyration;
   /** Bin indices for atom type */
   int *iatta;
   /** Bin indices for atom accessibility */

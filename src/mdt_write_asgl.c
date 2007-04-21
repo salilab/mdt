@@ -19,6 +19,9 @@ static gboolean wrdata(const char *datfil, int dimensions, const double bin[],
   fp = mdt_open_file(datfil, "w", &file_info, err);
   if (fp) {
     int i;
+    if (dimensions == 2) {
+      fprintf(fp, "%d %d\n", nbiny, nbinx);
+    }
     for (i = 0; i < nbinx * nbiny; i++) {
       fprintf(fp, "%#14.5g\n", bin[i]);
     }

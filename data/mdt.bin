@@ -1,0 +1,592 @@
+FEATURE 1
+RESIDUE TYPE OF A (1) 
+22    0
+
+
+FEATURE 2
+RESIDUE TYPE OF B (2) 
+22    0
+
+
+FEATURE 3
+CHI1 OF A (3)
+37    3
+-180  10
+
+
+FEATURE 4
+CHI1 OF B (4)
+37    3
+-180  10
+
+
+FEATURE 5
+CHI2 OF A (5)
+37    3
+-180  10
+
+
+FEATURE 6
+CHI2 OF B (6)
+37    3
+-180  10
+
+
+FEATURE 7
+PHI OF A (7)
+37    3
+-180  10
+
+
+FEATURE 8
+PHI OF B (8)
+37    3
+-180  10
+
+
+FEATURE 9
+PSI OF A (9)
+37    3
+-180  10
+
+
+FEATURE 10
+PSI OF B (10)
+37    3
+-180  10
+
+
+FEATURE 11
+MAIN CHAIN CONFORMATION OF A (11)
+ 5    1        
+                     H       
+                     E 
+                     R
+                     P+
+                     U
+
+
+FEATURE 12
+MAIN CHAIN CONFORMATION OF B (12)
+ 5    1            
+                     H       
+                     E 
+                     R
+                     P+
+                     U
+
+
+FEATURE 13
+RESIDUE ACCESSIBILITY IN A (13)
+ 31   3           
+ 0.0    5.0
+
+
+FEATURE 14
+RESIDUE NGH DIFF A-B (14)
+ 5    3      
+ 0.00  0.50
+
+
+FEATURE 15
+OVERALL FRACTIONAL SEQUENCE IDENTITY A-B (15)
+11    3         
+ 0.00  0.10
+
+
+FEATURE 16
+DISTANCE IN A (16)
+1     3             SYM1      SYM2
+  0   1.0
+
+
+FEATURE 17
+DISTANCE IN B (17)
+1     3             SYM1      SYM2
+  0   1.0
+
+
+FEATURE 18
+CHI1 CLASS IN A (18)
+4     0    
+
+
+FEATURE 19
+CHI1 CLASS IN B (19)
+4     0    
+
+
+FEATURE 20
+CHI2 CLASS IN A (20)
+4     0    
+
+
+FEATURE 21
+CHI2 CLASS IN B (21)
+4     0    
+
+
+FEATURE 22
+CHI3 CLASS IN A (22)
+4     0    
+
+
+FEATURE 23
+CHI3 CLASS IN B (23)
+4     0    
+
+
+FEATURE 24
+AVERAGE RES NGH DIFF A-B (24)
+25    3      
+ 0.00  0.10
+
+
+FEATURE 25
+AVERAGE RES NGH DIFF A-C (25)
+25    3      
+ 0.00  0.10
+
+
+FEATURE 26
+CHI4 CLASS IN A (26)
+4     0    
+
+
+FEATURE 27
+CHI4 CLASS in B (27)
+4     0    
+
+
+FEATURE 28
+OMEGA IN A (28)
+37    3    
+-180   10.0
+
+
+FEATURE 29
+OMEGA IN B (29)
+37    3    
+-180   10.0
+
+
+FEATURE 30
+ALPHA CONTENT OF A (30)
+11    3    
+0.0   0.1
+
+
+FEATURE 31
+RESIDUE NGH DIFF A-C (31)
+25    3    
+0.0  0.1
+
+
+FEATURE 32
+RESIDUE ACCESSIBILITY IN B (32)
+ 31   3           
+ 0.0    5.0
+
+
+FEATURE 33
+AVERAGE SIDECHAIN Biso IN A (33)
+20    3       
+ 0.0  5.0
+
+
+FEATURE 34
+AVERAGE SIDECHAIN Biso IN B (34)
+20    3       
+ 0.0  5.0
+
+
+FEATURE 35
+X-RAY RESOLUTION OF A (35)
+ 4    3       
+-1.0     1.5
+
+
+FEATURE 36
+NUMB OF CONTACTS WITH HETATM IN A (36)
+ 1    3 
+ 0    1 
+
+
+FEATURE 37
+NUMB OF CONTACTS WITH HETATM IN B (37)
+ 1    3 
+ 0    1 
+
+
+FEATURE 38
+X-RAY RESOLUTION OF B (38)
+ 4    3       
+-1.0     1.5
+
+
+FEATURE 39
+AVERAGE ACCESSIBILITY OF RES PAIR IN A (39)
+ 30    3
+  0    5
+
+
+FEATURE 40
+DISTANCE DIFF B-A (40)
+ 21    3
+ -10.0  1.0
+
+
+FEATURE 41
+PHI DIFF B-A (41)
+ 37    3
+ -180.0 10.0
+
+
+FEATURE 42
+PSI DIFF B-A (42)
+ 37    3
+ -180.0 10.0
+
+
+FEATURE 43
+MAINCHAIN CONFORMATION (RAMACHANDRAN) IN A (43)
+  0   0
+
+
+FEATURE 44
+MAINCHAIN CONFORMATION (RAMACHANDRAN) IN B (44)
+  0   0
+
+
+FEATURE 45
+SIDECHAIN CONFORMATION IN A (45)
+ 16   1             SYM1      SYM2
+                    11
+                    21
+                    31
+                    U1
+                    12
+                    22
+                    32
+                    U2
+                    12
+                    22
+                    32
+                    U3
+                    1U
+                    2U
+                    3U
+                    UU 
+
+
+FEATURE 46
+SIDECHAIN CONFORMATION IN B (46)
+ 16   1             SYM1      SYM2
+                    11
+                    21
+                    31
+                    U1
+                    12
+                    22
+                    32
+                    U2
+                    12
+                    22
+                    32
+                    U3
+                    1U
+                    2U
+                    3U
+                    UU 
+
+
+FEATURE 47
+DISTANCE FROM A GAP A-B (47)
+1     3             SYM1      SYM2
+  0   1
+
+
+FEATURE 48
+AVERAGE DISTANCE FROM A GAP A-B (48)
+1     3             SYM1      SYM2
+ 0    1
+
+
+FEATURE 49
+DISTANCE IN C (49)
+1     3             SYM1      SYM2
+ 0    1.0
+
+
+FEATURE 50
+OVERALL FRACTIONAL SEQUENCE IDENTITY A-C (50)
+ 6    3         
+ 0.00  0.20
+
+
+FEATURE 51
+RESIDUE INDEX DIFFERENCE A (51)
+21    3         
+-10   1
+
+
+FEATURE 52
+RESIDUE INDEX DIFFERENCE B (52)
+21    3         
+-10   1
+
+
+FEATURE 53
+CHI3 IN A (53)
+37    3
+-180  10
+
+
+FEATURE 54
+CHI3 IN B (54)
+37    3
+-180  10
+
+
+FEATURE 55
+CHI4 IN A (55)
+37    3
+-180  10
+
+
+FEATURE 56
+CHI4 IN B (56)
+37    3
+-180  10
+
+
+FEATURE 57
+OMEGA DIFFERENCE B-A (57)
+ 37   3    
+-180.0   1.0
+
+
+FEATURE 58
+PHI CLASS IN A (58)
+4     0    
+
+
+FEATURE 59
+PHI CLASS IN B (59)
+4     0    
+
+
+FEATURE 60
+PSI CLASS IN A (60)
+4     0    
+
+
+FEATURE 61
+PSI CLASS IN B (61)
+4     0    
+
+
+FEATURE 62
+OMEGA CLASS IN A (62)
+4     0    
+
+
+FEATURE 63
+OMEGA CLASS IN B (63)
+4     0    
+
+
+FEATURE 64
+CHI5 CLASS IN A (64)
+4     0    
+
+
+FEATURE 65
+CHI5 CLASS IN B (65)
+4     0    
+
+
+FEATURE 66
+RESIDUE TYPE AT DELTA I IN A (66) 
+22    0
+
+
+FEATURE 67
+RESIDUE TYPE AT DELTA I IN B (67) 
+22    0
+
+
+FEATURE 68
+RESIDUE TYPE AT POS2 IN A (68) 
+22    0
+
+
+FEATURE 69
+RESIDUE TYPE AT POS2 IN B (69) 
+22    0
+
+
+FEATURE 70
+SEQUENCE LENGTH OF A (70) 
+50    3
+  0   5
+
+
+FEATURE 71
+RESIDUE GROUP TYPE IN A (71) 
+0     0
+
+
+FEATURE 72
+RESIDUE GROUP TYPE IN B (72) 
+0     0
+
+
+FEATURE 73
+DISTANCE2 IN A (73)
+1     3             SYM1      SYM2
+  0   1.0
+
+
+FEATURE 74
+DISTANCE2 IN A (74)
+1     3             SYM1      SYM2
+  0   1.0
+
+
+FEATURE 75
+PRECEDING OMEGA CLASS IN A (75)
+ 4    0
+
+
+FEATURE 76
+PRECEDING OMEGA CLASS IN B (76)
+ 4    0
+
+FEATURE 77
+RESIDUE TYPE AT DELTA J IN A (77)
+22    0
+
+FEATURE 78
+RESIDUE TYPE AT DELTA J IN B (78)
+22    0
+
+FEATURE 79
+MODELLER ATOM TYPE OF A (79)
+0     0
+
+FEATURE 80
+ATOM ACCESSIBILITY IN A (80)
+121   3
+  0   0.20
+
+FEATURE 81
+FRACTIONAL ATOM ACCESSIBILITY IN A (81)
+61    3
+  0   0.01
+
+FEATURE 82
+ANY ATOM DISTANCE IN A (82)
+61    3
+  0   0.5
+
+FEATURE 83
+MODELLER ATOM TYPE AT POS2 OF A (79)
+0     0
+
+FEATURE 84
+H-BOND DONOR IN A (84)
+8     3
+-0.5  1.00
+
+FEATURE 85
+H-BOND ACCEPTOR IN A (85)
+8     3
+-0.5  1.00
+
+FEATURE 86
+HBOND SATISFACTION INDEX OF PROTEIN 1 (86)
+101   3
+0    10.00
+
+FEATURE 87
+TOTAL CHARGE AROUND ATOM IN A (87)
+10    3
+0     1.00
+
+FEATURE 88
+ALPHA DIHEDRAL IN A (88)
+37    3    
+-180   10.0
+
+FEATURE 101
+ATOM TRIPLET TYPE IN A (101)
+0     0
+
+FEATURE 102
+ATOM TRIPLET TYPE IN A AT POS2 (102)
+0     0
+
+FEATURE 103
+TRIPLET NON-BONDED DISTANCE IN A (103)
+10    3
+2.0  0.2
+
+FEATURE 104
+NON-BONDED TRIPLET ANGLE1 IN A (104)
+7     3
+0    30
+
+FEATURE 105
+NON-BONDED TRIPLET ANGLE1 IN A (105)
+7     3
+0    30
+
+FEATURE 106
+NON-BONDED TRIPLET DIHEDRAL1 OF A (106)
+7     3
+-180  60
+
+FEATURE 107
+NON-BONDED TRIPLET DIHEDRAL2 OF A (107)
+7     3
+-180  60
+
+FEATURE 108
+NON-BONDED TRIPLET DIHEDRAL3 OF A (108)
+7     3
+-180  60
+
+FEATURE 109
+BOND TYPE IN A (109)
+174    0
+
+FEATURE 110
+BOND LENGTH IN A (110)
+201   3
+1.0  0.005
+
+FEATURE 111
+BOND ANGLE TYPE IN A (111)
+236    0
+
+FEATURE 112
+BOND ANGLE IN A (112)
+289   3
+0   0.625
+
+FEATURE 113
+BOND DIHEDRAL ANGLE TYPE IN A (113)
+79     0
+
+FEATURE 114
+BOND DIHEDRAL ANGLE IN A (114)
+289   3
+-180  1.25
+
+FEATURE 115
+RADIUS OF GYRATION OF A (115)
+45    3
+5.0   1.0
+
+END

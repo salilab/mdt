@@ -21,7 +21,7 @@ class MDTTests(ModellerTest):
     def get_mdt_library(self, **vars):
         """Read in MDT library and bin definitions"""
         env = self.get_environ()
-        return mdt.mdt_library(env, '${LIB}/mdt.ini', '${LIB}/mdt.bin', **vars)
+        return mdt.mdt_library(env, '${LIB}/mdt.ini', 'data/mdt.bin', **vars)
 
     def get_test_mdt(self, features):
         """Build a simple test MDT"""

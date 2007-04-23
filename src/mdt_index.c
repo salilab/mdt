@@ -48,6 +48,8 @@ static int irestab(const struct f_int2_array *ialn, int naln, int iseq,
   }
 }
 
+/** Return the bin index itab[ir], or the undefined bin index if anything is
+    out of range */
 static int itable(const int *itab, int nr, int ir, int ndim)
 {
   if (ir >= 0 && ir < nr && itab[ir] >= 1 && itab[ir] <= ndim) {
@@ -55,6 +57,13 @@ static int itable(const int *itab, int nr, int ir, int ndim)
   } else {
     return ndim;
   }
+}
+
+/** Ensure that a given bin index is in range for the feature; return in
+    the undefined bin if not. */
+static int index_inrange(int index, const struct mdt_libfeature *feat)
+{
+  return (index >= 1 && index < feat->nbins) ? index : feat->nbins;
 }
 
 /** Convert a raw number to the corresponding MDT bin index */
@@ -235,10 +244,10 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   switch (ifi) {
   case 35:
     iresol = property_iresol(aln, is1, prop, mlib, ifi, feat);
-    return itable(&iresol, 1, 0, feat->nbins);
+    return index_inrange(iresol, feat);
   case 38:
     iresol = property_iresol(aln, is2, prop, mlib, ifi, feat);
-    return itable(&iresol, 1, 0, feat->nbins);
+    return index_inrange(iresol, feat);
   case 66:
     return irestab(&aln->ialn, aln->naln, is1, f_int1_pt(&seq1->irestyp),
                    seq1->nres, ip1, mlib->deltai, mlib->deltai_ali,
@@ -317,10 +326,10 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     return itable(f_int1_pt(&struc2->iacc), seq2->nres, ir2, feat->nbins);
   case 101:
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
-    return CLAMP(trp->trpclass, 1, feat->nbins);
+    return index_inrange(trp->trpclass, feat);
   case 102:
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return CLAMP(trp->trpclass, 1, feat->nbins);
+    return index_inrange(trp->trpclass, feat);
   case 104:
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
     return iangle0(ia1, ia1p, trp->iata[0], struc1, mlib, ifi, feat->nbins);
@@ -345,7 +354,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 109:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
                              libs);
-    return CLAMP(bond->bndgrp, 1, feat->nbins);
+    return index_inrange(bond->bndgrp, feat);
   case 110:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
                              libs);
@@ -354,7 +363,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 111:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_ANGLE, ibnd1,
                              libs);
-    return CLAMP(bond->bndgrp, 1, feat->nbins);
+    return index_inrange(bond->bndgrp, feat);
   case 112:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_ANGLE, ibnd1,
                              libs);
@@ -363,7 +372,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 113:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_DIHEDRAL,
                              ibnd1, libs);
-    return CLAMP(bond->bndgrp, 1, feat->nbins);
+    return index_inrange(bond->bndgrp, feat);
   case 114:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_DIHEDRAL,
                              ibnd1, libs);
@@ -371,7 +380,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                       bond->iata[3], struc1, mlib, ifi, feat->nbins);
   case 115:
     irad = property_radius_gyration(aln, is1, prop, mlib, ifi, feat);
-    return itable(&irad, 1, 0, feat->nbins);
+    return index_inrange(irad, feat);
   default:
     /* If we don't implement this feature, maybe Modeller does */
     ret = mdt_index(ifi, aln, is1 + 1, ip1 + 1, is2 + 1, ir1 + 1, ir2 + 1,

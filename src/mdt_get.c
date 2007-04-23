@@ -22,7 +22,12 @@ double mdt_get(const struct mdt_type *mdt, const int indices[], int n_indices,
   }
   indf = g_malloc(sizeof(int) * n_indices);
   for (i = 0; i < n_indices; i++) {
-    indf[i] = indices[i] + 1;
+    /* count negative indices from the end of the feature, as in Python */
+    if (indices[i] < 0) {
+      indf[i] = mdt->features[i].iend + 1 + indices[i];
+    } else {
+      indf[i] = indices[i] + 1;
+    }
   }
   indx = indmdt(indf, mdt);
   g_free(indf);

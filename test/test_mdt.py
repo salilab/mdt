@@ -206,11 +206,13 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[0], 425.0, 1.0005)
         self.assertInTolerance(m[1], 35.0, 2.0005)
         self.assertInTolerance(m[2], 17.0, 0.0005)
+        self.assertEqual(m[-1], 0.0)
         m = self.get_test_mdt(features=81)
         self.assertEqual(m.shape, (61,))
         self.assertInTolerance(m[0], 457.0, 1.0005)
         self.assertInTolerance(m[1], 39.0, 1.0005)
         self.assertInTolerance(m[2], 35.0, 2.0005)
+        self.assertEqual(m[-1], 0.0)
 
     def test_feature_bond_type(self):
         """Check bond type features"""
@@ -318,6 +320,7 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[30], 10057.0, 0.0005)
         self.assertInTolerance(m[31], 10214.0, 0.0005)
         self.assertInTolerance(m[32], 10095.0, 0.0005)
+        self.assertEqual(m[-1], 0.0)
 
     def test_feature_combination(self):
         """Check that invalid feature combinations are rejected"""

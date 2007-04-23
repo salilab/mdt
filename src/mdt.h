@@ -69,6 +69,10 @@ gboolean mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
                      int n_offset, const int shape[], int n_shape,
                      GError **err);
 
+/** Clear the MDT array, and set feature types. Return TRUE on success. */
+gboolean mdt_make(struct mdt_type *mdt, const struct mdt_library *mlib,
+                  const int features[], int n_features, GError **err);
+
 /** Get an element from an MDT. */
 double mdt_get(const struct mdt_type *mdt, const int indices[], int n_indices,
                GError **err);

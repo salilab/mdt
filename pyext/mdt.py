@@ -229,7 +229,7 @@ class mdt(mdt_section):
 
     def make(self, features):
         """Clear the MDT, and set the features"""
-        _modeller.make_mdt(self._modpt, self._mlib.basept, features)
+        _mdt.mdt_make(self._modpt, self._mlib.modpt, features)
 
     def write(self, file, write_preamble=True):
         """Write an MDT to C{file}. If C{write_preamble} is False, it will

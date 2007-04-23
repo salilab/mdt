@@ -178,10 +178,13 @@ class MDTTests(ModellerTest):
         m3.add_alignment(aln)
         self.assertInTolerance(m[0], 295.0, 0.0005)
         self.assertInTolerance(m[1], 139.0, 0.0005)
+        self.assertEqual(m[-1], 0.0)
         self.assertInTolerance(m2[0], 236.0, 0.0005)
         self.assertInTolerance(m2[1], 223.0, 0.0005)
+        self.assertEqual(m2[-1], 0.0)
         self.assertInTolerance(m3[0], 1.0, 0.0005)
         self.assertInTolerance(m3[1], 0.0, 0.0005)
+        self.assertEqual(m3[-1], 0.0)
 
     def test_feature_radius_gyration(self):
         """Check radius of gyration feature"""
@@ -227,10 +230,12 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[0], 7.0, 0.0005)
         self.assertInTolerance(m[5], 9.0, 0.0005)
         self.assertInTolerance(m[19], 14.0, 0.0005)
+        self.assertEqual(m[-1], 0.0)
         self.assertEqual(m.shape, (174,))
         self.assertInTolerance(m2[0], 0.0, 0.0005)
         self.assertInTolerance(m2[43], 3.0, 0.0005)
         self.assertInTolerance(m2[44], 10.0, 0.0005)
+        self.assertEqual(m2[-1], 0.0)
         self.assertEqual(m2.shape, (201,))
 
     def test_feature_angle_type(self):
@@ -247,10 +252,12 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[7], 9.0, 0.0005)
         self.assertInTolerance(m[15], 11.0, 0.0005)
         self.assertEqual(m.shape, (236,))
+        self.assertEqual(m[-1], 0.0)
         self.assertInTolerance(m2[176], 48.0, 1.0005)
         self.assertInTolerance(m2[177], 42.0, 0.0005)
         self.assertInTolerance(m2[178], 38.0, 0.0005)
         self.assertEqual(m2.shape, (289,))
+        self.assertEqual(m2[-1], 0.0)
 
     def test_feature_dihedral_type(self):
         """Check dihedral type features"""
@@ -266,10 +273,12 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[2], 9.0, 0.0005)
         self.assertInTolerance(m[4], 11.0, 0.0005)
         self.assertEqual(m.shape, (79,))
+        self.assertEqual(m[-1], 0.0)
         self.assertInTolerance(m2[143], 60.0, 1.0005)
         self.assertInTolerance(m2[144], 53.0, 1.0005)
         self.assertInTolerance(m2[145], 24.0, 0.0005)
         self.assertEqual(m2.shape, (289,))
+        self.assertEqual(m2[-1], 0.0)
 
     def test_feature_triplet_type(self):
         """Check triplet type features"""
@@ -288,22 +297,27 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m1[1], 0.0, 0.0005)
         self.assertInTolerance(m1[2], 1.0, 0.0005)
         self.assertEqual(m1.shape, (236,))
+        self.assertEqual(m1[-1], 0.0)
         self.assertInTolerance(m2[0], 60.0, 0.0005)
         self.assertInTolerance(m2[1], 0.0, 0.0005)
         self.assertInTolerance(m2[2], 60.0, 0.0005)
         self.assertEqual(m2.shape, (236,))
+        self.assertEqual(m2[-1], 0.0)
         self.assertInTolerance(m3[0], 0.0, 0.0005)
         self.assertInTolerance(m3[1], 82.0, 0.0005)
         self.assertInTolerance(m3[2], 226.0, 0.0005)
         self.assertEqual(m3.shape, (10,))
+        self.assertEqual(m3[-1], 0.0)
         self.assertInTolerance(m4[0], 479.0, 0.0005)
         self.assertInTolerance(m4[1], 806.0, 0.0005)
         self.assertInTolerance(m4[2], 471.0, 0.0005)
         self.assertEqual(m4.shape, (7,))
+        self.assertEqual(m4[-1], 0.0)
         self.assertInTolerance(m5[0], 556.0, 0.0005)
         self.assertInTolerance(m5[1], 642.0, 0.0005)
         self.assertInTolerance(m5[2], 528.0, 6.0005)
         self.assertEqual(m5.shape, (7,))
+        self.assertEqual(m5[-1], 0.0)
 
     def test_feature_alpha_dihedral(self):
         """Check alpha dihedral feature"""

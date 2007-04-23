@@ -72,6 +72,13 @@ class MDTTests(ModellerTest):
             self.assertEqual(f1.ifeat, f2.ifeat)
         self.assertMDTDataEqual(mdt1, mdt2)
 
+    def test_bad_bins(self):
+        """Check that bad bin files raise an error"""
+        env = self.get_environ()
+        mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', 'test/data/bad.bin')
+        self.assertRaises(mdt.error, mdt.mdt, mlib, features=3)
+        self.assertRaises(mdt.error, mdt.mdt, mlib, features=30)
+
     def test_mdt_formats(self):
         """Make sure we can read and write MDT files"""
         env = self.get_environ()

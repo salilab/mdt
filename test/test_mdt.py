@@ -187,6 +187,9 @@ class MDTTests(ModellerTest):
         """Check radius of gyration feature"""
         m = self.get_test_mdt(features=115)
         self.assertEqual(m[7], 1.0)
+        for (n, bin) in enumerate(m):
+            if n != 7:
+                self.assertEqual(bin, 0.0)
 
     def test_feature_iresol(self):
         """Check resolution features"""

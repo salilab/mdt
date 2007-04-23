@@ -140,7 +140,7 @@ gboolean mdt_integrate(const struct mdt_type *mdtin, struct mdt_type *mdtout,
     return FALSE;
   }
 
-  copy_mdt(mdtin, mdtout);
+  mdt_copy(mdtin, mdtout);
   mdtout->nfeat = n_features;
   copy_mdt_indices_subset(mdtin, mdtout, inew_features);
 

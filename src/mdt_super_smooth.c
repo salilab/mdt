@@ -404,7 +404,7 @@ void mdt_super_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
   double *apriori, *frq, *bin2;
   struct combination_vector *vec = new_combination_vector();
 
-  copy_mdt(mdtin, mdtout);
+  mdt_copy(mdtin, mdtout);
   nbinx = mdtin->features[mdtin->nfeat - 1].nbins;
   i_feat_fix = g_malloc(sizeof(int) * mdtin->nfeat);
   n_bins_fix = g_malloc(sizeof(int) * mdtin->nfeat);

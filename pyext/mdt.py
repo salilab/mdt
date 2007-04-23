@@ -224,7 +224,7 @@ class mdt(mdt_section):
         """@return: a copy of this MDT.
            @rtype: L{mdt}"""
         mdtout = mdt(self._mlib)
-        _modeller.copy_mdt(self._modpt, mdtout._modpt)
+        _mdt.mdt_copy(self._modpt, mdtout._modpt)
         return mdtout
 
     def make(self, features):

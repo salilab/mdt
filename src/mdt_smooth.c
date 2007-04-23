@@ -22,7 +22,7 @@ gboolean mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
   }
   nbins = nbinx * nbiny;
 
-  copy_mdt(mdtin, mdtout);
+  mdt_copy(mdtin, mdtout);
 
   indf = mdt_start_indices(mdtin);
 

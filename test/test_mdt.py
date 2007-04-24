@@ -307,7 +307,7 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m3[1], 82.0, 0.0005)
         self.assertInTolerance(m3[2], 226.0, 0.0005)
         self.assertEqual(m3.shape, (10,))
-        self.assertEqual(m3[-1], 0.0)
+        self.assertInTolerance(m3[-1], 3018.0, 0.0005)
         self.assertInTolerance(m4[0], 479.0, 0.0005)
         self.assertInTolerance(m4[1], 806.0, 0.0005)
         self.assertInTolerance(m4[2], 471.0, 0.0005)
@@ -317,7 +317,7 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m5[1], 642.0, 0.0005)
         self.assertInTolerance(m5[2], 528.0, 6.0005)
         self.assertEqual(m5.shape, (7,))
-        self.assertEqual(m5[-1], 0.0)
+        self.assertInTolerance(m5[-1], 180.0, 0.0005)
 
     def test_feature_alpha_dihedral(self):
         """Check alpha dihedral feature"""
@@ -334,7 +334,7 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[30], 10057.0, 0.0005)
         self.assertInTolerance(m[31], 10214.0, 0.0005)
         self.assertInTolerance(m[32], 10095.0, 0.0005)
-        self.assertEqual(m[-1], 0.0)
+        self.assertInTolerance(m[-1], 4892.0, 0.0005)
 
     def test_feature_combination(self):
         """Check that invalid feature combinations are rejected"""

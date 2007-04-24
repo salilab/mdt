@@ -72,15 +72,15 @@ int iclsbin(float x, const struct mdt_library *mlib, int ifi, int nrang)
   int i;
   const struct mdt_libfeature *feat = &mlib->base.features[ifi - 1];
   const struct mdt_bin *bin = feat->bins;
-  for (i = 0; i < nrang; i++, bin++) {
+  for (i = 0; i < nrang - 1; i++, bin++) {
     if (x >= bin->rang1 && x <= bin->rang2) {
       return i + 1;
     }
   }
   bin = &feat->bins[0];
   modlogwarning("iclsbin", "Undefined value; X,x1,x2,n,bin: %f %f %f %d",
-                x, bin->rang1, bin->rang2, nrang + 1);
-  return nrang + 1;
+                x, bin->rang1, bin->rang2, nrang);
+  return nrang;
 }
 
 /** Return the distance between two coordinates */
@@ -114,13 +114,14 @@ static float angle1(float x1, float y1, float z1, float x2, float y2, float z2,
   return acos(div) * 180.0 / G_PI;
 }
 
-/** Return the dihedral angle between four coordinates */
+/** Return the dihedral angle between four coordinates.
+    outrange is set to TRUE if the angle cannot be reliably calculated. */
 static float dihedral1(float x1, float y1, float z1, float x2, float y2,
                        float z2, float x3, float y3, float z3, float x4,
-                       float y4, float z4)
+                       float y4, float z4, gboolean *outrange)
 {
   double rt[4][3], l1[3], l2[3], l3[3], xt1[3], xt2[3], leng1, leng2, dot1,
-      ang, sign, norm;
+      ang, sign, norm, lengprod;
 
   rt[0][0] = x1;
   rt[0][1] = y1;
@@ -154,7 +155,14 @@ static float dihedral1(float x1, float y1, float z1, float x2, float y2,
   leng1 = xt1[0] * xt1[0] + xt1[1] * xt1[1] + xt1[2] * xt1[2];
   leng2 = xt2[0] * xt2[0] + xt2[1] * xt2[1] + xt2[2] * xt2[2];
   dot1 = xt1[0] * xt2[0] + xt1[1] * xt2[1] + xt1[2] * xt2[2];
-  norm = dot1 / sqrt(leng1 * leng2);
+  lengprod = leng1 * leng2;
+  if (lengprod < 1.0e-4) {
+    *outrange = TRUE;
+    return 0.;
+  } else {
+    *outrange = FALSE;
+    norm = dot1 / sqrt(lengprod);
+  }
   norm = CLAMP(norm, -1.0, 1.0);
   ang = acos(norm);
   sign = xt1[0] * l3[0] + xt1[1] * l3[1] + xt1[2] * l3[2];
@@ -178,7 +186,7 @@ static int idist0(int ia1, int ia1p, const struct structure *struc,
     d = dist1(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p]);
     return iclsbin(d, mlib, ifi, nrang);
   } else {
-    return nrang + 1;
+    return nrang;
   }
 }
 
@@ -196,7 +204,7 @@ static int iangle0(int ia1, int ia2, int ia3, const struct structure *struc,
                y[ia3], z[ia3]);
     return iclsbin(d, mlib, ifi, nrang);
   } else {
-    return nrang + 1;
+    return nrang;
   }
 }
 
@@ -207,15 +215,20 @@ static int idihedral0(int ia1, int ia2, int ia3, int ia4,
                       const struct mdt_library *mlib, int ifi, int nrang)
 {
   if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0 && ia4 >= 0) {
+    gboolean outrange;
     float d, *x, *y, *z;
     x = f_float1_pt(&struc->cd.x);
     y = f_float1_pt(&struc->cd.y);
     z = f_float1_pt(&struc->cd.z);
     d = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
-                  y[ia3], z[ia3], x[ia4], y[ia4], z[ia4]);
-    return iclsbin(d, mlib, ifi, nrang);
+                  y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
+    if (outrange) {
+      return nrang;
+    } else {
+      return iclsbin(d, mlib, ifi, nrang);
+    }
   } else {
-    return nrang + 1;
+    return nrang;
   }
 }
 
@@ -306,7 +319,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     if (!property_hbpot(aln, is1, prop, mlib, ifi, libs, &fprop, err)) {
       return 0;
     }
-    return iclsbin(fprop, mlib, ifi, feat->nbins - 1);
+    return iclsbin(fprop, mlib, ifi, feat->nbins);
   case 87:
     binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
     if (!binprop) {

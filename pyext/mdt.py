@@ -58,6 +58,18 @@ class mdt_library(modobject):
            @param env: the Modeller environment to use
            @param file: the MDT definition file
            @param binfile: file defining bin ranges
+           @param residue_grouping: type of residue grouping for residue class
+                  features, as defined in resgrp.lib (1=mainchain conformation,
+                  2=hydrophobicity)
+           @param deltai: see L{deltai}
+           @param deltaj: see L{deltaj}
+           @param deltai_ali: see L{deltai_ali}
+           @param deltaj_ali: see L{deltaj_ali}
+           @param distance_atoms: the atom types to use for "specified" distance
+                  features
+           @param special_atoms: whether to treat disulfide and terminii atoms
+                  specially for atom class features
+           @param hbond_cutoff: maximum separation between two H-bonded atoms
         """
         self.env = env.copy()
         _modeller.read_mdt_library(self.basept, file)
@@ -297,7 +309,9 @@ class mdt(mdt_section):
 
     def exp_transform(self, offset, expoffset, multiplier, power):
         """Apply an exponential transform to the MDT.
-           @return: the transformed MDT.
+           Each element in the new MDT, M{b}, is obtained from the original
+           MDT element M{a}, using the following relation:
+           M{b = offset + exp(expoffset + multiplier * a ^ power)}.
            @rtype: L{mdt}"""
         mdtout = self.copy()
         _mdt.mdt_exp_transform(mdtout._modpt, offset, expoffset, multiplier,
@@ -306,6 +320,10 @@ class mdt(mdt_section):
 
     def log_transform(self, offset, multiplier, undefined=0.):
         """Apply a log transform to the MDT.
+           Each element in the new MDT, M{b}, is obtained from the original
+           MDT element M{a}, using the following relation:
+           M{b = ln(offset + multiplier * a)}. Where this would involve the
+           logarithm of a negative number, M{b} is assigned to be C{undefined}.
            @return: the transformed MDT.
            @rtype: L{mdt}"""
         mdtout = self.copy()
@@ -325,6 +343,10 @@ class mdt(mdt_section):
 
     def inverse_transform(self, offset, multiplier, undefined=0.):
         """Apply an inverse transform to the MDT.
+           Each element in the new MDT, M{b}, is obtained from the original
+           MDT element M{a}, using the following relation:
+           M{b = offset + multiplier / a}. Where M{a} is zero, M{b} is
+           assigned to be C{undefined}.
            @return: the transformed MDT.
            @rtype: L{mdt}"""
         mdtout = self.copy()

@@ -1,7 +1,6 @@
 #ifdef SWIGPYTHON
 %define TO_LIST(type, checkfn, convertfn, errmsg)
-%ignore to_list_ ## type ##;
-%inline %{
+%{
 static type *to_list_ ## type ##(PyObject *pyinput, int fixsize, int *sizevar, char *displayname) {
   Py_ssize_t seqlen;
   int i, intseqlen;

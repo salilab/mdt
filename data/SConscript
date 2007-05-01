@@ -1,7 +1,7 @@
 Import('env', 'modconfig')
 
 # Source files
-files = ['anggrp.lib', 'bndgrp.lib', 'impgrp.lib', 'trpcls.lib',
+files = ['anggrp.lib', 'bndgrp.lib', 'impgrp.lib', 'trpcls.lib', 'dblcls.lib',
          'atmcls-hbda.lib', 'mdt.bin']
 
 # Install the files

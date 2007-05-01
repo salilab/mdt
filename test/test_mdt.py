@@ -280,6 +280,24 @@ class MDTTests(ModellerTest):
         self.assertEqual(m2.shape, (289,))
         self.assertEqual(m2[-1], 0.0)
 
+    def test_feature_doublet_type(self):
+        """Check doublet type features"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.triplet_classes.read('data/dblcls.lib')
+        m1 = mdt.mdt(mlib, features=105)
+        m2 = mdt.mdt(mlib, features=106)
+        aln = alignment(env, file='test/data/tiny.ali')
+        for m in (m1, m2):
+            m.add_alignment(aln)
+        for f in (107, 108):
+            m = mdt.mdt(mlib, features=f)
+            self.assertRaises(mdt.error, m.add_alignment, aln)
+        self.assertEqual(m1.shape, (7,))
+        self.assertEqual(m2.shape, (7,))
+        self.assertInTolerance(m1[0], 311.0, 0.0005)
+        self.assertInTolerance(m2[0], 302.0, 0.0005)
+
     def test_feature_triplet_type(self):
         """Check triplet type features"""
         env = self.get_environ()

@@ -51,6 +51,11 @@ const struct mdt_triplet_list *property_triplets(const struct alignment *aln,
                                                  const struct mdt_library *mlib,
                                                  const struct libraries *libs);
 
+/** Require that the triplets have at least min_natom atoms each */
+G_GNUC_INTERNAL
+gboolean triplet_require_natom(const struct mdt_library *mlib, int min_natom,
+                               int ifeat, GError **err);
+
 /** Get a single atom triplet from a structure */
 G_GNUC_INTERNAL
 const struct mdt_triplet *property_one_triplet(const struct alignment *aln,

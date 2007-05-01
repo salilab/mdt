@@ -175,23 +175,44 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
   GArray *types = g_array_new(FALSE, FALSE, sizeof(struct mdt_atom_type));
 
   if (triplets) {
-    sym[0] = "TRPGRP";
-    sym[1] = "TRIPLET";
+    sym[0] = "DBLGRP";
+    sym[1] = "TRPGRP";
+    g_scanner_add_symbol(scanner, sym[0], GINT_TO_POINTER(2));
+    g_scanner_add_symbol(scanner, sym[1], GINT_TO_POINTER(3));
   } else {
     sym[0] = grpnames[atclass->natom - 1];
     sym[1] = atnames[atclass->natom - 1];
+    g_scanner_add_symbol(scanner, sym[0], GINT_TO_POINTER(0));
+    g_scanner_add_symbol(scanner, sym[1], GINT_TO_POINTER(1));
   }
-  g_scanner_add_symbol(scanner, sym[0], GINT_TO_POINTER(0));
-  g_scanner_add_symbol(scanner, sym[1], GINT_TO_POINTER(1));
   scanner->input_name = filename;
   scanner->config->int_2_float = TRUE;
   g_scanner_input_text(scanner, text, filelen);
   while (g_scanner_get_next_token(scanner) != G_TOKEN_EOF && retval) {
     if (scanner->token == G_TOKEN_SYMBOL) {
-      if (GPOINTER_TO_INT(scanner->value.v_symbol) == 0) {
+      int symb = GPOINTER_TO_INT(scanner->value.v_symbol);
+      switch (symb) {
+      case 0:
         retval = read_atmgrp(scanner, classes, &types, read_hbond, err);
-      } else {
+        break;
+      case 1:
         retval = read_atom(scanner, atclass, classes, types, sym, err);
+        break;
+      case 2:
+      case 3:
+        atclass->natom = symb;
+        g_scanner_remove_symbol(scanner, sym[0]);
+        g_scanner_remove_symbol(scanner, sym[1]);
+        if (symb == 2) {
+          sym[0] = "DBLGRP";
+          sym[1] = "DOUBLET";
+        } else {
+          sym[0] = "TRPGRP";
+          sym[1] = "TRIPLET";
+        }
+        g_scanner_add_symbol(scanner, sym[0], GINT_TO_POINTER(0));
+        g_scanner_add_symbol(scanner, sym[1], GINT_TO_POINTER(1));
+        retval = read_atmgrp(scanner, classes, &types, read_hbond, err);
       }
     } else {
       char *symbols = g_strdup_printf("%s or %s", sym[0], sym[1]);

@@ -344,22 +344,37 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
     return index_inrange(trp->trpclass, feat);
   case 104:
+    if (!triplet_require_natom(mlib, 2, ifi, err)) {
+      return 0;
+    }
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
     return iangle0(ia1, ia1p, trp->iata[0], struc1, mlib, ifi, feat->nbins);
   case 105:
+    if (!triplet_require_natom(mlib, 2, ifi, err)) {
+      return 0;
+    }
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
     return iangle0(trp->iata[0], ia1, ia1p, struc1, mlib, ifi, feat->nbins);
   case 106:
+    if (!triplet_require_natom(mlib, 2, ifi, err)) {
+      return 0;
+    }
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
     trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
     return idihedral0(trp->iata[0], ia1, ia1p, trp2->iata[0], struc1,
                       mlib, ifi, feat->nbins);
   case 107:
+    if (!triplet_require_natom(mlib, 3, ifi, err)) {
+      return 0;
+    }
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
     trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
     return idihedral0(trp->iata[1], trp2->iata[0], ia1, ia1p, struc1,
                       mlib, ifi, feat->nbins);
   case 108:
+    if (!triplet_require_natom(mlib, 3, ifi, err)) {
+      return 0;
+    }
     trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
     trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
     return idihedral0(ia1, ia1p, trp->iata[0], trp2->iata[1], struc1,

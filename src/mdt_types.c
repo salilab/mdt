@@ -23,7 +23,10 @@ struct mdt_library *mdt_library_new(void)
     mlib->atclass[i] = mdt_atom_class_list_new(i + 1);
   }
   mlib->hbond = mdt_atom_class_list_new(1);
-  mlib->trpclass = mdt_atom_class_list_new(3);
+
+  /* Set natom to 0 to start with; gets set to 2 or 3 when we read the
+     doublet/triplet class file */
+  mlib->trpclass = mdt_atom_class_list_new(0);
   return mlib;
 }
 

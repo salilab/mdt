@@ -23,7 +23,7 @@ G_BEGIN_DECLS
 #define MDT_BOND_TYPE_DIHEDRAL 2
 #define N_MDT_BOND_TYPES       3
 
-/** Atom triplet (2 atoms stored for each leading atom) */
+/** Atom triplet (1 or 2 atoms stored for each leading atom) */
 struct mdt_triplet {
   /** Atom indices */
   int iata[2];

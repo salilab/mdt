@@ -437,6 +437,21 @@ const struct mdt_triplet_list *property_triplets(const struct alignment *aln,
   return prop[is].triplets;
 }
 
+/** Require that the triplets have at least min_natom atoms each */
+gboolean triplet_require_natom(const struct mdt_library *mlib, int min_natom,
+                               int ifeat, GError **err)
+{
+  int have_natom = mlib->trpclass->natom;
+  if (have_natom < min_natom) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                "This feature (%d) works only for tuplets of %d or more "
+                "atoms; you have only %d", ifeat, min_natom, have_natom);
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}
+
 /** Get a single atom triplet from a structure */
 const struct mdt_triplet *property_one_triplet(const struct alignment *aln,
                                                int is,

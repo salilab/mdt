@@ -14,22 +14,28 @@
 static void add_triplet(const struct coordinates *cd,
                         const struct sequence *seq,
                         const struct mdt_atom_type *atype, int ia1, int ir1,
-                        int iclass, GArray *tlist)
+                        int iclass, int natom, GArray *tlist)
 {
-  int ia2, ia3;
+  int ia2, ia3 = 0;
+  struct mdt_triplet newtrp;
+
   /* 2nd atom of the triplet: */
   ia2 = mod_residue_find_atom(cd, seq, ir1, atype->names[2]) - 1;
-  /* 3rd atom of the triplet: */
-  ia3 = mod_residue_find_atom(cd, seq, ir1, atype->names[3]) - 1;
-
-  if (ia1 != ia2 && ia1 != ia3 && ia2 != ia3 && atmdefd(ia2, cd)
-      && atmdefd(ia3, cd)) {
-    struct mdt_triplet newtrp;
-    newtrp.iata[0] = ia2;
-    newtrp.iata[1] = ia3;
-    newtrp.trpclass = iclass + 1;
-    g_array_append_val(tlist, newtrp);
+  if (ia1 == ia2 || !atmdefd(ia2, cd)) {
+    return;
   }
+  if (natom > 2) {
+    /* 3rd atom of the triplet: */
+    ia3 = mod_residue_find_atom(cd, seq, ir1, atype->names[3]) - 1;
+    if (ia1 == ia3 || ia2 == ia3 || !atmdefd(ia3, cd)) {
+      return;
+    }
+  }
+
+  newtrp.iata[0] = ia2;
+  newtrp.iata[1] = ia3;
+  newtrp.trpclass = iclass + 1;
+  g_array_append_val(tlist, newtrp);
 }
 
 static void get_triplets(int iatm, const struct structure *struc,
@@ -56,7 +62,8 @@ static void get_triplets(int iatm, const struct structure *struc,
         char *atmnam = get_coord_atmnam(&struc->cd, iatm);
         /* Does the lead atom type match? */
         if (strcmp(atmnam, t->names[1]) == 0) {
-          add_triplet(&struc->cd, seq, t, iatm, ir1, iclass, tlist);
+          add_triplet(&struc->cd, seq, t, iatm, ir1, iclass, atclass->natom,
+                      tlist);
         }
         g_free(atmnam);
       }

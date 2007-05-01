@@ -12,7 +12,7 @@
 #include "mdt_property.h"
 #include "mdt_hydrogen_bonds.h"
 #include "mdt_stereo.h"
-#include "mdt_triplets.h"
+#include "mdt_tuples.h"
 
 /** Make a new mdt_properties structure */
 struct mdt_properties *mdt_properties_new(const struct alignment *aln)
@@ -24,7 +24,7 @@ struct mdt_properties *mdt_properties_new(const struct alignment *aln)
     for (j = 0; j < N_MDT_BOND_TYPES; j++) {
       prop[i].bonds[j] = NULL;
     }
-    prop[i].triplets = NULL;
+    prop[i].tuples = NULL;
     prop[i].hb_iatta = NULL;
     prop[i].hbpot = NULL;
     prop[i].iresol = 0;
@@ -49,12 +49,12 @@ void mdt_properties_free(struct mdt_properties *prop,
       }
       g_free(prop[i].bonds[j]);
     }
-    if (prop[i].triplets) {
+    if (prop[i].tuples) {
       for (j = 0; j < struc->cd.natm; j++) {
-        g_free(prop[i].triplets[j].triplets);
+        g_free(prop[i].tuples[j].tuples);
       }
     }
-    g_free(prop[i].triplets);
+    g_free(prop[i].tuples);
     g_free(prop[i].hb_iatta);
     g_free(prop[i].hbpot);
     g_free(prop[i].iatta);
@@ -421,30 +421,29 @@ const struct mdt_bond *property_one_bond(const struct alignment *aln,
 }
 
 
-/** Get/calculate the list of all triplets for a structure. */
-const struct mdt_triplet_list *property_triplets(const struct alignment *aln,
-                                                 int is,
-                                                 struct mdt_properties *prop,
-                                                 const struct mdt_library
-                                                 *mlib,
-                                                 const struct libraries *libs)
+/** Get/calculate the list of all tuples for a structure. */
+const struct mdt_tuple_list *property_tuples(const struct alignment *aln,
+                                             int is,
+                                             struct mdt_properties *prop,
+                                             const struct mdt_library *mlib,
+                                             const struct libraries *libs)
 {
-  if (!prop[is].triplets) {
+  if (!prop[is].tuples) {
     struct sequence *seq = alignment_sequence_get(aln, is);
     struct structure *struc = alignment_structure_get(aln, is);
-    prop[is].triplets = trpclass(struc, seq, mlib->trpclass, libs);
+    prop[is].tuples = tupclass(struc, seq, mlib->tupclass, libs);
   }
-  return prop[is].triplets;
+  return prop[is].tuples;
 }
 
-/** Require that the triplets have at least min_natom atoms each */
-gboolean triplet_require_natom(const struct mdt_library *mlib, int min_natom,
-                               int ifeat, GError **err)
+/** Require that the tuples have at least min_natom atoms each */
+gboolean tuple_require_natom(const struct mdt_library *mlib, int min_natom,
+                             int ifeat, GError **err)
 {
-  int have_natom = mlib->trpclass->natom;
+  int have_natom = mlib->tupclass->natom;
   if (have_natom < min_natom) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
-                "This feature (%d) works only for tuplets of %d or more "
+                "This feature (%d) works only for tuples of %d or more "
                 "atoms; you have only %d", ifeat, min_natom, have_natom);
     return FALSE;
   } else {
@@ -452,16 +451,15 @@ gboolean triplet_require_natom(const struct mdt_library *mlib, int min_natom,
   }
 }
 
-/** Get a single atom triplet from a structure */
-const struct mdt_triplet *property_one_triplet(const struct alignment *aln,
-                                               int is,
-                                               struct mdt_properties *prop,
-                                               const struct mdt_library *mlib,
-                                               int ibnd1, int ia1,
-                                               const struct libraries *libs)
+/** Get a single atom tuple from a structure */
+const struct mdt_tuple *property_one_tuple(const struct alignment *aln,
+                                           int is, struct mdt_properties *prop,
+                                           const struct mdt_library *mlib,
+                                           int ibnd1, int ia1,
+                                           const struct libraries *libs)
 {
-  const struct mdt_triplet_list *trp;
-  trp = property_triplets(aln, is, prop, mlib, libs);
+  const struct mdt_tuple_list *trp;
+  trp = property_tuples(aln, is, prop, mlib, libs);
 
-  return &trp[ia1].triplets[ibnd1];
+  return &trp[ia1].tuples[ibnd1];
 }

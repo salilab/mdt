@@ -444,27 +444,27 @@ static gboolean gen_bonds(struct mdt_type *mdt, const struct mdt_library *mlib,
 }
 
 
-/** Scan all atom triplets in the first alignment sequence. */
-static gboolean gen_atom_triplets(struct mdt_type *mdt,
-                                  const struct mdt_library *mlib,
-                                  const struct alignment *aln, int is1,
-                                  const struct libraries *libs,
-                                  const struct energy_data *edat,
-                                  struct mdt_properties *prop, GError **err)
+/** Scan all atom tuples in the first alignment sequence. */
+static gboolean gen_atom_tuples(struct mdt_type *mdt,
+                                const struct mdt_library *mlib,
+                                const struct alignment *aln, int is1,
+                                const struct libraries *libs,
+                                const struct energy_data *edat,
+                                struct mdt_properties *prop, GError **err)
 {
   int ia1, ir1, ibnd1, ibnd1p, ia1p, ir1p, *iresatm;
   struct structure *s1;
-  const struct mdt_triplet_list *trp;
+  const struct mdt_tuple_list *tup;
 
   if (!check_single_protein_features(mdt, mlib, err)) {
     return FALSE;
   }
   s1 = alignment_structure_get(aln, is1);
   iresatm = f_int1_pt(&s1->cd.iresatm);
-  trp = property_triplets(aln, is1, prop, mlib, libs);
+  tup = property_tuples(aln, is1, prop, mlib, libs);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
     ir1 = iresatm[ia1] - 1;
-    for (ibnd1 = 0; ibnd1 < trp[ia1].ntriplets; ibnd1++) {
+    for (ibnd1 = 0; ibnd1 < tup[ia1].ntuples; ibnd1++) {
       /* Just in case you use a single atom feature at position 2 in
          protein A: */
       ia1p = ia1;
@@ -480,26 +480,25 @@ static gboolean gen_atom_triplets(struct mdt_type *mdt,
 }
 
 
-/** Scan all atom triplet pairs in the first alignment sequence. */
-static gboolean gen_atom_triplet_pairs(struct mdt_type *mdt,
-                                       const struct mdt_library *mlib,
-                                       const struct alignment *aln,
-                                       const int rsrang[4], int is1,
-                                       const struct libraries *libs,
-                                       const struct energy_data *edat,
-                                       struct mdt_properties *prop,
-                                       GError **err)
+/** Scan all atom tuple pairs in the first alignment sequence. */
+static gboolean gen_atom_tuple_pairs(struct mdt_type *mdt,
+                                     const struct mdt_library *mlib,
+                                     const struct alignment *aln,
+                                     const int rsrang[4], int is1,
+                                     const struct libraries *libs,
+                                     const struct energy_data *edat,
+                                     struct mdt_properties *prop, GError **err)
 {
   int ia1, ir1, ibnd1, ibnd1p, ia1p, ir1p, nr, *iresatm;
   struct structure *s1;
-  const struct mdt_triplet_list *trp;
+  const struct mdt_tuple_list *tup;
 
   s1 = alignment_structure_get(aln, is1);
   iresatm = f_int1_pt(&s1->cd.iresatm);
-  trp = property_triplets(aln, is1, prop, mlib, libs);
+  tup = property_tuples(aln, is1, prop, mlib, libs);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
     ir1 = iresatm[ia1] - 1;
-    for (ibnd1 = 0; ibnd1 < trp[ia1].ntriplets; ibnd1++) {
+    for (ibnd1 = 0; ibnd1 < tup[ia1].ntuples; ibnd1++) {
       for (ia1p = 0; ia1p < s1->cd.natm; ia1p++) {
         ir1p = iresatm[ia1p] - 1;
 
@@ -507,7 +506,7 @@ static gboolean gen_atom_triplet_pairs(struct mdt_type *mdt,
         nr = ir1p - ir1;
         if (ia1 != ia1p && ((nr >= rsrang[0] && nr <= rsrang[1])
                             || (nr >= rsrang[2] && nr <= rsrang[3]))) {
-          for (ibnd1p = 0; ibnd1p < trp[ia1p].ntriplets; ibnd1p++) {
+          for (ibnd1p = 0; ibnd1p < tup[ia1p].ntuples; ibnd1p++) {
             if (!update_mdt(mdt, mlib, aln, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
                             ia1p, ibnd1, ibnd1p, 1, 1, 1, libs, edat, prop,
                             err)) {
@@ -587,22 +586,22 @@ static gboolean update_stats(struct mdt_type *mdt,
     }
     break;
 
-    /* Single protein, all atom triplets; using only the first protein in
+    /* Single protein, all atom tuples; using only the first protein in
        an alignment! */
   case 8:
     if (acceptd[0]) {
-      if (!gen_atom_triplets(mdt, mlib, aln, 0, libs, edat, prop, err)) {
+      if (!gen_atom_tuples(mdt, mlib, aln, 0, libs, edat, prop, err)) {
         return FALSE;
       }
     }
     break;
 
-    /* Single protein, all atom triplet pairs; using only the first protein in
+    /* Single protein, all atom tuple pairs; using only the first protein in
        an alignment! */
   case 9:
     if (acceptd[0]) {
-      if (!gen_atom_triplet_pairs(mdt, mlib, aln, rsrang, 0, libs, edat, prop,
-                                  err)) {
+      if (!gen_atom_tuple_pairs(mdt, mlib, aln, rsrang, 0, libs, edat, prop,
+                                err)) {
         return FALSE;
       }
     }

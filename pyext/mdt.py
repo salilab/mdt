@@ -13,7 +13,7 @@
    obtained depending on the type of features M{a, b, c, ..., d}.
    The sample can contain individual proteins, pairs of proteins, pairs of
    residues in proteins, pairs of aligned residues, pairs of aligned pairs of
-   residues, chemical bonds, angles, dihedral angles, and pairs of triplets of
+   residues, chemical bonds, angles, dihedral angles, and pairs of tuples of
    atoms. Some features work with triple alignments, too. All the needed
    features M{a, b, c, ..., d} are calculated automatically from the sequences,
    alignments, and/or PDB files. The feature bins are defined in a bin file
@@ -105,8 +105,8 @@ class mdt_library(modobject):
         return bond_classes(self, 3)
     def __get_dihedral_classes(self):
         return bond_classes(self, 4)
-    def __get_triplet_classes(self):
-        return triplet_classes(self)
+    def __get_tuple_classes(self):
+        return tuple_classes(self)
     def __get_hbond_classes(self):
         return hbond_classes(self)
 
@@ -116,8 +116,8 @@ class mdt_library(modobject):
     bond_classes = property(__get_bond_classes, doc="Bond classes")
     angle_classes = property(__get_angle_classes, doc="Angle classes")
     dihedral_classes = property(__get_dihedral_classes, doc="Dihedral classes")
-    triplet_classes = property(__get_triplet_classes,
-                               doc="Atom triplet classes")
+    tuple_classes = property(__get_tuple_classes,
+                             doc="Atom tuple classes")
     hbond_classes = property(__get_hbond_classes,
                                doc="Hydrogen bond atom classes")
     deltai = property(__get_deltai, doc="delta i for some feature types")
@@ -144,15 +144,15 @@ class bond_classes(object):
 
 
 
-class triplet_classes(bond_classes):
-    """Classifications of triplets of atoms into classes"""
+class tuple_classes(bond_classes):
+    """Classifications of tuples of atoms into classes"""
 
     def __init__(self, mlib):
-        bond_classes.__init__(self, mlib, 3)
+        bond_classes.__init__(self, mlib, 0)
 
     def read(self, filename):
-        """Read atom triplet information from a file"""
-        return _mdt.mdt_triplet_read(filename, self._mlib.modpt)
+        """Read atom tuple information from a file"""
+        return _mdt.mdt_tuple_read(filename, self._mlib.modpt)
 
 
 class hbond_classes(bond_classes):

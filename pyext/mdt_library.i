@@ -23,5 +23,5 @@ gboolean mdt_atom_classes_read(const gchar *filename,
                                GError **err);
 gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib,
                         GError **err);
-gboolean mdt_triplet_read(const gchar *filename, struct mdt_library *mlib, 
-                          GError **err);
+gboolean mdt_tuple_read(const gchar *filename, struct mdt_library *mlib, 
+                        GError **err);

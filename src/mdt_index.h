@@ -23,20 +23,20 @@ G_BEGIN_DECLS
 #define MDT_BOND_TYPE_DIHEDRAL 2
 #define N_MDT_BOND_TYPES       3
 
-/** Atom triplet (1 or 2 atoms stored for each leading atom) */
-struct mdt_triplet {
+/** Atom tuple (1 or 2 atoms stored for each leading atom) */
+struct mdt_tuple {
   /** Atom indices */
   int iata[2];
-  /** Triplet class */
-  int trpclass;
+  /** Tuple class */
+  int tupclass;
 };
 
-/** List of atom triplets */
-struct mdt_triplet_list {
-  /** Number of triplets */
-  int ntriplets;
-  /** Triplet data */
-  struct mdt_triplet *triplets;
+/** List of atom tuples */
+struct mdt_tuple_list {
+  /** Number of tuples */
+  int ntuples;
+  /** Tuple data */
+  struct mdt_tuple *tuples;
 };
 
 /** A single bond/angle/dihedral in a template structure */
@@ -59,8 +59,8 @@ struct mdt_bond_list {
 struct mdt_properties {
   /** Lists of bonds */
   struct mdt_bond_list *bonds[N_MDT_BOND_TYPES];
-  /** Lists of atom triplets for each atom */
-  struct mdt_triplet_list *triplets;
+  /** Lists of atom tuples for each atom */
+  struct mdt_tuple_list *tuples;
   /** Bin indices for hydrogen bond atom type */
   int *hb_iatta;
   /** Hydrogen bond satisfaction index */

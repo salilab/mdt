@@ -284,7 +284,7 @@ class MDTTests(ModellerTest):
         """Check doublet type features"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        mlib.triplet_classes.read('data/dblcls.lib')
+        mlib.tuple_classes.read('data/dblcls.lib')
         m1 = mdt.mdt(mlib, features=105)
         m2 = mdt.mdt(mlib, features=106)
         aln = alignment(env, file='test/data/tiny.ali')
@@ -302,7 +302,7 @@ class MDTTests(ModellerTest):
         """Check triplet type features"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        mlib.triplet_classes.read('data/trpcls.lib')
+        mlib.tuple_classes.read('data/trpcls.lib')
         m1 = mdt.mdt(mlib, features=101)
         m2 = mdt.mdt(mlib, features=102)
         m3 = mdt.mdt(mlib, features=103)

@@ -43,27 +43,26 @@ const struct mdt_bond *property_one_bond(const struct alignment *aln,
                                          int bondtype, int ibnd1,
                                          const struct libraries *libs);
 
-/** Get/calculate the list of all triplets for a structure. */
+/** Get/calculate the list of all tuples for a structure. */
 G_GNUC_INTERNAL
-const struct mdt_triplet_list *property_triplets(const struct alignment *aln,
-                                                 int is,
-                                                 struct mdt_properties *prop,
-                                                 const struct mdt_library *mlib,
-                                                 const struct libraries *libs);
+const struct mdt_tuple_list *property_tuples(const struct alignment *aln,
+                                             int is,
+                                             struct mdt_properties *prop,
+                                             const struct mdt_library *mlib,
+                                             const struct libraries *libs);
 
-/** Require that the triplets have at least min_natom atoms each */
+/** Require that the tuples have at least min_natom atoms each */
 G_GNUC_INTERNAL
-gboolean triplet_require_natom(const struct mdt_library *mlib, int min_natom,
-                               int ifeat, GError **err);
+gboolean tuple_require_natom(const struct mdt_library *mlib, int min_natom,
+                             int ifeat, GError **err);
 
-/** Get a single atom triplet from a structure */
+/** Get a single atom tuple from a structure */
 G_GNUC_INTERNAL
-const struct mdt_triplet *property_one_triplet(const struct alignment *aln,
-                                               int is,
-                                               struct mdt_properties *prop,
-                                               const struct mdt_library *mlib,
-                                               int ibnd1, int ia1,
-                                               const struct libraries *libs);
+const struct mdt_tuple *property_one_tuple(const struct alignment *aln, int is,
+                                           struct mdt_properties *prop,
+                                           const struct mdt_library *mlib,
+                                           int ibnd1, int ia1,
+                                           const struct libraries *libs);
 
 /** Get/calculate the resolution bin index */
 G_GNUC_INTERNAL

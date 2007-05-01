@@ -11,7 +11,7 @@
 #include "mdt_property.h"
 #include "mdt_hydrogen_bonds.h"
 #include "mdt_stereo.h"
-#include "mdt_triplets.h"
+#include "mdt_tuples.h"
 
 static int ires_get(int ires, int nres, int igaptyp, const int *irestyp,
                     int ndimen)
@@ -248,7 +248,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   struct structure *struc1, *struc2;
   struct sequence *seq1, *seq2;
   const struct mdt_bond *bond;
-  const struct mdt_triplet *trp, *trp2;
+  const struct mdt_tuple *tup, *tup2;
   struct mdt_libfeature *feat = &mlib->base.features[ifi - 1];
   struc1 = alignment_structure_get(aln, is1);
   struc2 = alignment_structure_get(aln, is2);
@@ -338,46 +338,46 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 100:
     return itable(f_int1_pt(&struc2->iacc), seq2->nres, ir2, feat->nbins);
   case 101:
-    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
-    return index_inrange(trp->trpclass, feat);
+    tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
+    return index_inrange(tup->tupclass, feat);
   case 102:
-    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return index_inrange(trp->trpclass, feat);
+    tup = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
+    return index_inrange(tup->tupclass, feat);
   case 104:
-    if (!triplet_require_natom(mlib, 2, ifi, err)) {
+    if (!tuple_require_natom(mlib, 2, ifi, err)) {
       return 0;
     }
-    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return iangle0(ia1, ia1p, trp->iata[0], struc1, mlib, ifi, feat->nbins);
+    tup = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
+    return iangle0(ia1, ia1p, tup->iata[0], struc1, mlib, ifi, feat->nbins);
   case 105:
-    if (!triplet_require_natom(mlib, 2, ifi, err)) {
+    if (!tuple_require_natom(mlib, 2, ifi, err)) {
       return 0;
     }
-    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
-    return iangle0(trp->iata[0], ia1, ia1p, struc1, mlib, ifi, feat->nbins);
+    tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
+    return iangle0(tup->iata[0], ia1, ia1p, struc1, mlib, ifi, feat->nbins);
   case 106:
-    if (!triplet_require_natom(mlib, 2, ifi, err)) {
+    if (!tuple_require_natom(mlib, 2, ifi, err)) {
       return 0;
     }
-    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
-    trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return idihedral0(trp->iata[0], ia1, ia1p, trp2->iata[0], struc1,
+    tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
+    tup2 = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
+    return idihedral0(tup->iata[0], ia1, ia1p, tup2->iata[0], struc1,
                       mlib, ifi, feat->nbins);
   case 107:
-    if (!triplet_require_natom(mlib, 3, ifi, err)) {
+    if (!tuple_require_natom(mlib, 3, ifi, err)) {
       return 0;
     }
-    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
-    trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return idihedral0(trp->iata[1], trp2->iata[0], ia1, ia1p, struc1,
+    tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
+    tup2 = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
+    return idihedral0(tup->iata[1], tup2->iata[0], ia1, ia1p, struc1,
                       mlib, ifi, feat->nbins);
   case 108:
-    if (!triplet_require_natom(mlib, 3, ifi, err)) {
+    if (!tuple_require_natom(mlib, 3, ifi, err)) {
       return 0;
     }
-    trp = property_one_triplet(aln, is1, prop, mlib, ibnd1, ia1, libs);
-    trp2 = property_one_triplet(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return idihedral0(ia1, ia1p, trp->iata[0], trp2->iata[1], struc1,
+    tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
+    tup2 = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
+    return idihedral0(ia1, ia1p, tup->iata[0], tup2->iata[1], struc1,
                       mlib, ifi, feat->nbins);
   case 109:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,

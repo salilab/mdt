@@ -163,7 +163,7 @@ static gboolean read_atom(GScanner *scanner,
 static gboolean scan_atom_classes_file(const char *filename, const char *text,
                                        unsigned filelen,
                                        struct mdt_atom_class_list *atclass,
-                                       gboolean read_hbond, gboolean triplets,
+                                       gboolean read_hbond, gboolean tuples,
                                        GError **err)
 {
   static const char *grpnames[] = { "ATMGRP", "BNDGRP", "ANGGRP", "DIHGRP" };
@@ -174,7 +174,7 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
   GArray *classes = g_array_new(FALSE, FALSE, sizeof(struct mdt_atom_class));
   GArray *types = g_array_new(FALSE, FALSE, sizeof(struct mdt_atom_type));
 
-  if (triplets) {
+  if (tuples) {
     sym[0] = "DBLGRP";
     sym[1] = "TRPGRP";
     g_scanner_add_symbol(scanner, sym[0], GINT_TO_POINTER(2));
@@ -248,7 +248,7 @@ static void update_mdt_feat_atclass(struct mdt_libfeature *feat,
 static gboolean read_atom_class_file(const gchar *filename,
                                      struct mdt_library *mlib,
                                      struct mdt_atom_class_list *atclass,
-                                     gboolean read_hbond, gboolean triplets,
+                                     gboolean read_hbond, gboolean tuples,
                                      GError **err)
 {
   struct mod_file file_info;
@@ -269,7 +269,7 @@ static gboolean read_atom_class_file(const gchar *filename,
     return FALSE;
   } else {
     retval = scan_atom_classes_file(filename, text, filelen, atclass,
-                                    read_hbond, triplets, err);
+                                    read_hbond, tuples, err);
     g_free(text);
   }
 
@@ -309,19 +309,19 @@ gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib,
   return read_atom_class_file(filename, mlib, mlib->hbond, TRUE, FALSE, err);
 }
 
-/** Read triplet class information from a file; return TRUE on success. */
-gboolean mdt_triplet_read(const gchar *filename, struct mdt_library *mlib,
-                          GError **err)
+/** Read tuple class information from a file; return TRUE on success. */
+gboolean mdt_tuple_read(const gchar *filename, struct mdt_library *mlib,
+                        GError **err)
 {
   gboolean retval;
-  retval = read_atom_class_file(filename, mlib, mlib->trpclass, FALSE, TRUE,
+  retval = read_atom_class_file(filename, mlib, mlib->tupclass, FALSE, TRUE,
                                 err);
   if (retval) {
     int ifeat;
-    /* MDT atom triplet features; 101 and 102 */
+    /* MDT atom tuple features; 101 and 102 */
     for (ifeat = 100; ifeat < 102; ifeat++) {
       struct mdt_libfeature *feat = &mlib->base.features[ifeat];
-      update_mdt_feat_atclass(feat, mlib->trpclass);
+      update_mdt_feat_atclass(feat, mlib->tupclass);
     }
   }
   return retval;

@@ -654,7 +654,7 @@ gboolean mdt_add_alignment(struct mdt_type *mdt,
   int nseqacc, ierr;
   gboolean ret, *acceptd;
 
-  modlognote("Calculating and checking other data: %d", aln->nseq);
+  mod_lognote("Calculating and checking other data: %d", aln->nseq);
 
   mdt_getdata(mdt, &nseqacc, aln, distngh, sdchngh, surftyp, iacc1typ, io,
               libs, &ierr);
@@ -680,14 +680,14 @@ gboolean mdt_add_alignment(struct mdt_type *mdt,
   mdt->nalns++;
   mdt->n_proteins += nseqacc;
 
-  modlognote("Pre-calculating");
+  mod_lognote("Pre-calculating");
   mdt_precalc(mdt, &mlib->base, aln, libs, &ierr);
   if (ierr) {
     handle_modeller_error(err);
     ret = FALSE;
   } else {
     struct mdt_properties *prop = mdt_properties_new(aln);
-    modlognote("Updating the statistics array:");
+    mod_lognote("Updating the statistics array:");
     ret = update_stats(mdt, mlib, aln, residue_span_range, libs, edat, acceptd,
                        nseqacc, pairs, triples, prop, err);
     mdt_properties_free(prop, aln);

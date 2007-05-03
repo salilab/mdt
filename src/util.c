@@ -382,7 +382,7 @@ double entrp2(double summdt, const int i_feat_fix[],
   } while (roll_ind(i_val_fix, istart, fix_feature_bins, n_feat_fix));
 
   if (fabs(spjk - 1.0) > small) {
-    modlogwarning(routine, "Sum of p(ijk) (%.8f) is not equal to 1.0", spjk);
+    mod_logwarning(routine, "Sum of p(ijk) (%.8f) is not equal to 1.0", spjk);
   }
 
   /* clean up */
@@ -475,8 +475,8 @@ double chisqr(double summdt, const int i_feat_fix[],
   if (*df > small) {
     *prob = gammq(0.5 * (*df), 0.5 * chi2);
   } else {
-    modlogwarning(routine, "There are zero degrees of freedom; "
-                  "chi-square calculation is meaningless.");
+    mod_logwarning(routine, "There are zero degrees of freedom; "
+                   "chi-square calculation is meaningless.");
     *prob = -1.0;
   }
 

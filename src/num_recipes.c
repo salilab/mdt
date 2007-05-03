@@ -70,7 +70,7 @@ static void gcf(float *gammcf, float a, float x, float *gln)
       gold = g;
     }
   }
-  modlogwarning(routine, "a too large or itmax too small");
+  mod_logwarning(routine, "a too large or itmax too small");
   *gammcf = 0.;
 }
 
@@ -101,7 +101,7 @@ static void gser(float *gamser, float a, float x, float *gln)
         return;
       }
     }
-    modlogwarning(routine, "a too large or itmax too small");
+    mod_logwarning(routine, "a too large or itmax too small");
     *gamser = 0.;
   }
 }

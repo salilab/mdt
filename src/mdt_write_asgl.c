@@ -251,10 +251,10 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
   }
 
   /* Finish with a nice message: */
-  modlognote("Number of attempted plots : %d\n"
-             "Number of drawn plots     : %d\n"
-             "Number of empty plots     : %d\n"
-             "Number of pages           : %d", nhist, idrawn, nempty, npage);
+  mod_lognote("Number of attempted plots : %d\n"
+              "Number of drawn plots     : %d\n"
+              "Number of empty plots     : %d\n"
+              "Number of pages           : %d", nhist, idrawn, nempty, npage);
 }
 
 /** Write input files to plot the given MDT with ASGL. Return TRUE on

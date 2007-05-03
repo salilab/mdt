@@ -57,7 +57,7 @@ gboolean mdt_close(struct mdt_type *mdt, int dimensions, GError **err)
   }
   nbins = nbinx * nbiny;
 
-  modlognote("transform_mdt_> close the ends of a spline");
+  mod_lognote("transform_mdt_> close the ends of a spline");
 
   indf = mdt_start_indices(mdt);
 

@@ -106,8 +106,8 @@ static int iatmcls(int irestyp, const char *atmnam,
   }
 
   if (!residue_is_hetatm(irestyp, libs) && !mod_atom_is_hydrogen(atmnam)) {
-    modlogwarning("iatmcls", "Model atom not classified: %s:%s", resnam,
-                  atmnam);
+    mod_logwarning("iatmcls", "Model atom not classified: %s:%s", resnam,
+                   atmnam);
   }
   g_free(resnam);
   return 0;

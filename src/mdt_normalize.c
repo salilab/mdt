@@ -103,10 +103,10 @@ gboolean mdt_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 
   mdt_copy(mdtin, mdtout);
 
-  modlognote("%s______> to_pdf        : %d", routine, to_pdf);
-  modlognote("%s______> dimensions    : %d", routine, dimensions);
-  modlognote("%s______> dx*dy         : %10.4f", routine, dxdy);
-  modlognote("%s______> to_zero       : %d", routine, to_zero);
+  mod_lognote("%s______> to_pdf        : %d", routine, to_pdf);
+  mod_lognote("%s______> dimensions    : %d", routine, dimensions);
+  mod_lognote("%s______> dx*dy         : %10.4f", routine, dxdy);
+  mod_lognote("%s______> to_zero       : %d", routine, to_zero);
 
   indf = mdt_start_indices(mdtin);
   do_normalize(mdtin, mdtout, indf, dxdy, to_zero, nbins,

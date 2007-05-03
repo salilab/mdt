@@ -19,7 +19,7 @@ static int ires_get(int ires, int nres, int igaptyp, const int *irestyp,
   if (ires < 1 || ires > nres) {
     return igaptyp;
   } else if (irestyp[ires - 1] >= 21 || irestyp[ires - 1] <= 0) {
-    modlogwarning("irestab", "ires, irestp: %d %d", ires, irestyp[ires - 1]);
+    mod_logwarning("irestab", "ires, irestp: %d %d", ires, irestyp[ires - 1]);
     return ndimen;
   } else {
     return irestyp[ires - 1];
@@ -78,8 +78,8 @@ int iclsbin(float x, const struct mdt_library *mlib, int ifi, int nrang)
     }
   }
   bin = &feat->bins[0];
-  modlogwarning("iclsbin", "Undefined value; X,x1,x2,n,bin: %f %f %f %d",
-                x, bin->rang1, bin->rang2, nrang);
+  mod_logwarning("iclsbin", "Undefined value; X,x1,x2,n,bin: %f %f %f %d",
+                 x, bin->rang1, bin->rang2, nrang);
   return nrang;
 }
 

@@ -22,57 +22,57 @@ static void wrhead(double hx, const struct mdt_type *mdt,
     rule[i] = '-';
   }
   rule[79] = 0;
-  modlognote("\n\n\nEntropy output\n\n\n"
-             "Features tabulated in the multidimensional table\n\n"
-             "  #  FEATURE NAME");
+  mod_lognote("\n\n\nEntropy output\n\n\n"
+              "Features tabulated in the multidimensional table\n\n"
+              "  #  FEATURE NAME");
   for (i = 0; i < mdt->nfeat; i++) {
     struct mdt_libfeature *feat;
     int ifeat = mdt->features[i].ifeat - 1;
     feat = &mlib->base.features[ifeat];
-    modlognote("%3d   %6d %s", i + 1, ifeat + 1, feat->name);
+    mod_lognote("%3d   %6d %s", i + 1, ifeat + 1, feat->name);
   }
 
-  modlognote("\n  The last feature is the dependent one (x).");
+  mod_lognote("\n  The last feature is the dependent one (x).");
 
-  modlognote("\n\nThe subset of values (with respect to the BIN file)"
-             "\nthat are actually present in this analysis:\n\n  # NBINS");
+  mod_lognote("\n\nThe subset of values (with respect to the BIN file)"
+              "\nthat are actually present in this analysis:\n\n  # NBINS");
   for (i = 0; i < mdt->nfeat; i++) {
-    modlognote("%3d %7d", i + 1, mdt->features[i].nbins);
+    mod_lognote("%3d %7d", i + 1, mdt->features[i].nbins);
   }
 
-  modlognote("\n\nNumber of all MDT table elements :%12d"
-             "\nNumber of all MDT table points   :%12.2f", mdt->nelems,
-             summdt);
+  mod_lognote("\n\nNumber of all MDT table elements :%12d"
+              "\nNumber of all MDT table points   :%12.2f", mdt->nelems,
+              summdt);
 
-  modlogout("\n\n\nDegrees of freedom for the p(x) chi^2 test    : %14.4f\n"
-            "chi^2 for comparison of p(x) with uniform pdf : %14.4f\n"
-            "The significance of this chi^2                : %14.6g\n"
-            "The entropy of uniform pdf, H(u)              : %12.4f\n"
-            "The entropy of pdf p(x), H(x)                 : %12.4f\n"
-            "U(x) = (H(u) - H(x)) / H(u)                   : %12.4f",
-            dfu, chi2u, chi2up, hx0, hx, ux0);
+  mod_logout("\n\n\nDegrees of freedom for the p(x) chi^2 test    : %14.4f\n"
+             "chi^2 for comparison of p(x) with uniform pdf : %14.4f\n"
+             "The significance of this chi^2                : %14.6g\n"
+             "The entropy of uniform pdf, H(u)              : %12.4f\n"
+             "The entropy of pdf p(x), H(x)                 : %12.4f\n"
+             "U(x) = (H(u) - H(x)) / H(u)                   : %12.4f",
+             dfu, chi2u, chi2up, hx0, hx, ux0);
 
-  modlognote("\n\nThe significance (as measured by chi^2) and strength\n"
-             "(as measured by entropy) of associations between x and\n"
-             "various combinations of y,z,... :\n\n"
-             "The situation with more than one independent variable is "
-             "formally\n"
-             "the same as if they were transformed into one super-variable "
-             "with\n"
-             "ny*nz different values, where ny and nz are the numbers of "
-             "values\n"
-             "for Y and Z variables alone.\n\n"
-             "    DF       ...  degrees of freedom for the chi^2;\n"
-             "    chi^2    ...  chi^2 statistic for significance of "
-             "association;\n"
-             "    p        ...  significance of chi^2 (small -> "
-             "significant);\n"
-             "    H(x/yz)  ...  weighted average entropy of the "
-             "conditional pdf's\n"
-             "    U(x/yz)  ...  (H(x) - H(x/yz)) / H(x),\n"
-             "    u(x/yz)  ...  (H(u) - H(x/yz)) / H(u).\n");
-  modlogout("\nIndpndt feats y,z,...%9s%11s%11s%8s%8s%8s\n%s",
-            "DF", "chi^2", "p", "H(x/yz)", "U(x/yz)", "u(x/yz)", rule);
+  mod_lognote("\n\nThe significance (as measured by chi^2) and strength\n"
+              "(as measured by entropy) of associations between x and\n"
+              "various combinations of y,z,... :\n\n"
+              "The situation with more than one independent variable is "
+              "formally\n"
+              "the same as if they were transformed into one super-variable "
+              "with\n"
+              "ny*nz different values, where ny and nz are the numbers of "
+              "values\n"
+              "for Y and Z variables alone.\n\n"
+              "    DF       ...  degrees of freedom for the chi^2;\n"
+              "    chi^2    ...  chi^2 statistic for significance of "
+              "association;\n"
+              "    p        ...  significance of chi^2 (small -> "
+              "significant);\n"
+              "    H(x/yz)  ...  weighted average entropy of the "
+              "conditional pdf's\n"
+              "    U(x/yz)  ...  (H(x) - H(x/yz)) / H(x),\n"
+              "    u(x/yz)  ...  (H(u) - H(x/yz)) / H(u).\n");
+  mod_logout("\nIndpndt feats y,z,...%9s%11s%11s%8s%8s%8s\n%s",
+             "DF", "chi^2", "p", "H(x/yz)", "U(x/yz)", "u(x/yz)", rule);
 }
 
 /** Write entropy results to the log. */
@@ -86,8 +86,8 @@ static void wrres(const int i_feat_fix[], int n_feat_fix, double df,
     g_string_append_printf(str, "%3d", i_feat_fix[i] + 1);
   }
   g_string_truncate(str, 21);
-  modlogout("%-21s%10.2f %10.4g %10.4g %7.4f %7.4f %7.4f", str->str, df, chisq,
-            prob, hxy, uxy, uuxy);
+  mod_logout("%-21s%10.2f %10.4g %10.4g %7.4f %7.4f %7.4f", str->str, df,
+             chisq, prob, hxy, uxy, uuxy);
   g_string_free(str, TRUE);
 }
 
@@ -145,8 +145,8 @@ gboolean mdt_entropy_full(const struct mdt_type *mdt,
   }
   hx = entrp1(frq, nbinx);
   if (hx < small) {
-    modlogwarning(routine, "Entropy too small for division; changed to %e",
-                  small);
+    mod_logwarning(routine, "Entropy too small for division; changed to %e",
+                   small);
     hx = small;
   }
 

@@ -13,9 +13,9 @@ void mdt_exp_transform(struct mdt_type *mdt, float offset, float expoffset,
 {
   int i;
 
-  modlognote("transform_mdt_> parameters: %10.5f %10.5f %10.5f %10.5f\n"
-             "                y = a + exp[b + c*y^d]", offset, expoffset,
-             multiplier, power);
+  mod_lognote("transform_mdt_> parameters: %10.5f %10.5f %10.5f %10.5f\n"
+              "                y = a + exp[b + c*y^d]", offset, expoffset,
+              multiplier, power);
 
   for (i = 0; i < mdt->nelems; i++) {
     mdt->bin[i] = offset + exp(expoffset

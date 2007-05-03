@@ -43,12 +43,12 @@ float mdt_entropy_hx(const struct mdt_type *mdt, GError **err)
 
   hx = entrp1(frq, nbinx);
   if (hx < small) {
-    modlogwarning(routine, "Entropy too small for division; changed to %.4g",
-                  small);
+    mod_logwarning(routine, "Entropy too small for division; changed to %.4g",
+                   small);
     hx = small;
   }
 
-  modlognote("entropy_hx_mdt_> h(x) = %.4g", hx);
+  mod_lognote("entropy_hx_mdt_> h(x) = %.4g", hx);
   g_free(frq);
   return hx;
 }

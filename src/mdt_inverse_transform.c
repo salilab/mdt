@@ -14,8 +14,8 @@ void mdt_inverse_transform(struct mdt_type *mdt, float offset,
   static const float divisor = 1e-15;
   int i;
 
-  modlognote("transform_mdt_> parameters: %10.5f %10.5f\n"
-             "                y = a + b/y", offset, multiplier);
+  mod_lognote("transform_mdt_> parameters: %10.5f %10.5f\n"
+              "                y = a + b/y", offset, multiplier);
 
   for (i = 0; i < mdt->nelems; i++) {
     if (abs(mdt->bin[i]) < divisor) {

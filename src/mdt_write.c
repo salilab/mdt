@@ -14,7 +14,7 @@ static void write_mdt_header(FILE *fp, const struct mdt_type *mdt,
                              const struct mdt_library *mlib)
 {
   int i;
-  char *version = get_mod_short_version();
+  char *version = mod_short_version_get();
 
   fprintf(fp, "REAL OUTPUT OF PROGRAM:  ** MDT %s **\n\n\n", version);
   fprintf(fp, "Number of alignments                 : %14d\n"

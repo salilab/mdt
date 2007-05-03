@@ -526,7 +526,7 @@ FILE *mdt_open_file(const char *path, const char *mode,
   FILE *fp;
   fp = open_file(path, mode, file_info);
   if (!fp) {
-    char *moderr = get_mod_error();
+    char *moderr = mod_error_get();
     if (moderr) {
       g_set_error(err, MDT_ERROR, MDT_ERROR_IO, moderr);
     }
@@ -547,7 +547,7 @@ gboolean mdt_close_file(FILE *fp, struct mod_file *file_info, GError **err)
   }
   close_file(fp, file_info, &ierr);
   if (ierr) {
-    char *moderr = get_mod_error();
+    char *moderr = mod_error_get();
     if (moderr) {
       g_set_error(err, MDT_ERROR, MDT_ERROR_IO, moderr);
     }
@@ -560,5 +560,5 @@ gboolean mdt_close_file(FILE *fp, struct mod_file *file_info, GError **err)
 /** Convert a Modeller error into a GError */
 void handle_modeller_error(GError **err)
 {
-  g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, get_mod_error());
+  g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, mod_error_get());
 }

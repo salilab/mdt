@@ -19,9 +19,9 @@ gboolean atmdefd(int ia1, const struct coordinates *cd)
 {
   if (ia1 >= 0 && ia1 < cd->natm) {
     float *x, *y, *z;
-    x = f_float1_pt(&cd->x);
-    y = f_float1_pt(&cd->y);
-    z = f_float1_pt(&cd->z);
+    x = mod_float1_pt(&cd->x);
+    y = mod_float1_pt(&cd->y);
+    z = mod_float1_pt(&cd->z);
     return DEFINED(x[ia1]) && DEFINED(x[ia1]) && DEFINED(z[ia1]);
   } else {
     return FALSE;
@@ -56,8 +56,8 @@ static void get_bondlist(GArray *bonds, const struct structure *struc,
                          int natom, const struct libraries *libs)
 {
   int ia1, *iresatm, *irestyp;
-  iresatm = f_int1_pt(&struc->cd.iresatm);
-  irestyp = f_int1_pt(&seq->irestyp);
+  iresatm = mod_int1_pt(&struc->cd.iresatm);
+  irestyp = mod_int1_pt(&seq->irestyp);
   for (ia1 = 0; ia1 < struc->cd.natm; ia1++) {
     int iclass, ir1 = iresatm[ia1] - 1;
     char *resnam = mod_residue_name_from_type(irestyp[ir1], libs);

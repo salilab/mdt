@@ -26,7 +26,7 @@ static int ires_get(int ires, int nres, int igaptyp, const int *irestyp,
   }
 }
 
-static int irestab(const struct f_int2_array *ialn, int naln, int iseq,
+static int irestab(const struct mod_int2_array *ialn, int naln, int iseq,
                    const int *irestyp, int nres, int ip, int delta,
                    gboolean delta_ali, int ndimen, int igaptyp)
 {
@@ -35,11 +35,11 @@ static int irestab(const struct f_int2_array *ialn, int naln, int iseq,
     if (ipos < 0 || ipos >= naln) {
       return igaptyp;
     } else {
-      int ires = f_int2_get(ialn, ipos, iseq);
+      int ires = mod_int2_get(ialn, ipos, iseq);
       return ires_get(ires, nres, igaptyp, irestyp, ndimen);
     }
   } else {
-    int ires = f_int2_get(ialn, ip, iseq);
+    int ires = mod_int2_get(ialn, ip, iseq);
     if (ires < 1 || ires > nres) {
       return igaptyp;
     } else {
@@ -180,9 +180,9 @@ static int idist0(int ia1, int ia1p, const struct structure *struc,
 {
   if (ia1 >= 0 && ia1p >= 0) {
     float d, *x, *y, *z;
-    x = f_float1_pt(&struc->cd.x);
-    y = f_float1_pt(&struc->cd.y);
-    z = f_float1_pt(&struc->cd.z);
+    x = mod_float1_pt(&struc->cd.x);
+    y = mod_float1_pt(&struc->cd.y);
+    z = mod_float1_pt(&struc->cd.z);
     d = dist1(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p]);
     return iclsbin(d, mlib, ifi, nrang);
   } else {
@@ -197,9 +197,9 @@ static int iangle0(int ia1, int ia2, int ia3, const struct structure *struc,
 {
   if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0) {
     float d, *x, *y, *z;
-    x = f_float1_pt(&struc->cd.x);
-    y = f_float1_pt(&struc->cd.y);
-    z = f_float1_pt(&struc->cd.z);
+    x = mod_float1_pt(&struc->cd.x);
+    y = mod_float1_pt(&struc->cd.y);
+    z = mod_float1_pt(&struc->cd.z);
     d = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
                y[ia3], z[ia3]);
     return iclsbin(d, mlib, ifi, nrang);
@@ -217,9 +217,9 @@ static int idihedral0(int ia1, int ia2, int ia3, int ia4,
   if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0 && ia4 >= 0) {
     gboolean outrange;
     float d, *x, *y, *z;
-    x = f_float1_pt(&struc->cd.x);
-    y = f_float1_pt(&struc->cd.y);
-    z = f_float1_pt(&struc->cd.z);
+    x = mod_float1_pt(&struc->cd.x);
+    y = mod_float1_pt(&struc->cd.y);
+    z = mod_float1_pt(&struc->cd.z);
     d = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
                   y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
     if (outrange) {
@@ -262,19 +262,19 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
     iresol = property_iresol(aln, is2, prop, mlib, ifi, feat);
     return index_inrange(iresol, feat);
   case 66:
-    return irestab(&aln->ialn, aln->naln, is1, f_int1_pt(&seq1->irestyp),
+    return irestab(&aln->ialn, aln->naln, is1, mod_int1_pt(&seq1->irestyp),
                    seq1->nres, ip1, mlib->deltai, mlib->deltai_ali,
                    feat->nbins, libs->igaptyp);
   case 67:
-    return irestab(&aln->ialn, aln->naln, is2, f_int1_pt(&seq2->irestyp),
+    return irestab(&aln->ialn, aln->naln, is2, mod_int1_pt(&seq2->irestyp),
                    seq2->nres, ip1, mlib->deltai, mlib->deltai_ali,
                    feat->nbins, libs->igaptyp);
   case 77:
-    return irestab(&aln->ialn, aln->naln, is1, f_int1_pt(&seq1->irestyp),
+    return irestab(&aln->ialn, aln->naln, is1, mod_int1_pt(&seq1->irestyp),
                    seq1->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
                    feat->nbins, libs->igaptyp);
   case 78:
-    return irestab(&aln->ialn, aln->naln, is2, f_int1_pt(&seq2->irestyp),
+    return irestab(&aln->ialn, aln->naln, is2, mod_int1_pt(&seq2->irestyp),
                    seq2->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
                    feat->nbins, libs->igaptyp);
   case 79:
@@ -331,12 +331,12 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   case 95:
   case 97:
   case 99:
-    return itable(f_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);
+    return itable(mod_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);
   case 94:
   case 96:
   case 98:
   case 100:
-    return itable(f_int1_pt(&struc2->iacc), seq2->nres, ir2, feat->nbins);
+    return itable(mod_int1_pt(&struc2->iacc), seq2->nres, ir2, feat->nbins);
   case 101:
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
     return index_inrange(tup->tupclass, feat);

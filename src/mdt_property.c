@@ -123,7 +123,7 @@ static void atmclass_disulfide(const int iss[], int nss,
 
   cycint = mod_residue_type_from_name("CSS", libs);
 
-  iatmr1 = f_int1_pt(&struc->cd.iatmr1);
+  iatmr1 = mod_int1_pt(&struc->cd.iatmr1);
   for (i = 0; i < nss; i++) {
     int ir1;
     for (ir1 = 0; ir1 < 2; i++) {
@@ -150,8 +150,8 @@ static gboolean atmcls_special(struct structure *struc,
                                const struct libraries *libs, GError **err)
 {
   int i, *irestyp, *iresatm;
-  iresatm = f_int1_pt(&struc->cd.iresatm);
-  irestyp = f_int1_pt(&seq->irestyp);
+  iresatm = mod_int1_pt(&struc->cd.iresatm);
+  irestyp = mod_int1_pt(&seq->irestyp);
   for (i = 0; i < struc->cd.natm; i++) {
     int irest = irestyp[iresatm[i] - 1];
     char *atmnam = get_coord_atmnam(&struc->cd, i);
@@ -160,7 +160,7 @@ static gboolean atmcls_special(struct structure *struc,
   }
 
   if (mlib->special_atoms) {
-    int *iss, nss, ierr, *iatmr1 = f_int1_pt(&struc->cd.iatmr1);
+    int *iss, nss, ierr, *iatmr1 = mod_int1_pt(&struc->cd.iatmr1);
     /* Take care of the atoms in the disulfide bonded Cys residues: */
     mod_find_ss(&iss, &nss, struc, seq, &ierr);
     if (ierr != 0) {
@@ -329,9 +329,9 @@ int property_radius_gyration(const struct alignment *aln, int is,
   if (prop[is].radius_gyration == -1) {
     struct structure *struc = alignment_structure_get(aln, is);
     float *x, *y, *z, radius_gyration, cx, cy, cz;
-    x = f_float1_pt(&struc->cd.x);
-    y = f_float1_pt(&struc->cd.y);
-    z = f_float1_pt(&struc->cd.z);
+    x = mod_float1_pt(&struc->cd.x);
+    y = mod_float1_pt(&struc->cd.y);
+    z = mod_float1_pt(&struc->cd.z);
     /* get center of mass */
     get_mass_center(x, y, z, struc->cd.natm, &cx, &cy, &cz);
     /* get radius of gyration */
@@ -351,7 +351,7 @@ const int *property_iatmacc(const struct alignment *aln, int is,
   if (!prop[is].iatmacc) {
     struct structure *struc = alignment_structure_get(aln, is);
     prop[is].iatmacc = g_malloc(sizeof(int) * struc->cd.natm);
-    alliclsbin(struc->cd.natm, f_float1_pt(&struc->cd.atmacc),
+    alliclsbin(struc->cd.natm, mod_float1_pt(&struc->cd.atmacc),
                prop[is].iatmacc, mlib, ifi, feat->nbins - 1);
   }
   return prop[is].iatmacc;
@@ -382,9 +382,9 @@ const int *property_ifatmacc(const struct alignment *aln, int is,
         return NULL;
       }
       /* Get VDW atom radius */
-      r = f_float2_get(&libs->vdwcnt, iattyp - 1, libs->tpl.submodel - 1);
+      r = mod_float2_get(&libs->vdwcnt, iattyp - 1, libs->tpl.submodel - 1);
       /* Calculate fractional atom accessibility from raw values */
-      fatmacc = f_float1_get(&struc->cd.atmacc, i) / (4. * G_PI * r * r);
+      fatmacc = mod_float1_get(&struc->cd.atmacc, i) / (4. * G_PI * r * r);
       /* Get the corresponding bin index */
       ifatmacc[i] = iclsbin(fatmacc, mlib, ifi, feat->nbins - 1);
     }

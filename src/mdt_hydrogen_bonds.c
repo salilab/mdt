@@ -32,9 +32,9 @@ int numb_hda(int ia, const int hb_iattyp[], const struct coordinates *cd,
 {
   float *x, *y, *z;
   int i, num = 0;
-  x = f_float1_pt(&cd->x);
-  y = f_float1_pt(&cd->y);
-  z = f_float1_pt(&cd->z);
+  x = mod_float1_pt(&cd->x);
+  y = mod_float1_pt(&cd->y);
+  z = mod_float1_pt(&cd->z);
   for (i = 0; i < cd->natm; i++) {
     if (i != ia) {
       int iat = hb_iattyp[i] - 1;

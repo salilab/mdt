@@ -60,7 +60,7 @@ static void get_bondlist(GArray *bonds, const struct structure *struc,
   irestyp = f_int1_pt(&seq->irestyp);
   for (ia1 = 0; ia1 < struc->cd.natm; ia1++) {
     int iclass, ir1 = iresatm[ia1] - 1;
-    char *resnam = residue_name_from_type(irestyp[ir1], libs);
+    char *resnam = mod_residue_name_from_type(irestyp[ir1], libs);
     for (iclass = 0; iclass < atclass->nclass; iclass++) {
       int itype;
       struct mdt_atom_class *c = &atclass->classes[iclass];

@@ -87,7 +87,7 @@ static int iatmcls(int irestyp, const char *atmnam,
   if (allres) {
     resnam = g_strdup("*");
   } else {
-    resnam = residue_name_from_type(irestyp, libs);
+    resnam = mod_residue_name_from_type(irestyp, libs);
   }
 
   for (iclass = 0; iclass < atclass->nclass; iclass++) {
@@ -105,7 +105,7 @@ static int iatmcls(int irestyp, const char *atmnam,
     }
   }
 
-  if (!residue_is_hetatm(irestyp, libs) && !mod_atom_is_hydrogen(atmnam)) {
+  if (!mod_residue_is_hetatm(irestyp, libs) && !mod_atom_is_hydrogen(atmnam)) {
     mod_logwarning("iatmcls", "Model atom not classified: %s:%s", resnam,
                    atmnam);
   }
@@ -121,7 +121,7 @@ static void atmclass_disulfide(const int iss[], int nss,
 {
   int cycint, i, *iatmr1;
 
-  cycint = residue_type_from_name("CSS", libs);
+  cycint = mod_residue_type_from_name("CSS", libs);
 
   iatmr1 = f_int1_pt(&struc->cd.iatmr1);
   for (i = 0; i < nss; i++) {

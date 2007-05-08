@@ -49,7 +49,7 @@ static void get_tuples(int iatm, const struct structure *struc,
   iresatm = f_int1_pt(&struc->cd.iresatm);
   irestyp = f_int1_pt(&seq->irestyp);
   ir1 = iresatm[iatm] - 1;
-  resnam = residue_name_from_type(irestyp[ir1], libs);
+  resnam = mod_residue_name_from_type(irestyp[ir1], libs);
 
   for (iclass = 0; iclass < atclass->nclass; iclass++) {
     int itype;

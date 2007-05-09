@@ -33,7 +33,7 @@ static gboolean wrdata(const char *datfil, int dimensions, const double bin[],
 }
 
 /** Get the symbol name for a bin. */
-static char *get_mdt_symb(const struct mdt_type *mdt,
+static char *get_mdt_symb(const struct mod_mdt *mdt,
                           const struct mdt_library *mlib,
                           int nfeat, int ibin, int ndecimal)
 {
@@ -61,7 +61,7 @@ static char *get_mdt_symb(const struct mdt_type *mdt,
 }
 
 /** Output the ASGL commands to make a single plot. */
-static void appasgl(FILE *fp, const struct mdt_type *mdt,
+static void appasgl(FILE *fp, const struct mod_mdt *mdt,
                     const struct mdt_library *mlib, const char *datfil,
                     int ipos, const int indf[], int dimensions,
                     int every_x_numbered, int every_y_numbered, int nbinx,
@@ -178,7 +178,7 @@ static void appasgl(FILE *fp, const struct mdt_type *mdt,
 }
 
 /** Write the ASGL .top file */
-static void write_script_file(FILE *fp, const struct mdt_type *mdt,
+static void write_script_file(FILE *fp, const struct mod_mdt *mdt,
                               const struct mdt_library *mlib,
                               int dimensions, int nbinx, int nbiny,
                               double plot_density_cutoff, const char *asglroot,
@@ -259,7 +259,7 @@ static void write_script_file(FILE *fp, const struct mdt_type *mdt,
 
 /** Write input files to plot the given MDT with ASGL. Return TRUE on
     success. */
-gboolean mdt_write_asgl(const struct mdt_type *mdt,
+gboolean mdt_write_asgl(const struct mod_mdt *mdt,
                         const struct mdt_library *mlib, const char *asglroot,
                         const char *text, int dimensions, int every_x_numbered,
                         int every_y_numbered, double plot_density_cutoff,

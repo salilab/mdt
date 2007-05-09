@@ -47,7 +47,7 @@ static void close_2d(double *bin, int nbinx, int nbiny)
 
 /** Close an MDT so that it is useful for creating periodic splines.
     Return TRUE on success. */
-gboolean mdt_close(struct mdt_type *mdt, int dimensions, GError **err)
+gboolean mdt_close(struct mod_mdt *mdt, int dimensions, GError **err)
 {
   static const char *routine = "mdt_close";
   int nbins, nbinx, nbiny, *indf;

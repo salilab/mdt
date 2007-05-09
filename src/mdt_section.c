@@ -11,7 +11,7 @@
 
 /** Given the indices of an MDT section, return the start and end indices
     into the bin array. */
-static gboolean get_mdt_section_bins(const struct mdt_type *mdt,
+static gboolean get_mdt_section_bins(const struct mod_mdt *mdt,
                                      const int indices[], int n_indices,
                                      int *istart, int *nbins, GError **err)
 {
@@ -195,7 +195,7 @@ static void hist_avrstdev_deg(const double f[], int n, float x0, float dx,
 
 
 /** Sum an MDT section. */
-double mdt_section_sum(const struct mdt_type *mdt, const int indices[],
+double mdt_section_sum(const struct mod_mdt *mdt, const int indices[],
                        int n_indices, GError **err)
 {
   int istart, nbins;
@@ -206,7 +206,7 @@ double mdt_section_sum(const struct mdt_type *mdt, const int indices[],
 }
 
 /** Get the entropy of an MDT section. */
-double mdt_section_entropy(const struct mdt_type *mdt, const int indices[],
+double mdt_section_entropy(const struct mod_mdt *mdt, const int indices[],
                            int n_indices, GError **err)
 {
   int istart, nbins;
@@ -217,7 +217,7 @@ double mdt_section_entropy(const struct mdt_type *mdt, const int indices[],
 }
 
 /** Get the mean and standard deviation of an MDT section. */
-void mdt_section_meanstdev(const struct mdt_type *mdt,
+void mdt_section_meanstdev(const struct mod_mdt *mdt,
                            const struct mdt_library *mlib, const int indices[],
                            int n_indices, double *mean, double *stdev,
                            GError **err)

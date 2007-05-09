@@ -9,7 +9,7 @@
 #include "mdt.h"
 
 /** Transform an MDT with a log function */
-void mdt_log_transform(struct mdt_type *mdt, float offset, float multiplier,
+void mdt_log_transform(struct mod_mdt *mdt, float offset, float multiplier,
                        float undefined)
 {
   int i;

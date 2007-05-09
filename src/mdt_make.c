@@ -10,7 +10,7 @@
 #include "util.h"
 
 /** Clear the MDT array, and set feature types. Return TRUE on success. */
-gboolean mdt_make(struct mdt_type *mdt, const struct mdt_library *mlib,
+gboolean mdt_make(struct mod_mdt *mdt, const struct mdt_library *mlib,
                   const int features[], int n_features, GError **err)
 {
   const static char *routine = "mdt_make";
@@ -27,8 +27,8 @@ gboolean mdt_make(struct mdt_type *mdt, const struct mdt_library *mlib,
     }
     nelems *= mlib->base.features[ifeat - 1].nbins;
   }
-  mdt_type_nelems_set(mdt, nelems);
-  mdt_type_nfeat_set(mdt, n_features);
+  mod_mdt_nelems_set(mdt, nelems);
+  mod_mdt_nfeat_set(mdt, n_features);
   memset(mdt->bin, 0, sizeof(double) * nelems);
   mdt->nalns = mdt->n_protein_pairs = mdt->n_proteins = 0;
   mdt->sample_size = 0.;

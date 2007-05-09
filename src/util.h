@@ -21,7 +21,7 @@ G_BEGIN_DECLS
 /** Return the indices of the "top-left" corner of the MDT. This must be freed
     by the user after use. */
 G_GNUC_INTERNAL
-int *mdt_start_indices(const struct mdt_type *mdt);
+int *mdt_start_indices(const struct mod_mdt *mdt);
 
 /** Calculate the weights in the smoothing procedure for combining the
     a priori pdf with the experimental pdf. */
@@ -31,7 +31,7 @@ void weights(float weight, int nbins, float norm, float *w1, float *w2);
 /** Return the index in the MDT pdf of the point whose feature bin
     indices are indf. */
 G_GNUC_INTERNAL
-int indmdt(const int *indf, const struct mdt_type *mdt);
+int indmdt(const int *indf, const struct mod_mdt *mdt);
 
 /** Return the index in the MDT pdf of the point whose feature bin
     indices are indf, using the stride and istart arrays. */
@@ -47,11 +47,11 @@ int roll_ind(int indf[], const int istart[], const int iend[], int nfeat);
 /** Update the indices for the next point in the MDT. Return false if no
     more points are available. */
 G_GNUC_INTERNAL
-int roll_ind_mdt(int indf[], const struct mdt_type *mdt, int nfeat);
+int roll_ind_mdt(int indf[], const struct mod_mdt *mdt, int nfeat);
 
 /** Like roll_ind(), but only for the selected inds[n_inds] features */
 G_GNUC_INTERNAL
-int roll_inds(int indf[], const struct mdt_type *mdt, const int inds[],
+int roll_inds(int indf[], const struct mod_mdt *mdt, const int inds[],
               int n_inds);
 
 /** Roll n indices in ind so that all combinations of n different indices
@@ -72,7 +72,7 @@ int roll_ind_comb(int **ind, int n, int nmax);
 /** Get the number of bins in the 1 or 2 dependent features. Return TRUE on
     success. */
 G_GNUC_INTERNAL
-gboolean get_binx_biny(int dimensions, const struct mdt_type *mdt,
+gboolean get_binx_biny(int dimensions, const struct mod_mdt *mdt,
                        const char *routine, int *nbinx, int *nbiny,
                        GError **err);
 
@@ -88,24 +88,24 @@ double entrp1(const double frq[], int nbinx);
     independent features and their values except for the n_feat_fix fixed
     independent features. */
 G_GNUC_INTERNAL
-void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
+void getfrq(const struct mod_mdt *mdt, const int i_feat_fix[], int n_feat_fix,
             const int i_val_fix[], int nbinx, double frq[]);
 
 /** Return entropy of p(x/y,z,...) where y,z are the independent features.
     See pages 480-483 in Numerical Recipes for equations. */
 G_GNUC_INTERNAL
-double entrp2(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
+double entrp2(double summdt, const int i_feat_fix[], const struct mod_mdt *mdt,
               int n_feat_fix, int nbinx, float sumi[]);
 
 /** Get the chi^2, etc for pdf p(x/y,z,...) */
 G_GNUC_INTERNAL
-double chisqr(double summdt, const int i_feat_fix[], const struct mdt_type *mdt,
+double chisqr(double summdt, const int i_feat_fix[], const struct mod_mdt *mdt,
               int n_feat_fix, int nbinx, float sumi[], double *df, double *prob,
               double *ccc, double *cramrv, GError **err);
 
 /** Make the stride array for faster indmdt lookup */
 G_GNUC_INTERNAL
-void make_mdt_stride(struct mdt_type *mdt);
+void make_mdt_stride(struct mod_mdt *mdt);
 
 /** Make the stride array from the nbins array, and return the size of
     the MDT. */

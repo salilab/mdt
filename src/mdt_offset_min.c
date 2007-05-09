@@ -26,7 +26,7 @@ static double get_bin_minval(const double *bin, int num)
 }
 
 /** Offset an MDT by the minimum value. Return TRUE on success. */
-gboolean mdt_offset_min(struct mdt_type *mdt, int dimensions, GError **err)
+gboolean mdt_offset_min(struct mod_mdt *mdt, int dimensions, GError **err)
 {
   static const char *routine = "mdt_offset_min";
   int nbins, nbinx, nbiny, *indf;

@@ -8,7 +8,7 @@
 #include "mdt.h"
 
 /** Transform an MDT with an exp function */
-void mdt_exp_transform(struct mdt_type *mdt, float offset, float expoffset,
+void mdt_exp_transform(struct mod_mdt *mdt, float offset, float expoffset,
                        float multiplier, float power)
 {
   int i;

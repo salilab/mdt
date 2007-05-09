@@ -12,7 +12,7 @@
 #include "num_recipes.h"
 
 /** Write an explanatory header about entropy to the log. */
-static void wrhead(double hx, const struct mdt_type *mdt,
+static void wrhead(double hx, const struct mod_mdt *mdt,
                    const struct mdt_library *mlib, double summdt, double hx0,
                    double ux0, double dfu, double chi2u, double chi2up)
 {
@@ -94,7 +94,7 @@ static void wrres(const int i_feat_fix[], int n_feat_fix, double df,
 
 /** Write chi^2, entropies and dependencies of pdf p(x/y,z,...) to the log.
     Return TRUE on success. */
-gboolean mdt_entropy_full(const struct mdt_type *mdt,
+gboolean mdt_entropy_full(const struct mod_mdt *mdt,
                           const struct mdt_library *mlib, GError **err)
 {
   static const double small = 1.e-8;

@@ -7,7 +7,7 @@
 #include "mdt.h"
 
 /** Transform an MDT with a linear function */
-void mdt_linear_transform(struct mdt_type *mdt, float offset, float multiplier)
+void mdt_linear_transform(struct mod_mdt *mdt, float offset, float multiplier)
 {
   int i;
 

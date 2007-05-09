@@ -10,7 +10,7 @@
 #include "util.h"
 
 /** Get the MDT array positions of new features and integrated features */
-static gboolean get_feature_indices(const struct mdt_type *mdt,
+static gboolean get_feature_indices(const struct mod_mdt *mdt,
                                     const int features[], int n_features,
                                     int **inew_features, int *n_int_features,
                                     int **int_features, const char *routine,
@@ -59,8 +59,8 @@ static gboolean get_feature_indices(const struct mdt_type *mdt,
 }
 
 /** Copy a subset of the mdtin feature indices to mdtout */
-static void copy_mdt_indices_subset(const struct mdt_type *mdtin,
-                                    struct mdt_type *mdtout,
+static void copy_mdt_indices_subset(const struct mod_mdt *mdtin,
+                                    struct mod_mdt *mdtout,
                                     const int inew_features[])
 {
   int i;
@@ -80,8 +80,8 @@ static void copy_mdt_indices_subset(const struct mdt_type *mdtin,
 }
 
 /** Do the actual work of integrating the MDT */
-static void integrate_mdt_table(const struct mdt_type *mdtin,
-                                struct mdt_type *mdtout, int n_features,
+static void integrate_mdt_table(const struct mod_mdt *mdtin,
+                                struct mod_mdt *mdtout, int n_features,
                                 const int inew_features[], int n_int_features,
                                 const int int_features[])
 {
@@ -120,7 +120,7 @@ static void integrate_mdt_table(const struct mdt_type *mdtin,
 }
 
 /** Integrate an MDT. Return TRUE on success. */
-gboolean mdt_integrate(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+gboolean mdt_integrate(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
                        const int features[], int n_features, GError **err)
 {
   static const char *routine = "mdt_integrate";

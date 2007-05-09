@@ -12,7 +12,7 @@
 
 /** Return the indices of the "top-left" corner of the MDT. This must be freed
     by the user after use. */
-int *mdt_start_indices(const struct mdt_type *mdt)
+int *mdt_start_indices(const struct mod_mdt *mdt)
 {
   int i, *indf;
 
@@ -38,7 +38,7 @@ void weights(float weight, int nbins, float norm, float *w1, float *w2)
 
 /** Return the index in the MDT pdf of the point whose feature bin
     indices are indf. */
-int indmdt(const int *indf, const struct mdt_type *mdt)
+int indmdt(const int *indf, const struct mod_mdt *mdt)
 {
   int i, ind, nfeat = mdt->nfeat;
   const struct mdt_feature *feat = mdt->features;
@@ -89,7 +89,7 @@ int roll_ind(int indf[], const int istart[], const int iend[], int nfeat)
 
 /** Update the indices for the next point in the MDT. Return false if no
     more points are available. */
-int roll_ind_mdt(int indf[], const struct mdt_type *mdt, int nfeat)
+int roll_ind_mdt(int indf[], const struct mod_mdt *mdt, int nfeat)
 {
   int i = nfeat - 1;
   while (i >= 0) {
@@ -107,7 +107,7 @@ int roll_ind_mdt(int indf[], const struct mdt_type *mdt, int nfeat)
 }
 
 /** Like roll_ind(), but only for the selected inds[n_inds] features */
-int roll_inds(int indf[], const struct mdt_type *mdt, const int inds[],
+int roll_inds(int indf[], const struct mod_mdt *mdt, const int inds[],
               int n_inds)
 {
   int iind, i;
@@ -176,7 +176,7 @@ int roll_ind_comb(int **ind, int n, int nmax)
 
 /** Get the number of bins in the 1 or 2 dependent features. Return TRUE on
     success. */
-gboolean get_binx_biny(int dimensions, const struct mdt_type *mdt,
+gboolean get_binx_biny(int dimensions, const struct mod_mdt *mdt,
                        const char *routine, int *nbinx, int *nbiny,
                        GError **err)
 {
@@ -255,7 +255,7 @@ static int *complem(const int i_feat_fix[], int n_feat_fix, int numb_features,
 }
 
 /** Allocate and set control arrays for a subset of the MDT features */
-static void setup_mdt_feature_arrays(const struct mdt_type *mdt,
+static void setup_mdt_feature_arrays(const struct mod_mdt *mdt,
                                      const int ifeat[], int nfeat,
                                      int **istart, int **ival, int **nbins)
 {
@@ -273,7 +273,7 @@ static void setup_mdt_feature_arrays(const struct mdt_type *mdt,
 /** Calculate the pdf p(x/independent features) summed over all
     independent features and their values except for the n_feat_fix fixed
     independent features. */
-void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
+void getfrq(const struct mod_mdt *mdt, const int i_feat_fix[], int n_feat_fix,
             const int i_val_fix[], int nbinx, double frq[])
 {
   int *indf, *i_val_var, *i_feat_var, *var_feature_bins, *istart, n_feat_var,
@@ -324,7 +324,7 @@ void getfrq(const struct mdt_type *mdt, const int i_feat_fix[], int n_feat_fix,
 /** Return entropy of p(x/y,z,...) where y,z are the independent features.
     See pages 480-483 in Numerical Recipes for equations. */
 double entrp2(double summdt, const int i_feat_fix[],
-              const struct mdt_type *mdt, int n_feat_fix, int nbinx,
+              const struct mod_mdt *mdt, int n_feat_fix, int nbinx,
               float sumi[])
 {
   static const char *routine = "entrp2";
@@ -396,7 +396,7 @@ double entrp2(double summdt, const int i_feat_fix[],
 
 /** Get the chi^2, etc for pdf p(x/y,z,...) */
 double chisqr(double summdt, const int i_feat_fix[],
-              const struct mdt_type *mdt, int n_feat_fix, int nbinx,
+              const struct mod_mdt *mdt, int n_feat_fix, int nbinx,
               float sumi[], double *df, double *prob, double *ccc,
               double *cramrv, GError **err)
 {
@@ -491,7 +491,7 @@ double chisqr(double summdt, const int i_feat_fix[],
 }
 
 /** Make the stride array for faster indmdt lookup */
-void make_mdt_stride(struct mdt_type *mdt)
+void make_mdt_stride(struct mod_mdt *mdt)
 {
   int i, nelems;
 

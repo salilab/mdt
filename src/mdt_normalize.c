@@ -9,7 +9,7 @@
 #include "util.h"
 
 /** Get the ranges of the last one or two features */
-static float get_dxdy(const float dx_dy[], const struct mdt_type *mdtin,
+static float get_dxdy(const float dx_dy[], const struct mod_mdt *mdtin,
                       int dimensions, const struct mdt_library *mlib)
 {
   static const float undefined = -999;
@@ -41,7 +41,7 @@ static float get_dxdy(const float dx_dy[], const struct mdt_type *mdtin,
 }
 
 /** Normalize over nbins bins */
-static void do_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+static void do_normalize(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
                          int indf[], float dxdy, gboolean to_zero, int nbins,
                          int nfeat)
 {
@@ -76,7 +76,7 @@ static void do_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
 
 
 /** Normalize an MDT. Return TRUE on success. */
-gboolean mdt_normalize(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+gboolean mdt_normalize(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
                        const struct mdt_library *mlib, int dimensions,
                        const float dx_dy[], int n_dx_dy, gboolean to_zero,
                        gboolean to_pdf, GError **err)

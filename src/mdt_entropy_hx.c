@@ -9,7 +9,7 @@
 #include "util.h"
 
 /** Get the entropy of the dependent variable. */
-float mdt_entropy_hx(const struct mdt_type *mdt, GError **err)
+float mdt_entropy_hx(const struct mod_mdt *mdt, GError **err)
 {
   int i, nbinx;
   double summdt, sumfrq, *frq, hx;

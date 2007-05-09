@@ -10,7 +10,7 @@
 
 /** Smooth a histogram or the 2D plot with a uniform prior.
     Return TRUE on success. */
-gboolean mdt_smooth(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+gboolean mdt_smooth(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
                     int dimensions, float weight, GError **err)
 {
   static const float divisor = 1e-15;

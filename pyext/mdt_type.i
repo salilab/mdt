@@ -1,4 +1,4 @@
-struct mdt_type {
+struct mod_mdt {
 %immutable;
   int nelems;
   int nfeat;
@@ -13,7 +13,7 @@ struct mdt_feature {
 };
 
 %inline %{
-static struct mdt_bin *mdt_library_bin_get(const struct mdt_type *mdt,
+static struct mdt_bin *mdt_library_bin_get(const struct mod_mdt *mdt,
                                            struct mdt_library *mlib, int nfeat,
                                            int nbin)
 {
@@ -23,8 +23,8 @@ static struct mdt_bin *mdt_library_bin_get(const struct mdt_type *mdt,
   return &mlib->base.features[ifeat].bins[nbin + istart];
 }
 
-static struct mdt_feature *mdt_type_feature_get(const struct mdt_type *mdt,
-                                                int nfeat)
+static struct mdt_feature *mod_mdt_feature_get(const struct mod_mdt *mdt,
+                                               int nfeat)
 {
   return &mdt->features[nfeat];
 }

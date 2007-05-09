@@ -210,7 +210,7 @@ class mdt(mdt_section):
 
     def __new__(cls, *args, **vars):
         obj = mdt_section.__new__(cls)
-        obj._modpt = _modeller.new_mdt_type()
+        obj._modpt = _modeller.mod_mdt_new()
         return obj
 
     def __init__(self, mlib, file=None, features=None):
@@ -459,13 +459,13 @@ class mdt(mdt_section):
             return _mdt.mdt_get(self._modpt, indx)
 
     def __get_pdf(self):
-        return _mdt.mdt_type_pdf_get(self._modpt)
+        return _mdt.mod_mdt_pdf_get(self._modpt)
     def __get_n_proteins(self):
-        return _mdt.mdt_type_n_proteins_get(self._modpt)
+        return _mdt.mod_mdt_n_proteins_get(self._modpt)
     def __get_n_protein_pairs(self):
-        return _mdt.mdt_type_n_protein_pairs_get(self._modpt)
+        return _mdt.mod_mdt_n_protein_pairs_get(self._modpt)
     def __get_sample_size(self):
-        return _mdt.mdt_type_sample_size_get(self._modpt)
+        return _mdt.mod_mdt_sample_size_get(self._modpt)
     def __get_features(self):
         return feature_list(self)
     def __get_offset(self):
@@ -491,7 +491,7 @@ class feature_list(modlist.fixlist):
         modlist.fixlist.__init__(self)
 
     def __len__(self):
-        return _mdt.mdt_type_nfeat_get(self.__mdt._modpt)
+        return _mdt.mod_mdt_nfeat_get(self.__mdt._modpt)
 
     def _getfunc(self, indx):
         return feature(self.__mdt, indx)
@@ -513,7 +513,7 @@ class feature(object):
     def __get_periodic(self):
         return _mdt.mdt_feature_is_periodic(self.ifeat)
     def __get_modpt(self):
-        return _mdt.mdt_type_feature_get(self._mdt._modpt, self._indx)
+        return _mdt.mod_mdt_feature_get(self._mdt._modpt, self._indx)
 
     modpt = property(__get_modpt)
     ifeat = property(__get_ifeat, doc="Integer type")

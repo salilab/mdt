@@ -10,7 +10,7 @@
 #include "util.h"
 
 /** Write MDT header to a file */
-static void write_mdt_header(FILE *fp, const struct mdt_type *mdt,
+static void write_mdt_header(FILE *fp, const struct mod_mdt *mdt,
                              const struct mdt_library *mlib)
 {
   int i;
@@ -49,13 +49,13 @@ static void write_mdt_header(FILE *fp, const struct mdt_type *mdt,
 }
 
 /** Write MDT footer to a file */
-static void write_mdt_footer(FILE *fp, const struct mdt_type *mdt)
+static void write_mdt_footer(FILE *fp, const struct mod_mdt *mdt)
 {
   fprintf(fp, "MDT TABLE END%s\n", mdt->pdf ? ":PDF" : "");
 }
 
 /** Write MDT bin data to a file */
-static void write_mdt_data(FILE *fp, const struct mdt_type *mdt)
+static void write_mdt_data(FILE *fp, const struct mod_mdt *mdt)
 {
   int i;
 
@@ -65,7 +65,7 @@ static void write_mdt_data(FILE *fp, const struct mdt_type *mdt)
 }
 
 /** Write out an MDT. Return TRUE on success. */
-gboolean mdt_write(const struct mdt_type *mdt, const struct mdt_library *mlib,
+gboolean mdt_write(const struct mod_mdt *mdt, const struct mdt_library *mlib,
                    const char *filename, gboolean write_preamble, GError **err)
 {
   FILE *fp;

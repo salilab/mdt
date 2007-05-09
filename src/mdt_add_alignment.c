@@ -19,7 +19,7 @@ static int *mdt_indices(gboolean *outrange, const struct alignment *aln,
                         int is1, int ip1, int is2, int ir1, int ir2, int ir1p,
                         int ir2p, int ia1, int ia1p,
                         const struct mdt_library *mlib, int ip2,
-                        const struct mdt_type *mdt, int ibnd1, int ibnd1p,
+                        const struct mod_mdt *mdt, int ibnd1, int ibnd1p,
                         int is3, int ir3, int ir3p,
                         const struct libraries *libs,
                         const struct energy_data *edat,
@@ -51,7 +51,7 @@ static int *mdt_indices(gboolean *outrange, const struct alignment *aln,
 
 
 /** Update an MDT with feature data. */
-static gboolean update_mdt(struct mdt_type *mdt,
+static gboolean update_mdt(struct mod_mdt *mdt,
                            const struct mdt_library *mlib,
                            const struct alignment *aln, int is1, int ip1,
                            int is2, int ir1, int ir2, int ir1p, int ir2p,
@@ -95,7 +95,7 @@ static gboolean update_mdt(struct mdt_type *mdt,
 }
 
 /** Check to make sure that all features are single protein features */
-static gboolean check_single_protein_features(const struct mdt_type *mdt,
+static gboolean check_single_protein_features(const struct mod_mdt *mdt,
                                               const struct mdt_library *mlib,
                                               GError **err)
 {
@@ -116,7 +116,7 @@ static gboolean check_single_protein_features(const struct mdt_type *mdt,
 }
 
 /** Update the number of protein pairs in the MDT. */
-static void update_protein_pairs(struct mdt_type *mdt, int nseqacc, int pairs,
+static void update_protein_pairs(struct mod_mdt *mdt, int nseqacc, int pairs,
                                  int triples)
 {
   switch (mdt->nprotcmp) {
@@ -157,7 +157,7 @@ static int isbeg(int is, int nseq, int iseqbeg)
 }
 
 /** Update MDT data for a single protein property. */
-static gboolean update_single(struct mdt_type *mdt,
+static gboolean update_single(struct mod_mdt *mdt,
                               const struct mdt_library *mlib,
                               const struct alignment *aln, int is1, int ip1,
                               int ip2, int ir1, int ir1p,
@@ -208,7 +208,7 @@ static gboolean update_single(struct mdt_type *mdt,
 
 
 /** Update MDT data for a multiple protein property. */
-static gboolean update_multiple(struct mdt_type *mdt,
+static gboolean update_multiple(struct mod_mdt *mdt,
                                 const struct mdt_library *mlib,
                                 const struct alignment *aln, int is1, int ip1,
                                 int ip2, int ir1, int ir1p, int pairs,
@@ -277,7 +277,7 @@ static gboolean update_multiple(struct mdt_type *mdt,
 
 
 /** Scan all proteins or protein pairs in the alignment. */
-static gboolean genpair(struct mdt_type *mdt, const struct mdt_library *mlib,
+static gboolean genpair(struct mod_mdt *mdt, const struct mdt_library *mlib,
                         const struct alignment *aln, int ip1, int ip2,
                         const struct libraries *libs,
                         const struct energy_data *edat,
@@ -320,7 +320,7 @@ static gboolean genpair(struct mdt_type *mdt, const struct mdt_library *mlib,
 
 
 /** Scan all residue pairs in the first alignment sequence. */
-static gboolean gen_residue_pairs(struct mdt_type *mdt,
+static gboolean gen_residue_pairs(struct mod_mdt *mdt,
                                   const struct mdt_library *mlib,
                                   const struct alignment *aln,
                                   const int rsrang[4],
@@ -361,7 +361,7 @@ static gboolean gen_residue_pairs(struct mdt_type *mdt,
 
 
 /** Scan all atoms in the first alignment sequence. */
-static gboolean gen_atoms(struct mdt_type *mdt, const struct mdt_library *mlib,
+static gboolean gen_atoms(struct mod_mdt *mdt, const struct mdt_library *mlib,
                           const struct alignment *aln, int is1,
                           const struct libraries *libs,
                           const struct energy_data *edat,
@@ -387,7 +387,7 @@ static gboolean gen_atoms(struct mdt_type *mdt, const struct mdt_library *mlib,
 }
 
 /** Scan all atom pairs in the first alignment sequence. */
-static gboolean gen_atom_pairs(struct mdt_type *mdt,
+static gboolean gen_atom_pairs(struct mod_mdt *mdt,
                                const struct mdt_library *mlib,
                                const struct alignment *aln, int is1,
                                const struct libraries *libs,
@@ -418,7 +418,7 @@ static gboolean gen_atom_pairs(struct mdt_type *mdt,
 
 
 /** Scan all bonds, angles or dihedrals in the first alignment sequence. */
-static gboolean gen_bonds(struct mdt_type *mdt, const struct mdt_library *mlib,
+static gboolean gen_bonds(struct mod_mdt *mdt, const struct mdt_library *mlib,
                           const struct alignment *aln, int is1, int npnt,
                           const struct libraries *libs,
                           const struct energy_data *edat,
@@ -445,7 +445,7 @@ static gboolean gen_bonds(struct mdt_type *mdt, const struct mdt_library *mlib,
 
 
 /** Scan all atom tuples in the first alignment sequence. */
-static gboolean gen_atom_tuples(struct mdt_type *mdt,
+static gboolean gen_atom_tuples(struct mod_mdt *mdt,
                                 const struct mdt_library *mlib,
                                 const struct alignment *aln, int is1,
                                 const struct libraries *libs,
@@ -481,7 +481,7 @@ static gboolean gen_atom_tuples(struct mdt_type *mdt,
 
 
 /** Scan all atom tuple pairs in the first alignment sequence. */
-static gboolean gen_atom_tuple_pairs(struct mdt_type *mdt,
+static gboolean gen_atom_tuple_pairs(struct mod_mdt *mdt,
                                      const struct mdt_library *mlib,
                                      const struct alignment *aln,
                                      const int rsrang[4], int is1,
@@ -524,7 +524,7 @@ static gboolean gen_atom_tuple_pairs(struct mdt_type *mdt,
 /** Scan all alignment positions or all alignment position pairs in the
     current alignment. If whole protein features only occur in the current
     MDT, then no positions are scanned. */
-static gboolean update_stats(struct mdt_type *mdt,
+static gboolean update_stats(struct mod_mdt *mdt,
                              const struct mdt_library *mlib,
                              const struct alignment *aln, const int rsrang[4],
                              const struct libraries *libs,
@@ -642,7 +642,7 @@ static gboolean update_stats(struct mdt_type *mdt,
 
 
 /** Add data from an alignment to an MDT. Return TRUE on success. */
-gboolean mdt_add_alignment(struct mdt_type *mdt,
+gboolean mdt_add_alignment(struct mod_mdt *mdt,
                            const struct mdt_library *mlib,
                            struct alignment *aln, float distngh,
                            gboolean sdchngh, int surftyp, int iacc1typ,

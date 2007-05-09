@@ -9,7 +9,7 @@
 #include "util.h"
 
 /** Get an element from an MDT. */
-double mdt_get(const struct mdt_type *mdt, const int indices[], int n_indices,
+double mdt_get(const struct mod_mdt *mdt, const int indices[], int n_indices,
                GError **err)
 {
   const static char *routine = "mdt_get";

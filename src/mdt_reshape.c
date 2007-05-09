@@ -9,8 +9,8 @@
 #include "util.h"
 
 /** Set new MDT indices using new offset and shape */
-static void reshape_mdt_indices(const struct mdt_type *mdtin,
-                                struct mdt_type *mdtout, const int offset[],
+static void reshape_mdt_indices(const struct mod_mdt *mdtin,
+                                struct mod_mdt *mdtout, const int offset[],
                                 const int shape[], const int features[],
                                 const int old_position[])
 {
@@ -37,8 +37,8 @@ static void reshape_mdt_indices(const struct mdt_type *mdtin,
 
 
 /** Do the hard work of reshaping the table. */
-static void reshape_mdt_table(const struct mdt_type *mdtin,
-                              struct mdt_type *mdtout,
+static void reshape_mdt_table(const struct mod_mdt *mdtin,
+                              struct mod_mdt *mdtout,
                               const int new_position[])
 {
   int *out_indf, *in_indf;
@@ -58,7 +58,7 @@ static void reshape_mdt_table(const struct mdt_type *mdtin,
 }
 
 /** Get mapping from old to new features */
-static gboolean get_position_mappings(const struct mdt_type *mdt,
+static gboolean get_position_mappings(const struct mod_mdt *mdt,
                                       const int features[], int old_position[],
                                       int new_position[], const char *routine,
                                       GError **err)
@@ -86,7 +86,7 @@ static gboolean get_position_mappings(const struct mdt_type *mdt,
 
 
 /** Check new offset and shape */
-static gboolean check_start_end(const struct mdt_type *mdt, const int offset[],
+static gboolean check_start_end(const struct mod_mdt *mdt, const int offset[],
                                 const int shape[], const int old_position[],
                                 const int features[], const char *routine,
                                 GError **err)
@@ -113,7 +113,7 @@ static gboolean check_start_end(const struct mdt_type *mdt, const int offset[],
 
 
 /** Reshape an MDT. Return TRUE on success. */
-gboolean mdt_reshape(const struct mdt_type *mdtin, struct mdt_type *mdtout,
+gboolean mdt_reshape(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
                      const int features[], int n_features, const int offset[],
                      int n_offset, const int shape[], int n_shape,
                      GError **err)

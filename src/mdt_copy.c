@@ -9,7 +9,7 @@
 #include "mdt.h"
 
 /** Make mdtout a copy of mdtin. */
-void mdt_copy(const struct mdt_type *mdtin, struct mdt_type *mdtout)
+void mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
 {
   int i;
   mdtout->nalns = mdtin->nalns;
@@ -26,8 +26,8 @@ void mdt_copy(const struct mdt_type *mdtin, struct mdt_type *mdtout)
   mdtout->nprotcmp = mdtin->nprotcmp;
   mdtout->nresfeat = mdtin->nresfeat;
 
-  mdt_type_nfeat_set(mdtout, mdtin->nfeat);
-  mdt_type_nelems_set(mdtout, mdtin->nelems);
+  mod_mdt_nfeat_set(mdtout, mdtin->nfeat);
+  mod_mdt_nelems_set(mdtout, mdtin->nelems);
   for (i = 0; i < mdtin->nfeat; i++) {
     struct mdt_feature *in, *out;
     in = &mdtin->features[i];

@@ -228,6 +228,9 @@ class mdt(mdt_section):
         elif features:
             self.make(features)
 
+    def __del__(self):
+        _modeller.mod_mdt_free(self._modpt)
+
     def read(self, file):
         """Read an MDT from C{file}."""
         _modeller.read_mdt(self._modpt, self._mlib.basept, file)

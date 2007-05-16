@@ -115,7 +115,7 @@ static int iatmcls(int irestyp, const char *atmnam,
 
 static void atmclass_disulfide(const int iss[], int nss,
                                const struct structure *struc,
-                               const struct sequence *seq,
+                               const struct mod_sequence *seq,
                                const struct mdt_atom_class_list *atclass,
                                int iatta[], const struct mod_libraries *libs)
 {
@@ -144,7 +144,7 @@ static void atmclass_disulfide(const int iss[], int nss,
 }
 
 static gboolean atmcls_special(struct structure *struc,
-                               const struct sequence *seq, int iatta[],
+                               const struct mod_sequence *seq, int iatta[],
                                const struct mdt_atom_class_list *atclass,
                                const struct mdt_library *mlib,
                                const struct mod_libraries *libs, GError **err)
@@ -203,7 +203,7 @@ static int *make_atom_type(const struct alignment *aln, int is,
 {
   int *iatta;
   struct structure *struc = alignment_structure_get(aln, is);
-  struct sequence *seq = alignment_sequence_get(aln, is);
+  struct mod_sequence *seq = alignment_sequence_get(aln, is);
   iatta = g_malloc(sizeof(int) * struc->cd.natm);
   if (!atmcls_special(struc, seq, iatta, atclass, mlib, libs, err)) {
     g_free(iatta);
@@ -267,7 +267,7 @@ int property_iresol(const struct alignment *aln, int is,
                     const struct mdt_libfeature *feat)
 {
   if (prop[is].iresol == 0) {
-    struct sequence *seq = alignment_sequence_get(aln, is);
+    struct mod_sequence *seq = alignment_sequence_get(aln, is);
     float resol;
     int iresol;
 
@@ -367,7 +367,7 @@ const int *property_ifatmacc(const struct alignment *aln, int is,
 {
   if (!prop[is].ifatmacc) {
     int i, *ifatmacc;
-    struct sequence *seq = alignment_sequence_get(aln, is);
+    struct mod_sequence *seq = alignment_sequence_get(aln, is);
     struct structure *struc = alignment_structure_get(aln, is);
 
     ifatmacc = g_malloc(sizeof(int) * struc->cd.natm);
@@ -402,7 +402,7 @@ const struct mdt_bond_list *property_bonds(const struct alignment *aln, int is,
                                            const struct mod_libraries *libs)
 {
   if (!prop[is].bonds[bondtype]) {
-    struct sequence *seq = alignment_sequence_get(aln, is);
+    struct mod_sequence *seq = alignment_sequence_get(aln, is);
     struct structure *struc = alignment_structure_get(aln, is);
     prop[is].bonds[bondtype] = get_stereo(struc, seq,
                                           mlib->atclass[bondtype + 1],
@@ -430,7 +430,7 @@ const struct mdt_tuple_list *property_tuples(const struct alignment *aln,
                                              const struct mod_libraries *libs)
 {
   if (!prop[is].tuples) {
-    struct sequence *seq = alignment_sequence_get(aln, is);
+    struct mod_sequence *seq = alignment_sequence_get(aln, is);
     struct structure *struc = alignment_structure_get(aln, is);
     prop[is].tuples = tupclass(struc, seq, mlib->tupclass, libs);
   }

@@ -29,7 +29,8 @@ gboolean atmdefd(int ia1, const struct coordinates *cd)
 }
 
 /** Add a bond/angle/dihedral if all the atoms are OK. */
-static void add_bond(const struct coordinates *cd, const struct sequence *seq,
+static void add_bond(const struct coordinates *cd,
+                     const struct mod_sequence *seq,
                      const struct mdt_atom_type *atype, int ia1, int ir1,
                      int natom, int iclass, GArray *bonds)
 {
@@ -51,7 +52,7 @@ static void add_bond(const struct coordinates *cd, const struct sequence *seq,
 }
 
 static void get_bondlist(GArray *bonds, const struct structure *struc,
-                         const struct sequence *seq,
+                         const struct mod_sequence *seq,
                          const struct mdt_atom_class_list *atclass,
                          int natom, const struct mod_libraries *libs)
 {
@@ -84,7 +85,7 @@ static void get_bondlist(GArray *bonds, const struct structure *struc,
 
 /** Get all of one type of bond (bond/angle/dihedral) for a structure. */
 struct mdt_bond_list *get_stereo(const struct structure *struc,
-                                 const struct sequence *seq,
+                                 const struct mod_sequence *seq,
                                  const struct mdt_atom_class_list *atclass,
                                  int bondtype, const struct mod_libraries *libs)
 {

@@ -26,7 +26,7 @@ gboolean atmdefd(int ia1, const struct coordinates *cd);
 /** Get all of one type of bond (bond/angle/dihedral) for a structure. */
 G_GNUC_INTERNAL
 struct mdt_bond_list *get_stereo(const struct structure *struc,
-                                 const struct sequence *seq,
+                                 const struct mod_sequence *seq,
                                  const struct mdt_atom_class_list *atclass,
                                  int bondtype,
                                  const struct mod_libraries *libs);

@@ -246,7 +246,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   int iresol, irad;
   float fprop;
   struct structure *struc1, *struc2;
-  struct sequence *seq1, *seq2;
+  struct mod_sequence *seq1, *seq2;
   const struct mdt_bond *bond;
   const struct mdt_tuple *tup, *tup2;
   struct mdt_libfeature *feat = &mlib->base.features[ifi - 1];

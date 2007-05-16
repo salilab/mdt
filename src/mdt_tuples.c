@@ -12,7 +12,7 @@
 #include "mdt_tuples.h"
 
 static void add_tuple(const struct coordinates *cd,
-                      const struct sequence *seq,
+                      const struct mod_sequence *seq,
                       const struct mdt_atom_type *atype, int ia1, int ir1,
                       int iclass, int natom, GArray *tlist)
 {
@@ -39,7 +39,7 @@ static void add_tuple(const struct coordinates *cd,
 }
 
 static void get_tuples(int iatm, const struct structure *struc,
-                       const struct sequence *seq,
+                       const struct mod_sequence *seq,
                        const struct mdt_atom_class_list *atclass,
                        GArray *tlist, const struct mod_libraries *libs)
 {
@@ -75,7 +75,7 @@ static void get_tuples(int iatm, const struct structure *struc,
 
 /** Get all tuples for a structure. */
 struct mdt_tuple_list *tupclass(const struct structure *struc,
-                                const struct sequence *seq,
+                                const struct mod_sequence *seq,
                                 const struct mdt_atom_class_list *atclass,
                                 const struct mod_libraries *libs)
 {

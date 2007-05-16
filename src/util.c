@@ -524,7 +524,7 @@ FILE *mdt_open_file(const char *path, const char *mode,
                     struct mod_file *file_info, GError **err)
 {
   FILE *fp;
-  fp = open_file(path, mode, file_info);
+  fp = mod_file_open(path, mode, file_info);
   if (!fp) {
     char *moderr = mod_error_get();
     if (moderr) {
@@ -545,7 +545,7 @@ gboolean mdt_close_file(FILE *fp, struct mod_file *file_info, GError **err)
   } else {
     ierr = 0;
   }
-  close_file(fp, file_info, &ierr);
+  mod_file_close(fp, file_info, &ierr);
   if (ierr) {
     char *moderr = mod_error_get();
     if (moderr) {

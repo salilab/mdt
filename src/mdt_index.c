@@ -237,7 +237,7 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
                  int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,
                  int ia1p, const struct mdt_library *mlib, int ip2,
                  int ibnd1, int ibnd1p, int is3, int ir3, int ir3p,
-                 const struct libraries *libs,
+                 const struct mod_libraries *libs,
                  const struct energy_data *edat,
                  struct mdt_properties *prop, GError **err)
 {

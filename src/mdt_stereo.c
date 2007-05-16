@@ -53,7 +53,7 @@ static void add_bond(const struct coordinates *cd, const struct sequence *seq,
 static void get_bondlist(GArray *bonds, const struct structure *struc,
                          const struct sequence *seq,
                          const struct mdt_atom_class_list *atclass,
-                         int natom, const struct libraries *libs)
+                         int natom, const struct mod_libraries *libs)
 {
   int ia1, *iresatm, *irestyp;
   iresatm = mod_int1_pt(&struc->cd.iresatm);
@@ -86,7 +86,7 @@ static void get_bondlist(GArray *bonds, const struct structure *struc,
 struct mdt_bond_list *get_stereo(const struct structure *struc,
                                  const struct sequence *seq,
                                  const struct mdt_atom_class_list *atclass,
-                                 int bondtype, const struct libraries *libs)
+                                 int bondtype, const struct mod_libraries *libs)
 {
   struct mdt_bond_list *bondlist = g_malloc(sizeof(struct mdt_bond_list));
   GArray *bonds = g_array_new(FALSE, FALSE, sizeof(struct mdt_bond));

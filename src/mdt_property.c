@@ -75,7 +75,7 @@ static void alliclsbin(int nvec, const float *x, int *ix,
 
 static int iatmcls(int irestyp, const char *atmnam,
                    const struct mdt_atom_class_list *atclass,
-                   const struct libraries *libs)
+                   const struct mod_libraries *libs)
 {
   gboolean allres, allatm;
   char *resnam;
@@ -117,7 +117,7 @@ static void atmclass_disulfide(const int iss[], int nss,
                                const struct structure *struc,
                                const struct sequence *seq,
                                const struct mdt_atom_class_list *atclass,
-                               int iatta[], const struct libraries *libs)
+                               int iatta[], const struct mod_libraries *libs)
 {
   int cycint, i, *iatmr1;
 
@@ -147,7 +147,7 @@ static gboolean atmcls_special(struct structure *struc,
                                const struct sequence *seq, int iatta[],
                                const struct mdt_atom_class_list *atclass,
                                const struct mdt_library *mlib,
-                               const struct libraries *libs, GError **err)
+                               const struct mod_libraries *libs, GError **err)
 {
   int i, *irestyp, *iresatm;
   iresatm = mod_int1_pt(&struc->cd.iresatm);
@@ -198,7 +198,8 @@ static gboolean atmcls_special(struct structure *struc,
 static int *make_atom_type(const struct alignment *aln, int is,
                            const struct mdt_library *mlib,
                            const struct mdt_atom_class_list *atclass,
-                           int ifi, const struct libraries *libs, GError **err)
+                           int ifi, const struct mod_libraries *libs,
+                           GError **err)
 {
   int *iatta;
   struct structure *struc = alignment_structure_get(aln, is);
@@ -216,7 +217,7 @@ static int *make_atom_type(const struct alignment *aln, int is,
 const int *property_iatta(const struct alignment *aln, int is,
                           struct mdt_properties *prop,
                           const struct mdt_library *mlib, int ifi,
-                          const struct libraries *libs, GError **err)
+                          const struct mod_libraries *libs, GError **err)
 {
   if (!prop[is].iatta) {
     prop[is].iatta = make_atom_type(aln, is, mlib, mlib->atclass[0], ifi, libs,
@@ -229,7 +230,7 @@ const int *property_iatta(const struct alignment *aln, int is,
 const int *property_hb_iatta(const struct alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
-                             const struct libraries *libs, GError **err)
+                             const struct mod_libraries *libs, GError **err)
 {
   if (!prop[is].hb_iatta) {
     prop[is].hb_iatta = make_atom_type(aln, is, mlib, mlib->hbond, ifi, libs,
@@ -242,7 +243,7 @@ const int *property_hb_iatta(const struct alignment *aln, int is,
 gboolean property_hbpot(const struct alignment *aln, int is,
                         struct mdt_properties *prop,
                         const struct mdt_library *mlib, int ifi,
-                        const struct libraries *libs, float *hbpot,
+                        const struct mod_libraries *libs, float *hbpot,
                         GError **err)
 {
   struct structure *struc = alignment_structure_get(aln, is);
@@ -362,7 +363,7 @@ const int *property_ifatmacc(const struct alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
                              const struct mdt_libfeature *feat,
-                             const struct libraries *libs, GError **err)
+                             const struct mod_libraries *libs, GError **err)
 {
   if (!prop[is].ifatmacc) {
     int i, *ifatmacc;
@@ -398,7 +399,7 @@ const struct mdt_bond_list *property_bonds(const struct alignment *aln, int is,
                                            struct mdt_properties *prop,
                                            const struct mdt_library *mlib,
                                            int bondtype,
-                                           const struct libraries *libs)
+                                           const struct mod_libraries *libs)
 {
   if (!prop[is].bonds[bondtype]) {
     struct sequence *seq = alignment_sequence_get(aln, is);
@@ -415,7 +416,7 @@ const struct mdt_bond *property_one_bond(const struct alignment *aln,
                                          int is, struct mdt_properties *prop,
                                          const struct mdt_library *mlib,
                                          int bondtype, int ibnd1,
-                                         const struct libraries *libs)
+                                         const struct mod_libraries *libs)
 {
   return &property_bonds(aln, is, prop, mlib, bondtype, libs)->bonds[ibnd1];
 }
@@ -426,7 +427,7 @@ const struct mdt_tuple_list *property_tuples(const struct alignment *aln,
                                              int is,
                                              struct mdt_properties *prop,
                                              const struct mdt_library *mlib,
-                                             const struct libraries *libs)
+                                             const struct mod_libraries *libs)
 {
   if (!prop[is].tuples) {
     struct sequence *seq = alignment_sequence_get(aln, is);
@@ -456,7 +457,7 @@ const struct mdt_tuple *property_one_tuple(const struct alignment *aln,
                                            int is, struct mdt_properties *prop,
                                            const struct mdt_library *mlib,
                                            int ibnd1, int ia1,
-                                           const struct libraries *libs)
+                                           const struct mod_libraries *libs)
 {
   const struct mdt_tuple_list *trp;
   trp = property_tuples(aln, is, prop, mlib, libs);

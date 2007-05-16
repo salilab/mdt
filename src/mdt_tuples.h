@@ -22,7 +22,7 @@ G_GNUC_INTERNAL
 struct mdt_tuple_list *tupclass(const struct structure *struc,
                                 const struct sequence *seq,
                                 const struct mdt_atom_class_list *atclass,
-                                const struct libraries *libs);
+                                const struct mod_libraries *libs);
 
 G_END_DECLS
 

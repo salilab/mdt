@@ -118,7 +118,7 @@ gboolean mdt_add_alignment(struct mod_mdt *mdt, const struct mdt_library *mlib,
                            gboolean sdchngh, int surftyp, int iacc1typ,
                            const int residue_span_range[4], int pairs,
                            int triples, struct io_data *io,
-                           struct energy_data *edat, struct libraries *libs,
+                           struct energy_data *edat, struct mod_libraries *libs,
                            GError **err);
 
 G_END_DECLS

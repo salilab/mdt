@@ -41,7 +41,7 @@ static void add_tuple(const struct coordinates *cd,
 static void get_tuples(int iatm, const struct structure *struc,
                        const struct sequence *seq,
                        const struct mdt_atom_class_list *atclass,
-                       GArray *tlist, const struct libraries *libs)
+                       GArray *tlist, const struct mod_libraries *libs)
 {
   int iclass, *iresatm, *irestyp, ir1;
   char *resnam;
@@ -77,7 +77,7 @@ static void get_tuples(int iatm, const struct structure *struc,
 struct mdt_tuple_list *tupclass(const struct structure *struc,
                                 const struct sequence *seq,
                                 const struct mdt_atom_class_list *atclass,
-                                const struct libraries *libs)
+                                const struct mod_libraries *libs)
 {
   int i;
   struct mdt_tuple_list *tuples;

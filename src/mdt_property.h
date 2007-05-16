@@ -33,7 +33,7 @@ const struct mdt_bond_list *property_bonds(const struct alignment *aln, int is,
                                            struct mdt_properties *prop,
                                            const struct mdt_library *mlib,
                                            int bondtype,
-                                           const struct libraries *libs);
+                                           const struct mod_libraries *libs);
 
 /** Get a single bond from a structure */
 G_GNUC_INTERNAL
@@ -41,7 +41,7 @@ const struct mdt_bond *property_one_bond(const struct alignment *aln,
                                          int is, struct mdt_properties *prop,
                                          const struct mdt_library *mlib,
                                          int bondtype, int ibnd1,
-                                         const struct libraries *libs);
+                                         const struct mod_libraries *libs);
 
 /** Get/calculate the list of all tuples for a structure. */
 G_GNUC_INTERNAL
@@ -49,7 +49,7 @@ const struct mdt_tuple_list *property_tuples(const struct alignment *aln,
                                              int is,
                                              struct mdt_properties *prop,
                                              const struct mdt_library *mlib,
-                                             const struct libraries *libs);
+                                             const struct mod_libraries *libs);
 
 /** Require that the tuples have at least min_natom atoms each */
 G_GNUC_INTERNAL
@@ -62,7 +62,7 @@ const struct mdt_tuple *property_one_tuple(const struct alignment *aln, int is,
                                            struct mdt_properties *prop,
                                            const struct mdt_library *mlib,
                                            int ibnd1, int ia1,
-                                           const struct libraries *libs);
+                                           const struct mod_libraries *libs);
 
 /** Get/calculate the resolution bin index */
 G_GNUC_INTERNAL
@@ -76,21 +76,21 @@ G_GNUC_INTERNAL
 const int *property_iatta(const struct alignment *aln, int is,
                           struct mdt_properties *prop,
                           const struct mdt_library *mlib, int ifi,
-                          const struct libraries *libs, GError **err);
+                          const struct mod_libraries *libs, GError **err);
 
 /** Get/calculate the array of hydrogen bond atom type bin indices */
 G_GNUC_INTERNAL
 const int *property_hb_iatta(const struct alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
-                             const struct libraries *libs, GError **err);
+                             const struct mod_libraries *libs, GError **err);
 
 /** Get/calculate the hydrogen bond satisfaction index */
 G_GNUC_INTERNAL
 gboolean property_hbpot(const struct alignment *aln, int is,
                         struct mdt_properties *prop,
                         const struct mdt_library *mlib, int ifi,
-                        const struct libraries *libs, float *hbpot,
+                        const struct mod_libraries *libs, float *hbpot,
                         GError **err);
 
 /** Get/calculate the array of atom accessibility bin indices */
@@ -106,7 +106,7 @@ const int *property_ifatmacc(const struct alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
                              const struct mdt_libfeature *feat,
-                             const struct libraries *libs, GError **err);
+                             const struct mod_libraries *libs, GError **err);
 
 /** Get/calculate the radius of gyration bin index */
 G_GNUC_INTERNAL

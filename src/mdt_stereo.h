@@ -28,7 +28,8 @@ G_GNUC_INTERNAL
 struct mdt_bond_list *get_stereo(const struct structure *struc,
                                  const struct sequence *seq,
                                  const struct mdt_atom_class_list *atclass,
-                                 int bondtype, const struct libraries *libs);
+                                 int bondtype,
+                                 const struct mod_libraries *libs);
 
 G_END_DECLS
 

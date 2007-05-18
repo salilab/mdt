@@ -22,7 +22,7 @@ static int *mdt_indices(gboolean *outrange, const struct alignment *aln,
                         const struct mod_mdt *mdt, int ibnd1, int ibnd1p,
                         int is3, int ir3, int ir3p,
                         const struct mod_libraries *libs,
-                        const struct energy_data *edat,
+                        const struct mod_energy_data *edat,
                         struct mdt_properties *prop, GError **err)
 {
   int i, *indf;
@@ -58,7 +58,7 @@ static gboolean update_mdt(struct mod_mdt *mdt,
                            int ip2, int ia1, int ia1p, int ibnd1, int ibnd1p,
                            int is3, int ir3, int ir3p,
                            const struct mod_libraries *libs,
-                           const struct energy_data *edat,
+                           const struct mod_energy_data *edat,
                            struct mdt_properties *prop, GError **err)
 {
   static const char *routine = "update_mdt";
@@ -162,7 +162,7 @@ static gboolean update_single(struct mod_mdt *mdt,
                               const struct alignment *aln, int is1, int ip1,
                               int ip2, int ir1, int ir1p,
                               const struct mod_libraries *libs,
-                              const struct energy_data *edat,
+                              const struct mod_energy_data *edat,
                               struct mdt_properties *prop, GError **err)
 {
   int is2, ir2, ir2p, ia1, ia1p, is3, ir3, ir3p;
@@ -213,7 +213,7 @@ static gboolean update_multiple(struct mod_mdt *mdt,
                                 const struct alignment *aln, int is1, int ip1,
                                 int ip2, int ir1, int ir1p, int pairs,
                                 int triples, const struct mod_libraries *libs,
-                                const struct energy_data *edat,
+                                const struct mod_energy_data *edat,
                                 const gboolean acceptd[],
                                 struct mdt_properties *prop, GError **err)
 {
@@ -280,7 +280,7 @@ static gboolean update_multiple(struct mod_mdt *mdt,
 static gboolean genpair(struct mod_mdt *mdt, const struct mdt_library *mlib,
                         const struct alignment *aln, int ip1, int ip2,
                         const struct mod_libraries *libs,
-                        const struct energy_data *edat,
+                        const struct mod_energy_data *edat,
                         const gboolean acceptd[], int pairs, int triples,
                         struct mdt_properties *prop, GError **err)
 {
@@ -325,7 +325,7 @@ static gboolean gen_residue_pairs(struct mod_mdt *mdt,
                                   const struct alignment *aln,
                                   const int rsrang[4],
                                   const struct mod_libraries *libs,
-                                  const struct energy_data *edat,
+                                  const struct mod_energy_data *edat,
                                   const gboolean acceptd[], int pairs,
                                   int triples, struct mdt_properties *prop,
                                   GError **err)
@@ -364,7 +364,7 @@ static gboolean gen_residue_pairs(struct mod_mdt *mdt,
 static gboolean gen_atoms(struct mod_mdt *mdt, const struct mdt_library *mlib,
                           const struct alignment *aln, int is1,
                           const struct mod_libraries *libs,
-                          const struct energy_data *edat,
+                          const struct mod_energy_data *edat,
                           struct mdt_properties *prop, GError **err)
 {
   int ia1, ir1, *iresatm;
@@ -391,7 +391,7 @@ static gboolean gen_atom_pairs(struct mod_mdt *mdt,
                                const struct mdt_library *mlib,
                                const struct alignment *aln, int is1,
                                const struct mod_libraries *libs,
-                               const struct energy_data *edat,
+                               const struct mod_energy_data *edat,
                                struct mdt_properties *prop, GError **err)
 {
   int ia1, ia1p, ir1, ir1p, *iresatm;
@@ -421,7 +421,7 @@ static gboolean gen_atom_pairs(struct mod_mdt *mdt,
 static gboolean gen_bonds(struct mod_mdt *mdt, const struct mdt_library *mlib,
                           const struct alignment *aln, int is1, int npnt,
                           const struct mod_libraries *libs,
-                          const struct energy_data *edat,
+                          const struct mod_energy_data *edat,
                           struct mdt_properties *prop, GError **err)
 {
   const struct mdt_bond_list *bonds;
@@ -449,7 +449,7 @@ static gboolean gen_atom_tuples(struct mod_mdt *mdt,
                                 const struct mdt_library *mlib,
                                 const struct alignment *aln, int is1,
                                 const struct mod_libraries *libs,
-                                const struct energy_data *edat,
+                                const struct mod_energy_data *edat,
                                 struct mdt_properties *prop, GError **err)
 {
   int ia1, ir1, ibnd1, ibnd1p, ia1p, ir1p, *iresatm;
@@ -486,7 +486,7 @@ static gboolean gen_atom_tuple_pairs(struct mod_mdt *mdt,
                                      const struct alignment *aln,
                                      const int rsrang[4], int is1,
                                      const struct mod_libraries *libs,
-                                     const struct energy_data *edat,
+                                     const struct mod_energy_data *edat,
                                      struct mdt_properties *prop, GError **err)
 {
   int ia1, ir1, ibnd1, ibnd1p, ia1p, ir1p, nr, *iresatm;
@@ -528,7 +528,7 @@ static gboolean update_stats(struct mod_mdt *mdt,
                              const struct mdt_library *mlib,
                              const struct alignment *aln, const int rsrang[4],
                              const struct mod_libraries *libs,
-                             const struct energy_data *edat,
+                             const struct mod_energy_data *edat,
                              const gboolean acceptd[], int nseqacc, int pairs,
                              int triples, struct mdt_properties *prop,
                              GError **err)
@@ -647,9 +647,9 @@ gboolean mdt_add_alignment(struct mod_mdt *mdt,
                            struct alignment *aln, float distngh,
                            gboolean sdchngh, int surftyp, int iacc1typ,
                            const int residue_span_range[4], int pairs,
-                           int triples, struct io_data *io,
-                           struct energy_data *edat, struct mod_libraries *libs,
-                           GError **err)
+                           int triples, struct mod_io_data *io,
+                           struct mod_energy_data *edat,
+                           struct mod_libraries *libs, GError **err)
 {
   int nseqacc, ierr;
   gboolean ret, *acceptd;

@@ -79,7 +79,7 @@ struct mdt_properties {
 
 /** Calculate a single MDT feature index */
 G_GNUC_INTERNAL
-int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
+int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,
                  int ia1p, const struct mdt_library *mlib, int ip2,
                  int ibnd1, int ibnd1p, int is3, int ir3, int ir3p,

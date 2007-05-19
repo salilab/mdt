@@ -19,7 +19,7 @@ G_BEGIN_DECLS
 
 /** Get all tuples for a structure. */
 G_GNUC_INTERNAL
-struct mdt_tuple_list *tupclass(const struct structure *struc,
+struct mdt_tuple_list *tupclass(const struct mod_structure *struc,
                                 const struct mod_sequence *seq,
                                 const struct mdt_atom_class_list *atclass,
                                 const struct mod_libraries *libs);

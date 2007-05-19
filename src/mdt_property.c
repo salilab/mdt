@@ -15,7 +15,7 @@
 #include "mdt_tuples.h"
 
 /** Make a new mdt_properties structure */
-struct mdt_properties *mdt_properties_new(const struct alignment *aln)
+struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
 {
   struct mdt_properties *prop;
   int i, j;
@@ -38,11 +38,11 @@ struct mdt_properties *mdt_properties_new(const struct alignment *aln)
 
 /** Free an mdt_properties structure */
 void mdt_properties_free(struct mdt_properties *prop,
-                         const struct alignment *aln)
+                         const struct mod_alignment *aln)
 {
   int i, j;
   for (i = 0; i < aln->naln; i++) {
-    struct structure *struc = alignment_structure_get(aln, i);
+    struct mod_structure *struc = mod_alignment_structure_get(aln, i);
     for (j = 0; j < N_MDT_BOND_TYPES; j++) {
       if (prop[i].bonds[j]) {
         g_free(prop[i].bonds[j]->bonds);
@@ -114,7 +114,7 @@ static int iatmcls(int irestyp, const char *atmnam,
 }
 
 static void atmclass_disulfide(const int iss[], int nss,
-                               const struct structure *struc,
+                               const struct mod_structure *struc,
                                const struct mod_sequence *seq,
                                const struct mdt_atom_class_list *atclass,
                                int iatta[], const struct mod_libraries *libs)
@@ -143,7 +143,7 @@ static void atmclass_disulfide(const int iss[], int nss,
   }
 }
 
-static gboolean atmcls_special(struct structure *struc,
+static gboolean atmcls_special(struct mod_structure *struc,
                                const struct mod_sequence *seq, int iatta[],
                                const struct mdt_atom_class_list *atclass,
                                const struct mdt_library *mlib,
@@ -195,15 +195,15 @@ static gboolean atmcls_special(struct structure *struc,
   return TRUE;
 }
 
-static int *make_atom_type(const struct alignment *aln, int is,
+static int *make_atom_type(const struct mod_alignment *aln, int is,
                            const struct mdt_library *mlib,
                            const struct mdt_atom_class_list *atclass,
                            int ifi, const struct mod_libraries *libs,
                            GError **err)
 {
   int *iatta;
-  struct structure *struc = alignment_structure_get(aln, is);
-  struct mod_sequence *seq = alignment_sequence_get(aln, is);
+  struct mod_structure *struc = mod_alignment_structure_get(aln, is);
+  struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
   iatta = g_malloc(sizeof(int) * struc->cd.natm);
   if (!atmcls_special(struc, seq, iatta, atclass, mlib, libs, err)) {
     g_free(iatta);
@@ -214,7 +214,7 @@ static int *make_atom_type(const struct alignment *aln, int is,
 }
 
 /** Get/calculate the array of atom type bin indices */
-const int *property_iatta(const struct alignment *aln, int is,
+const int *property_iatta(const struct mod_alignment *aln, int is,
                           struct mdt_properties *prop,
                           const struct mdt_library *mlib, int ifi,
                           const struct mod_libraries *libs, GError **err)
@@ -227,7 +227,7 @@ const int *property_iatta(const struct alignment *aln, int is,
 }
 
 /** Get/calculate the array of hydrogen bond atom type bin indices */
-const int *property_hb_iatta(const struct alignment *aln, int is,
+const int *property_hb_iatta(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
                              const struct mod_libraries *libs, GError **err)
@@ -240,13 +240,13 @@ const int *property_hb_iatta(const struct alignment *aln, int is,
 }
 
 /** Get/calculate the hydrogen bond satisfaction index */
-gboolean property_hbpot(const struct alignment *aln, int is,
+gboolean property_hbpot(const struct mod_alignment *aln, int is,
                         struct mdt_properties *prop,
                         const struct mdt_library *mlib, int ifi,
                         const struct mod_libraries *libs, float *hbpot,
                         GError **err)
 {
-  struct structure *struc = alignment_structure_get(aln, is);
+  struct mod_structure *struc = mod_alignment_structure_get(aln, is);
   const int *iatta = property_hb_iatta(aln, is, prop, mlib, ifi, libs, err);
   if (!iatta) {
     return FALSE;
@@ -261,13 +261,13 @@ gboolean property_hbpot(const struct alignment *aln, int is,
 }
 
 /** Get/calculate the resolution bin index */
-int property_iresol(const struct alignment *aln, int is,
+int property_iresol(const struct mod_alignment *aln, int is,
                     struct mdt_properties *prop,
                     const struct mdt_library *mlib, int ifi,
                     const struct mdt_libfeature *feat)
 {
   if (prop[is].iresol == 0) {
-    struct mod_sequence *seq = alignment_sequence_get(aln, is);
+    struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
     float resol;
     int iresol;
 
@@ -322,13 +322,13 @@ static float get_radius_gyration(const float x[], const float y[],
 }
 
 /** Get/calculate the radius of gyration bin index */
-int property_radius_gyration(const struct alignment *aln, int is,
+int property_radius_gyration(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
                              const struct mdt_libfeature *feat)
 {
   if (prop[is].radius_gyration == -1) {
-    struct structure *struc = alignment_structure_get(aln, is);
+    struct mod_structure *struc = mod_alignment_structure_get(aln, is);
     float *x, *y, *z, radius_gyration, cx, cy, cz;
     x = mod_float1_pt(&struc->cd.x);
     y = mod_float1_pt(&struc->cd.y);
@@ -344,13 +344,13 @@ int property_radius_gyration(const struct alignment *aln, int is,
 }
 
 /** Get/calculate the array of atom accessibility bin indices */
-const int *property_iatmacc(const struct alignment *aln, int is,
+const int *property_iatmacc(const struct mod_alignment *aln, int is,
                             struct mdt_properties *prop,
                             const struct mdt_library *mlib, int ifi,
                             const struct mdt_libfeature *feat)
 {
   if (!prop[is].iatmacc) {
-    struct structure *struc = alignment_structure_get(aln, is);
+    struct mod_structure *struc = mod_alignment_structure_get(aln, is);
     prop[is].iatmacc = g_malloc(sizeof(int) * struc->cd.natm);
     alliclsbin(struc->cd.natm, mod_float1_pt(&struc->cd.atmacc),
                prop[is].iatmacc, mlib, ifi, feat->nbins - 1);
@@ -359,7 +359,7 @@ const int *property_iatmacc(const struct alignment *aln, int is,
 }
 
 /** Get/calculate the array of fractional atom accessibility bin indices */
-const int *property_ifatmacc(const struct alignment *aln, int is,
+const int *property_ifatmacc(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
                              const struct mdt_libfeature *feat,
@@ -367,8 +367,8 @@ const int *property_ifatmacc(const struct alignment *aln, int is,
 {
   if (!prop[is].ifatmacc) {
     int i, *ifatmacc;
-    struct mod_sequence *seq = alignment_sequence_get(aln, is);
-    struct structure *struc = alignment_structure_get(aln, is);
+    struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
+    struct mod_structure *struc = mod_alignment_structure_get(aln, is);
 
     ifatmacc = g_malloc(sizeof(int) * struc->cd.natm);
     for (i = 0; i < struc->cd.natm; i++) {
@@ -395,15 +395,16 @@ const int *property_ifatmacc(const struct alignment *aln, int is,
 }
 
 /** Get/calculate the list of all bonds for a structure. */
-const struct mdt_bond_list *property_bonds(const struct alignment *aln, int is,
+const struct mdt_bond_list *property_bonds(const struct mod_alignment *aln,
+                                           int is,
                                            struct mdt_properties *prop,
                                            const struct mdt_library *mlib,
                                            int bondtype,
                                            const struct mod_libraries *libs)
 {
   if (!prop[is].bonds[bondtype]) {
-    struct mod_sequence *seq = alignment_sequence_get(aln, is);
-    struct structure *struc = alignment_structure_get(aln, is);
+    struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
+    struct mod_structure *struc = mod_alignment_structure_get(aln, is);
     prop[is].bonds[bondtype] = get_stereo(struc, seq,
                                           mlib->atclass[bondtype + 1],
                                           bondtype, libs);
@@ -412,7 +413,7 @@ const struct mdt_bond_list *property_bonds(const struct alignment *aln, int is,
 }
 
 /** Get a single bond from a structure */
-const struct mdt_bond *property_one_bond(const struct alignment *aln,
+const struct mdt_bond *property_one_bond(const struct mod_alignment *aln,
                                          int is, struct mdt_properties *prop,
                                          const struct mdt_library *mlib,
                                          int bondtype, int ibnd1,
@@ -423,15 +424,15 @@ const struct mdt_bond *property_one_bond(const struct alignment *aln,
 
 
 /** Get/calculate the list of all tuples for a structure. */
-const struct mdt_tuple_list *property_tuples(const struct alignment *aln,
+const struct mdt_tuple_list *property_tuples(const struct mod_alignment *aln,
                                              int is,
                                              struct mdt_properties *prop,
                                              const struct mdt_library *mlib,
                                              const struct mod_libraries *libs)
 {
   if (!prop[is].tuples) {
-    struct mod_sequence *seq = alignment_sequence_get(aln, is);
-    struct structure *struc = alignment_structure_get(aln, is);
+    struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
+    struct mod_structure *struc = mod_alignment_structure_get(aln, is);
     prop[is].tuples = tupclass(struc, seq, mlib->tupclass, libs);
   }
   return prop[is].tuples;
@@ -453,7 +454,7 @@ gboolean tuple_require_natom(const struct mdt_library *mlib, int min_natom,
 }
 
 /** Get a single atom tuple from a structure */
-const struct mdt_tuple *property_one_tuple(const struct alignment *aln,
+const struct mdt_tuple *property_one_tuple(const struct mod_alignment *aln,
                                            int is, struct mdt_properties *prop,
                                            const struct mdt_library *mlib,
                                            int ibnd1, int ia1,

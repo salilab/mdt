@@ -175,7 +175,7 @@ static float dihedral1(float x1, float y1, float z1, float x2, float y2,
 
 /** Return the bin index for the distance between two specified atoms in the
     same protein. */
-static int idist0(int ia1, int ia1p, const struct structure *struc,
+static int idist0(int ia1, int ia1p, const struct mod_structure *struc,
                   const struct mdt_library *mlib, int ifi, int nrang)
 {
   if (ia1 >= 0 && ia1p >= 0) {
@@ -192,7 +192,7 @@ static int idist0(int ia1, int ia1p, const struct structure *struc,
 
 /** Return the bin index for the angle between three specified atoms in the
     same protein. */
-static int iangle0(int ia1, int ia2, int ia3, const struct structure *struc,
+static int iangle0(int ia1, int ia2, int ia3, const struct mod_structure *struc,
                    const struct mdt_library *mlib, int ifi, int nrang)
 {
   if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0) {
@@ -211,7 +211,7 @@ static int iangle0(int ia1, int ia2, int ia3, const struct structure *struc,
 /** Return the bin index for the dihedral angle between four specified atoms
     in the same protein. */
 static int idihedral0(int ia1, int ia2, int ia3, int ia4,
-                      const struct structure *struc,
+                      const struct mod_structure *struc,
                       const struct mdt_library *mlib, int ifi, int nrang)
 {
   if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0 && ia4 >= 0) {
@@ -233,7 +233,7 @@ static int idihedral0(int ia1, int ia2, int ia3, int ia4,
 }
 
 /** Get the index into the MDT for the given alignment feature */
-int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
+int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,
                  int ia1p, const struct mdt_library *mlib, int ip2,
                  int ibnd1, int ibnd1p, int is3, int ir3, int ir3p,
@@ -245,15 +245,15 @@ int my_mdt_index(int ifi, const struct alignment *aln, int is1, int ip1,
   const int *binprop;
   int iresol, irad;
   float fprop;
-  struct structure *struc1, *struc2;
+  struct mod_structure *struc1, *struc2;
   struct mod_sequence *seq1, *seq2;
   const struct mdt_bond *bond;
   const struct mdt_tuple *tup, *tup2;
   struct mdt_libfeature *feat = &mlib->base.features[ifi - 1];
-  struc1 = alignment_structure_get(aln, is1);
-  struc2 = alignment_structure_get(aln, is2);
-  seq1 = alignment_sequence_get(aln, is1);
-  seq2 = alignment_sequence_get(aln, is2);
+  struc1 = mod_alignment_structure_get(aln, is1);
+  struc2 = mod_alignment_structure_get(aln, is2);
+  seq1 = mod_alignment_sequence_get(aln, is1);
+  seq2 = mod_alignment_sequence_get(aln, is2);
   switch (ifi) {
   case 35:
     iresol = property_iresol(aln, is1, prop, mlib, ifi, feat);

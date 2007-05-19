@@ -15,7 +15,7 @@
 
 /** Return True iff the atom index is OK, and the coordinates are
     defined. */
-gboolean atmdefd(int ia1, const struct coordinates *cd)
+gboolean atmdefd(int ia1, const struct mod_coordinates *cd)
 {
   if (ia1 >= 0 && ia1 < cd->natm) {
     float *x, *y, *z;
@@ -29,7 +29,7 @@ gboolean atmdefd(int ia1, const struct coordinates *cd)
 }
 
 /** Add a bond/angle/dihedral if all the atoms are OK. */
-static void add_bond(const struct coordinates *cd,
+static void add_bond(const struct mod_coordinates *cd,
                      const struct mod_sequence *seq,
                      const struct mdt_atom_type *atype, int ia1, int ir1,
                      int natom, int iclass, GArray *bonds)
@@ -51,7 +51,7 @@ static void add_bond(const struct coordinates *cd,
   g_array_append_val(bonds, newbnd);
 }
 
-static void get_bondlist(GArray *bonds, const struct structure *struc,
+static void get_bondlist(GArray *bonds, const struct mod_structure *struc,
                          const struct mod_sequence *seq,
                          const struct mdt_atom_class_list *atclass,
                          int natom, const struct mod_libraries *libs)
@@ -84,7 +84,7 @@ static void get_bondlist(GArray *bonds, const struct structure *struc,
 }
 
 /** Get all of one type of bond (bond/angle/dihedral) for a structure. */
-struct mdt_bond_list *get_stereo(const struct structure *struc,
+struct mdt_bond_list *get_stereo(const struct mod_structure *struc,
                                  const struct mod_sequence *seq,
                                  const struct mdt_atom_class_list *atclass,
                                  int bondtype, const struct mod_libraries *libs)

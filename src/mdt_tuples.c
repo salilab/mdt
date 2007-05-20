@@ -59,7 +59,7 @@ static void get_tuples(int iatm, const struct mod_structure *struc,
 
       /* Does the residue type match? */
       if (strcmp(resnam, t->names[0]) == 0 || strcmp(t->names[0], "*") == 0) {
-        char *atmnam = get_coord_atmnam(&struc->cd, iatm);
+        char *atmnam = mod_coordinates_atmnam_get(&struc->cd, iatm);
         /* Does the lead atom type match? */
         if (strcmp(atmnam, t->names[1]) == 0) {
           add_tuple(&struc->cd, seq, t, iatm, ir1, iclass, atclass->natom,

@@ -37,7 +37,7 @@ static char *get_mdt_symb(const struct mod_mdt *mdt,
                           const struct mdt_library *mlib,
                           int nfeat, int ibin, int ndecimal)
 {
-  const struct mdt_libfeature *feat;
+  const struct mod_mdt_libfeature *feat;
   int ifeat = mdt->features[nfeat].ifeat - 1;
   feat = &mlib->base.features[ifeat];
   /* For type 3, generate symbol from range data */

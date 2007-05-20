@@ -71,7 +71,7 @@ G_GNUC_INTERNAL
 int property_iresol(const struct mod_alignment *aln, int is,
                     struct mdt_properties *prop,
                     const struct mdt_library *mlib, int ifi,
-                    const struct mdt_libfeature *feat);
+                    const struct mod_mdt_libfeature *feat);
 
 /** Get/calculate the array of atom type bin indices */
 G_GNUC_INTERNAL
@@ -100,14 +100,14 @@ G_GNUC_INTERNAL
 const int *property_iatmacc(const struct mod_alignment *aln, int is,
                             struct mdt_properties *prop,
                             const struct mdt_library *mlib, int ifi,
-                            const struct mdt_libfeature *feat);
+                            const struct mod_mdt_libfeature *feat);
 
 /** Get/calculate the array of fractional atom accessibility bin indices */
 G_GNUC_INTERNAL
 const int *property_ifatmacc(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
-                             const struct mdt_libfeature *feat,
+                             const struct mod_mdt_libfeature *feat,
                              const struct mod_libraries *libs, GError **err);
 
 /** Get/calculate the radius of gyration bin index */
@@ -115,7 +115,7 @@ G_GNUC_INTERNAL
 int property_radius_gyration(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
-                             const struct mdt_libfeature *feat);
+                             const struct mod_mdt_libfeature *feat);
 
 G_END_DECLS
 

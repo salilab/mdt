@@ -224,7 +224,7 @@ void mdt_section_meanstdev(const struct mod_mdt *mdt,
 {
   int istart, nbins, ifeat;
   gboolean periodic;
-  struct mdt_libfeature *feat;
+  struct mod_mdt_libfeature *feat;
   double dx, x0;
 
   if (!get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, err)) {

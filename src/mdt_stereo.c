@@ -70,7 +70,7 @@ static void get_bondlist(GArray *bonds, const struct mod_structure *struc,
 
         /* Does the residue type match? */
         if (strcmp(resnam, t->names[0]) == 0 || strcmp(t->names[0], "*") == 0) {
-          char *atmnam = get_coord_atmnam(&struc->cd, ia1);
+          char *atmnam = mod_coordinates_atmnam_get(&struc->cd, ia1);
           /* Does the lead atom type match? */
           if (strcmp(atmnam, t->names[1]) == 0) {
             add_bond(&struc->cd, seq, t, ia1, ir1, natom, iclass, bonds);
@@ -87,7 +87,8 @@ static void get_bondlist(GArray *bonds, const struct mod_structure *struc,
 struct mdt_bond_list *get_stereo(const struct mod_structure *struc,
                                  const struct mod_sequence *seq,
                                  const struct mdt_atom_class_list *atclass,
-                                 int bondtype, const struct mod_libraries *libs)
+                                 int bondtype,
+                                 const struct mod_libraries *libs)
 {
   struct mdt_bond_list *bondlist = g_malloc(sizeof(struct mdt_bond_list));
   GArray *bonds = g_array_new(FALSE, FALSE, sizeof(struct mdt_bond));

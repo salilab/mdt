@@ -41,7 +41,7 @@ void weights(float weight, int nbins, float norm, float *w1, float *w2)
 int indmdt(const int *indf, const struct mod_mdt *mdt)
 {
   int i, ind, nfeat = mdt->nfeat;
-  const struct mdt_feature *feat = mdt->features;
+  const struct mod_mdt_feature *feat = mdt->features;
   ind = indf[nfeat - 1] - feat[nfeat - 1].istart;
 
   for (i = nfeat - 2; i >= 0; i--) {
@@ -264,7 +264,7 @@ static void setup_mdt_feature_arrays(const struct mod_mdt *mdt,
   *ival = g_malloc(sizeof(int) * nfeat);
   *nbins = g_malloc(sizeof(int) * nfeat);
   for (i = 0; i < nfeat; i++) {
-    const struct mdt_feature *feat = &mdt->features[ifeat[i]];
+    const struct mod_mdt_feature *feat = &mdt->features[ifeat[i]];
     (*nbins)[i] = feat->nbins;
     (*ival)[i] = (*istart)[i] = feat->istart;
   }

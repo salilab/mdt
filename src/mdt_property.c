@@ -135,7 +135,7 @@ static void atmclass_disulfide(const int iss[], int nss,
         iend = struc->cd.natm;
       }
       for (iatm = istart; iatm < iend; iatm++) {
-        char *atmnam = get_coord_atmnam(&struc->cd, iatm);
+        char *atmnam = mod_coordinates_atmnam_get(&struc->cd, iatm);
         iatta[iatm] = iatmcls(cycint, atmnam, atclass, libs);
         g_free(atmnam);
       }
@@ -154,7 +154,7 @@ static gboolean atmcls_special(struct mod_structure *struc,
   irestyp = mod_int1_pt(&seq->irestyp);
   for (i = 0; i < struc->cd.natm; i++) {
     int irest = irestyp[iresatm[i] - 1];
-    char *atmnam = get_coord_atmnam(&struc->cd, i);
+    char *atmnam = mod_coordinates_atmnam_get(&struc->cd, i);
     iatta[i] = iatmcls(irest, atmnam, atclass, libs);
     g_free(atmnam);
   }
@@ -174,7 +174,7 @@ static gboolean atmcls_special(struct mod_structure *struc,
 
     /* also, the first N in the chain is different: */
     for (i = 0; i < iatmr1[0]; i++) {
-      char *atmnam = get_coord_atmnam(&struc->cd, i);
+      char *atmnam = mod_coordinates_atmnam_get(&struc->cd, i);
       if (strcmp(atmnam, "N") == 0) {
         iatta[i] = iatmcls(0, "NH3", atclass, libs);
       }
@@ -183,7 +183,7 @@ static gboolean atmcls_special(struct mod_structure *struc,
 
     /* also, the O in the last residue are different: */
     for (i = iatmr1[seq->nres - 1]; i < struc->cd.natm; i++) {
-      char *atmnam = get_coord_atmnam(&struc->cd, i);
+      char *atmnam = mod_coordinates_atmnam_get(&struc->cd, i);
       if (strcmp(atmnam, "OT") == 0 || strcmp(atmnam, "OT1") == 0
           || strcmp(atmnam, "OT2") == 0 || strcmp(atmnam, "OXT") == 0
           || strcmp(atmnam, "O") == 0) {
@@ -264,7 +264,7 @@ gboolean property_hbpot(const struct mod_alignment *aln, int is,
 int property_iresol(const struct mod_alignment *aln, int is,
                     struct mdt_properties *prop,
                     const struct mdt_library *mlib, int ifi,
-                    const struct mdt_libfeature *feat)
+                    const struct mod_mdt_libfeature *feat)
 {
   if (prop[is].iresol == 0) {
     struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
@@ -325,7 +325,7 @@ static float get_radius_gyration(const float x[], const float y[],
 int property_radius_gyration(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
-                             const struct mdt_libfeature *feat)
+                             const struct mod_mdt_libfeature *feat)
 {
   if (prop[is].radius_gyration == -1) {
     struct mod_structure *struc = mod_alignment_structure_get(aln, is);
@@ -347,7 +347,7 @@ int property_radius_gyration(const struct mod_alignment *aln, int is,
 const int *property_iatmacc(const struct mod_alignment *aln, int is,
                             struct mdt_properties *prop,
                             const struct mdt_library *mlib, int ifi,
-                            const struct mdt_libfeature *feat)
+                            const struct mod_mdt_libfeature *feat)
 {
   if (!prop[is].iatmacc) {
     struct mod_structure *struc = mod_alignment_structure_get(aln, is);
@@ -362,7 +362,7 @@ const int *property_iatmacc(const struct mod_alignment *aln, int is,
 const int *property_ifatmacc(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
                              const struct mdt_library *mlib, int ifi,
-                             const struct mdt_libfeature *feat,
+                             const struct mod_mdt_libfeature *feat,
                              const struct mod_libraries *libs, GError **err)
 {
   if (!prop[is].ifatmacc) {
@@ -376,7 +376,7 @@ const int *property_ifatmacc(const struct mod_alignment *aln, int is,
       float r, fatmacc;
 
       /* Get integer atom type */
-      iattyp = coordinates_atom_type_get(&struc->cd, seq, i, libs, &ierr);
+      iattyp = mod_coordinates_atom_type_get(&struc->cd, seq, i, libs, &ierr);
       if (ierr) {
         handle_modeller_error(err);
         g_free(ifatmacc);

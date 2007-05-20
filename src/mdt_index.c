@@ -61,7 +61,7 @@ static int itable(const int *itab, int nr, int ir, int ndim)
 
 /** Ensure that a given bin index is in range for the feature; return in
     the undefined bin if not. */
-static int index_inrange(int index, const struct mdt_libfeature *feat)
+static int index_inrange(int index, const struct mod_mdt_libfeature *feat)
 {
   return (index >= 1 && index < feat->nbins) ? index : feat->nbins;
 }
@@ -70,8 +70,8 @@ static int index_inrange(int index, const struct mdt_libfeature *feat)
 int iclsbin(float x, const struct mdt_library *mlib, int ifi, int nrang)
 {
   int i;
-  const struct mdt_libfeature *feat = &mlib->base.features[ifi - 1];
-  const struct mdt_bin *bin = feat->bins;
+  const struct mod_mdt_libfeature *feat = &mlib->base.features[ifi - 1];
+  const struct mod_mdt_bin *bin = feat->bins;
   for (i = 0; i < nrang - 1; i++, bin++) {
     if (x >= bin->rang1 && x <= bin->rang2) {
       return i + 1;
@@ -192,7 +192,8 @@ static int idist0(int ia1, int ia1p, const struct mod_structure *struc,
 
 /** Return the bin index for the angle between three specified atoms in the
     same protein. */
-static int iangle0(int ia1, int ia2, int ia3, const struct mod_structure *struc,
+static int iangle0(int ia1, int ia2, int ia3,
+                   const struct mod_structure *struc,
                    const struct mdt_library *mlib, int ifi, int nrang)
 {
   if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0) {
@@ -249,7 +250,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   struct mod_sequence *seq1, *seq2;
   const struct mdt_bond *bond;
   const struct mdt_tuple *tup, *tup2;
-  struct mdt_libfeature *feat = &mlib->base.features[ifi - 1];
+  struct mod_mdt_libfeature *feat = &mlib->base.features[ifi - 1];
   struc1 = mod_alignment_structure_get(aln, is1);
   struc2 = mod_alignment_structure_get(aln, is2);
   seq1 = mod_alignment_sequence_get(aln, is1);
@@ -411,9 +412,9 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     return index_inrange(irad, feat);
   default:
     /* If we don't implement this feature, maybe Modeller does */
-    ret = mdt_index(ifi, aln, is1 + 1, ip1 + 1, is2 + 1, ir1 + 1, ir2 + 1,
-                    ir1p + 1, ir2p + 1, &mlib->base, ip2 + 1, is3 + 1, ir3 + 1,
-                    ir3p + 1, libs, edat, &ierr);
+    ret = mod_mdt_index(ifi, aln, is1 + 1, ip1 + 1, is2 + 1, ir1 + 1, ir2 + 1,
+                        ir1p + 1, ir2p + 1, &mlib->base, ip2 + 1, is3 + 1,
+                        ir3 + 1, ir3p + 1, libs, edat, &ierr);
     if (ierr) {
       handle_modeller_error(err);
     }

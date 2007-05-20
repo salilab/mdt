@@ -31,7 +31,7 @@ static int *mdt_indices(gboolean *outrange, const struct mod_alignment *aln,
   indf = g_malloc(sizeof(int) * mdt->nfeat);
 
   for (i = 0; i < mdt->nfeat && !tmperr && *outrange == FALSE; i++) {
-    const struct mdt_feature *feat = &mdt->features[i];
+    const struct mod_mdt_feature *feat = &mdt->features[i];
     int ifi = feat->ifeat;
     indf[i] = my_mdt_index(ifi, aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
                            ia1p, mlib, ip2, ibnd1, ibnd1p, is3, ir3, ir3p,
@@ -101,8 +101,8 @@ static gboolean check_single_protein_features(const struct mod_mdt *mdt,
 {
   int i;
   for (i = 0; i < mdt->nfeat; i++) {
-    struct mdt_feature *feat = &mdt->features[i];
-    struct mdt_libfeature *libfeat;
+    struct mod_mdt_feature *feat = &mdt->features[i];
+    struct mod_mdt_libfeature *libfeat;
     libfeat = &mlib->base.features[feat->ifeat - 1];
     if (libfeat->iknown > 1) {
       g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
@@ -159,8 +159,8 @@ static int isbeg(int is, int nseq, int iseqbeg)
 /** Update MDT data for a single protein property. */
 static gboolean update_single(struct mod_mdt *mdt,
                               const struct mdt_library *mlib,
-                              const struct mod_alignment *aln, int is1, int ip1,
-                              int ip2, int ir1, int ir1p,
+                              const struct mod_alignment *aln, int is1,
+                              int ip1, int ip2, int ir1, int ir1p,
                               const struct mod_libraries *libs,
                               const struct mod_energy_data *edat,
                               struct mdt_properties *prop, GError **err)
@@ -657,8 +657,8 @@ gboolean mdt_add_alignment(struct mod_mdt *mdt,
 
   mod_lognote("Calculating and checking other data: %d", aln->nseq);
 
-  mdt_getdata(mdt, &nseqacc, aln, distngh, sdchngh, surftyp, iacc1typ, io,
-              libs, &ierr);
+  mod_mdt_getdata(mdt, &nseqacc, aln, distngh, sdchngh, surftyp, iacc1typ, io,
+                  libs, &ierr);
   if (ierr) {
     handle_modeller_error(err);
     return FALSE;
@@ -682,7 +682,7 @@ gboolean mdt_add_alignment(struct mod_mdt *mdt,
   mdt->n_proteins += nseqacc;
 
   mod_lognote("Pre-calculating");
-  mdt_precalc(mdt, &mlib->base, aln, libs, &ierr);
+  mod_mdt_precalc(mdt, &mlib->base, aln, libs, &ierr);
   if (ierr) {
     handle_modeller_error(err);
     ret = FALSE;

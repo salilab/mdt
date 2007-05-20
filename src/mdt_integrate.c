@@ -67,8 +67,8 @@ static void copy_mdt_indices_subset(const struct mod_mdt *mdtin,
 
   mdtout->nelems = 1;
   for (i = 0; i < mdtout->nfeat; i++) {
-    const struct mdt_feature *featin = &mdtin->features[inew_features[i]];
-    struct mdt_feature *featout = &mdtout->features[i];
+    const struct mod_mdt_feature *featin = &mdtin->features[inew_features[i]];
+    struct mod_mdt_feature *featout = &mdtout->features[i];
 
     featout->ifeat = featin->ifeat;
     featout->istart = featin->istart;

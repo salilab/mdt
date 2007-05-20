@@ -35,13 +35,13 @@ gboolean mdt_make(struct mod_mdt *mdt, const struct mdt_library *mlib,
 
   for (i = 0; i < n_features; i++) {
     int ifeat = features[i];
-    struct mdt_feature *feat = &mdt->features[i];
+    struct mod_mdt_feature *feat = &mdt->features[i];
     feat->ifeat = ifeat;
     feat->istart = 1;
     feat->iend = mlib->base.features[ifeat - 1].nbins;
   }
 
-  mdt_setup_check(mdt, &mlib->base, &ierr);
+  mod_mdt_setup_check(mdt, &mlib->base, &ierr);
   if (ierr == 0) {
     return TRUE;
   } else {

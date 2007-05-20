@@ -26,7 +26,7 @@ static void wrhead(double hx, const struct mod_mdt *mdt,
               "Features tabulated in the multidimensional table\n\n"
               "  #  FEATURE NAME");
   for (i = 0; i < mdt->nfeat; i++) {
-    struct mdt_libfeature *feat;
+    struct mod_mdt_libfeature *feat;
     int ifeat = mdt->features[i].ifeat - 1;
     feat = &mlib->base.features[ifeat];
     mod_lognote("%3d   %6d %s", i + 1, ifeat + 1, feat->name);

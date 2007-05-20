@@ -29,7 +29,7 @@ void mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
   mod_mdt_nfeat_set(mdtout, mdtin->nfeat);
   mod_mdt_nelems_set(mdtout, mdtin->nelems);
   for (i = 0; i < mdtin->nfeat; i++) {
-    struct mdt_feature *in, *out;
+    struct mod_mdt_feature *in, *out;
     in = &mdtin->features[i];
     out = &mdtout->features[i];
     out->stride = in->stride;

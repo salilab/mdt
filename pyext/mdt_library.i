@@ -1,4 +1,4 @@
-struct mdt_bin {
+struct mod_mdt_bin {
 %immutable;
   float rang1, rang2;
   char *symbol;

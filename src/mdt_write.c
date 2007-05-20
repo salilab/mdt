@@ -28,7 +28,7 @@ static void write_mdt_header(FILE *fp, const struct mod_mdt *mdt,
 
   for (i = 0; i < mdt->nfeat; i++) {
     int ifeat;
-    struct mdt_libfeature *feat;
+    struct mod_mdt_libfeature *feat;
     ifeat = mdt->features[i].ifeat - 1;
     feat = &mlib->base.features[ifeat];
     fprintf(fp, "%3d %8d %5d %s\n", i + 1, ifeat + 1, feat->nbins, feat->name);
@@ -39,7 +39,7 @@ static void write_mdt_header(FILE *fp, const struct mod_mdt *mdt,
           "  # ISTART   IEND\n");
 
   for (i = 0; i < mdt->nfeat; i++) {
-    const struct mdt_feature *feat = &mdt->features[i];
+    const struct mod_mdt_feature *feat = &mdt->features[i];
     fprintf(fp, "%3d %6d %6d\n", i + 1, feat->istart, feat->iend);
   }
 

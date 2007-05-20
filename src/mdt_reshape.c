@@ -18,8 +18,8 @@ static void reshape_mdt_indices(const struct mod_mdt *mdtin,
 
   mdtout->nelems = 1;
   for (i = 0; i < mdtin->nfeat; i++) {
-    const struct mdt_feature *infeat = &mdtin->features[old_position[i]];
-    struct mdt_feature *feat = &mdtout->features[i];
+    const struct mod_mdt_feature *infeat = &mdtin->features[old_position[i]];
+    struct mod_mdt_feature *feat = &mdtout->features[i];
     feat->istart = offset[i] + 1;
     if (shape[i] <= 0) {
       feat->iend = infeat->iend + shape[i];
@@ -38,8 +38,7 @@ static void reshape_mdt_indices(const struct mod_mdt *mdtin,
 
 /** Do the hard work of reshaping the table. */
 static void reshape_mdt_table(const struct mod_mdt *mdtin,
-                              struct mod_mdt *mdtout,
-                              const int new_position[])
+                              struct mod_mdt *mdtout, const int new_position[])
 {
   int *out_indf, *in_indf;
   out_indf = mdt_start_indices(mdtout);
@@ -93,7 +92,7 @@ static gboolean check_start_end(const struct mod_mdt *mdt, const int offset[],
 {
   int i;
   for (i = 0; i < mdt->nfeat; i++) {
-    const struct mdt_feature *oldfeat = &mdt->features[old_position[i]];
+    const struct mod_mdt_feature *oldfeat = &mdt->features[old_position[i]];
     int end;
     if (shape[i] <= 0) {
       end = oldfeat->iend + shape[i];

@@ -72,15 +72,16 @@ class mdt_library(modobject):
            @param hbond_cutoff: maximum separation between two H-bonded atoms
         """
         self.env = env.copy()
-        _modeller.read_mdt_library(self.basept, file)
+        _modeller.mod_mdt_library_read(self.basept, file)
         _mdt.mdt_library_deltai_set(self.modpt, deltai)
         _mdt.mdt_library_deltaj_set(self.modpt, deltaj)
         _mdt.mdt_library_deltai_ali_set(self.modpt, deltai_ali)
         _mdt.mdt_library_deltaj_ali_set(self.modpt, deltaj_ali)
         _mdt.mdt_library_hbond_cutoff_set(self.modpt, hbond_cutoff)
         _mdt.mdt_library_special_atoms_set(self.modpt, special_atoms)
-        _modeller.readbin_mdt_library(self.basept, self.env.libs.modpt,
-                                      binfile, residue_grouping, distance_atoms)
+        _modeller.mod_mdt_library_readbin(self.basept, self.env.libs.modpt,
+                                          binfile, residue_grouping,
+                                          distance_atoms)
 
     def __del__(self):
         _mdt.mdt_library_free(self.modpt)
@@ -233,7 +234,7 @@ class mdt(mdt_section):
 
     def read(self, file):
         """Read an MDT from C{file}."""
-        _modeller.read_mdt(self._modpt, self._mlib.basept, file)
+        _modeller.mod_mdt_read(self._modpt, self._mlib.basept, file)
 
     def copy(self):
         """@return: a copy of this MDT.
@@ -508,11 +509,11 @@ class feature(object):
         self._indx = indx
 
     def __get_ifeat(self):
-        return _mdt.mdt_feature_ifeat_get(self.modpt)
+        return _mdt.mod_mdt_feature_ifeat_get(self.modpt)
     def __get_bins(self):
         return bin_list(self)
     def __get_offset(self):
-        return _mdt.mdt_feature_istart_get(self.modpt) - 1
+        return _mdt.mod_mdt_feature_istart_get(self.modpt) - 1
     def __get_periodic(self):
         return _mdt.mdt_feature_is_periodic(self.ifeat)
     def __get_modpt(self):
@@ -534,7 +535,7 @@ class bin_list(modlist.fixlist):
         modlist.fixlist.__init__(self)
 
     def __len__(self):
-        return _mdt.mdt_feature_nbins_get(self.__feature.modpt)
+        return _mdt.mod_mdt_feature_nbins_get(self.__feature.modpt)
 
     def _getfunc(self, indx):
         return bin(self.__feature, indx)
@@ -548,11 +549,11 @@ class bin(object):
         self.__indx = indx
 
     def __get_symb(self):
-        return _mdt.mdt_bin_symbol_get(self.modpt)
+        return _mdt.mod_mdt_bin_symbol_get(self.modpt)
 
     def __get_range(self):
-        return ( _mdt.mdt_bin_rang1_get(self.modpt),
-                 _mdt.mdt_bin_rang2_get(self.modpt) )
+        return ( _mdt.mod_mdt_bin_rang1_get(self.modpt),
+                 _mdt.mod_mdt_bin_rang2_get(self.modpt) )
 
     def __get_modpt(self):
         nfeat = self.__feature._indx

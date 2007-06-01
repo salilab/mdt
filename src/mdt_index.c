@@ -414,7 +414,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case 117:
     /* Atom-atom pairs in the same residue count as undefined */
     if (ir1 == ir1p) {
-      return feat->nbins - 1;
+      return feat->nbins;
     } else {
       return idist0(ia1, ia1p, struc1, mlib, ifi, feat->nbins);
     }

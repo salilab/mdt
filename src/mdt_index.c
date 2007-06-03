@@ -410,14 +410,6 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case 115:
     irad = property_radius_gyration(aln, is1, prop, mlib, ifi, feat);
     return index_inrange(irad, feat);
-  case 116:
-  case 117:
-    /* Atom-atom pairs in the same residue count as undefined */
-    if (ir1 == ir1p) {
-      return feat->nbins;
-    } else {
-      return idist0(ia1, ia1p, struc1, mlib, ifi, feat->nbins);
-    }
   default:
     /* If we don't implement this feature, maybe Modeller does */
     ret = mod_mdt_index(ifi, aln, is1 + 1, ip1 + 1, is2 + 1, ir1 + 1, ir2 + 1,

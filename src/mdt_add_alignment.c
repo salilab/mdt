@@ -318,6 +318,15 @@ static gboolean genpair(struct mod_mdt *mdt, const struct mdt_library *mlib,
 }
 
 
+/** Return TRUE iff the two residues satisfy the residue_span_range check */
+static gboolean check_sequence_separation(int ir1, int ir1p,
+                                          const int rsrang[4])
+{
+  int nr = ir1p - ir1;
+  return ((nr >= rsrang[0] && nr <= rsrang[1])
+          || (nr >= rsrang[2] && nr <= rsrang[3]));
+}
+
 
 /** Scan all residue pairs in the first alignment sequence. */
 static gboolean gen_residue_pairs(struct mod_mdt *mdt,
@@ -345,9 +354,9 @@ static gboolean gen_residue_pairs(struct mod_mdt *mdt,
         }
       }
     } else {
-      for (ip2 = MAX(0, ip1 - rsrang[3]);
+      for (ip2 = MAX(0, ip1 + rsrang[0]);
            ip2 <= MIN(aln->naln - 1, ip1 + rsrang[3]); ip2++) {
-        if (abs(ip1 - ip2) >= rsrang[1]) {
+        if (check_sequence_separation(ip1, ip2, rsrang)) {
           if (!genpair(mdt, mlib, aln, ip1, ip2, libs, edat, acceptd, pairs,
                        triples, prop, err)) {
             return FALSE;
@@ -389,7 +398,8 @@ static gboolean gen_atoms(struct mod_mdt *mdt, const struct mdt_library *mlib,
 /** Scan all atom pairs in the first alignment sequence. */
 static gboolean gen_atom_pairs(struct mod_mdt *mdt,
                                const struct mdt_library *mlib,
-                               const struct mod_alignment *aln, int is1,
+                               const struct mod_alignment *aln,
+                               const int rsrang[4], int is1,
                                const struct mod_libraries *libs,
                                const struct mod_energy_data *edat,
                                struct mdt_properties *prop, GError **err)
@@ -407,9 +417,11 @@ static gboolean gen_atom_pairs(struct mod_mdt *mdt,
     ir1 = iresatm[ia1] - 1;
     for (ia1p = ia1 + 1; ia1p < s1->cd.natm; ia1p++) {
       ir1p = iresatm[ia1p] - 1;
-      if (!update_mdt(mdt, mlib, aln, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
-                      ia1p, 1, 1, 1, 1, 1, libs, edat, prop, err)) {
-        return FALSE;
+      if (check_sequence_separation(ir1, ir1p, rsrang)) {
+        if (!update_mdt(mdt, mlib, aln, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
+                        ia1p, 1, 1, 1, 1, 1, libs, edat, prop, err)) {
+          return FALSE;
+        }
       }
     }
   }
@@ -504,8 +516,7 @@ static gboolean gen_atom_tuple_pairs(struct mod_mdt *mdt,
 
         /* the same conditions on sequence separation as for residue pairs */
         nr = ir1p - ir1;
-        if (ia1 != ia1p && ((nr >= rsrang[0] && nr <= rsrang[1])
-                            || (nr >= rsrang[2] && nr <= rsrang[3]))) {
+        if (ia1 != ia1p && check_sequence_separation(ir1, ir1p, rsrang)) {
           for (ibnd1p = 0; ibnd1p < tup[ia1p].ntuples; ibnd1p++) {
             if (!update_mdt(mdt, mlib, aln, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
                             ia1p, ibnd1, ibnd1p, 1, 1, 1, libs, edat, prop,
@@ -581,7 +592,7 @@ static gboolean update_stats(struct mod_mdt *mdt,
        an alignment! */
   case 7:
     if (acceptd[0]) {
-      if (!gen_atom_pairs(mdt, mlib, aln, 0, libs, edat, prop, err)) {
+      if (!gen_atom_pairs(mdt, mlib, aln, rsrang, 0, libs, edat, prop, err)) {
         return FALSE;
       }
     }

@@ -289,7 +289,7 @@ class MDTTests(ModellerTest):
         m2 = mdt.mdt(mlib, features=106)
         aln = alignment(env, file='test/data/tiny.ali')
         for m in (m1, m2):
-            m.add_alignment(aln)
+            m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))
         for f in (107, 108):
             m = mdt.mdt(mlib, features=f)
             self.assertRaises(mdt.error, m.add_alignment, aln)
@@ -310,7 +310,7 @@ class MDTTests(ModellerTest):
         m5 = mdt.mdt(mlib, features=106)
         aln = alignment(env, file='test/data/tiny.ali')
         for m in (m1, m2, m3, m4, m5):
-            m.add_alignment(aln)
+            m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))
         self.assertInTolerance(m1[0], 1.0, 0.0005)
         self.assertInTolerance(m1[1], 0.0, 0.0005)
         self.assertInTolerance(m1[2], 1.0, 0.0005)

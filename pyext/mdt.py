@@ -436,7 +436,7 @@ class mdt(mdt_section):
 
 
     def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
-                      residue_span_range=(-9999, 2, 2, 99999), pairs=1,
+                      residue_span_range=(-99999, -2, 2, 99999), pairs=1,
                       triples=1, io=None, edat=None):
         """Add data from a Modeller alignment to this MDT.
            @param aln: Modeller alignment.
@@ -444,6 +444,16 @@ class mdt(mdt_section):
                   neighbors.
            @param surftyp: 1 for PSA contact area, 2 for surface area.
            @param accessibility_type: PSA accessibility type (1-10).
+           @param residue_span_range: sequence separation (inclusive) for
+                  residue-residue, tuple-tuple, and 'any atom' features. For
+                  the two residue indices r1 and r2 in the tuple-tuple and any
+                  atom cases, or two alignment position indices in the
+                  residue-residue case, the following must be true:
+                  residue_span_range[0] <= (r2 - r1) <= residue_span_range[1]
+                  residue_span_range[2] <= (r2 - r1) <= residue_span_range[3]
+                  For symmetric residue-residue features, only one condition
+                  must be met:
+                  residue_span_range[2] <= abs(r2 - r1) <= residue_span_range[3]
         """
         if io is None:
             io = self._mlib.env.io

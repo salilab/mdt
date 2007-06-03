@@ -337,6 +337,29 @@ class MDTTests(ModellerTest):
         self.assertEqual(m5.shape, (7,))
         self.assertInTolerance(m5[-1], 180.0, 0.0005)
 
+    def test_residue_span_range(self):
+        """Test residue_span_range argument"""
+        env = self.get_environ()
+        aln = alignment(env, file='test/data/tiny.ali')
+        mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', 'test/data/dist.bin')
+        mlib.tuple_classes.read('data/dblcls.lib')
+        # All residue-residue pairs should be out of range, so this MDT should
+        # end up empty:
+        m = mdt.mdt(mlib, features=103)
+        m.add_alignment(aln, residue_span_range=(-999, -999, 999, 999))
+        self.assertEqual(m.sum(), 0.0)
+        m1 = mdt.mdt(mlib, features=103)
+        m2 = mdt.mdt(mlib, features=103)
+        # When excluding only intra-residue interactions, the short-range
+        # bins should differ but the long-range behavior should be the same:
+        m1.add_alignment(aln, residue_span_range=(-999, 0, 0, 999))
+        m2.add_alignment(aln, residue_span_range=(-999, -1, 1, 999))
+        self.assertEqual(m1.shape, m2.shape)
+        for i in range(1, 5):
+            self.assertNotEqual(m1[i], m2[i])
+        for i in range(38, 49):
+            self.assertEqual(m1[i], m2[i])
+
     def test_feature_alpha_dihedral(self):
         """Check alpha dihedral feature"""
         m = self.get_test_mdt(features=88)

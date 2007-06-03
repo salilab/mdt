@@ -449,11 +449,16 @@ class mdt(mdt_section):
                   the two residue indices r1 and r2 in the tuple-tuple and any
                   atom cases, or two alignment position indices in the
                   residue-residue case, the following must be true:
-                  residue_span_range[0] <= (r2 - r1) <= residue_span_range[1]
-                  residue_span_range[2] <= (r2 - r1) <= residue_span_range[3]
+
+                  M{residue_span_range[0] <= (r2 - r1) <= residue_span_range[1]}
+
+                  M{residue_span_range[2] <= (r2 - r1) <= residue_span_range[3]}
+
                   For symmetric residue-residue features, only one condition
                   must be met:
-                  residue_span_range[2] <= abs(r2 - r1) <= residue_span_range[3]
+
+                  M{residue_span_range[2] <= abs(r2 - r1)
+                  <= residue_span_range[3]}
         """
         if io is None:
             io = self._mlib.env.io

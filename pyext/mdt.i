@@ -22,6 +22,7 @@
 %apply (const int VARLIST[], int N_VARLIST) { (const int indices[], int n_indices) };
 
 %include "../src/mdt.h"
+%include "../src/mdt_alignment.h"
 
 # Wrap MDT types
 %include "mdt_type.i"

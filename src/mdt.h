@@ -12,6 +12,8 @@
 #include "mdt_atom_classes.h"
 #include "mod_types.h"
 
+#include "mdt_alignment.h"
+
 G_BEGIN_DECLS
 
 /** Smooth a histogram or the 2D plot with a uniform prior.

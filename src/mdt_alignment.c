@@ -1,4 +1,4 @@
-/** \file mdt_add_alignment.c  Functions to add alignment data to MDTs.
+/** \file mdt_alignment.c      Functions to add alignment data to MDTs.
  *
  *             Part of MDT, Copyright(c) 1989-2007 Andrej Sali
  */

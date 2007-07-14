@@ -469,6 +469,14 @@ class mdt(mdt_section):
                                residue_span_range, pairs, triples, io.modpt,
                                edat.modpt, self._mlib.env.libs.modpt)
 
+
+    def open_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
+                       io=None, edat=None):
+        """Open a Modeller alignment to allow MDT indices to be queried
+           (see L{source}). Arguments are as for L{add_alignment}."""
+        return source(self, self._mlib, aln, distngh, surftyp,
+                      accessibility_type, io, edat)
+
     def __getitem__(self, indx):
         if not isinstance(indx, (list, tuple)):
             indx = (indx,)
@@ -579,6 +587,51 @@ class bin(object):
     modpt = property(__get_modpt)
     symbol = property(__get_symb, doc="Bin symbol")
     range = property(__get_range, doc="Bin range")
+
+
+class source(object):
+    """A source of data for an MDT (generally a Modeller alignment, opened
+       with L{mdt.open_alignment()}."""
+
+    def __init__(self, mdt, mlib, aln, distngh, surftyp, accessibility_type,
+                 io, edat):
+        self._mdt = mdt
+        self._mlib = mlib
+        self._aln = aln
+        if io is None:
+            io = mlib.env.io
+        if edat is None:
+            edat = mlib.env.edat
+        self._edat = edat
+        self._modpt = _mdt.mdt_alignment_open(mdt._modpt, mlib.modpt, aln.modpt,
+                                              distngh, False, surftyp,
+                                              accessibility_type, io.modpt,
+                                              mlib.env.libs.modpt)
+
+    def __del__(self):
+        if hasattr(self, "_modpt"):
+            _mdt.mdt_alignment_close(self._modpt)
+
+    def index(self, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
+              ip2, ibnd1, ibnd1p, is3, ir3, ir3p):
+        """Return the bin index (starting at 1) of a single MDT feature.
+           @param ifeat: MDT feature type.
+           @param is1: index of the sequence within the alignment.
+           @param ip1: position within the sequence (i.e. including gaps).
+           @param ir1: residue index (i.e. not including alignment gaps).
+           @param ir1p: second residue index for residue-residue features.
+           @param ia1: atom index.
+           @param ia1p: second atom index for atom-atom features.
+           @param ibnd1: bond or tuple index.
+           @param ibnd1p: second bond/tuple index for bond-bond or tuple-tuple
+                          features.
+           Arguments ending in 2 and 3 are used for features involving pairs
+           or triples of proteins.
+        """
+        f = _mdt.mdt_alignment_index
+        return f(self._modpt, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
+                 ia1p, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, self._mlib.modpt,
+                 self._mlib.env.libs.modpt, self._edat.modpt)
 
 
 def _pass_cutoffs(mdt, num, bin, density_cutoff, entropy_cutoff):

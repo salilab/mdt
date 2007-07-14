@@ -653,6 +653,88 @@ static gboolean update_stats(struct mod_mdt *mdt,
 }
 
 
+/** A source of data for an MDT (generally an alignment) */
+struct mdt_source {
+  int nseqacc;
+  struct mdt_properties *prop;
+  struct mod_alignment *aln;
+  gboolean *acceptd;
+};
+
+
+/** Prepare a source alignment to add data to an MDT. Returns a source pointer
+    (to be later freed with mdt_alignment_close()), or NULL on error. */
+struct mdt_source *mdt_alignment_open(struct mod_mdt *mdt,
+                                      const struct mdt_library *mlib,
+                                      struct mod_alignment *aln, float distngh,
+                                      gboolean sdchngh, int surftyp,
+                                      int iacc1typ, struct mod_io_data *io,
+                                      struct mod_libraries *libs, GError **err)
+{
+  int nseqacc, ierr;
+
+  mod_mdt_getdata(mdt, &nseqacc, aln, distngh, sdchngh, surftyp, iacc1typ, io,
+                  libs, &ierr);
+  if (ierr) {
+    handle_modeller_error(err);
+    return NULL;
+  }
+
+  mod_lognote("Pre-calculating");
+  mod_mdt_precalc(mdt, &mlib->base, aln, libs, &ierr);
+  if (ierr) {
+    handle_modeller_error(err);
+    return NULL;
+  } else {
+    struct mdt_source *source = g_malloc(sizeof(struct mdt_source));
+    source->nseqacc = nseqacc;
+    source->aln = aln;
+    source->prop = mdt_properties_new(aln);
+    source->acceptd = g_malloc(sizeof(gboolean) * aln->nseq);
+
+    if (mdt->readin[0]) {
+      int i;
+      for (i = 0; i < aln->nseq; i++) {
+        struct mod_structure *s1 = mod_alignment_structure_get(aln, i);
+        source->acceptd[i] = s1->accepts;
+      }
+    } else {
+      int i;
+      for (i = 0; i < aln->nseq; i++) {
+        source->acceptd[i] = TRUE;
+      }
+    }
+    return source;
+  }
+}
+
+
+/** Close a source alignment previously opened with mdt_alignment_open(). */
+void mdt_alignment_close(struct mdt_source *source)
+{
+  mdt_properties_free(source->prop, source->aln);
+  g_free(source->acceptd);
+  g_free(source);
+}
+
+
+/** Return the bin index (starting at 1) of a single MDT feature, at the
+    given position in the source alignment. On failure, 0 is returned. */
+int mdt_alignment_index(struct mdt_source *source, int ifeat, int is1, int ip1,
+                        int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,
+                        int ia1p, int ip2, int ibnd1, int ibnd1p, int is3,
+                        int ir3, int ir3p, const struct mdt_library *mlib,
+                        const struct mod_libraries *libs,
+                        struct mod_energy_data *edat, GError **err)
+{
+  int indf;
+  indf = my_mdt_index(ifeat, source->aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p,
+                      ia1, ia1p, mlib, ip2, ibnd1, ibnd1p, is3, ir3,
+                      ir3p, libs, edat, source->prop, err);
+  return indf;
+}
+
+
 /** Add data from an alignment to an MDT. Return TRUE on success. */
 gboolean mdt_add_alignment(struct mod_mdt *mdt,
                            const struct mdt_library *mlib,
@@ -663,47 +745,26 @@ gboolean mdt_add_alignment(struct mod_mdt *mdt,
                            struct mod_energy_data *edat,
                            struct mod_libraries *libs, GError **err)
 {
-  int nseqacc, ierr;
-  gboolean ret, *acceptd;
+  struct mdt_source *source;
 
   mod_lognote("Calculating and checking other data: %d", aln->nseq);
 
-  mod_mdt_getdata(mdt, &nseqacc, aln, distngh, sdchngh, surftyp, iacc1typ, io,
-                  libs, &ierr);
-  if (ierr) {
-    handle_modeller_error(err);
+  source = mdt_alignment_open(mdt, mlib, aln, distngh, sdchngh, surftyp,
+                              iacc1typ, io, libs, err);
+  if (source) {
+    gboolean ret;
+
+    mdt->nalns++;
+    mdt->n_proteins += source->nseqacc;
+
+    mod_lognote("Updating the statistics array:");
+    ret = update_stats(mdt, mlib, aln, residue_span_range, libs, edat,
+                       source->acceptd, source->nseqacc, pairs, triples,
+                       source->prop, err);
+
+    mdt_alignment_close(source);
+    return ret;
+  } else {
     return FALSE;
   }
-
-  acceptd = g_malloc(sizeof(gboolean) * aln->nseq);
-  if (mdt->readin[0]) {
-    int i;
-    for (i = 0; i < aln->nseq; i++) {
-      struct mod_structure *s1 = mod_alignment_structure_get(aln, i);
-      acceptd[i] = s1->accepts;
-    }
-  } else {
-    int i;
-    for (i = 0; i < aln->nseq; i++) {
-      acceptd[i] = TRUE;
-    }
-  }
-
-  mdt->nalns++;
-  mdt->n_proteins += nseqacc;
-
-  mod_lognote("Pre-calculating");
-  mod_mdt_precalc(mdt, &mlib->base, aln, libs, &ierr);
-  if (ierr) {
-    handle_modeller_error(err);
-    ret = FALSE;
-  } else {
-    struct mdt_properties *prop = mdt_properties_new(aln);
-    mod_lognote("Updating the statistics array:");
-    ret = update_stats(mdt, mlib, aln, residue_span_range, libs, edat, acceptd,
-                       nseqacc, pairs, triples, prop, err);
-    mdt_properties_free(prop, aln);
-  }
-  g_free(acceptd);
-  return ret;
 }

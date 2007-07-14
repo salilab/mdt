@@ -116,12 +116,22 @@ class MDTTests(ModellerTest):
         m = mdt.mdt(mlib, features=1)
         aln = alignment(env)
         seq = "AFVVTDNCIKXCKYTDCVEVCPVDCFYEG"
+        aln.append_sequence(seq)
+        # Get known counts of all residue types (including undefined)
         seq_types = [self.__mdt_restyp(a) for a in seq]
         known_dist = [seq_types.count(n) for n in range(22)]
-        aln.append_sequence(seq)
+
+        # Now compare with that obtained by mdt.add_alignment()
         m.add_alignment(aln)
         for i in range(22):
             self.assertEqual(known_dist[i], int(m[i]))
+
+        # Now do the same test on individually-queried indices:
+        source = m.open_alignment(aln)
+        bins = [ source.index(1, 0, n, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0) - 1 for n in range(len(seq)) ]
+        bin_dist = [bins.count(n) for n in range(22)]
+        self.assertEqual(bin_dist, known_dist)
 
     def test_deltaij(self):
         """Test residue type at deltai,j features"""

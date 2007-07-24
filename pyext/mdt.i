@@ -4,9 +4,7 @@
 %{
 #include <glib.h>
 #include "../src/mdt.h"
-#include "mod_error_types.h"
 #include "modeller.h"
-#include "mod_error.h"
 %}
 
 %include "fortran-pointers.i"

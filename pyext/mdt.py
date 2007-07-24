@@ -615,6 +615,8 @@ class source(object):
     def index(self, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
               ip2, ibnd1, ibnd1p, is3, ir3, ir3p):
         """Return the bin index (starting at 1) of a single MDT feature.
+           (Arguments ending in 2 and 3 are used for features involving pairs
+           or triples of proteins.)
            @param ifeat: MDT feature type.
            @param is1: index of the sequence within the alignment.
            @param ip1: position within the sequence (i.e. including gaps).
@@ -625,8 +627,6 @@ class source(object):
            @param ibnd1: bond or tuple index.
            @param ibnd1p: second bond/tuple index for bond-bond or tuple-tuple
                           features.
-           Arguments ending in 2 and 3 are used for features involving pairs
-           or triples of proteins.
         """
         f = _mdt.mdt_alignment_index
         return f(self._modpt, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,

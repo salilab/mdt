@@ -2,7 +2,7 @@ from modeller import *
 import mdt
 
 env = environ()
-mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', '../lib/mdt2.bin')
+mlib = mdt.mdt_library(env, '../lib/mdt2.bin')
 mlib.bond_classes.read('${LIB}/bndgrp.lib')
 
 m = mdt.mdt(mlib, file='mdt.mdt')

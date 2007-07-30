@@ -50,13 +50,12 @@ class mdt_library(modobject):
         obj.__modpt = _mdt.mdt_library_new()
         return obj
 
-    def __init__(self, env, file, binfile, residue_grouping=1,
+    def __init__(self, env, binfile, residue_grouping=1,
                  deltai=1, deltaj=1, deltai_ali=False, deltaj_ali=False,
                  distance_atoms=('CA', 'CA'), special_atoms=False,
                  hbond_cutoff=3.5):
         """Create a new MDT library.
            @param env: the Modeller environment to use
-           @param file: the MDT definition file
            @param binfile: file defining bin ranges
            @param residue_grouping: type of residue grouping for residue class
                   features, as defined in resgrp.lib (1=mainchain conformation,
@@ -67,12 +66,11 @@ class mdt_library(modobject):
            @param deltaj_ali: see L{deltaj_ali}
            @param distance_atoms: the atom types to use for "specified" distance
                   features
-           @param special_atoms: whether to treat disulfide and terminii atoms
+           @param special_atoms: whether to treat disulfide and termini atoms
                   specially for atom class features
            @param hbond_cutoff: maximum separation between two H-bonded atoms
         """
         self.env = env.copy()
-        _modeller.mod_mdt_library_read(self.basept, file)
         _mdt.mdt_library_deltai_set(self.modpt, deltai)
         _mdt.mdt_library_deltaj_set(self.modpt, deltaj)
         _mdt.mdt_library_deltai_ali_set(self.modpt, deltai_ali)

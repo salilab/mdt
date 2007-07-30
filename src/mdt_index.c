@@ -233,6 +233,93 @@ static int idihedral0(int ia1, int ia2, int ia3, int ia4,
   }
 }
 
+/** Register our MDT feature types */
+void mdt_register_features(struct mod_mdt_library *mlib)
+{
+  mod_mdt_libfeature_register(mlib, 35, "X-RAY RESOLUTION OF A (35)",
+                              9, 1, 0, 0, 0);
+  mod_mdt_libfeature_register(mlib, 38, "X-RAY RESOLUTION OF B (38)",
+                              9, 2, 0, 0, 0);
+  mod_mdt_libfeature_register(mlib, 66, "RESIDUE TYPE AT DELTA I IN A (66)",
+                              9, 1, 1, 0, 0);
+  mod_mdt_libfeature_register(mlib, 67, "RESIDUE TYPE AT DELTA I IN B (67)",
+                              9, 2, 1, 0, 0);
+  mod_mdt_libfeature_register(mlib, 77, "RESIDUE TYPE AT DELTA J IN A (77)",
+                              9, 1, 1, 0, 0);
+  mod_mdt_libfeature_register(mlib, 78, "RESIDUE TYPE AT DELTA J IN B (78)",
+                              9, 2, 1, 0, 0);
+  mod_mdt_libfeature_register(mlib, 79, "MODELLER ATOM TYPE OF A (79)",
+                              9, 1, 5, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 80, "ATOM ACCESSIBILITY IN A (80)",
+                              9, 1, 5, 0, 1, 3, 0);
+  mod_mdt_libfeature_register(mlib, 81,
+                              "FRACTIONAL ATOM ACCESSIBILITY IN A (81)",
+                              9, 1, 5, 0, 1, 3, 0);
+  mod_mdt_libfeature_register(mlib, 82, "ANY ATOM DISTANCE IN A (82)",
+                              9, 1, 6, 1, 1, 0);
+  mod_mdt_libfeature_register(mlib, 83, "MODELLER ATOM TYPE AT POS2 OF A (83)",
+                              9, 1, 5, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 84, "H-BOND DONOR IN A (84)",
+                              9, 1, 5, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 85, "H-BOND ACCEPTOR IN A (85)",
+                              9, 1, 5, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 86,
+                              "HBOND SATISFACTION INDEX OF PROTEIN 1 (86)",
+                              9, 1, 0, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 87, "TOTAL CHARGE AROUND ATOM IN A (87)",
+                              9, 1, 5, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 93, "ACCESSIBILITY OF A (93)",
+                              6, 1, 1, 0, 1, 3, 0);
+  mod_mdt_libfeature_register(mlib, 94, "ACCESSIBILITY OF B (94)",
+                              6, 2, 1, 0, 1, 3, 0);
+  mod_mdt_libfeature_register(mlib, 95, "ACCESSIBILITY OF A (95)",
+                              6, 1, 1, 0, 1, 3, 0);
+  mod_mdt_libfeature_register(mlib, 96, "ACCESSIBILITY OF B (96)",
+                              6, 2, 1, 0, 1, 3, 0);
+  mod_mdt_libfeature_register(mlib, 97, "ACCESSIBILITY OF A (97)",
+                              6, 1, 1, 0, 1, 3, 0);
+  mod_mdt_libfeature_register(mlib, 98, "ACCESSIBILITY OF B (98)",
+                              6, 2, 1, 0, 1, 3, 0);
+  mod_mdt_libfeature_register(mlib, 99, "ACCESSIBILITY OF A (99)",
+                              6, 1, 1, 0, 1, 3, 0);
+  mod_mdt_libfeature_register(mlib, 100, "ACCESSIBILITY OF B (100)",
+                              6, 2, 1, 0, 1, 3, 0);
+  mod_mdt_libfeature_register(mlib, 101, "ATOM TUPLE TYPE IN A (101)",
+                              9, 1, 7, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 102, "ATOM TUPLE TYPE IN A AT POS2 (102)",
+                              9, 1, 8, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 103,
+                              "TUPLE NON-BONDED DISTANCE IN A (103)", 9, 1, 8,
+                              0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 104, "NON-BONDED TUPLE ANGLE1 IN A (104)",
+                              9, 1, 8, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 105, "NON-BONDED TUPLE ANGLE1 IN A (105)",
+                              9, 1, 8, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 106,
+                              "NON-BONDED TUPLE DIHEDRAL1 IN A (106)", 9, 1, 8,
+                              0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 107,
+                              "NON-BONDED TUPLE DIHEDRAL2 IN A (107)", 9, 1, 8,
+                              0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 108,
+                              "NON-BONDED TUPLE DIHEDRAL3 IN A (108)", 9, 1, 8,
+                              0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 109, "BOND TYPE IN A (109)", 9, 1, 9, 0, 1,
+                              0);
+  mod_mdt_libfeature_register(mlib, 110, "BOND LENGTH IN A (110)", 9, 1, 9, 0,
+                              1, 0);
+  mod_mdt_libfeature_register(mlib, 111, "BOND ANGLE TYPE IN A (111)", 9, 1,
+                              10, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 112, "BOND ANGLE IN A (112)", 9, 1, 10, 0,
+                              1, 0);
+  mod_mdt_libfeature_register(mlib, 113, "BOND DIHEDRAL ANGLE TYPE IN A (113)",
+                              9, 1, 11, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 114, "BOND DIHEDRAL ANGLE IN A (114)", 9,
+                              1, 11, 0, 1, 0);
+  mod_mdt_libfeature_register(mlib, 115, "RADIUS OF GYRATION OF A (115)", 9, 1,
+                              0, 0, 1, 0);
+}
+
 /** Get the index into the MDT for the given alignment feature */
 int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,

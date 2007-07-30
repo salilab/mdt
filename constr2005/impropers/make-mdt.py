@@ -7,7 +7,7 @@ env = environ()
 log.minimal()
 env.io.atom_files_directory = '/diva3/database/pdb/uncompressed_files'
 
-mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', '../lib/mdt2.bin')
+mlib = mdt.mdt_library(env, '../lib/mdt2.bin')
 
 mlib.dihedral_classes.read('${LIB}/impgrp.lib')
 

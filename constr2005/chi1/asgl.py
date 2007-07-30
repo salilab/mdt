@@ -2,7 +2,7 @@ from modeller import *
 import mdt
 
 env = environ()
-mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', '../lib/mdt2.bin')
+mlib = mdt.mdt_library(env, '../lib/mdt2.bin')
 
 m = mdt.mdt(mlib, file='mdt.mdt')
 m = m.reshape(features=(35,1,3), offset=(0,0,0), shape=(1,-2,-1))

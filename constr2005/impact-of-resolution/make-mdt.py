@@ -5,7 +5,7 @@ env = environ()
 log.minimal()
 env.io.atom_files_directory = '/diva3/database/pdb/uncompressed_files'
 
-mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', 'mdt_test_xray.bin')
+mlib = mdt.mdt_library(env, 'mdt_test_xray.bin')
 
 m = mdt.mdt(mlib, features=35)
 

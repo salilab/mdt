@@ -5,6 +5,7 @@
 
 #include <glib.h>
 #include "modeller.h"
+#include "mdt_index.h"
 #include "mdt_types.h"
 #include "mdt_atom_classes.h"
 
@@ -15,6 +16,7 @@ struct mdt_library *mdt_library_new(void)
   struct mdt_library *mlib;
   mlib = g_malloc(sizeof(struct mdt_library));
   mod_mdt_library_init(&mlib->base);
+  mdt_register_features(&mlib->base);
   mlib->deltai = mlib->deltaj = 1;
   mlib->deltai_ali = mlib->deltaj_ali = FALSE;
   mlib->hbond_cutoff = 3.5;

@@ -77,6 +77,10 @@ struct mdt_properties {
   int *ifatmacc;
 };
 
+/** Register our MDT feature types */
+G_GNUC_INTERNAL
+void mdt_register_features(struct mod_mdt_library *mlib);
+
 /** Calculate a single MDT feature index */
 G_GNUC_INTERNAL
 int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,

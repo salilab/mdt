@@ -2,7 +2,7 @@ from modeller import *
 import mdt
 
 env = environ()
-mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', 'mdt_test_xray.bin')
+mlib = mdt.mdt_library(env, 'mdt_test_xray.bin')
 
 m = mdt.mdt(mlib, file='mdt2.mdt')
 

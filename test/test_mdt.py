@@ -21,7 +21,7 @@ class MDTTests(ModellerTest):
     def get_mdt_library(self, **vars):
         """Read in MDT library and bin definitions"""
         env = self.get_environ()
-        return mdt.mdt_library(env, '${LIB}/mdt.ini', 'data/mdt.bin', **vars)
+        return mdt.mdt_library(env, 'data/mdt.bin', **vars)
 
     def get_test_mdt(self, features):
         """Build a simple test MDT"""
@@ -75,7 +75,7 @@ class MDTTests(ModellerTest):
     def test_bad_bins(self):
         """Check that bad bin files raise an error"""
         env = self.get_environ()
-        mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', 'test/data/bad.bin')
+        mlib = mdt.mdt_library(env, 'test/data/bad.bin')
         self.assertRaises(mdt.error, mdt.mdt, mlib, features=3)
         self.assertRaises(mdt.error, mdt.mdt, mlib, features=30)
 
@@ -351,7 +351,7 @@ class MDTTests(ModellerTest):
         """Test residue_span_range argument"""
         env = self.get_environ()
         aln = alignment(env, file='test/data/tiny.ali')
-        mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', 'test/data/dist.bin')
+        mlib = mdt.mdt_library(env, 'test/data/dist.bin')
         mlib.tuple_classes.read('data/dblcls.lib')
         # All residue-residue pairs should be out of range, so this MDT should
         # end up empty:

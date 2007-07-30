@@ -5,7 +5,7 @@ env = environ()
 log.minimal()
 env.io.atom_files_directory = '/diva3/database/pdb/uncompressed_files'
 
-mlib = mdt.mdt_library(env, '${LIB}/mdt.ini', '../lib/mdt2.bin')
+mlib = mdt.mdt_library(env, '../lib/mdt2.bin')
 
 # read the bond definitions in terms of the constituting atom type pairs:
 mlib.bond_classes.read('${LIB}/bndgrp.lib')

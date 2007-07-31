@@ -56,26 +56,6 @@ PSI OF B (10)
 -180  10
 
 
-FEATURE 11
-MAIN CHAIN CONFORMATION OF A (11)
- 5    1        
-                     H       
-                     E 
-                     R
-                     P+
-                     U
-
-
-FEATURE 12
-MAIN CHAIN CONFORMATION OF B (12)
- 5    1            
-                     H       
-                     E 
-                     R
-                     P+
-                     U
-
-
 FEATURE 13
 RESIDUE ACCESSIBILITY IN A (13)
  31   3           
@@ -206,18 +186,6 @@ X-RAY RESOLUTION OF A (35)
 -1.0     1.5
 
 
-FEATURE 36
-NUMB OF CONTACTS WITH HETATM IN A (36)
- 1    3 
- 0    1 
-
-
-FEATURE 37
-NUMB OF CONTACTS WITH HETATM IN B (37)
- 1    3 
- 0    1 
-
-
 FEATURE 38
 X-RAY RESOLUTION OF B (38)
  4    3       
@@ -256,48 +224,6 @@ MAINCHAIN CONFORMATION (RAMACHANDRAN) IN A (43)
 FEATURE 44
 MAINCHAIN CONFORMATION (RAMACHANDRAN) IN B (44)
   0   0
-
-
-FEATURE 45
-SIDECHAIN CONFORMATION IN A (45)
- 16   1             SYM1      SYM2
-                    11
-                    21
-                    31
-                    U1
-                    12
-                    22
-                    32
-                    U2
-                    12
-                    22
-                    32
-                    U3
-                    1U
-                    2U
-                    3U
-                    UU 
-
-
-FEATURE 46
-SIDECHAIN CONFORMATION IN B (46)
- 16   1             SYM1      SYM2
-                    11
-                    21
-                    31
-                    U1
-                    12
-                    22
-                    32
-                    U2
-                    12
-                    22
-                    32
-                    U3
-                    1U
-                    2U
-                    3U
-                    UU 
 
 
 FEATURE 47
@@ -440,18 +366,6 @@ RESIDUE GROUP TYPE IN A (71)
 FEATURE 72
 RESIDUE GROUP TYPE IN B (72) 
 0     0
-
-
-FEATURE 73
-DISTANCE2 IN A (73)
-1     3             SYM1      SYM2
-  0   1.0
-
-
-FEATURE 74
-DISTANCE2 IN A (74)
-1     3             SYM1      SYM2
-  0   1.0
 
 
 FEATURE 75

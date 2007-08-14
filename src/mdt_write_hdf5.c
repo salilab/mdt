@@ -9,25 +9,18 @@
 #include "mdt.h"
 #include "util.h"
 
-/** Walk the HDF5 error stack, and get the topmost error */
-static herr_t errwalkfunc(int n, H5E_error_t *err_desc, void *data)
-{
-  GError **err = (GError **)data;
-  if (n == 0) {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, "%s",
-                (err_desc->desc && strlen(err_desc->desc) > 0) ?
-                err_desc->desc : "Generic HDF5 error");
-  }
-  return 0;
-}
-
 /** Convert the HDF5 error into a GError */
 static void handle_hdf5_error(GError **err)
 {
-  H5Ewalk(H5E_WALK_DOWNWARD, errwalkfunc, err);
-  if (err && *err == NULL) {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, "Generic HDF5 error");
-  }
+  GError *moderr;
+
+  /* First convert into a Modeller error */
+  mod_hdf_handle_error();
+
+  moderr = mod_error_get();
+  g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, moderr->message);
+  g_error_free(moderr);
+  mod_error_clear();
 }
 
 /** Convert an HDF5 or Modeller error into a GError */
@@ -85,11 +78,11 @@ static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
     ifeat[i] = feat->ifeat;
   }
 
-  ret = H5LTmake_dataset_double(file_id, "/mdt", mdt->nfeat, dims, mdt->bin);
+  ret = mod_dataset_write_double(file_id, "/mdt", mdt->nfeat, dims, mdt->bin);
   if (ret >= 0) {
     hsize_t featdim[2];
     featdim[0] = mdt->nfeat;
-    ret = H5LTmake_dataset_int(file_id, "/features", 1, featdim, ifeat);
+    ret = mod_dataset_write_int(file_id, "/features", 1, featdim, ifeat);
   }
   g_free(dims);
   g_free(ifeat);

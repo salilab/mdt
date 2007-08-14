@@ -1,3 +1,5 @@
+import sys
+
 Import('env', 'modconfig', 'is_wine_platform')
 
 e = env.Copy()
@@ -9,16 +11,24 @@ e.Append(CPPPATH=modconfig['include'])
 e.Append(LIBPATH=modconfig['libpath'])
 e.Append(LIBS=modconfig['libs'] + modconfig['libm'])
 
+# AIX and w32 link complain about undefined symbols unless we explicitly
+# link HDF5:
+if sys.platform == 'aix5':
+    e.Append(LIBS='hdf5')
+if is_wine_platform(modconfig):
+    e.Append(SHLINKFLAGS=' hdf5.lib')
+
 # Source files
 files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',
          'num_recipes.c', 'mdt_error.c', 'mdt_index.c', 'mdt_types.c',
          'mdt_inverse_transform.c', 'mdt_log_transform.c', 'mdt_offset_min.c',
          'mdt_smooth.c', 'mdt_close.c', 'mdt_entropy_hx.c', 'mdt_write.c',
-         'mdt_entropy_full.c', 'mdt_normalize.c', 'mdt_integrate.c',
-         'mdt_reshape.c', 'mdt_get.c', 'mdt_write_asgl.c', 'mdt_section.c',
-         'mdt_feature.c', 'mdt_super_smooth.c', 'mdt_alignment.c',
-         'mdt_atom_classes.c', 'mdt_hydrogen_bonds.c', 'mdt_stereo.c',
-         'mdt_tuples.c', 'mdt_property.c', 'mdt_make.c', 'mdt_copy.c')
+         'mdt_write_hdf5.c', 'mdt_entropy_full.c', 'mdt_normalize.c',
+         'mdt_integrate.c', 'mdt_reshape.c', 'mdt_get.c', 'mdt_write_asgl.c',
+         'mdt_section.c', 'mdt_feature.c', 'mdt_super_smooth.c',
+         'mdt_alignment.c', 'mdt_atom_classes.c', 'mdt_hydrogen_bonds.c',
+         'mdt_stereo.c', 'mdt_tuples.c', 'mdt_property.c', 'mdt_make.c',
+         'mdt_copy.c')
 
 # Public headers
 headers = ('mdt.h', 'mdt_alignment.h', 'mdt_error.h',

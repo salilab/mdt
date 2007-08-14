@@ -91,9 +91,11 @@ class MDTTests(ModellerTest):
         m.write('test.mdt')
         m2 = m.copy()
         self.assertMDTsEqual(m, m2)
-
         m2 = mdt.mdt(mlib, file='test.mdt')
         self.assertMDTsEqual(m, m2)
+        m.write_hdf5('test.hdf5')
+        self.assertRaises(mdt.error, m.write_hdf5, '/does/not/exist/foo.hdf5')
+        os.unlink('test.hdf5')
 
     def test_bin_info(self):
         """Test query of bin symbol and range"""

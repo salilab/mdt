@@ -253,6 +253,10 @@ class mdt(mdt_section):
            Mathematica."""
         _mdt.mdt_write(self._modpt, self._mlib.modpt, file, write_preamble)
 
+    def write_hdf5(self, file):
+        """Write an MDT in HDF5 format to C{file}."""
+        _mdt.mdt_write_hdf5(self._modpt, file)
+
     def reshape(self, features, offset, shape):
         """Reorder the MDT features and optionally decrease their ranges.
            @param features: the new ordering of the MDT features.

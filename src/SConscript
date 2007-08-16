@@ -16,7 +16,7 @@ e.Append(LIBS=modconfig['libs'] + modconfig['libm'])
 if sys.platform == 'aix5':
     e.Append(LIBS=['hdf5', 'hdf5_hl'])
 if is_wine_platform(modconfig):
-    e.Append(SHLINKFLAGS=' hdf5.lib hdf5_hl.lib')
+    e.Append(SHLINKFLAGS=' hdf5dll.lib hdf5_hl.lib')
 
 # Source files
 files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',

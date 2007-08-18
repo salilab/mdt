@@ -566,3 +566,17 @@ void handle_modeller_error(GError **err)
   g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, moderr->message);
   g_error_free(moderr);
 }
+
+/** Check that a given feature type is within range. Return FALSE and set the
+    error indicator if it is not. */
+gboolean check_feature_type(int ifeat, const struct mdt_library *mlib,
+                            GError **err)
+{
+  if (ifeat < 1 || ifeat > mlib->base.nfeat) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_INDEX,
+                "Feature type %d out of range 1-%d", ifeat, mlib->base.nfeat);
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}

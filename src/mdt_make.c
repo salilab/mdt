@@ -13,16 +13,12 @@
 gboolean mdt_make(struct mod_mdt *mdt, const struct mdt_library *mlib,
                   const int features[], int n_features, GError **err)
 {
-  const static char *routine = "mdt_make";
   int i, nelems, ierr;
 
   nelems = 1;
   for (i = 0; i < n_features; i++) {
     int ifeat = features[i];
-    if (ifeat < 1 || ifeat > mlib->base.nfeat) {
-      g_set_error(err, MDT_ERROR, MDT_ERROR_INDEX,
-                  "%s: Feature type %d out of range 1-%d", routine, ifeat,
-                  mlib->base.nfeat);
+    if (!check_feature_type(ifeat, mlib, err)) {
       return FALSE;
     }
     nelems *= mlib->base.features[ifeat - 1].nbins;

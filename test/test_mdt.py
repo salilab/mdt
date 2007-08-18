@@ -95,6 +95,8 @@ class MDTTests(ModellerTest):
         self.assertMDTsEqual(m, m2)
         m.write_hdf5('test.hdf5')
         self.assertRaises(mdt.error, m.write_hdf5, '/does/not/exist/foo.hdf5')
+        m2 = mdt.mdt(mlib, file='test.hdf5')
+        self.assertMDTsEqual(m, m2)
         os.unlink('test.hdf5')
 
     def test_bin_info(self):

@@ -9,7 +9,7 @@
 #include <glib.h>
 #include <stdio.h>
 #include "mdt_error.h"
-#include "mod_types.h"
+#include "mdt_types.h"
 
 /* Allow building with glib < 2.6 */
 #ifndef G_GNUC_INTERNAL
@@ -126,6 +126,12 @@ gboolean mdt_close_file(FILE *fp, struct mod_file *file_info, GError **err);
 /** Convert a Modeller error code into a GError */
 G_GNUC_INTERNAL
 void handle_modeller_error(GError **err);
+
+/** Check that a given feature type is within range. Return FALSE and set the
+    error indicator if it is not. */
+G_GNUC_INTERNAL
+gboolean check_feature_type(int ifeat, const struct mdt_library *mlib,
+                            GError **err);
 
 G_END_DECLS
 

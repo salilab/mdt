@@ -59,6 +59,10 @@ gboolean mdt_write(const struct mod_mdt *mdt, const struct mdt_library *mlib,
 gboolean mdt_write_hdf5(const struct mod_mdt *mdt, const char *filename,
                         GError **err);
 
+/** Read in an MDT in HDF5 format. Return TRUE on success. */
+gboolean mdt_read_hdf5(struct mod_mdt *mdt, const struct mdt_library *mlib,
+                       const char *filename, GError **err);
+
 /** Normalize an MDT. */
 gboolean mdt_normalize(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
                        const struct mdt_library *mlib, int dimensions,

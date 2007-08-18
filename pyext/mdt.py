@@ -223,7 +223,10 @@ class mdt(mdt_section):
         self._indices = ()
         self._mlib = mlib
         if file:
-            self.read(file)
+            if file.endswith(".hdf5"):
+                self.read_hdf5(file)
+            else:
+                self.read(file)
         elif features:
             self.make(features)
 
@@ -233,6 +236,10 @@ class mdt(mdt_section):
     def read(self, file):
         """Read an MDT from C{file}."""
         _modeller.mod_mdt_read(self._modpt, self._mlib.basept, file)
+
+    def read_hdf5(self, file):
+        """Read an MDT in HDF5 format from C{file}."""
+        _mdt.mdt_read_hdf5(self._modpt, self._mlib.modpt, file)
 
     def copy(self):
         """@return: a copy of this MDT.

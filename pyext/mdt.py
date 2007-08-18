@@ -621,6 +621,14 @@ class source(object):
         if hasattr(self, "_modpt"):
             _mdt.mdt_alignment_close(self._modpt)
 
+    def sum(self, residue_span_range=(-99999, -2, 2, 99999), pairs=1,
+            triples=1):
+        """Scan all data points in the source, and return the sum."""
+        f = _mdt.mdt_source_sum
+        return f(self._modpt, self._mdt._modpt, self._mlib.modpt,
+                 residue_span_range, self._mlib.env.libs.modpt,
+                 self._edat.modpt, pairs, triples)
+
     def index(self, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
               ip2, ibnd1, ibnd1p, is3, ir3, ir3p):
         """Return the bin index (starting at 1) of a single MDT feature.

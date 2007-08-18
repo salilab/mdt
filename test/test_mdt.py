@@ -137,6 +137,10 @@ class MDTTests(ModellerTest):
         bin_dist = [bins.count(n) for n in range(22)]
         self.assertEqual(bin_dist, known_dist)
 
+        # source.sum() should return each sample nsample times, so it should be
+        # equal to the sum of the squares:
+        self.assertEqual(source.sum(), sum([i * i for i in known_dist]))
+
     def test_deltaij(self):
         """Test residue type at deltai,j features"""
         env = self.get_environ()

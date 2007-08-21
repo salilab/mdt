@@ -169,7 +169,7 @@ class hbond_classes(bond_classes):
 
 class mdt_section(modobject):
     """A section of a multi-dimensional table"""
-    _indices = None
+    _indices = ()
     __mdt = None
     _mlib = None
     _modpt = None
@@ -179,6 +179,11 @@ class mdt_section(modobject):
         self._modpt = mdt._modpt
         self._mlib = mdt._mlib
         self._indices = indices
+
+    def _get_removed_rank(self):
+        """Return the number of dimensions removed from the full MDT in this
+           section (0 for the full MDT, up to nfeatures - 1)"""
+        return len(self._indices)
 
     def sum(self):
         """Sum of all points in the table"""
@@ -192,6 +197,47 @@ class mdt_section(modobject):
         """Mean and standard deviation of the table"""
         return _mdt.mdt_section_meanstdev(self._modpt, self._mlib.modpt,
                                           self._indices)
+
+    def __check_indices(self, indices):
+        """Make sure the indices for an MDT section are reasonable"""
+        for (feat, indx) in zip(self.features, indices):
+            istart, iend = feat.offset, len(feat.bins) + feat.offset - 1
+            if indx < 0:
+                indx += iend + 1
+            if not istart <= indx <= iend:
+                raise IndexError, "index (%d) not in range %d<=index<=%d" \
+                                  % (indx, istart, iend)
+
+    def __getitem__(self, indx):
+        if isinstance(indx, list):
+            indx = tuple(indx)
+        elif not isinstance(indx, tuple):
+            indx = (indx,)
+        if len(indx) < len(self.features):
+            self.__check_indices(indx)
+            return mdt_section(self, self._indices + indx)
+        else:
+            return _mdt.mdt_get(self._modpt, self._indices + indx)
+
+    def __setitem__(self, indx, val):
+        if isinstance(indx, list):
+            indx = tuple(indx)
+        elif not isinstance(indx, tuple):
+            indx = (indx,)
+        if len(indx) < len(self.features):
+            raise ValueError, "Cannot set sections of MDTs"
+        else:
+            _mdt.mdt_set(self._modpt, self._indices + indx, val)
+
+    def __get_features(self):
+        return feature_list(self)
+    def __get_offset(self):
+        return tuple([f.offset for f in self.features])
+    def __get_shape(self):
+        return tuple([len(f.bins) for f in self.features])
+    features = property(__get_features, doc="Features in this MDT")
+    offset = property(__get_offset, doc="Array offsets")
+    shape = property(__get_shape, doc="Array shape")
 
 
 class mdt(mdt_section):
@@ -222,7 +268,6 @@ class mdt(mdt_section):
            @param features: if specified, a list of feature types to initialize
                             the table with
         """
-        self._indices = ()
         self._mlib = mlib
         if file:
             if file.endswith(".hdf5"):
@@ -488,22 +533,6 @@ class mdt(mdt_section):
         return source(self, self._mlib, aln, distngh, surftyp,
                       accessibility_type, io, edat)
 
-    def __getitem__(self, indx):
-        if not isinstance(indx, (list, tuple)):
-            indx = (indx,)
-        if len(indx) < len(self.features):
-            return mdt_section(self, indx)
-        else:
-            return _mdt.mdt_get(self._modpt, indx)
-
-    def __setitem__(self, indx, val):
-        if not isinstance(indx, (list, tuple)):
-            indx = (indx,)
-        if len(indx) < len(self.features):
-            raise ValueError, "Cannot set sections of MDTs"
-        else:
-            _mdt.mdt_set(self._modpt, indx, val)
-
     def __get_pdf(self):
         return _mdt.mod_mdt_pdf_get(self._modpt)
     def __get_n_proteins(self):
@@ -512,21 +541,12 @@ class mdt(mdt_section):
         return _mdt.mod_mdt_n_protein_pairs_get(self._modpt)
     def __get_sample_size(self):
         return _mdt.mod_mdt_sample_size_get(self._modpt)
-    def __get_features(self):
-        return feature_list(self)
-    def __get_offset(self):
-        return tuple([f.offset for f in self.features])
-    def __get_shape(self):
-        return tuple([len(f.bins) for f in self.features])
 
     pdf = property(__get_pdf, doc="Whether this MDT is a PDF")
-    features = property(__get_features, doc="Features in this MDT")
     n_proteins = property(__get_n_proteins, doc="Number of proteins")
     n_protein_pairs = property(__get_n_protein_pairs,
                                doc="Number of protein pairs")
     sample_size = property(__get_sample_size, doc="Number of sample points")
-    shape = property(__get_shape, doc="Array shape")
-    offset = property(__get_offset, doc="Array offsets")
 
 
 class feature_list(modlist.fixlist):
@@ -534,13 +554,14 @@ class feature_list(modlist.fixlist):
 
     def __init__(self, mdt):
         self.__mdt = mdt
+        self.__removed_rank = mdt._get_removed_rank()
         modlist.fixlist.__init__(self)
 
     def __len__(self):
-        return _mdt.mod_mdt_nfeat_get(self.__mdt._modpt)
+        return _mdt.mod_mdt_nfeat_get(self.__mdt._modpt) - self.__removed_rank
 
     def _getfunc(self, indx):
-        return feature(self.__mdt, indx)
+        return feature(self.__mdt, indx + self.__removed_rank)
 
 
 class feature(object):

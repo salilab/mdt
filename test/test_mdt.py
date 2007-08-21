@@ -113,6 +113,26 @@ class MDTTests(ModellerTest):
         for (n, bin) in enumerate(m2.features[0].bins):
             self.assertEqual(bin.symbol, m.features[0].bins[n+1].symbol)
 
+    def test_section(self):
+        """Test access to sections of MDTs"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        m = mdt.mdt(mlib, features=(1,3,18))
+        m[0,1,2] = 1.0
+        self.assertEqual(m[0][1][2], 1.0)
+        m[1][-2][3] = 4.0
+        self.assertEqual(m[1,-2,3], 4.0)
+        sec = m[1]
+        self.assertEqual([f.ifeat for f in sec.features],
+                         [f.ifeat for f in m.features[1:]])
+        self.assertEqual(sec.shape, m.shape[1:])
+        self.assertEqual(sec.offset, m.offset[1:])
+        sec = m[2][4]
+        self.assertEqual([f.ifeat for f in sec.features],
+                         [f.ifeat for f in m.features[2:]])
+        self.assertEqual(sec.shape, m.shape[2:])
+        self.assertEqual(sec.offset, m.offset[2:])
+
     def test_set(self):
         """Test set of MDT data"""
         env = self.get_environ()

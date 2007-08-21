@@ -586,12 +586,11 @@ gboolean check_feature_type(int ifeat, const struct mdt_library *mlib,
 gboolean get_bin_index(const struct mod_mdt *mdt, const int indices[],
                        int n_indices, int *bin_index, GError **err)
 {
-  const static char *routine = "get_bin_index";
   int i, *indf, indx;
   if (n_indices != mdt->nfeat) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
-                "%s: Number of indices (%d) must match dimension of MDT (%d)",
-                routine, n_indices, mdt->nfeat);
+                "number of indices (%d) must match dimension of MDT (%d)",
+                n_indices, mdt->nfeat);
     return FALSE;
   }
   indf = g_malloc(sizeof(int) * n_indices);
@@ -602,16 +601,18 @@ gboolean get_bin_index(const struct mod_mdt *mdt, const int indices[],
     } else {
       indf[i] = indices[i] + 1;
     }
+    if (indf[i] < mdt->features[i].istart || indf[i] > mdt->features[i].iend) {
+      g_set_error(err, MDT_ERROR, MDT_ERROR_INDEX,
+                  "index (%d) out of range (%d<=index<=%d) in dimension %d",
+                  indf[i] - 1, mdt->features[i].istart - 1,
+                  mdt->features[i].iend - 1, i);
+      g_free(indf);
+      return FALSE;
+    }
   }
   indx = indmdt(indf, mdt);
   g_free(indf);
-  if (indx < 0 || indx >= mdt->nelems) {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_INDEX,
-                "%s: Index %d out of range %d to %d", routine, indx, 0,
-                mdt->nelems);
-    return FALSE;
-  } else {
-    *bin_index = indx;
-    return TRUE;
-  }
+  assert(indx >= 0 && indx < mdt->nelems);
+  *bin_index = indx;
+  return TRUE;
 }

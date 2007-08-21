@@ -8,6 +8,7 @@
 
 #include <glib.h>
 #include <stdio.h>
+#include "modeller.h"
 #include "mdt_error.h"
 #include "mdt_types.h"
 
@@ -132,6 +133,12 @@ void handle_modeller_error(GError **err);
 G_GNUC_INTERNAL
 gboolean check_feature_type(int ifeat, const struct mdt_library *mlib,
                             GError **err);
+
+/** Get the position in the MDT bin array of the given set of indices. Return
+    TRUE on success. */
+G_GNUC_INTERNAL
+gboolean get_bin_index(const struct mod_mdt *mdt, const int indices[],
+                       int n_indices, int *bin_index, GError **err);
 
 G_END_DECLS
 

@@ -32,10 +32,12 @@
 
 __docformat__ = "epytext en"
 
-import _modeller
 import _mdt
 from modeller.util.modobject import modobject
 from modeller.util import modlist
+# Import _modeller after modeller itself, since the latter modifies the search
+# path for the former:
+import _modeller
 
 #: Generic exception
 error = _mdt.error

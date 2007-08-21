@@ -90,6 +90,10 @@ void mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout);
 double mdt_get(const struct mod_mdt *mdt, const int indices[], int n_indices,
                GError **err);
 
+/** Set an element in an MDT. Return TRUE on success. */
+gboolean mdt_set(struct mod_mdt *mdt, const int indices[], int n_indices,
+                 double val, GError **err);
+
 /** Write input files to plot the given MDT with ASGL. Return TRUE on
     success. */
 gboolean mdt_write_asgl(const struct mod_mdt *mdt,

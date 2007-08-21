@@ -496,6 +496,14 @@ class mdt(mdt_section):
         else:
             return _mdt.mdt_get(self._modpt, indx)
 
+    def __setitem__(self, indx, val):
+        if not isinstance(indx, (list, tuple)):
+            indx = (indx,)
+        if len(indx) < len(self.features):
+            raise ValueError, "Cannot set sections of MDTs"
+        else:
+            _mdt.mdt_set(self._modpt, indx, val)
+
     def __get_pdf(self):
         return _mdt.mod_mdt_pdf_get(self._modpt)
     def __get_n_proteins(self):

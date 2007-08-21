@@ -113,6 +113,18 @@ class MDTTests(ModellerTest):
         for (n, bin) in enumerate(m2.features[0].bins):
             self.assertEqual(bin.symbol, m.features[0].bins[n+1].symbol)
 
+    def test_set(self):
+        """Test set of MDT data"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        m = mdt.mdt(mlib, features=(1,2))
+        for i in range(0, 22):
+            for j in range(0, 22):
+                val = 1.0 + i * 40.0 + j   # Some value different for each i,j
+                self.assertEqual(m[i,j], 0.0)
+                m[i,j] = val
+                self.assertEqual(m[i,j], val)
+
     def test_1d_mdt(self):
         """Make sure a 1D MDT matches known residue data"""
         env = self.get_environ()

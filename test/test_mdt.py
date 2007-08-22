@@ -97,6 +97,9 @@ class MDTTests(ModellerTest):
         self.assertRaises(mdt.error, m.write_hdf5, '/does/not/exist/foo.hdf5')
         m2 = mdt.mdt(mlib, file='test.hdf5')
         self.assertMDTsEqual(m, m2)
+        m2 = mdt.mdt(mlib)
+        # Trying to read an HDF5 file in text format should fail gracefully:
+        self.assertRaises(ModellerError, m2.read, 'test.hdf5')
         os.unlink('test.hdf5')
 
     def test_bin_info(self):

@@ -39,7 +39,7 @@ class MDTTests(ModellerTest):
             inds.extend(offset)
             return sum(shape) != 0
         while (i >= 0):
-            if inds[i] < shape[i] - 1:
+            if inds[i] < offset[i] + shape[i] - 1:
                 inds[i] += 1
                 return True
             elif i == 0:
@@ -596,6 +596,20 @@ class MDTTests(ModellerTest):
         inds = []
         while self.roll_inds(inds, m.shape, m.offset):
             self.assertAlmostEqual(1./22., m2[inds], places=3)
+
+    def test_save_reshape(self):
+        """Check that we can correctly load and save reshaped MDTs"""
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(features=(1,2))
+        m = m.reshape(features=(1,2), offset=(4,2), shape=(11,10))
+        m.write('test.mdt')
+        m.write_hdf5('test.hdf5')
+        m2 = mdt.mdt(mlib, 'test.mdt')
+        self.assertMDTsEqual(m, m2)
+        m2 = mdt.mdt(mlib, 'test.hdf5')
+        self.assertMDTsEqual(m, m2)
+        os.unlink('test.mdt')
+        os.unlink('test.hdf5')
 
     def test_reshape(self):
         """Check that reshaping works correctly"""

@@ -63,9 +63,9 @@ static gboolean check_mdt_features(const struct mod_mdt *mdt,
     }
 
     libfeat = &mlib->base.features[feat->ifeat - 1];
-    if (feat->nbins != libfeat->nbins) {
+    if (feat->nbins > libfeat->nbins) {
       g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
-                  "Number of bins in MDT table (%d) does not match "
+                  "Number of bins in MDT table (%d) is greater than "
                   "that in bin file (%d) for feature number %d, feature "
                   "type %d", feat->nbins, libfeat->nbins, i, feat->ifeat);
       return FALSE;

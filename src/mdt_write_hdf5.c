@@ -11,23 +11,27 @@
 
 /** Write MDT data to an HDF5 file. Return TRUE on success. */
 static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
-                               GError **err)
+                               const struct mdt_library *mlib, GError **err)
 {
   herr_t ret;
   hsize_t *dims;
-  int *ifeat, *istart, *iend;
+  int *ifeat, *istart, *iend, *nbins;
   int i;
 
   dims = g_malloc(mdt->nfeat * sizeof(hsize_t));
   ifeat = g_malloc(mdt->nfeat * sizeof(int));
   istart = g_malloc(mdt->nfeat * sizeof(int));
   iend = g_malloc(mdt->nfeat * sizeof(int));
+  nbins = g_malloc(mdt->nfeat * sizeof(int));
   for (i = 0; i < mdt->nfeat; i++) {
+    const struct mod_mdt_libfeature *libfeat;
     const struct mod_mdt_feature *feat = &mdt->features[i];
+    libfeat = &mlib->base.features[feat->ifeat - 1];
     dims[i] = feat->nbins;
     ifeat[i] = feat->ifeat;
     istart[i] = feat->istart;
     iend[i] = feat->iend;
+    nbins[i] = libfeat->nbins;
   }
 
   ret = H5LTmake_dataset_double(file_id, "/mdt", mdt->nfeat, dims, mdt->bin);
@@ -35,7 +39,8 @@ static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
     hsize_t featdim = mdt->nfeat;
     if (H5LTmake_dataset_int(file_id, "/features", 1, &featdim, ifeat) < 0
         || H5LTmake_dataset_int(file_id, "/istart", 1, &featdim, istart) < 0
-        || H5LTmake_dataset_int(file_id, "/iend", 1, &featdim, iend) < 0) {
+        || H5LTmake_dataset_int(file_id, "/iend", 1, &featdim, iend) < 0
+        || H5LTmake_dataset_int(file_id, "/nbins", 1, &featdim, nbins) < 0) {
       ret = -1;
     }
   }
@@ -58,6 +63,7 @@ static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
   g_free(ifeat);
   g_free(istart);
   g_free(iend);
+  g_free(nbins);
 
   if (ret < 0) {
     handle_hdf5_error(err);
@@ -68,7 +74,8 @@ static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
 }
 
 /** Write out an MDT in HDF5 format. Return TRUE on success. */
-gboolean mdt_write_hdf5(const struct mod_mdt *mdt, const char *filename,
+gboolean mdt_write_hdf5(const struct mod_mdt *mdt,
+                        const struct mdt_library *mlib, const char *filename,
                         GError **err)
 {
   hid_t file_id;
@@ -76,7 +83,7 @@ gboolean mdt_write_hdf5(const struct mod_mdt *mdt, const char *filename,
 
   file_id = mdt_hdf_create(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT,
                            &file_info, err);
-  if (file_id < 0 || !write_mdt_data(file_id, mdt, err)
+  if (file_id < 0 || !write_mdt_data(file_id, mdt, mlib, err)
       || !mdt_hdf_close(file_id, &file_info, err)) {
     return FALSE;
   } else {

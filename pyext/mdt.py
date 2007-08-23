@@ -309,7 +309,7 @@ class mdt(mdt_section):
 
     def write_hdf5(self, file):
         """Write an MDT in HDF5 format to C{file}."""
-        _mdt.mdt_write_hdf5(self._modpt, file)
+        _mdt.mdt_write_hdf5(self._modpt, self._mlib.modpt, file)
 
     def reshape(self, features, offset, shape):
         """Reorder the MDT features and optionally decrease their ranges.

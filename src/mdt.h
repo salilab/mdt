@@ -56,7 +56,8 @@ gboolean mdt_write(const struct mod_mdt *mdt, const struct mdt_library *mlib,
                    const char *filename, gboolean write_preamble, GError **err);
 
 /** Write out an MDT in HDF5 format. Return TRUE on success. */
-gboolean mdt_write_hdf5(const struct mod_mdt *mdt, const char *filename,
+gboolean mdt_write_hdf5(const struct mod_mdt *mdt,
+                        const struct mdt_library *mlib, const char *filename,
                         GError **err);
 
 /** Read in an MDT in HDF5 format. Return TRUE on success. */

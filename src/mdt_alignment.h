@@ -32,8 +32,8 @@ double mdt_source_sum(struct mdt_source *source, struct mod_mdt *mdt,
                       const struct mdt_library *mlib,
                       const int residue_span_range[4],
                       const struct mod_libraries *libs,
-                      const struct mod_energy_data *edat, int pairs,
-                      int triples, GError **err);
+                      const struct mod_energy_data *edat, gboolean sympairs,
+                      gboolean symtriples, GError **err);
 
 /** Return the bin index (starting at 1) of a single MDT feature, at the
     given position in the source alignment. On failure, 0 is returned. */
@@ -48,8 +48,8 @@ int mdt_alignment_index(struct mdt_source *source, int ifeat, int is1, int ip1,
 gboolean mdt_add_alignment(struct mod_mdt *mdt, const struct mdt_library *mlib,
                            struct mod_alignment *aln, float distngh,
                            gboolean sdchngh, int surftyp, int iacc1typ,
-                           const int residue_span_range[4], int pairs,
-                           int triples, struct mod_io_data *io,
+                           const int residue_span_range[4], gboolean sympairs,
+                           gboolean symtriples, struct mod_io_data *io,
                            struct mod_energy_data *edat,
                            struct mod_libraries *libs, GError **err);
 

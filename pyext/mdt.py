@@ -583,8 +583,8 @@ class mdt(mdt_section):
 
 
     def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
-                      residue_span_range=(-99999, -2, 2, 99999), pairs=1,
-                      triples=1, io=None, edat=None):
+                      residue_span_range=(-99999, -2, 2, 99999), sympairs=False,
+                      symtriples=False, io=None, edat=None):
         """
         Add data from a Modeller alignment to this MDT.
 
@@ -607,6 +607,10 @@ class mdt(mdt_section):
             must be met:
 
             *residue_span_range[2] <= abs(r2 - r1) <= residue_span_range[3]*
+          - `sympairs`: if True, all features involving pairs of proteins
+            are symmetric.
+          - `symtriples`: if True, all features involving triples of proteins
+            are symmetric.
         """
         if io is None:
             io = self._mlib.env.io
@@ -614,8 +618,8 @@ class mdt(mdt_section):
             edat = self._mlib.env.edat
         _mdt.mdt_add_alignment(self._modpt, self._mlib.modpt, aln.modpt,
                                distngh, False, surftyp, accessibility_type,
-                               residue_span_range, pairs, triples, io.modpt,
-                               edat.modpt, self._mlib.env.libs.modpt)
+                               residue_span_range, sympairs, symtriples,
+                               io.modpt, edat.modpt, self._mlib.env.libs.modpt)
 
 
     def open_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
@@ -748,13 +752,13 @@ class source(object):
         if hasattr(self, "_modpt"):
             _mdt.mdt_alignment_close(self._modpt)
 
-    def sum(self, residue_span_range=(-99999, -2, 2, 99999), pairs=1,
-            triples=1):
+    def sum(self, residue_span_range=(-99999, -2, 2, 99999), sympairs=False,
+            symtriples=False):
         """Scan all data points in the source, and return the sum."""
         f = _mdt.mdt_source_sum
         return f(self._modpt, self._mdt._modpt, self._mlib.modpt,
                  residue_span_range, self._mlib.env.libs.modpt,
-                 self._edat.modpt, pairs, triples)
+                 self._edat.modpt, sympairs, symtriples)
 
     def index(self, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
               ip2, ibnd1, ibnd1p, is3, ir3, ir3p):

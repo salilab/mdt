@@ -137,8 +137,8 @@ static gboolean check_single_protein_features(const struct mod_mdt *mdt,
 }
 
 /** Update the number of protein pairs in the MDT. */
-static void update_protein_pairs(struct mod_mdt *mdt, int nseqacc, int pairs,
-                                 int triples)
+static void update_protein_pairs(struct mod_mdt *mdt, int nseqacc,
+                                 gboolean sympairs, gboolean symtriples)
 {
   switch (mdt->nprotcmp) {
   case 1:
@@ -146,18 +146,18 @@ static void update_protein_pairs(struct mod_mdt *mdt, int nseqacc, int pairs,
     break;
 
   case 2:
-    if (pairs == 1) {
-      mdt->n_protein_pairs += nseqacc * (nseqacc - 1);
-    } else {
+    if (sympairs) {
       mdt->n_protein_pairs += nseqacc * (nseqacc - 1) / 2;
+    } else {
+      mdt->n_protein_pairs += nseqacc * (nseqacc - 1);
     }
     break;
 
   case 3:
-    if (triples == 1) {
-      mdt->n_protein_pairs += nseqacc * (nseqacc - 1) * (nseqacc - 2);
-    } else {
+    if (symtriples) {
       mdt->n_protein_pairs += nseqacc * (nseqacc - 1) * (nseqacc - 2) / 6;
+    } else {
+      mdt->n_protein_pairs += nseqacc * (nseqacc - 1) * (nseqacc - 2);
     }
     break;
   }
@@ -165,15 +165,12 @@ static void update_protein_pairs(struct mod_mdt *mdt, int nseqacc, int pairs,
 
 
 /** Get start sequence for multiple protein features. */
-static int isbeg(int is, int nseq, int iseqbeg)
+static int isbeg(int is, gboolean symmetric)
 {
-  switch (iseqbeg) {
-  default:
-    return 0;
-  case 2:
+  if (symmetric) {
     return is + 1;
-  case 3:
-    return nseq - 1;
+  } else {
+    return 0;
   }
 }
 
@@ -235,8 +232,9 @@ static gboolean update_single(struct mod_mdt *mdt,
 static gboolean update_multiple(struct mod_mdt *mdt,
                                 const struct mdt_library *mlib,
                                 const struct mod_alignment *aln, int is1,
-                                int ip1, int ip2, int ir1, int ir1p, int pairs,
-                                int triples, const struct mod_libraries *libs,
+                                int ip1, int ip2, int ir1, int ir1p,
+                                gboolean sympairs, gboolean symtriples,
+                                const struct mod_libraries *libs,
                                 const struct mod_energy_data *edat,
                                 const gboolean acceptd[],
                                 struct mdt_properties *prop,
@@ -248,7 +246,7 @@ static gboolean update_multiple(struct mod_mdt *mdt,
   ia1 = ia1p = 0;
 
   /* generate all indices for the protein B: */
-  for (is2 = isbeg(is1, aln->nseq, pairs); is2 < aln->nseq; is2++) {
+  for (is2 = isbeg(is1, sympairs); is2 < aln->nseq; is2++) {
     if (acceptd[is2]) {
       /* residue indices in the first and second position for protein 2 */
       if (mdt->nresfeat != 1) {
@@ -278,7 +276,7 @@ static gboolean update_multiple(struct mod_mdt *mdt,
       } else {
         /* TRIPLET OF PROTEINS:
            generate all indices for the protein C: */
-        for (is3 = isbeg(is2, aln->nseq, triples); is3 < aln->nseq; is3++) {
+        for (is3 = isbeg(is2, symtriples); is3 < aln->nseq; is3++) {
           if (acceptd[is3]) {
             if (mdt->nresfeat != 1) {
               ir3 = mod_int2_get(&aln->ialn, ip1, is3) - 1;
@@ -307,9 +305,9 @@ static gboolean genpair(struct mod_mdt *mdt, const struct mdt_library *mlib,
                         const struct mod_alignment *aln, int ip1, int ip2,
                         const struct mod_libraries *libs,
                         const struct mod_energy_data *edat,
-                        const gboolean acceptd[], int pairs, int triples,
-                        struct mdt_properties *prop, mdt_scan_cb scanfunc,
-                        void *scandata, GError **err)
+                        const gboolean acceptd[], gboolean sympairs,
+                        gboolean symtriples, struct mdt_properties *prop,
+                        mdt_scan_cb scanfunc, void *scandata, GError **err)
 {
   int is1, ir1, ir1p;
 
@@ -334,8 +332,8 @@ static gboolean genpair(struct mod_mdt *mdt, const struct mdt_library *mlib,
           return FALSE;
         }
       } else {
-        if (!update_multiple(mdt, mlib, aln, is1, ip1, ip2, ir1, ir1p, pairs,
-                             triples, libs, edat, acceptd, prop, scanfunc,
+        if (!update_multiple(mdt, mlib, aln, is1, ip1, ip2, ir1, ir1p, sympairs,
+                             symtriples, libs, edat, acceptd, prop, scanfunc,
                              scandata, err)) {
           return FALSE;
         }
@@ -363,8 +361,9 @@ static gboolean gen_residue_pairs(struct mod_mdt *mdt,
                                   const int rsrang[4],
                                   const struct mod_libraries *libs,
                                   const struct mod_energy_data *edat,
-                                  const gboolean acceptd[], int pairs,
-                                  int triples, struct mdt_properties *prop,
+                                  const gboolean acceptd[], gboolean sympairs,
+                                  gboolean symtriples,
+                                  struct mdt_properties *prop,
                                   mdt_scan_cb scanfunc, void *scandata,
                                   GError **err)
 {
@@ -377,8 +376,8 @@ static gboolean gen_residue_pairs(struct mod_mdt *mdt,
     if (mdt->symmetric) {
       for (ip2 = ip1 + rsrang[2]; ip2 <= MIN(aln->naln - 1, ip1 + rsrang[3]);
            ip2++) {
-        if (!genpair(mdt, mlib, aln, ip1, ip2, libs, edat, acceptd, pairs,
-                     triples, prop, scanfunc, scandata, err)) {
+        if (!genpair(mdt, mlib, aln, ip1, ip2, libs, edat, acceptd, sympairs,
+                     symtriples, prop, scanfunc, scandata, err)) {
           return FALSE;
         }
       }
@@ -386,8 +385,8 @@ static gboolean gen_residue_pairs(struct mod_mdt *mdt,
       for (ip2 = MAX(0, ip1 + rsrang[0]);
            ip2 <= MIN(aln->naln - 1, ip1 + rsrang[3]); ip2++) {
         if (check_sequence_separation(ip1, ip2, rsrang)) {
-          if (!genpair(mdt, mlib, aln, ip1, ip2, libs, edat, acceptd, pairs,
-                       triples, prop, scanfunc, scandata, err)) {
+          if (!genpair(mdt, mlib, aln, ip1, ip2, libs, edat, acceptd, sympairs,
+                       symtriples, prop, scanfunc, scandata, err)) {
             return FALSE;
           }
         }
@@ -581,20 +580,20 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
                                 const struct mod_libraries *libs,
                                 const struct mod_energy_data *edat,
                                 const gboolean acceptd[], int nseqacc,
-                                int pairs, int triples,
+                                gboolean sympairs, gboolean symtriples,
                                 struct mdt_properties *prop,
                                 mdt_scan_cb scanfunc, void *scandata,
                                 GError **err)
 {
   int ip1;
 
-  update_protein_pairs(mdt, nseqacc, pairs, triples);
+  update_protein_pairs(mdt, nseqacc, sympairs, symtriples);
 
   switch (mdt->nresfeat) {
     /* Whole proteins */
   case 1:
-    if (!genpair(mdt, mlib, aln, 1, 1, libs, edat, acceptd, pairs, triples,
-                 prop, scanfunc, scandata, err)) {
+    if (!genpair(mdt, mlib, aln, 1, 1, libs, edat, acceptd, sympairs,
+                 symtriples, prop, scanfunc, scandata, err)) {
       return FALSE;
     }
     break;
@@ -603,8 +602,8 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
   case 2:
   case 4:
     for (ip1 = 0; ip1 < aln->naln; ip1++) {
-      if (!genpair(mdt, mlib, aln, ip1, ip1, libs, edat, acceptd, pairs,
-                   triples, prop, scanfunc, scandata, err)) {
+      if (!genpair(mdt, mlib, aln, ip1, ip1, libs, edat, acceptd, sympairs,
+                   symtriples, prop, scanfunc, scandata, err)) {
         return FALSE;
       }
     }
@@ -613,8 +612,9 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
     /* intra-molecular residue or selected (one per residue) atom pairs */
   case 3:
   case 5:
-    if (!gen_residue_pairs(mdt, mlib, aln, rsrang, libs, edat, acceptd, pairs,
-                           triples, prop, scanfunc, scandata, err)) {
+    if (!gen_residue_pairs(mdt, mlib, aln, rsrang, libs, edat, acceptd,
+                           sympairs, symtriples, prop, scanfunc, scandata,
+                           err)) {
       return FALSE;
     }
     break;
@@ -767,12 +767,12 @@ double mdt_source_sum(struct mdt_source *source, struct mod_mdt *mdt,
                       const struct mdt_library *mlib,
                       const int residue_span_range[4],
                       const struct mod_libraries *libs,
-                      const struct mod_energy_data *edat, int pairs,
-                      int triples, GError **err)
+                      const struct mod_energy_data *edat, gboolean sympairs,
+                      gboolean symtriples, GError **err)
 {
   double sum = 0.;
   mdt_source_scan(mdt, mlib, source->aln, residue_span_range, libs,
-                  edat, source->acceptd, source->nseqacc, pairs, triples,
+                  edat, source->acceptd, source->nseqacc, sympairs, symtriples,
                   source->prop, scan_sum, &sum, err);
   return sum;
 }
@@ -800,8 +800,8 @@ gboolean mdt_add_alignment(struct mod_mdt *mdt,
                            const struct mdt_library *mlib,
                            struct mod_alignment *aln, float distngh,
                            gboolean sdchngh, int surftyp, int iacc1typ,
-                           const int residue_span_range[4], int pairs,
-                           int triples, struct mod_io_data *io,
+                           const int residue_span_range[4], gboolean sympairs,
+                           gboolean symtriples, struct mod_io_data *io,
                            struct mod_energy_data *edat,
                            struct mod_libraries *libs, GError **err)
 {
@@ -819,8 +819,8 @@ gboolean mdt_add_alignment(struct mod_mdt *mdt,
 
     mod_lognote("Updating the statistics array:");
     ret = mdt_source_scan(mdt, mlib, aln, residue_span_range, libs, edat,
-                          source->acceptd, source->nseqacc, pairs, triples,
-                          source->prop, scan_update, NULL, err);
+                          source->acceptd, source->nseqacc, sympairs,
+                          symtriples, source->prop, scan_update, NULL, err);
 
     mdt_alignment_close(source);
     return ret;

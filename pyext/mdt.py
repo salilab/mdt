@@ -250,7 +250,7 @@ class mdt(mdt_section):
        >>> import mdt
        >>> import modeller
        >>> env = modeller.environ()
-       >>> mlib = mdt.mdt_library(env, '${LIB}/mdt.lib', '${LIB}/mdt.bin')
+       >>> mlib = mdt.mdt_library(env, '${LIB}/mdt.bin')
        >>> m = mdt.mdt(mlib, features=(1,2,5))
        >>> print m[0,0,0]
     """
@@ -269,6 +269,8 @@ class mdt(mdt_section):
         :Parameters:
           - `mlib`: the MDT library to use
           - `file`: if specified, the filename to read the initial table from
+            (if the name ends with '.hdf5', `mdt.read_hdf5` is used, otherwise
+            `mdt.read`)
           - `features`: if specified, a list of feature types to initialize
             the table with
         """
@@ -356,7 +358,7 @@ class mdt(mdt_section):
 
         Note that the resulting output MDT array is not necessarily a PDF,
         because the bin widths are not taken into account during scaling.
-        That is, the sum of all bin values multipled by the bin widths is not
+        That is, the sum of all bin values multiplied by the bin widths is not
         1 if the bin widths are not 1.
 
         :return: the smoothed MDT.

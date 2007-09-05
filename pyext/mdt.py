@@ -1,36 +1,35 @@
-"""MDT, a module for protein structure analysis.
+"""
+   MDT, a module for protein structure analysis.
 
    MDT prepares a raw frequency table, given information from MODELLER
    alignments and/or PDB files. It can also process the raw frequency table in
-   several ways (e.g., L{normalization<mdt.normalize>},
-   L{smoothing<mdt.smooth>}), perform "L{entropy<mdt.entropy_full>}"
-   calculations, and write out the data in various formats, including
-   L{for plotting by ASGL<mdt.write_asgl>} and use as restraints by MODELLER.
+   several ways (e.g., normalization with `mdt.normalize`,
+   smoothing with `mdt.smooth`), perform entropy calculations with
+   `mdt.entropy_full`, and write out the data in various formats, including
+   for plotting by ASGL (`mdt.write_asgl`) and use as restraints by MODELLER.
 
    More precisely, MDT uses a sample of sequences, structures, and/or
-   alignments to construct a table M{N(a,b,c,...,d)} for features 
-   M{a, b, c, ..., d}. The sample for generating the frequencies M{N} is
-   obtained depending on the type of features M{a, b, c, ..., d}.
+   alignments to construct a table *N(a,b,c,...,d)* for features 
+   *a, b, c, ..., d*. The sample for generating the frequencies *N* is
+   obtained depending on the type of features *a, b, c, ..., d*.
    The sample can contain individual proteins, pairs of proteins, pairs of
    residues in proteins, pairs of aligned residues, pairs of aligned pairs of
    residues, chemical bonds, angles, dihedral angles, and pairs of tuples of
    atoms. Some features work with triple alignments, too. All the needed
-   features M{a, b, c, ..., d} are calculated automatically from the sequences,
+   features *a, b, c, ..., d* are calculated automatically from the sequences,
    alignments, and/or PDB files. The feature bins are defined in a bin file
    which can be changed by the user.
 
-   MDT works by accumulating the table M{N} by processing each sequence or
-   alignment in turn. See L{mdt.add_alignment}.
+   MDT works by accumulating the table *N* by processing each sequence or
+   alignment in turn. See `mdt.add_alignment`.
 
-   See U{some studies with MDT<https://salilab.org/internal/manuals/mdt/manual.pdf>} for copious examples.
+   See `some studies with MDT <https://salilab.org/internal/manuals/mdt/manual.pdf>`__ for copious examples.
 
-   @author: Andrej Sali, Ben Webb
-   @copyright: 1989-2007 Andrej Sali
-
-   @sort: mdt_library, mdt
+   :author: Andrej Sali, Ben Webb
+   :copyright: 1989-2007 Andrej Sali
 """
 
-__docformat__ = "epytext en"
+__docformat__ = "restructuredtext"
 
 import _mdt
 from modeller.util.modobject import modobject
@@ -56,21 +55,24 @@ class mdt_library(modobject):
                  deltai=1, deltaj=1, deltai_ali=False, deltaj_ali=False,
                  distance_atoms=('CA', 'CA'), special_atoms=False,
                  hbond_cutoff=3.5):
-        """Create a new MDT library.
-           @param env: the Modeller environment to use
-           @param binfile: file defining bin ranges
-           @param residue_grouping: type of residue grouping for residue class
-                  features, as defined in resgrp.lib (1=mainchain conformation,
-                  2=hydrophobicity)
-           @param deltai: see L{deltai}
-           @param deltaj: see L{deltaj}
-           @param deltai_ali: see L{deltai_ali}
-           @param deltaj_ali: see L{deltaj_ali}
-           @param distance_atoms: the atom types to use for "specified" distance
-                  features
-           @param special_atoms: whether to treat disulfide and termini atoms
-                  specially for atom class features
-           @param hbond_cutoff: maximum separation between two H-bonded atoms
+        """
+        Create a new MDT library.
+
+        :Parameters:
+          - `env`: the Modeller environment to use
+          - `binfile`: file defining bin ranges
+          - `residue_grouping`: type of residue grouping for residue class
+            features, as defined in resgrp.lib (1=mainchain conformation,
+            2=hydrophobicity)
+          - `deltai`: see `deltai`
+          - `deltaj`: see `deltaj`
+          - `deltai_ali`: see `deltai_ali`
+          - `deltaj_ali`: see `deltaj_ali`
+          - `distance_atoms`: the atom types to use for "specified" distance
+            features
+          - `special_atoms`: whether to treat disulfide and termini atoms
+            specially for atom class features
+          - `hbond_cutoff`: maximum separation between two H-bonded atoms
         """
         self.env = env.copy()
         _mdt.mdt_library_deltai_set(self.modpt, deltai)
@@ -124,10 +126,10 @@ class mdt_library(modobject):
     deltai = property(__get_deltai, doc="delta i for some feature types")
     deltaj = property(__get_deltaj, doc="delta j for some feature types")
     deltai_ali = property(__get_deltai_ali,
-                          doc="True if L{deltai} refers to alignment " + \
+                          doc="True if `deltai` refers to alignment " + \
                               "positions, or False if residue positions")
     deltaj_ali = property(__get_deltaj_ali,
-                          doc="True if L{deltaj} refers to alignment " + \
+                          doc="True if `deltaj` refers to alignment " + \
                               "positions, or False if residue positions")
 
 
@@ -261,12 +263,14 @@ class mdt(mdt_section):
         return obj
 
     def __init__(self, mlib, file=None, features=None):
-        """Create a new MDT.
-           @param mlib: the MDT library to use
-           @param file: if specified, the filename to read the initial table
-                        from
-           @param features: if specified, a list of feature types to initialize
-                            the table with
+        """
+        Create a new MDT.
+
+        :Parameters:
+          - `mlib`: the MDT library to use
+          - `file`: if specified, the filename to read the initial table from
+          - `features`: if specified, a list of feature types to initialize
+            the table with
         """
         self._mlib = mlib
         if file:
@@ -281,16 +285,18 @@ class mdt(mdt_section):
         _modeller.mod_mdt_free(self._modpt)
 
     def read(self, file):
-        """Read an MDT from C{file}."""
+        """Read an MDT from `file`."""
         _modeller.mod_mdt_read(self._modpt, self._mlib.basept, file)
 
     def read_hdf5(self, file):
-        """Read an MDT in HDF5 format from C{file}."""
+        """Read an MDT in HDF5 format from `file`."""
         _mdt.mdt_read_hdf5(self._modpt, self._mlib.modpt, file)
 
     def copy(self):
-        """@return: a copy of this MDT.
-           @rtype: L{mdt}"""
+        """
+        :return: a copy of this MDT.
+        :rtype: `mdt`
+        """
         mdtout = mdt(self._mlib)
         _mdt.mdt_copy(self._modpt, mdtout._modpt)
         return mdtout
@@ -300,7 +306,7 @@ class mdt(mdt_section):
         _mdt.mdt_make(self._modpt, self._mlib.modpt, features)
 
     def write(self, file, write_preamble=True):
-        """Write an MDT to C{file}. If C{write_preamble} is False, it will
+        """Write an MDT to `file`. If `write_preamble` is False, it will
            only write out the contents of the MDT table, without the preamble
            including the feature list, bins, etc. This is useful for example
            for creating a file to be read by another program, such as
@@ -308,124 +314,196 @@ class mdt(mdt_section):
         _mdt.mdt_write(self._modpt, self._mlib.modpt, file, write_preamble)
 
     def write_hdf5(self, file):
-        """Write an MDT in HDF5 format to C{file}."""
+        """Write an MDT in HDF5 format to `file`."""
         _mdt.mdt_write_hdf5(self._modpt, self._mlib.modpt, file)
 
     def reshape(self, features, offset, shape):
-        """Reorder the MDT features and optionally decrease their ranges.
-           @param features: the new ordering of the MDT features.
-           @param offset: the new offset (see L{offset}).
-           @param shape: the new shape (see L{shape}).
-           @return: the reshaped MDT.
-           @rtype: L{mdt}"""
+        """
+        Reorder the MDT features and optionally decrease their ranges.
+
+        :Parameters:
+          - `features`: the new ordering of the MDT features.
+          - `offset`: the new offset (see `offset`).
+          - `shape`: the new shape (see `shape`).
+        :return: the reshaped MDT.
+        :rtype: `mdt`
+        """
         mdtout = mdt(self._mlib)
         _mdt.mdt_reshape(self._modpt, mdtout._modpt, features, offset, shape)
         return mdtout
 
     def smooth(self, dimensions, weight):
-        """Smooth the MDT with a uniform prior.
-           @return: the smoothed MDT.
-           @rtype: L{mdt}"""
+        """
+        Smooth the MDT with a uniform prior. The MDT is treated either as a
+        histogram (if `dimensions` = 1) or a 2D density (`dimensions` = 2),
+        and a uniform distribution is added followed by scaling:
+
+        p\ :sub:`i` = |w1| / n + |w2| |vi| / S
+
+        S = |sum|\ :sub:`i`\ :sup:`n` |vi|
+
+        |w1| = 1 / ( 1 + S / (`weight` * n))
+
+        |w2| = 1 - |w1|
+
+        where *v* is the input MDT array, *n* is the number of bins in the
+        histogram, and *p* is the output MDT array, smoothed and normalized.
+        `weight` is the number of points per bin in the histogram at which
+        the relative weights of the input histogram and the uniform prior
+        are equal.
+
+        The sum of the bins in the output MDT array is 1, for each histogram.
+
+        Note that the resulting output MDT array is not necessarily a PDF,
+        because the bin widths are not taken into account during scaling.
+        That is, the sum of all bin values multipled by the bin widths is not
+        1 if the bin widths are not 1.
+
+        :return: the smoothed MDT.
+        :rtype: `mdt`
+
+        .. |sum| unicode:: U+03A3
+        .. |w1| replace:: w\ :sub:`1`
+        .. |w2| replace:: w\ :sub:`2`
+        .. |vi| replace:: v\ :sub:`i`
+        """
         mdtout = mdt(self._mlib)
         _mdt.mdt_smooth(self._modpt, mdtout._modpt, dimensions, weight)
         return mdtout
 
     def normalize(self, dimensions, dx_dy, to_zero, to_pdf):
-        """Normalize or scale the MDT. It does not really matter what the
-           contents of the input MDT are; sensible contents includes the raw
-           or normalized frequencies.
-           @param dimensions: specifies whether a 1D or a 2D table is
-                  normalized. More precisely, the input distributions are
-                  M{p(x/a, b, c, ...)} if C{dimensions}=1, or
-                  M{p(x, y/a, b, c, ...)} if C{dimensions}=2, where y and x are
-                  the second to last and last features in the list of features.
-           @param dx_dy: widths of the bins (either one or two numbers,
-                  depending on C{dimensions}). If the value of either dx or dy
-                  is -999, the corresponding bin width is extracted from the MDT
-                  data structure (not available for all features).
-           @param to_zero: if the histogram is empty, setting this True will set
-                  the bin values to zero, and False will yield a uniform
-                  distribution. It has no effect when the histogram is not
-                  empty.
-           @return: the normalized MDT.
-           @rtype: L{mdt}"""
+        """
+        Normalize or scale the MDT. It does not really matter what the
+        contents of the input MDT are; sensible contents include the raw
+        or normalized frequencies.
+
+        :Parameters:
+          - `dimensions`: specifies whether a 1D or a 2D table is
+            normalized. More precisely, the input distributions are
+            *p(x|a, b, c, ...)* if `dimensions` = 1, or
+            *p(x, y|a, b, c, ...)* if `dimensions` = 2, where y and x are
+            the second to last and last features in the list of features.
+          - `dx_dy`: widths of the bins (either one or two numbers,
+            depending on `dimensions`). If the value of either dx or dy
+            is -999, the corresponding bin width is extracted from the MDT
+            data structure (not available for all features).
+          - `to_zero`: if the histogram is empty, setting this True will set
+            the bin values to zero, and False will yield a uniform
+            distribution. It has no effect when the histogram is not empty.
+          - `to_pdf`: if False, the output is obtained by scaling the input
+            such that for 1D histograms |sum| :sub:`i` p(x :sub:`i`) = 1,
+            and for 2D histograms |sum| :sub:`i,j` p(x :sub:`i,j`) = 1. Note
+            that `dx_dy` is **not** taken into account during this scaling.
+
+            If it is True, the normalization takes into account `dx_dy` so
+            that the normalized distribution is actually a PDF. That is,
+            |sum| :sub:`i` p(x :sub:`i`) dx = 1 for 1D and 
+            |sum| :sub:`i,j` p(x :sub:`i,j`) dx dy = 1 for 2D, where dx and
+            dy are the widths of the bins. 
+        :return: the normalized MDT.
+        :rtype: `mdt`
+
+        .. |sum| unicode:: U+03A3
+        """
         mdtout = mdt(self._mlib)
         _mdt.mdt_normalize(self._modpt, mdtout._modpt, self._mlib.modpt,
                            dimensions, dx_dy, to_zero, to_pdf)
         return mdtout
 
     def integrate(self, features):
-        """Integrate the MDT, and reorder the features. This is useful for
-           squeezing large MDT arrays into smaller ones, and also for
-           eliminating unwanted features (such as X-ray resolution) in
-           preparation for L{mdt.write}.
-           @param features: the new features (all must be present in the
-                            original MDT).
-           @return: the integrated MDT.
-           @rtype: L{mdt}"""
+        """
+        Integrate the MDT, and reorder the features. This is useful for
+        squeezing large MDT arrays into smaller ones, and also for
+        eliminating unwanted features (such as X-ray resolution) in
+        preparation for `mdt.write`.
+
+        :Parameters:
+          - `features`: the new features (all must be present in the
+            original MDT).
+        :return: the integrated MDT.
+        :rtype: `mdt`
+        """
         mdtout = mdt(self._mlib)
         _mdt.mdt_integrate(self._modpt, mdtout._modpt, features)
         return mdtout
 
     def exp_transform(self, offset, expoffset, multiplier, power):
-        """Apply an exponential transform to the MDT.
-           Each element in the new MDT, M{b}, is obtained from the original
-           MDT element M{a}, using the following relation:
-           M{b = offset + exp(expoffset + multiplier * a ^ power)}.
-           @rtype: L{mdt}"""
+        """
+        Apply an exponential transform to the MDT.
+        Each element in the new MDT, *b*, is obtained from the original
+        MDT element *a*, using the following relation:
+        *b = offset + exp(expoffset + multiplier \* a ^ power)*.
+
+        :rtype: `mdt`
+        """
         mdtout = self.copy()
         _mdt.mdt_exp_transform(mdtout._modpt, offset, expoffset, multiplier,
                                power)
         return mdtout
 
     def log_transform(self, offset, multiplier, undefined=0.):
-        """Apply a log transform to the MDT.
-           Each element in the new MDT, M{b}, is obtained from the original
-           MDT element M{a}, using the following relation:
-           M{b = ln(offset + multiplier * a)}. Where this would involve the
-           logarithm of a negative number, M{b} is assigned to be C{undefined}.
-           @return: the transformed MDT.
-           @rtype: L{mdt}"""
+        """
+        Apply a log transform to the MDT.
+        Each element in the new MDT, *b*, is obtained from the original
+        MDT element *a*, using the following relation:
+        *b = ln(offset + multiplier \* a)*. Where this would involve the
+        logarithm of a negative number, *b* is assigned to be `undefined`.
+
+        :return: the transformed MDT.
+        :rtype: `mdt`
+        """
         mdtout = self.copy()
         _mdt.mdt_log_transform(mdtout._modpt, offset, multiplier, undefined)
         return mdtout
 
     def linear_transform(self, offset, multiplier):
-        """Apply a linear transform to the MDT.
-           Each element in the new MDT, M{b}, is obtained from the original
-           MDT element M{a}, using the following relation:
-           M{b = offset + a * multiplier}.
-           @return: the transformed MDT.
-           @rtype: L{mdt}"""
+        """
+        Apply a linear transform to the MDT.
+        Each element in the new MDT, *b*, is obtained from the original
+        MDT element *a*, using the following relation:
+        *b = offset + a \* multiplier*.
+
+        :return: the transformed MDT.
+        :rtype: `mdt`
+        """
         mdtout = self.copy()
         _mdt.mdt_linear_transform(mdtout._modpt, offset, multiplier)
         return mdtout
 
     def inverse_transform(self, offset, multiplier, undefined=0.):
-        """Apply an inverse transform to the MDT.
-           Each element in the new MDT, M{b}, is obtained from the original
-           MDT element M{a}, using the following relation:
-           M{b = offset + multiplier / a}. Where M{a} is zero, M{b} is
-           assigned to be C{undefined}.
-           @return: the transformed MDT.
-           @rtype: L{mdt}"""
+        """
+        Apply an inverse transform to the MDT.
+        Each element in the new MDT, *b*, is obtained from the original
+        MDT element *a*, using the following relation:
+        *b = offset + multiplier / a*. Where *a* is zero, *b* is
+        assigned to be `undefined`.
+
+        :return: the transformed MDT.
+        :rtype: `mdt`
+        """
         mdtout = self.copy()
         _mdt.mdt_inverse_transform(mdtout._modpt, offset, multiplier, undefined)
         return mdtout
 
     def offset_min(self, dimensions):
-        """Offset the MDT by the minimum value.
-           @return: the transformed MDT.
-           @rtype: L{mdt}"""
+        """
+        Offset the MDT by the minimum value.
+
+        :return: the transformed MDT.
+        :rtype: `mdt`
+        """
         mdtout = self.copy()
         _mdt.mdt_offset_min(mdtout._modpt, dimensions)
         return mdtout
 
     def close(self, dimensions):
-        """Attempt to 'close' the MDT, so that it is useful for creating splines
-           of periodic features.
-           @return: the closed MDT.
-           @rtype: L{mdt}"""
+        """
+        Attempt to 'close' the MDT, so that it is useful for creating splines
+        of periodic features.
+
+        :return: the closed MDT.
+        :rtype: `mdt`
+        """
         mdtout = self.copy()
         _mdt.mdt_close(mdtout._modpt, dimensions)
         return mdtout
@@ -435,27 +513,35 @@ class mdt(mdt_section):
         return _mdt.mdt_entropy_full(self._modpt, self._mlib.modpt)
 
     def entropy_hx(self):
-        """@return: the entropy of the last dependent variable.
+        """
+        The MDT is integrated to get a 1D histogram, then normalized by
+        the sum of the bin values. Finally, entropy is calculated as
+        |sum|\ :sub:`i` -p\ :sub:`i` ln p\ :sub:`i`
 
-           The MDT is integrated to get a 1D histogram, then normalized by
-           the sum of the bin values.
-           """
+        :return: the entropy of the last dependent variable.
+        :rtype: float
+
+        .. |sum| unicode:: U+03A3
+        """
         return _mdt.mdt_entropy_hx(self._modpt)
 
     def super_smooth(self, prior_weight, entropy_weighing):
-        """Multi-level smoothing. This super-smoothes the raw frequencies in
-           the MDT using the hierarchical smoothing procedure for 1D histograms
-           described in Sali and Blundell, JMB 1993. It was also employed in
-           Sali and Overington, Prot Sci. 1994.
+        """
+        Multi-level smoothing. This super-smoothes the raw frequencies in
+        the MDT using the hierarchical smoothing procedure for 1D histograms
+        described in Sali and Blundell, JMB 1993. It was also employed in
+        Sali and Overington, Prot Sci. 1994.
 
-           Briefly, the idea is to recursively construct the best possible
-           prior distribution for smoothing 1D data M{p(x/a, b, c, ...)}.
-           The best prior is a weighted sum (weights optionally based on
-           entropy) of the best possible estimate of M{p(x/a, b, ...)}
-           integrated over c for each c. Each one of these can itself be
-           obtained from a prior and the data, and so on recursively.
-           @return: the smoothed MDT.
-           @rtype: L{mdt}"""
+        Briefly, the idea is to recursively construct the best possible
+        prior distribution for smoothing 1D data *p(x|a, b, c, ...)*.
+        The best prior is a weighted sum (weights optionally based on
+        entropy) of the best possible estimate of *p(x|a, b, ...)*
+        integrated over *c* for each *c*. Each one of these can itself be
+        obtained from a prior and the data, and so on recursively.
+
+        :return: the smoothed MDT.
+        :rtype: `mdt`
+        """
         mdtout = mdt(self._mlib)
         _mdt.mdt_super_smooth(self._modpt, mdtout._modpt, prior_weight,
                               entropy_weighing)
@@ -465,24 +551,27 @@ class mdt(mdt_section):
                    plots_per_page, plot_density_cutoff=-1., plot_type='HIST2D',
                    every_x_numbered=1, every_y_numbered=1, x_decimal=1,
                    y_decimal=1):
-        """Make input files for ASGL.
-           @param asglroot: filename prefix for ASGL TOP script and data files.
-           @param text: ASGL command lines that are written for each plot.
-           @param dimensions: whether to make 1D or 2D plots.
-           @param plot_position: position of the plot on the page, in
-                  ASGL convention.
-           @param plots_per_page: number of plots per page.
-           @param plot_density_cutoff: the minimal sum of the bin values that
-                  each plot has to have before it is actually written out;
-                  otherwise it is ignored. This helps to avoid wasting paper
-                  on empty plots when the MDT array data are sparse.
-           @param plot_type: select 'HIST2D' or 'PLOT2D' when C{dimensions}=2.
-           @param every_x_numbered: spacing for labels on the X axis.
-           @param every_y_numbered: spacing for labels on the Y axis.
-           @param x_decimal: the number of decimal places used to write
-                             X feature values.
-           @param y_decimal: the number of decimal places used to write
-                             Y feature values.
+        """
+        Make input files for ASGL.
+
+        :Parameters:
+          - `asglroot`: filename prefix for ASGL TOP script and data files.
+          - `text`: ASGL command lines that are written for each plot.
+          - `dimensions`: whether to make 1D or 2D plots.
+          - `plot_position`: position of the plot on the page, in
+            ASGL convention.
+          - `plots_per_page`: number of plots per page.
+          - `plot_density_cutoff`: the minimal sum of the bin values that
+            each plot has to have before it is actually written out;
+            otherwise it is ignored. This helps to avoid wasting paper
+            on empty plots when the MDT array data are sparse.
+          - `plot_type`: select 'HIST2D' or 'PLOT2D' when `dimensions` = 2.
+          - `every_x_numbered`: spacing for labels on the X axis.
+          - `every_y_numbered`: spacing for labels on the Y axis.
+          - `x_decimal`: the number of decimal places used to write
+            X feature values.
+          - `y_decimal`: the number of decimal places used to write
+            Y feature values.
         """
         return _mdt.mdt_write_asgl(self._modpt, self._mlib.modpt, asglroot,
                                    text, dimensions, every_x_numbered,
@@ -494,27 +583,28 @@ class mdt(mdt_section):
     def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
                       residue_span_range=(-99999, -2, 2, 99999), pairs=1,
                       triples=1, io=None, edat=None):
-        """Add data from a Modeller alignment to this MDT.
-           @param aln: Modeller alignment.
-           @param distngh: distance below which residues are considered
-                  neighbors.
-           @param surftyp: 1 for PSA contact area, 2 for surface area.
-           @param accessibility_type: PSA accessibility type (1-10).
-           @param residue_span_range: sequence separation (inclusive) for
-                  residue-residue, tuple-tuple, and 'any atom' features. For
-                  the two residue indices r1 and r2 in the tuple-tuple and any
-                  atom cases, or two alignment position indices in the
-                  residue-residue case, the following must be true:
+        """
+        Add data from a Modeller alignment to this MDT.
 
-                  M{residue_span_range[0] <= (r2 - r1) <= residue_span_range[1]}
+        :Parameters:
+          - `aln`: Modeller alignment.
+          - `distngh`: distance below which residues are considered neighbors.
+          - `surftyp`: 1 for PSA contact area, 2 for surface area.
+          - `accessibility_type`: PSA accessibility type (1-10).
+          - `residue_span_range`: sequence separation (inclusive) for
+            residue-residue, tuple-tuple, and 'any atom' features. For
+            the two residue indices r1 and r2 in the tuple-tuple and any
+            atom cases, or two alignment position indices in the
+            residue-residue case, the following must be true:
 
-                  M{residue_span_range[2] <= (r2 - r1) <= residue_span_range[3]}
+            *residue_span_range[0] <= (r2 - r1) <= residue_span_range[1]*
 
-                  For symmetric residue-residue features, only one condition
-                  must be met:
+            *residue_span_range[2] <= (r2 - r1) <= residue_span_range[3]*
 
-                  M{residue_span_range[2] <= abs(r2 - r1)
-                  <= residue_span_range[3]}
+            For symmetric residue-residue features, only one condition
+            must be met:
+
+            *residue_span_range[2] <= abs(r2 - r1) <= residue_span_range[3]*
         """
         if io is None:
             io = self._mlib.env.io
@@ -528,8 +618,12 @@ class mdt(mdt_section):
 
     def open_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
                        io=None, edat=None):
-        """Open a Modeller alignment to allow MDT indices to be queried
-           (see L{source}). Arguments are as for L{add_alignment}."""
+        """
+        Open a Modeller alignment to allow MDT indices to be queried
+        (see `source`). Arguments are as for `add_alignment`.
+
+        :rtype: `source`
+        """
         return source(self, self._mlib, aln, distngh, surftyp,
                       accessibility_type, io, edat)
 
@@ -631,7 +725,7 @@ class bin(object):
 
 class source(object):
     """A source of data for an MDT (generally a Modeller alignment, opened
-       with L{mdt.open_alignment()}."""
+       with `mdt.open_alignment()`)."""
 
     def __init__(self, mdt, mlib, aln, distngh, surftyp, accessibility_type,
                  io, edat):
@@ -662,19 +756,22 @@ class source(object):
 
     def index(self, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
               ip2, ibnd1, ibnd1p, is3, ir3, ir3p):
-        """Return the bin index (starting at 1) of a single MDT feature.
-           (Arguments ending in 2 and 3 are used for features involving pairs
-           or triples of proteins.)
-           @param ifeat: MDT feature type.
-           @param is1: index of the sequence within the alignment.
-           @param ip1: position within the sequence (i.e. including gaps).
-           @param ir1: residue index (i.e. not including alignment gaps).
-           @param ir1p: second residue index for residue-residue features.
-           @param ia1: atom index.
-           @param ia1p: second atom index for atom-atom features.
-           @param ibnd1: bond or tuple index.
-           @param ibnd1p: second bond/tuple index for bond-bond or tuple-tuple
-                          features.
+        """
+        Return the bin index (starting at 1) of a single MDT feature.
+        (Arguments ending in 2 and 3 are used for features involving pairs
+        or triples of proteins.)
+
+        :Parameters:
+          - `ifeat`: MDT feature type.
+          - `is1`: index of the sequence within the alignment.
+          - `ip1`: position within the sequence (i.e. including gaps).
+          - `ir1`: residue index (i.e. not including alignment gaps).
+          - `ir1p`: second residue index for residue-residue features.
+          - `ia1`: atom index.
+          - `ia1p`: second atom index for atom-atom features.
+          - `ibnd1`: bond or tuple index.
+          - `ibnd1p`: second bond/tuple index for bond-bond or tuple-tuple
+            features.
         """
         f = _mdt.mdt_alignment_index
         return f(self._modpt, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
@@ -786,9 +883,12 @@ def make_restraints(atmsel, restraints, num_selected):
 
 
 def write_2dsplinelib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
-    """Write out a Modeller 2D spline library file from an MDT.
-       @param fh: Python file to write to
-       @param mdt: input MDT, which should be a 2D table (e.g. phi/psi features)
+    """
+    Write out a Modeller 2D spline library file from an MDT.
+
+    :Parameters:
+      - `fh`: Python file to write to
+      - `mdt`: input MDT, which should be a 2D table (e.g. phi/psi features)
     """
     (yperiodic, dy, y1, y2) = _get_splinerange(mdt.features[1])
     (zperiodic, dz, z1, z2) = _get_splinerange(mdt.features[2])

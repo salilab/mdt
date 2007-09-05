@@ -703,6 +703,7 @@ struct mdt_source {
   struct mdt_properties *prop;
   struct mod_alignment *aln;
   gboolean *acceptd;
+  gboolean sympairs, symtriples;
 };
 
 
@@ -712,7 +713,9 @@ struct mdt_source *mdt_alignment_open(struct mod_mdt *mdt,
                                       const struct mdt_library *mlib,
                                       struct mod_alignment *aln, float distngh,
                                       gboolean sdchngh, int surftyp,
-                                      int iacc1typ, struct mod_io_data *io,
+                                      int iacc1typ, gboolean sympairs,
+                                      gboolean symtriples,
+                                      struct mod_io_data *io,
                                       struct mod_libraries *libs, GError **err)
 {
   int nseqacc, ierr;
@@ -735,6 +738,8 @@ struct mdt_source *mdt_alignment_open(struct mod_mdt *mdt,
     source->aln = aln;
     source->prop = mdt_properties_new(aln);
     source->acceptd = g_malloc(sizeof(gboolean) * aln->nseq);
+    source->sympairs = sympairs;
+    source->symtriples = symtriples;
 
     if (mdt->readin[0]) {
       int i;
@@ -767,13 +772,12 @@ double mdt_source_sum(struct mdt_source *source, struct mod_mdt *mdt,
                       const struct mdt_library *mlib,
                       const int residue_span_range[4],
                       const struct mod_libraries *libs,
-                      const struct mod_energy_data *edat, gboolean sympairs,
-                      gboolean symtriples, GError **err)
+                      const struct mod_energy_data *edat, GError **err)
 {
   double sum = 0.;
   mdt_source_scan(mdt, mlib, source->aln, residue_span_range, libs,
-                  edat, source->acceptd, source->nseqacc, sympairs, symtriples,
-                  source->prop, scan_sum, &sum, err);
+                  edat, source->acceptd, source->nseqacc, source->sympairs,
+                  source->symtriples, source->prop, scan_sum, &sum, err);
   return sum;
 }
 
@@ -810,7 +814,7 @@ gboolean mdt_add_alignment(struct mod_mdt *mdt,
   mod_lognote("Calculating and checking other data: %d", aln->nseq);
 
   source = mdt_alignment_open(mdt, mlib, aln, distngh, sdchngh, surftyp,
-                              iacc1typ, io, libs, err);
+                              iacc1typ, sympairs, symtriples, io, libs, err);
   if (source) {
     gboolean ret;
 
@@ -819,8 +823,9 @@ gboolean mdt_add_alignment(struct mod_mdt *mdt,
 
     mod_lognote("Updating the statistics array:");
     ret = mdt_source_scan(mdt, mlib, aln, residue_span_range, libs, edat,
-                          source->acceptd, source->nseqacc, sympairs,
-                          symtriples, source->prop, scan_update, NULL, err);
+                          source->acceptd, source->nseqacc, source->sympairs,
+                          source->symtriples, source->prop, scan_update, NULL,
+                          err);
 
     mdt_alignment_close(source);
     return ret;

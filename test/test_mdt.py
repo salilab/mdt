@@ -434,6 +434,21 @@ class MDTTests(ModellerTest):
         self.assertInTolerance(m[32], 10095.0, 0.0005)
         self.assertInTolerance(m[-1], 4892.0, 0.0005)
 
+    def test_sources(self):
+        """Make sure that alignments and models both work as sources"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        m1 = mdt.mdt(mlib, features=82)
+        m2 = mdt.mdt(mlib, features=82)
+        a1 = alignment(env, file='test/data/tiny.ali', align_codes='5fd1')
+        m1.add_alignment(a1)
+        mdl = model(env, file='test/data/5fd1.atm', model_segment=('1:', '6:'))
+        a2 = alignment(env)
+        # Atom file 'foo' does not exist; all data should be taken from mdl
+        a2.append_model(mdl, align_codes='foo', atom_files='foo')
+        m2.add_alignment(a2)
+        self.assertMDTsEqual(m1, m2)
+
     def test_feature_combination(self):
         """Check that invalid feature combinations are rejected"""
         self.assertRaises(ValueError, self.get_test_mdt, features=(17,82))

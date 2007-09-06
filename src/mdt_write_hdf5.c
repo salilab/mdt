@@ -15,13 +15,12 @@ static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
 {
   herr_t ret;
   hsize_t *dims;
-  int *ifeat, *istart, *iend, *nbins;
+  int *ifeat, *offset, *nbins;
   int i;
 
   dims = g_malloc(mdt->nfeat * sizeof(hsize_t));
   ifeat = g_malloc(mdt->nfeat * sizeof(int));
-  istart = g_malloc(mdt->nfeat * sizeof(int));
-  iend = g_malloc(mdt->nfeat * sizeof(int));
+  offset = g_malloc(mdt->nfeat * sizeof(int));
   nbins = g_malloc(mdt->nfeat * sizeof(int));
   for (i = 0; i < mdt->nfeat; i++) {
     const struct mod_mdt_libfeature *libfeat;
@@ -29,8 +28,7 @@ static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
     libfeat = &mlib->base.features[feat->ifeat - 1];
     dims[i] = feat->nbins;
     ifeat[i] = feat->ifeat;
-    istart[i] = feat->istart;
-    iend[i] = feat->iend;
+    offset[i] = feat->istart - 1;
     nbins[i] = libfeat->nbins;
   }
 
@@ -38,8 +36,7 @@ static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
   if (ret >= 0) {
     hsize_t featdim = mdt->nfeat;
     if (H5LTmake_dataset_int(file_id, "/features", 1, &featdim, ifeat) < 0
-        || H5LTmake_dataset_int(file_id, "/istart", 1, &featdim, istart) < 0
-        || H5LTmake_dataset_int(file_id, "/iend", 1, &featdim, iend) < 0
+        || H5LTmake_dataset_int(file_id, "/offset", 1, &featdim, offset) < 0
         || H5LTmake_dataset_int(file_id, "/nbins", 1, &featdim, nbins) < 0) {
       ret = -1;
     }
@@ -61,8 +58,7 @@ static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
   }
   g_free(dims);
   g_free(ifeat);
-  g_free(istart);
-  g_free(iend);
+  g_free(offset);
   g_free(nbins);
 
   if (ret < 0) {

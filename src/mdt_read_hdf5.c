@@ -13,8 +13,8 @@
 static gboolean read_mdt_features(hid_t file_id, struct mod_mdt *mdt,
                                   GError **err)
 {
-  hsize_t nfeat;
-  int *ifeat, *istart, *iend;
+  hsize_t nfeat, *shape;
+  int *ifeat, *offset;
   herr_t ret;
 
   ret = mod_dataset_get_ndsize(file_id, "/features", 1, &nfeat);
@@ -24,54 +24,87 @@ static gboolean read_mdt_features(hid_t file_id, struct mod_mdt *mdt,
   }
   mod_mdt_nfeat_set(mdt, nfeat);
   ifeat = g_malloc(mdt->nfeat * sizeof(int));
-  istart = g_malloc(mdt->nfeat * sizeof(int));
-  iend = g_malloc(mdt->nfeat * sizeof(int));
+  offset = g_malloc(mdt->nfeat * sizeof(int));
+  shape = g_malloc(mdt->nfeat * sizeof(hsize_t));
   if (mod_dataset_read_int(file_id, "/features", 1, &nfeat, ifeat) >= 0
-      && mod_dataset_read_int(file_id, "/istart", 1, &nfeat, istart) >= 0
-      && mod_dataset_read_int(file_id, "/iend", 1, &nfeat, iend) >= 0) {
+      && mod_dataset_read_int(file_id, "/offset", 1, &nfeat, offset) >= 0
+      && mod_dataset_get_ndsize(file_id, "/mdt", nfeat, shape) >= 0) {
     int i;
     for (i = 0; i < mdt->nfeat; i++) {
       struct mod_mdt_feature *feat = &mdt->features[i];
       feat->ifeat = ifeat[i];
-      feat->istart = istart[i];
-      feat->iend = iend[i];
-      feat->nbins = iend[i] - istart[i] + 1;
+      feat->istart = offset[i] + 1;
+      feat->nbins = shape[i];
+      feat->iend = feat->istart + feat->nbins - 1;
     }
   } else {
     handle_modeller_hdf5_error(err);
     ret = -1;
   }
   g_free(ifeat);
-  g_free(istart);
-  g_free(iend);
+  g_free(offset);
+  g_free(shape);
   return (ret >= 0);
 }
 
 
-/** Check MDT feature information for sanity. */
-static gboolean check_mdt_features(const struct mod_mdt *mdt,
+/** Check a single MDT feature for sanity. */
+static gboolean check_mdt_feature(const struct mod_mdt_feature *feat,
+                                  int nbins, int i,
+                                  const struct mdt_library *mlib, GError **err)
+{
+  const struct mod_mdt_libfeature *libfeat;
+
+  if (!check_feature_type(feat->ifeat, mlib, err)) {
+    return FALSE;
+  }
+
+  libfeat = &mlib->base.features[feat->ifeat - 1];
+  if (nbins != libfeat->nbins) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                "MDT number of bins (%d) is different to that in the bin "
+                "file (%d) for feature number %d, feature type %d", nbins,
+                libfeat->nbins, i, feat->ifeat);
+    return FALSE;
+  } else if (feat->istart < 1 || feat->istart > libfeat->nbins) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                "MDT table offset (%d) is outside of bin file range 0-%d "
+                "for feature number %d, feature type %d", feat->istart - 1,
+                libfeat->nbins - 1, i, feat->ifeat);
+    return FALSE;
+  } else if (feat->iend < 1 || feat->iend > libfeat->nbins) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                "MDT table end (%d) is outside of bin file range 0-%d "
+                "for feature number %d, feature type %d", feat->iend - 1,
+                libfeat->nbins - 1, i, feat->ifeat);
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}
+
+
+/** Check all MDT feature information for sanity. */
+static gboolean check_mdt_features(hid_t file_id, const struct mod_mdt *mdt,
                                    const struct mdt_library *mlib,
                                    GError **err)
 {
-  int i;
-  for (i = 0; i < mdt->nfeat; i++) {
-    const struct mod_mdt_libfeature *libfeat;
-    const struct mod_mdt_feature *feat = &mdt->features[i];
+  int i, *nbins;
+  gboolean retval;
+  hsize_t nfeat = mdt->nfeat;
 
-    if (!check_feature_type(feat->ifeat, mlib, err)) {
-      return FALSE;
-    }
+  nbins = g_malloc(mdt->nfeat * sizeof(int));
 
-    libfeat = &mlib->base.features[feat->ifeat - 1];
-    if (feat->nbins > libfeat->nbins) {
-      g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
-                  "Number of bins in MDT table (%d) is greater than "
-                  "that in bin file (%d) for feature number %d, feature "
-                  "type %d", feat->nbins, libfeat->nbins, i, feat->ifeat);
-      return FALSE;
-    }
+  retval = (mod_dataset_read_int(file_id, "/nbins", 1, &nfeat, nbins) >= 0);
+  if (!retval) {
+    handle_modeller_hdf5_error(err);
   }
-  return TRUE;
+  for (i = 0; i < mdt->nfeat && retval; i++) {
+    retval = check_mdt_feature(&mdt->features[i], nbins[i], i, mlib, err);
+  }
+
+  g_free(nbins);
+  return retval;
 }
 
 
@@ -129,7 +162,7 @@ gboolean mdt_read_hdf5(struct mod_mdt *mdt, const struct mdt_library *mlib,
   file_id = mdt_hdf_open(filename, H5F_ACC_RDONLY, H5P_DEFAULT, &file_info,
                          err);
   if (file_id < 0 || !read_mdt_features(file_id, mdt, err)
-      || !check_mdt_features(mdt, mlib, err)
+      || !check_mdt_features(file_id, mdt, mlib, err)
       || !read_mdt_data(file_id, mdt, err)
       || !mdt_hdf_close(file_id, &file_info, err)) {
     return FALSE;

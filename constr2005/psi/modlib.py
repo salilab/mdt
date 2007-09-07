@@ -16,7 +16,7 @@ m = m.integrate(features=(1,9))
 # Process the raw histograms to get appropriate pdf 1D splines for restraints:
 
 # Start by smoothing with a uniform prior (equal weight when 10 points per bin),
-# producing a normalized distribution that sums to 1 (not a pdf when dx <> 1):
+# producing a normalized distribution that sums to 1 (not a pdf when dx != 1):
 m = m.smooth(dimensions=1, weight=10)
 
 # Normalize it to get the true pdf (Integral p(x) dx = 1):

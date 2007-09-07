@@ -5,7 +5,9 @@
   <!ENTITY MODELLER "<application>MODELLER</application>">
   <!ENTITY ASGL "<application>ASGL</application>">
   <!ENTITY PDB "<acronym>PDB</acronym>">
+  <!ENTITY epydoc "epydoc/redirect.html#mdt.">
   <!ENTITY acknowl SYSTEM "acknowl.xml">
+  <!ENTITY usage SYSTEM "usage.xml">
   <!ENTITY study SYSTEM "study.xml">
   <!ENTITY make-pdb60 SYSTEM "../constr2005/cluster-PDB/make-pdb60.py">
   <!ENTITY impact-resolution SYSTEM "../constr2005/impact-of-resolution/make-mdt.py">
@@ -89,6 +91,8 @@ written consent.
 </bookinfo>
 
 &acknowl;
+
+&usage;
 
 &study;
 

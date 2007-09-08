@@ -23,7 +23,7 @@
    MDT works by accumulating the table *N* by processing each sequence or
    alignment in turn. See `mdt.add_alignment`.
 
-   See `some studies with MDT <https://salilab.org/internal/manuals/mdt/manual.pdf>`__ for copious examples.
+   See the 'Sample studies with MDT' chapter in the `MDT manual <https://salilab.org/internal/manuals/mdt/>`__ for copious examples.
 
    :author: Andrej Sali, Ben Webb
    :copyright: 1989-2007 Andrej Sali

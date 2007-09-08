@@ -31,10 +31,65 @@ a bin file which can be changed by the user.
 </para>
 
 <para>
-MDT works by accumulating the table N by processing each sequence or alignment
+&MDT; works by accumulating the table N by processing each sequence or alignment
 in turn. See <ulink url="&epydoc;mdt.add_alignment">mdt.add_alignment</ulink>.
 </para>
 </sect1>
+
+<sect2 id="features">
+<title>&MDT; features</title>
+
+<para>
+A 'feature' in &MDT; is simply some binnable property of your input alignment.
+Example features include the residue type, &chi; and &Phi; dihedral angles,
+sequence identity between two sequences, X-ray resolution, atom-atom distances,
+atom type, and bond length.
+</para>
+
+<para>
+&MDT; understands that different features act on different sets of proteins,
+or parts of proteins, and will automatically scan over the correct range to
+collect necessary statistics (e.g. when you call
+<ulink url="&epydoc;mdt.add_alignment">mdt.add_alignment</ulink>). For example,
+to collect statistics for the residue type feature, it is necessary to scan
+all residues in all proteins in the alignment. The X-ray resolution feature,
+on the other hand, only requires each protein in the alignment to be scanned.
+The atom-atom distance feature requires scanning over all pairs of atoms in
+all proteins in the alignment, while the sequence identity feature requires
+scanning all pairs of proteins in the alignment. If you construct a table of
+multiple features, the most fine-grained of the features determines the scan -
+for example, a table of X-ray resolution against &Phi; dihedral would require
+a scan of all residues.
+</para>
+
+<para>
+&MDT; also knows that some features are symmetric, and will perform a
+non-redundant scan in this case. If, however, any feature is asymmetric, a
+full scan is performed.
+</para>
+
+<para>
+The bin file determines how to convert a feature value into a frequency table.
+For most feature types, you can specify how many bins to use, and their value
+ranges. The last bin is always reserved as an 'undefined' bin, for values that
+don't fall into any other bin<footnote>
+<para>
+You can, however, remove the 'undefined' bin using
+<ulink url="&epydoc;mdt.reshape">mdt.reshape</ulink>.
+</para>
+</footnote>.
+(Some features are predetermined by the setup of the system - for
+example, the residue type feature always has 22 bins - 20 for the standard
+amino acids, 1 for gaps in the alignment, and 1 for undefined.)
+</para>
+
+<para>
+For a list of all defined feature types and suitable default bin ranges,
+see the file <filename>mdt.bin</filename>, which you can find in the
+<filename>data</filename> subdirectory of the &MDT; source distribution, or
+the <filename>modlib</filename> directory after installation.
+</para>
+</sect2>
 
 <sect1 id="compilation">
 <title>Compilation from source code</title>
@@ -64,13 +119,34 @@ libraries in the same directories as &MODELLER;.
 </sect1>
 
 <sect1 id="running">
-<title>Running &MDT; scripts</title>
+<title>Example &MDT; script</title>
+<para>
+&MDT; is simply a Python extension module, and as such can be used in
+combination with other Python modules, such as &MODELLER;.
+</para>
+
+<para>
+Generally speaking, to use &MDT;, you should first create an
+<ulink url="&epydoc;mdt_library">mdt_library</ulink> object. This defines
+the bin ranges, and in most cases is the only prerequisite for creating
+MDT tables themselves<footnote>
+<para>
+Some library information needs to be read from additional files, such as
+the definitions of chemical bonds (see <xref linkend="chembonds" /> for an
+example), or atom tuples.
+</para>
+</footnote>. You can then create one or more
+<ulink url="&epydoc;mdt">mdt</ulink> objects which hold the frequency tables
+themselves. See <xref linkend="chi1" /> for an example.
+</para>
+
 <para>
 To run a script <filename>foo.py</filename>, simply run
 </para>
 <screen>
 <command>${MODINSTALLSVN}/bin/modpy.sh python <replaceable>foo.py</replaceable></command>
 </screen>
+
 </sect1>
 
 <sect1 id="reference">

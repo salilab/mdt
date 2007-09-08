@@ -101,7 +101,7 @@ plotted with the script:</para>
 &impact-resolution-asgl;
 </programlisting></informalexample>
 
-<para>and giving <ulink url="../constr2005/impact-of-resolution/asgl2-a.pdf">this output</ulink>.</para>
+<para>and giving <ulink url="pdf/impact-of-resolution.pdf">this output</ulink>.</para>
 
 </sect2>
 
@@ -121,7 +121,7 @@ The contents of the &MDT; table are then plotted with &ASGL; as follows:
 <informalexample><programlisting>
 &bonds-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="../constr2005/bonds/asgl1-a.pdf">this output</ulink>.</para>
+<para>giving <ulink url="pdf/bonds.pdf">this output</ulink>.</para>
 
 <para>
 Inspection of the plots shows that all distributions are mono-modal, but most
@@ -165,7 +165,7 @@ The contents of the &MDT; table are then plotted with &ASGL; as follows:
 <informalexample><programlisting>
 &angles-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="../constr2005/angles/asgl1-a.pdf">this output</ulink>.</para>
+<para>giving <ulink url="pdf/angles.pdf">this output</ulink>.</para>
 
 <para>
 The situation is similar to that for the chemical bonds, except that there are
@@ -203,7 +203,7 @@ The contents of the &MDT; table are then plotted with &ASGL; as follows:
 </para>
 <informalexample><programlisting>
 &impropers-asgl;
-</programlisting></informalexample><para>giving <ulink url="../constr2005/impropers/asgl1-a.pdf">this output</ulink>.</para>
+</programlisting></informalexample><para>giving <ulink url="pdf/impropers.pdf">this output</ulink>.</para>
 
 <para>
 The final &MODELLER; &MDT; library is produced with:
@@ -230,7 +230,7 @@ obtained by constructing and inspecting
 <informalexample><programlisting>
 &chi1res-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="../constr2005/chi1/impact-of-resolution/asgl1-a.pdf">this output</ulink>
+<para>giving <ulink url="pdf/chi1-impact.pdf">this output</ulink>
 which clearly show that x-ray structures at resolution of at least 2.0 &Aring;
 are just fine. X-ray structures above that resolution and NMR structures
 (whose resolution is set artificially to 0.45 &Aring; for the purposes of &MDT;
@@ -248,7 +248,7 @@ model for these data. Again, the following script was used to construct the
 <informalexample><programlisting>
 &chi1-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="../constr2005/chi1/asgl1-a.pdf">this output</ulink>.</para>
+<para>giving <ulink url="pdf/chi1.pdf">this output</ulink>.</para>
 
 <para>
 The weights, means, and standard deviations of the Gaussians were obtained
@@ -283,7 +283,7 @@ The contents of the &MDT; table are then plotted with &ASGL; as follows:
 <informalexample><programlisting>
 &chi2-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="../constr2005/chi2/asgl1-a.pdf">this output</ulink>.</para>
+<para>giving <ulink url="pdf/chi2.pdf">this output</ulink>.</para>
 
 <para>
 The final &MODELLER; &MDT; library is produced with:
@@ -318,7 +318,7 @@ The contents of the &MDT; table are then plotted with &ASGL; as follows:
 <informalexample><programlisting>
 &chi3-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="../constr2005/chi3/asgl1-a.pdf">this output</ulink>.
+<para>giving <ulink url="pdf/chi3.pdf">this output</ulink>.
 The final &MODELLER; &MDT; library is produced with:
 </para>
 <informalexample><programlisting>
@@ -350,7 +350,7 @@ The contents of the &MDT; table are then plotted with &ASGL; as follows:
 <informalexample><programlisting>
 &chi4-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="../constr2005/chi4/asgl1-a.pdf">this output</ulink>.
+<para>giving <ulink url="pdf/chi4.pdf">this output</ulink>.
 The final &MODELLER; &MDT; library is produced with:
 </para>
 <informalexample><programlisting>
@@ -382,7 +382,7 @@ The contents of the &MDT; table are then plotted with &ASGL; as follows:
 <informalexample><programlisting>
 &phi-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="../constr2005/phi/asgl1-a.pdf">this output</ulink>.
+<para>giving <ulink url="pdf/phi.pdf">this output</ulink>.
 The final &MODELLER; &MDT; library is produced with:
 </para>
 <informalexample><programlisting>
@@ -414,7 +414,7 @@ The contents of the &MDT; table are then plotted with &ASGL; as follows:
 <informalexample><programlisting>
 &psi-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="../constr2005/psi/asgl1-a.pdf">this output</ulink>.
+<para>giving <ulink url="pdf/psi.pdf">this output</ulink>.
 The final &MODELLER; &MDT; library is produced with:
 </para>
 <informalexample><programlisting>
@@ -452,14 +452,14 @@ distributions with finer sampling of 0.5&deg;:
 </programlisting></informalexample>
 
 <para>
-The <ulink url="../constr2005/omega/asgl1-a.pdf">distribution in raw
+The <ulink url="pdf/omega.pdf">distribution in raw
 form</ulink> is then plotted with:
 </para>
 <informalexample><programlisting>
 &omega-asgl;
 </programlisting></informalexample>
 <para>
-and <ulink url="../constr2005/omega/asgl2-a.pdf">in logarithmic form</ulink>
+and <ulink url="pdf/omega-log.pdf">in logarithmic form</ulink>
 with:
 </para>
 <informalexample><programlisting>
@@ -514,7 +514,7 @@ The contents of the &MDT; table are then plotted with &ASGL; as follows:
 <informalexample><programlisting>
 &omega-weights-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="../constr2005/omega/weights/asgl1-a.pdf">this output</ulink>.</para>
+<para>giving <ulink url="pdf/omega-weights.pdf">this output</ulink>.</para>
 
 <para>
 The library <filename>omega.py</filename> is edited manually to replace the
@@ -547,7 +547,7 @@ They are plotted with
 <informalexample><programlisting>
 &phipsi-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="../constr2005/phipsi/asgl1-a.pdf">this output</ulink>.</para>
+<para>giving <ulink url="pdf/phipsi.pdf">this output</ulink>.</para>
 
 <para>
 The distributions are clearly not 2D Gaussian functions and need to be

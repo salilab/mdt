@@ -95,7 +95,20 @@ for all 9,365 representative chains, using this &MDT; script:
 &impact-resolution;
 </programlisting></informalexample>
 
-<para>which resulted in the &MDT; table <filename>mdt2.mdt</filename> that was
+<para>This script first creates an
+<ulink url="&epydoc;mdt_library">mdt_library</ulink> object with the bin
+file <filename>mdt_test_xray.bin</filename>. It then creates an
+<ulink url="&epydoc;mdt">mdt</ulink> object, which is the MDT table itself.
+This starts off as an empty 1D table defined for feature 35, which is the X-ray
+resolution feature. It then uses a &MODELLER; alignment object to read the
+sequences from <filename>pdb_60.pir</filename> one by one, and for each one it
+updates the X-ray resolution feature in the MDT table by calling
+<ulink url="&epydoc;mdt.add_alignment">mdt.add_alignment</ulink>. Finally,
+the table is written out to the file <filename>mdt2.mdt</filename> using
+<ulink url="&epydoc;mdt.write">mdt.write</ulink>.
+</para>
+
+<para>The resulting &MDT; table <filename>mdt2.mdt</filename> was then
 plotted with the script:</para>
 <informalexample><programlisting>
 &impact-resolution-asgl;
@@ -116,12 +129,27 @@ The &MDT; table is constructed with the following &MDT; Python script:
 </programlisting></informalexample>
 
 <para>
-The contents of the &MDT; table are then plotted with &ASGL; as follows:
+In this case, the bin file does not contain all of the necessary information,
+and we must read the file <filename>bndgrp.lib</filename> which defines all
+chemical bonds, using the
+<ulink url="&epydoc;bond_classes.read">bond_classes_read</ulink> method. The
+MDT we then construct is a 3D table of X-ray resolution, bond type, and bond
+length. The contents of the &MDT; table are then plotted with &ASGL; as follows:
 </para>
 <informalexample><programlisting>
 &bonds-asgl;
 </programlisting></informalexample>
-<para>giving <ulink url="pdf/bonds.pdf">this output</ulink>.</para>
+<para>giving <ulink url="pdf/bonds.pdf">this output</ulink>. Notice that
+here we use the <ulink url="&epydoc;mdt.reshape">mdt.reshape</ulink> method,
+which can reshape a table by reordering the features, and/or reducing the bin
+ranges of these features. In this case we don't change the feature order, or
+the offset (leaving it at the default 0,0,0) but we do change the shape. The
+first feature is restricted to only one bin - because our bin file for X-ray
+resolution contains only two bins (for "less than 2 &Aring;" and "2 &Aring; or
+greater") this keeps only the good structures for our plot. The other two
+features have their bin ranges reduced by 1 (a negative value for shape means
+"reduce the size by this amount"), which effectively removes the final
+("undefined") bin.</para>
 
 <para>
 Inspection of the plots shows that all distributions are mono-modal, but most
@@ -145,6 +173,12 @@ The final &MODELLER; &MDT; library is produced with:
 <informalexample><programlisting>
 &bonds-modlib;
 </programlisting></informalexample>
+
+<para>
+Here we use the <ulink url="&epydoc;mdt.integrate">mdt.integrate</ulink> method,
+which removes a feature from the table by integrating the remaining features
+over all of that feature's bins.
+</para>
 
 </sect2>
 

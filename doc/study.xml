@@ -14,26 +14,26 @@ homology-derived restraints:</para>
 <orderedlist numeration="arabic">
   <listitem><para>Sterochemical restraints</para>
   <itemizedlist>
-    <listitem><para>chemical bonds: <inlineequation><mathphrase>p(Bond|BondType)</mathphrase></inlineequation></para></listitem>
-    <listitem><para>chemical angles: <inlineequation><mathphrase>p(Angle|AngleType)</mathphrase></inlineequation></para></listitem>
-    <listitem><para>improper dihedral angles as defined in the CHARMM residue topology file: <inlineequation><mathphrase>p(Dihedral|DihedralType)</mathphrase></inlineequation></para></listitem>
-    <listitem><para>the &omega; dihedral angle of the peptide bond: <inlineequation><mathphrase>p(&omega;|ResidueType<subscript>+1</subscript>)</mathphrase></inlineequation> where ResidueType<subscript>+1</subscript> refers to the residue type following the residue with the &omega; dihedral angle</para></listitem>
-    <listitem><para>the &Phi; and &Psi; dihedral angles: <inlineequation><mathphrase>p(&Phi;|ResidueType)</mathphrase></inlineequation>, <inlineequation><mathphrase>p(&Psi;|ResidueType)</mathphrase></inlineequation></para></listitem>
-    <listitem><para>the sidechain dihedral angles: <inlineequation><mathphrase>p(&chi;<subscript>1</subscript>|ResidueType)</mathphrase></inlineequation>, <inlineequation><mathphrase>p(&chi;<subscript>2</subscript>|ResidueType)</mathphrase></inlineequation>, <inlineequation><mathphrase>p(&chi;<subscript>3</subscript>|ResidueType)</mathphrase></inlineequation>, <inlineequation><mathphrase>p(&chi;<subscript>4</subscript>|ResidueType)</mathphrase></inlineequation></para></listitem>
-    <listitem><para>the mainchain conformation: <inlineequation><mathphrase>p(&Phi;, &Psi;|ResidueType)</mathphrase></inlineequation></para></listitem>
+    <listitem><para>chemical bonds: <inlineequation><mathphrase>p(Bond | BondType)</mathphrase></inlineequation></para></listitem>
+    <listitem><para>chemical angles: <inlineequation><mathphrase>p(Angle | AngleType)</mathphrase></inlineequation></para></listitem>
+    <listitem><para>improper dihedral angles as defined in the CHARMM residue topology file: <inlineequation><mathphrase>p(Dihedral | DihedralType)</mathphrase></inlineequation></para></listitem>
+    <listitem><para>the &omega; dihedral angle of the peptide bond: <inlineequation><mathphrase>p(&omega; | ResidueType<subscript>+1</subscript>)</mathphrase></inlineequation> where ResidueType<subscript>+1</subscript> refers to the residue type following the residue with the &omega; dihedral angle</para></listitem>
+    <listitem><para>the &Phi; and &Psi; dihedral angles: <inlineequation><mathphrase>p(&Phi; | ResidueType)</mathphrase></inlineequation>, <inlineequation><mathphrase>p(&Psi; | ResidueType)</mathphrase></inlineequation></para></listitem>
+    <listitem><para>the sidechain dihedral angles: <inlineequation><mathphrase>p(&chi;<subscript>1</subscript> | ResidueType)</mathphrase></inlineequation>, <inlineequation><mathphrase>p(&chi;<subscript>2</subscript> | ResidueType)</mathphrase></inlineequation>, <inlineequation><mathphrase>p(&chi;<subscript>3</subscript> | ResidueType)</mathphrase></inlineequation>, <inlineequation><mathphrase>p(&chi;<subscript>4</subscript> | ResidueType)</mathphrase></inlineequation></para></listitem>
+    <listitem><para>the mainchain conformation: <inlineequation><mathphrase>p(&Phi;, &Psi; | ResidueType)</mathphrase></inlineequation></para></listitem>
   </itemizedlist>
   </listitem>
 
   <listitem><para>Non-bonded restraints:</para>
   <itemizedlist>
-    <listitem><para>the mainchain hydrogen bonding restraints: <inlineequation><mathphrase>p(h|d,a)</mathphrase></inlineequation></para></listitem>
-    <listitem><para>the non-bonded pair of atom triplets: <inlineequation><mathphrase>p(d,&alpha;<subscript>1</subscript>,&alpha;<subscript>2</subscript>,&#x3b8;<subscript>1</subscript>,&#x3b8;<subscript>2</subscript>,&#x3b8;<subscript>3</subscript>|t<subscript>1</subscript>,t<subscript>2</subscript>)</mathphrase></inlineequation></para></listitem>
+    <listitem><para>the mainchain hydrogen bonding restraints: <inlineequation><mathphrase>p(h | d, a)</mathphrase></inlineequation></para></listitem>
+    <listitem><para>the non-bonded pair of atom triplets: <inlineequation><mathphrase>p(d, &alpha;<subscript>1</subscript>, &alpha;<subscript>2</subscript>, &theta;<subscript>1</subscript>, &theta;<subscript>2</subscript>, &theta;<subscript>3</subscript> | t<subscript>1</subscript>, t<subscript>2</subscript>)</mathphrase></inlineequation></para></listitem>
   </itemizedlist>
   </listitem>
 
   <listitem><para>Homology-derived restraints:</para>
   <itemizedlist>
-    <listitem><para>distance: <inlineequation><mathphrase>p(d|d')</mathphrase></inlineequation></para></listitem>
+    <listitem><para>distance: <inlineequation><mathphrase>p(d | d')</mathphrase></inlineequation></para></listitem>
   </itemizedlist>
   </listitem>
 

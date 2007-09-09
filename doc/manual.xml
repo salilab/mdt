@@ -5,6 +5,7 @@
   <!ENTITY MODELLER "<application>MODELLER</application>">
   <!ENTITY ASGL "<application>ASGL</application>">
   <!ENTITY PDB "<acronym>PDB</acronym>">
+  <!ENTITY theta "&#x3b8;">
   <!ENTITY epydoc "epydoc/redirect.html#mdt.">
   <!ENTITY acknowl SYSTEM "acknowl.xml">
   <!ENTITY usage SYSTEM "usage.xml">

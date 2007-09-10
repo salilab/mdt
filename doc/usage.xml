@@ -59,7 +59,10 @@ all proteins in the alignment, while the sequence identity feature requires
 scanning all pairs of proteins in the alignment. If you construct a table of
 multiple features, the most fine-grained of the features determines the scan -
 for example, a table of X-ray resolution against &Phi; dihedral would require
-a scan of all residues.
+a scan of all residues. Most features require only one protein in the alignment
+('protein A') but some features will act on the second or third protein instead
+(protein B or C) while some features act on two or three proteins
+simultaneously. See <xref linkend="scantypes" /> for all of the scan types.
 </para>
 
 <para>
@@ -89,6 +92,83 @@ see the file <filename>mdt.bin</filename>, which you can find in the
 <filename>data</filename> subdirectory of the &MDT; source distribution, or
 the <filename>modlib</filename> directory after installation.
 </para>
+
+<table id="scantypes">
+<title>Scan types</title>
+<tgroup cols="2">
+<thead>
+  <row><entry>Type</entry><entry>Example</entry></row>
+</thead>
+<tbody>
+
+<row>
+<entry>Protein</entry>
+<entry>Feature 35, X-ray resolution of protein A</entry>
+</row>
+
+<row>
+<entry>Residue<footnote id="resatompair">
+<para>
+Residue and residue pair scans are also used for 'one atom per residue'
+features, such as feature 16, which is the distance between the 'special
+atom' in two residues. This special atom is usually
+C<subscript>&alpha;</subscript>, but can be overridden by specifying the
+<varname>distance_atoms</varname> parameter when creating the
+<ulink url="&epydoc;mdt_library">mdt_library</ulink> object.
+</para>
+</footnote></entry>
+<entry>Feature 4, &chi;<subscript>1</subscript> of protein B</entry>
+</row>
+
+<row>
+<entry>Residue pair<footnoteref linkend="resatompair" /></entry>
+<entry>Feature 51, residue index difference in protein A</entry>
+</row>
+
+<row>
+<entry>Residue pair</entry>
+<entry>Feature 51, residue index difference in protein A</entry>
+</row>
+
+<row>
+<entry>Atom</entry>
+<entry>Feature 79, &MODELLER; atom type in protein A</entry>
+</row>
+
+<row>
+<entry>Atom pair</entry>
+<entry>Feature 82, distance between two atoms in protein A</entry>
+</row>
+
+<row>
+<entry>Atom tuple</entry>
+<entry>Feature 101, atom tuple type in protein A</entry>
+</row>
+
+<row>
+<entry>Atom tuple pair</entry>
+<entry>Feature 103, atom tuple non-bonded distance in protein A</entry>
+</row>
+
+<row>
+<entry>Chemical bond</entry>
+<entry>Feature 109, bond type in protein A</entry>
+</row>
+
+<row>
+<entry>Chemical angle</entry>
+<entry>Feature 112, bond angle in protein A</entry>
+</row>
+
+<row>
+<entry>Chemical dihedral angle</entry>
+<entry>Feature 114, bond dihedral angle in protein A</entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
 </sect2>
 
 <sect1 id="compilation">

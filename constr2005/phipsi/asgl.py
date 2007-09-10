@@ -1,4 +1,5 @@
 from modeller import *
+import os
 import mdt
 
 env = environ()
@@ -17,5 +18,5 @@ m.write_asgl(asglroot='asgl1-a', plots_per_page=3, dimensions=2,
              plot_position=9, every_x_numbered=12, every_y_numbered=12,
              text=text, x_decimal=0, y_decimal=0)
 
-env.system("asgl asgl1-a")
-env.system("ps2pdf asgl1-a.ps")
+os.system("asgl asgl1-a")
+os.system("ps2pdf asgl1-a.ps")

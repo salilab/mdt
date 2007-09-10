@@ -1,4 +1,5 @@
 from modeller import *
+import os
 import mdt
 
 env = environ()
@@ -44,4 +45,4 @@ SET WORLD_WINDOW = -999 -999 -999 -999
 """
 m.write_asgl(asglroot='modlib-a', plot_type='PLOT2D', every_x_numbered=20,
              text=text)
-env.system('asgl modlib-a')
+os.system('asgl modlib-a')

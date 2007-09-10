@@ -1,4 +1,5 @@
 from modeller import *
+import os
 import mdt
 
 env = environ()
@@ -22,5 +23,5 @@ ZOOM SCALE_WORLDX = 0.08
 m.write_asgl(asglroot='asgl1-a', plots_per_page=8, dimensions=1,
              plot_position=1, every_x_numbered=999, text=text, x_decimal=0)
 
-env.system("asgl asgl1-a")
-env.system("ps2pdf asgl1-a.ps")
+os.system("asgl asgl1-a")
+os.system("ps2pdf asgl1-a.ps")

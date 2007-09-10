@@ -1,4 +1,5 @@
 from modeller import *
+import os
 import mdt
 
 env = environ()
@@ -13,5 +14,5 @@ SET Y_TICK = -999 -999 -999, WORLD_WINDOW = -999 -999 -999 -999
 m.write_asgl(asglroot='asgl2-a', plots_per_page=8, dimensions=1,
              plot_position=1, every_x_numbered=20, text=text, x_decimal=1)
 
-env.system("asgl asgl2-a")
-env.system("ps2pdf asgl2-a.ps")
+os.system("asgl asgl2-a")
+os.system("ps2pdf asgl2-a.ps")

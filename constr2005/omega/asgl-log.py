@@ -1,4 +1,5 @@
 from modeller import *
+import os
 import mdt
 
 env = environ()
@@ -22,5 +23,5 @@ TRANSFORM TRF_TYPE = LOGARITHMIC4, ;
 m.write_asgl(asglroot='asgl2-a', plots_per_page=8, dimensions=1,
              plot_position=1, every_x_numbered=20, text=text, x_decimal=0)
 
-env.system("asgl asgl2-a")
-env.system("ps2pdf asgl2-a.ps")
+os.system("asgl asgl2-a")
+os.system("ps2pdf asgl2-a.ps")

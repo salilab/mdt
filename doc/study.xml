@@ -114,7 +114,11 @@ plotted with the script:</para>
 &impact-resolution-asgl;
 </programlisting></informalexample>
 
-<para>and giving <ulink url="pdf/impact-of-resolution.pdf">this output</ulink>.</para>
+<para>where the <ulink url="&epydoc;mdt.write_asgl">mdt.write_asgl</ulink>
+method writes out an &ASGL; script and the MDT data in a form suitable for
+plotting (which we then execute with &ASGL; using Python's
+<command>os.system</command> method). This gives
+<ulink url="pdf/impact-of-resolution.pdf">this output plot</ulink>.</para>
 
 </sect2>
 
@@ -142,14 +146,14 @@ length. The contents of the &MDT; table are then plotted with &ASGL; as follows:
 <para>giving <ulink url="pdf/bonds.pdf">this output</ulink>. Notice that
 here we use the <ulink url="&epydoc;mdt.reshape">mdt.reshape</ulink> method,
 which can reshape a table by reordering the features, and/or reducing the bin
-ranges of these features. In this case we don't change the feature order, or
-the offset (leaving it at the default 0,0,0) but we do change the shape. The
-first feature is restricted to only one bin - because our bin file for X-ray
-resolution contains only two bins (for "less than 2 &Aring;" and "2 &Aring; or
-greater") this keeps only the good structures for our plot. The other two
-features have their bin ranges reduced by 1 (a negative value for shape means
-"reduce the size by this amount"), which effectively removes the final
-("undefined") bin.</para>
+ranges (offset or shape) of these features. In this case we don't change the
+feature order, or the offset (leaving it at the default 0,0,0) but we do
+change the shape. The first feature is restricted to only one bin - because
+our bin file for X-ray resolution contains only two bins (for "less than
+2 &Aring;" and "2 &Aring; or greater") this keeps only the good structures
+for our plot. The other two features have their bin ranges reduced by 1
+(a negative value for shape means "reduce the size by this amount"),
+which effectively removes the final ("undefined") bin.</para>
 
 <para>
 Inspection of the plots shows that all distributions are mono-modal, but most
@@ -177,7 +181,10 @@ The final &MODELLER; &MDT; library is produced with:
 <para>
 Here we use the <ulink url="&epydoc;mdt.integrate">mdt.integrate</ulink> method,
 which removes a feature from the table by integrating the remaining features
-over all of that feature's bins.
+over all of that feature's bins, and the
+<ulink url="&epydoc;mdt.write_bondlib">mdt.write_bondlib</ulink> function
+to write out a &MODELLER; script which builds restraints using the &MDT;-derived
+distributions.
 </para>
 
 </sect2>
@@ -286,8 +293,8 @@ model for these data. Again, the following script was used to construct the
 
 <para>
 The weights, means, and standard deviations of the Gaussians were obtained
-by least-squares fitting with &ASGL; and are manually added to the &MODELLER;
-&MDT; library:
+by least-squares fitting with &ASGL; (with the script below) and are manually
+added to the &MODELLER; &MDT; library.
 </para>
 <informalexample><programlisting>
 &chi1-fit;
@@ -327,6 +334,15 @@ The final &MODELLER; &MDT; library is produced with:
 </programlisting></informalexample>
 
 <para>
+This script also uses
+<ulink url="&epydoc;mdt.smooth">mdt.smooth</ulink> to smooth the raw
+frequencies and
+<ulink url="&epydoc;mdt.normalize">mdt.normalize</ulink> to convert the
+distribution into a PDF. It is then converted into a statistical potential
+by taking the negative log of the values (using the
+<ulink url="&epydoc;mdt.log_transform">mdt.log_transform</ulink>,
+<ulink url="&epydoc;mdt.linear_transform">mdt.linear_transform</ulink>, and
+<ulink url="&epydoc;mdt.offset_min">mdt.offset_min</ulink> methods).
 The smoothing parameter <varname>weight</varname> of
 <replaceable>10</replaceable> was selected by trial and error, inspecting the
 resulting restraints in <filename>modlib-a.ps</filename>, also produced by the
@@ -506,7 +522,7 @@ Clearly, the peaks are sharp and will best be modeled by Gaussian distributions.
 
 <para>
 Similarly to &chi;<subscript>1</subscript>, two Gaussian distributions are
-fit to the histograms with:
+fit to the histograms with the following &ASGL; script:
 </para>
 <informalexample><programlisting>
 &omega-fit;

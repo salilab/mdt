@@ -200,7 +200,7 @@ static gboolean update_single(struct mod_mdt *mdt,
 
   switch (mdt->nresfeat) {
     /* whole protein properties tabulated: */
-  case 1:
+  case MOD_MDTS_PROTEIN:
     if (!update_mdt(mdt, mlib, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ip2,
                     ia1, ia1p, 1, 1, is3, ir3, ir3p, libs, edat, source,
                     scanfunc, scandata, err)) {
@@ -209,7 +209,7 @@ static gboolean update_single(struct mod_mdt *mdt,
     break;
 
     /* residue properties tabulated */
-  case 2:
+  case MOD_MDTS_RESIDUE:
     if (ir1 >= 0) {
       if (!update_mdt(mdt, mlib, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ip2,
                       ia1, ia1p, 1, 1, is3, ir3, ir3p, libs, edat, source,
@@ -220,7 +220,7 @@ static gboolean update_single(struct mod_mdt *mdt,
     break;
 
     /* residue rels compared */
-  case 3:
+  case MOD_MDTS_RESIDUE_PAIR:
     if (ir1 >= 0 && ir1p >= 0) {
       if (!update_mdt(mdt, mlib, is1, ip1, is2, ir1, ir2, ir1p, ir2p,
                       ip2, ia1, ia1p, 1, 1, is3, ir3, ir3p, libs, edat, source,
@@ -254,10 +254,10 @@ static gboolean update_multiple(struct mod_mdt *mdt,
   for (is2 = isbeg(is1, source->sympairs); is2 < aln->nseq; is2++) {
     if (acceptd[is2]) {
       /* residue indices in the first and second position for protein 2 */
-      if (mdt->nresfeat != 1) {
+      if (mdt->nresfeat != MOD_MDTS_PROTEIN) {
         ir2 = mod_int2_get(&aln->ialn, ip1, is2) - 1;
       }
-      if (mdt->nresfeat == 3) {
+      if (mdt->nresfeat == MOD_MDTS_RESIDUE_PAIR) {
         ir2p = mod_int2_get(&aln->ialn, ip2, is2) - 1;
       }
       is3 = is2;
@@ -283,10 +283,10 @@ static gboolean update_multiple(struct mod_mdt *mdt,
            generate all indices for the protein C: */
         for (is3 = isbeg(is2, source->symtriples); is3 < aln->nseq; is3++) {
           if (acceptd[is3]) {
-            if (mdt->nresfeat != 1) {
+            if (mdt->nresfeat != MOD_MDTS_PROTEIN) {
               ir3 = mod_int2_get(&aln->ialn, ip1, is3) - 1;
             }
-            if (mdt->nresfeat == 3) {
+            if (mdt->nresfeat == MOD_MDTS_RESIDUE_PAIR) {
               ir3p = mod_int2_get(&aln->ialn, ip2, is3) - 1;
             }
             if ((is1 != is2 && is1 != is3 && is2 != is3) || aln->nseq == 1) {
@@ -320,12 +320,12 @@ static gboolean genpair(struct mod_mdt *mdt, const struct mdt_library *mlib,
     if (acceptd[is1]) {
 
       /* residue index for a residue of protein A in the 1st position: */
-      if (mdt->nresfeat != 1) {
+      if (mdt->nresfeat != MOD_MDTS_PROTEIN) {
         ir1 = mod_int2_get(&aln->ialn, ip1, is1) - 1;
       }
       /* residue index for a residue of protein A in the 2nd position:
          (not used if residue relationships are not compared) */
-      if (mdt->nresfeat == 3 || mdt->nresfeat == 5) {
+      if (mdt->nresfeat == MOD_MDTS_RESIDUE_PAIR) {
         ir1p = mod_int2_get(&aln->ialn, ip2, is1) - 1;
       }
 
@@ -585,7 +585,7 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
 
   switch (mdt->nresfeat) {
     /* Whole proteins */
-  case 1:
+  case MOD_MDTS_PROTEIN:
     if (!genpair(mdt, mlib, 1, 1, libs, edat, acceptd, source, scanfunc,
                  scandata, err)) {
       return FALSE;
@@ -593,8 +593,7 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
     break;
 
     /* Single residues or selected (one per residue) atoms */
-  case 2:
-  case 4:
+  case MOD_MDTS_RESIDUE:
     for (ip1 = 0; ip1 < source->aln->naln; ip1++) {
       if (!genpair(mdt, mlib, ip1, ip1, libs, edat, acceptd, source, scanfunc,
                    scandata, err)) {
@@ -604,8 +603,7 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
     break;
 
     /* intra-molecular residue or selected (one per residue) atom pairs */
-  case 3:
-  case 5:
+  case MOD_MDTS_RESIDUE_PAIR:
     if (!gen_residue_pairs(mdt, mlib, rsrang, libs, edat, acceptd, source,
                            scanfunc, scandata, err)) {
       return FALSE;
@@ -614,7 +612,7 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
 
     /* Single protein, all atoms; using only the first protein in
        an alignment! */
-  case 6:
+  case MOD_MDTS_ATOM:
     if (acceptd[0]) {
       if (!gen_atoms(mdt, mlib, 0, libs, edat, source, scanfunc, scandata,
                      err)) {
@@ -625,7 +623,7 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
 
     /* Single protein, all atom pairs; using only the first protein in
        an alignment! */
-  case 7:
+  case MOD_MDTS_ATOM_PAIR:
     if (acceptd[0]) {
       if (!gen_atom_pairs(mdt, mlib, rsrang, 0, libs, edat, source, scanfunc,
                           scandata, err)) {
@@ -636,7 +634,7 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
 
     /* Single protein, all atom tuples; using only the first protein in
        an alignment! */
-  case 8:
+  case MOD_MDTS_TUPLE:
     if (acceptd[0]) {
       if (!gen_atom_tuples(mdt, mlib, 0, libs, edat, source, scanfunc,
                            scandata, err)) {
@@ -647,7 +645,7 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
 
     /* Single protein, all atom tuple pairs; using only the first protein in
        an alignment! */
-  case 9:
+  case MOD_MDTS_TUPLE_PAIR:
     if (acceptd[0]) {
       if (!gen_atom_tuple_pairs(mdt, mlib, rsrang, 0, libs, edat, source,
                                 scanfunc, scandata, err)) {
@@ -657,7 +655,7 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
     break;
 
     /* Scan over all bonds: */
-  case 10:
+  case MOD_MDTS_BOND:
     if (acceptd[0]) {
       if (!gen_bonds(mdt, mlib, 0, MDT_BOND_TYPE_BOND, libs, edat, source,
                      scanfunc, scandata, err)) {
@@ -667,7 +665,7 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
     break;
 
     /* Scan over all angles: */
-  case 11:
+  case MOD_MDTS_ANGLE:
     if (acceptd[0]) {
       if (!gen_bonds(mdt, mlib, 0, MDT_BOND_TYPE_ANGLE, libs, edat, source,
                      scanfunc, scandata, err)) {
@@ -677,7 +675,7 @@ static gboolean mdt_source_scan(struct mod_mdt *mdt,
     break;
 
     /* Scan over all dihedrals: */
-  case 12:
+  case MOD_MDTS_DIHEDRAL:
     if (acceptd[0]) {
       if (!gen_bonds(mdt, mlib, 0, MDT_BOND_TYPE_DIHEDRAL, libs, edat, source,
                      scanfunc, scandata, err)) {

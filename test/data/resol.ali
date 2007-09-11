@@ -1,0 +1,15 @@
+>P1;bin0
+structureX:dummy:1:A:3:A:::-1.0:
+GGG*
+>P1;bin1
+structureX:dummy:1:A:3:A:::1.0:
+GGG*
+>P1;bin2
+structureX:dummy:1:A:3:A:::2.1:
+GGG*
+>P1;undef1
+structureX:dummy:1:A:3:A:::-1.1:
+GGG*
+>P1;undef2
+structureX:dummy:1:A:3:A:::3.6:
+GGG*

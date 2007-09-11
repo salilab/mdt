@@ -43,12 +43,12 @@ error = _mdt.error
 
 class mdt_library(modobject):
     """Library data used in the construction and use of MDTs"""
-    __modpt = None
-    env = None
+    _modpt = None
+    _env = None
 
     def __new__(cls, *args, **vars):
         obj = modobject.__new__(cls)
-        obj.__modpt = _mdt.mdt_library_new()
+        obj._modpt = _mdt.mdt_library_new()
         return obj
 
     def __init__(self, env, binfile, residue_grouping=1,
@@ -74,32 +74,30 @@ class mdt_library(modobject):
             specially for atom class features
           - `hbond_cutoff`: maximum separation between two H-bonded atoms
         """
-        self.env = env.copy()
-        _mdt.mdt_library_deltai_set(self.modpt, deltai)
-        _mdt.mdt_library_deltaj_set(self.modpt, deltaj)
-        _mdt.mdt_library_deltai_ali_set(self.modpt, deltai_ali)
-        _mdt.mdt_library_deltaj_ali_set(self.modpt, deltaj_ali)
-        _mdt.mdt_library_hbond_cutoff_set(self.modpt, hbond_cutoff)
-        _mdt.mdt_library_special_atoms_set(self.modpt, special_atoms)
-        _modeller.mod_mdt_library_readbin(self.basept, self.env.libs.modpt,
+        self._env = env.copy()
+        _mdt.mdt_library_deltai_set(self._modpt, deltai)
+        _mdt.mdt_library_deltaj_set(self._modpt, deltaj)
+        _mdt.mdt_library_deltai_ali_set(self._modpt, deltai_ali)
+        _mdt.mdt_library_deltaj_ali_set(self._modpt, deltaj_ali)
+        _mdt.mdt_library_hbond_cutoff_set(self._modpt, hbond_cutoff)
+        _mdt.mdt_library_special_atoms_set(self._modpt, special_atoms)
+        _modeller.mod_mdt_library_readbin(self._basept, self._env.libs.modpt,
                                           binfile, residue_grouping,
                                           distance_atoms)
 
     def __del__(self):
-        _mdt.mdt_library_free(self.modpt)
+        _mdt.mdt_library_free(self._modpt)
 
-    def __get_modpt(self):
-        return self.__modpt
     def __get_basept(self):
-        return _mdt.mdt_library_base_get(self.__modpt)
+        return _mdt.mdt_library_base_get(self._modpt)
     def __get_deltai(self):
-        return _mdt.mdt_library_deltai_get(self.modpt)
+        return _mdt.mdt_library_deltai_get(self._modpt)
     def __get_deltaj(self):
-        return _mdt.mdt_library_deltaj_get(self.modpt)
+        return _mdt.mdt_library_deltaj_get(self._modpt)
     def __get_deltai_ali(self):
-        return _mdt.mdt_library_deltai_ali_get(self.modpt)
+        return _mdt.mdt_library_deltai_ali_get(self._modpt)
     def __get_deltaj_ali(self):
-        return _mdt.mdt_library_deltaj_ali_get(self.modpt)
+        return _mdt.mdt_library_deltaj_ali_get(self._modpt)
     def __get_atom_classes(self):
         return bond_classes(self, 1)
     def __get_bond_classes(self):
@@ -113,16 +111,20 @@ class mdt_library(modobject):
     def __get_hbond_classes(self):
         return hbond_classes(self)
 
-    modpt = property(__get_modpt)
-    basept = property(__get_basept)
-    atom_classes = property(__get_atom_classes, doc="Atom classes")
-    bond_classes = property(__get_bond_classes, doc="Bond classes")
-    angle_classes = property(__get_angle_classes, doc="Angle classes")
-    dihedral_classes = property(__get_dihedral_classes, doc="Dihedral classes")
+    _basept = property(__get_basept)
+    atom_classes = property(__get_atom_classes,
+                            doc="Atom classes; see `bond_classes`")
+    bond_classes = property(__get_bond_classes,
+                            doc="Bond classes; see `bond_classes`")
+    angle_classes = property(__get_angle_classes,
+                             doc="Angle classes; see `bond_classes`")
+    dihedral_classes = property(__get_dihedral_classes,
+                                doc="Dihedral classes; see `bond_classes`")
     tuple_classes = property(__get_tuple_classes,
-                             doc="Atom tuple classes")
+                             doc="Atom tuple classes; see `tuple_classes`")
     hbond_classes = property(__get_hbond_classes,
-                               doc="Hydrogen bond atom classes")
+                             doc="Hydrogen bond atom classes; " + \
+                                 "see `hbond_classes`")
     deltai = property(__get_deltai, doc="delta i for some feature types")
     deltaj = property(__get_deltaj, doc="delta j for some feature types")
     deltai_ali = property(__get_deltai_ali,
@@ -134,7 +136,7 @@ class mdt_library(modobject):
 
 
 class bond_classes(object):
-    """Classifications of bonds/angles/dihedrals into classes"""
+    """Classifications of atoms/bonds/angles/dihedrals into classes"""
 
     def __init__(self, mlib, n_atom):
         self._mlib = mlib
@@ -142,7 +144,7 @@ class bond_classes(object):
 
     def read(self, filename):
         """Read bond class information from a file"""
-        return _mdt.mdt_atom_classes_read(filename, self._mlib.modpt, 
+        return _mdt.mdt_atom_classes_read(filename, self._mlib._modpt, 
                                           self.__n_atom)
 
 
@@ -155,7 +157,7 @@ class tuple_classes(bond_classes):
 
     def read(self, filename):
         """Read atom tuple information from a file"""
-        return _mdt.mdt_tuple_read(filename, self._mlib.modpt)
+        return _mdt.mdt_tuple_read(filename, self._mlib._modpt)
 
 
 class hbond_classes(bond_classes):
@@ -166,11 +168,21 @@ class hbond_classes(bond_classes):
 
     def read(self, filename):
         """Read hydrogen bond atom class information from a file"""
-        return _mdt.mdt_hbond_read(filename, self._mlib.modpt)
+        return _mdt.mdt_hbond_read(filename, self._mlib._modpt)
 
 
 class mdt_section(modobject):
-    """A section of a multi-dimensional table"""
+    """A section of a multi-dimensional table. You should not create mdt_section
+       objects directly, but rather by indexing an `mdt` object, as an
+       mdt_section is just a 'view' into an existing table. For example,
+
+       >>> m = mdt.mdt(mlib, features=(1,35))
+       >>> print m[0].entropy()
+
+       would create a section (using m[0]) which is a 1D table over the 2nd
+       feature (feature 35) for the first bin (0) of the first feature
+       (feature 1), and then get the entropy using the `mdt_section.entropy`
+       method."""
     _indices = ()
     __mdt = None
     _mlib = None
@@ -197,7 +209,7 @@ class mdt_section(modobject):
 
     def mean_stdev(self):
         """Mean and standard deviation of the table"""
-        return _mdt.mdt_section_meanstdev(self._modpt, self._mlib.modpt,
+        return _mdt.mdt_section_meanstdev(self._modpt, self._mlib._modpt,
                                           self._indices)
 
     def __check_indices(self, indices):
@@ -232,14 +244,16 @@ class mdt_section(modobject):
             _mdt.mdt_set(self._modpt, self._indices + indx, val)
 
     def __get_features(self):
-        return feature_list(self)
+        return _feature_list(self)
     def __get_offset(self):
         return tuple([f.offset for f in self.features])
     def __get_shape(self):
         return tuple([len(f.bins) for f in self.features])
-    features = property(__get_features, doc="Features in this MDT")
-    offset = property(__get_offset, doc="Array offsets")
-    shape = property(__get_shape, doc="Array shape")
+    features = property(__get_features,
+                        doc="Features in this MDT; a list of `feature` objects")
+    offset = property(__get_offset, doc="Array offsets; see `feature.offset`")
+    shape = property(__get_shape, doc="Array shape; the number of " + \
+                                      "bins for each feature")
 
 
 class mdt(mdt_section):
@@ -253,6 +267,9 @@ class mdt(mdt_section):
        >>> mlib = mdt.mdt_library(env, '${LIB}/mdt.bin')
        >>> m = mdt.mdt(mlib, features=(1,2,5))
        >>> print m[0,0,0]
+
+       You can also access an element as m[0][0][0], a 1D section as m[0][0],
+       or a 2D section as m[0]. See `mdt_section`.
     """
     _modpt = None
     _mlib = None
@@ -271,8 +288,8 @@ class mdt(mdt_section):
           - `file`: if specified, the filename to read the initial table from
             (if the name ends with '.hdf5', `mdt.read_hdf5` is used, otherwise
             `mdt.read`)
-          - `features`: if specified, a list of feature types to initialize
-            the table with
+          - `features`: if specified (and `file` is not), a list of feature
+            types to initialize the table with
         """
         self._mlib = mlib
         if file:
@@ -288,11 +305,11 @@ class mdt(mdt_section):
 
     def read(self, file):
         """Read an MDT from `file`."""
-        _modeller.mod_mdt_read(self._modpt, self._mlib.basept, file)
+        _modeller.mod_mdt_read(self._modpt, self._mlib._basept, file)
 
     def read_hdf5(self, file):
         """Read an MDT in HDF5 format from `file`."""
-        _mdt.mdt_read_hdf5(self._modpt, self._mlib.modpt, file)
+        _mdt.mdt_read_hdf5(self._modpt, self._mlib._modpt, file)
 
     def copy(self):
         """
@@ -305,7 +322,7 @@ class mdt(mdt_section):
 
     def make(self, features):
         """Clear the MDT, and set the features"""
-        _mdt.mdt_make(self._modpt, self._mlib.modpt, features)
+        _mdt.mdt_make(self._modpt, self._mlib._modpt, features)
 
     def write(self, file, write_preamble=True):
         """Write an MDT to `file`. If `write_preamble` is False, it will
@@ -313,20 +330,30 @@ class mdt(mdt_section):
            including the feature list, bins, etc. This is useful for example
            for creating a file to be read by another program, such as
            Mathematica."""
-        _mdt.mdt_write(self._modpt, self._mlib.modpt, file, write_preamble)
+        _mdt.mdt_write(self._modpt, self._mlib._modpt, file, write_preamble)
 
     def write_hdf5(self, file):
         """Write an MDT in HDF5 format to `file`."""
-        _mdt.mdt_write_hdf5(self._modpt, self._mlib.modpt, file)
+        _mdt.mdt_write_hdf5(self._modpt, self._mlib._modpt, file)
 
     def reshape(self, features, offset, shape):
         """
         Reorder the MDT features and optionally decrease their ranges.
+        When an MDT is created, each feature has exactly the bins defined in
+        the `mdt_library`'s bin file. However, for each feature, you can change
+        the offset (initial number of bins from the bin file to omit) from the
+        default 0, and the shape (total number of bins).
+
+        All parameters should be lists with the same number of elements as
+        the MDT has features.
 
         :Parameters:
           - `features`: the new ordering of the MDT features.
           - `offset`: the new offset (see `offset`).
-          - `shape`: the new shape (see `shape`).
+          - `shape`: the new shape (see `shape`). If any element in this list is
+            0 or negative, it is added to the MDT's existing shape to get the
+            new value. Thus, a value of 0 would leave the shape unchanged, -1
+            would remove the last (undefined) bin, etc.
         :return: the reshaped MDT.
         :rtype: `mdt`
         """
@@ -382,8 +409,8 @@ class mdt(mdt_section):
         :Parameters:
           - `dimensions`: specifies whether a 1D or a 2D table is
             normalized. More precisely, the input distributions are
-            *p(x|a, b, c, ...)* if `dimensions` = 1, or
-            *p(x, y|a, b, c, ...)* if `dimensions` = 2, where y and x are
+            *p(x | a, b, c, ...)* if `dimensions` = 1, or
+            *p(x, y | a, b, c, ...)* if `dimensions` = 2, where y and x are
             the second to last and last features in the list of features.
           - `dx_dy`: widths of the bins (either one or two numbers,
             depending on `dimensions`). If the value of either dx or dy
@@ -408,7 +435,7 @@ class mdt(mdt_section):
         .. |sum| unicode:: U+03A3
         """
         mdtout = mdt(self._mlib)
-        _mdt.mdt_normalize(self._modpt, mdtout._modpt, self._mlib.modpt,
+        _mdt.mdt_normalize(self._modpt, mdtout._modpt, self._mlib._modpt,
                            dimensions, dx_dy, to_zero, to_pdf)
         return mdtout
 
@@ -489,7 +516,8 @@ class mdt(mdt_section):
 
     def offset_min(self, dimensions):
         """
-        Offset the MDT by the minimum value.
+        Offset the MDT by the minimum value, either in each 1D section
+        (`dimensions` = 1) or in each 2D section (`dimensions` = 2).
 
         :return: the transformed MDT.
         :rtype: `mdt`
@@ -503,6 +531,10 @@ class mdt(mdt_section):
         Attempt to 'close' the MDT, so that it is useful for creating splines
         of periodic features.
 
+        If `dimensions` = 1, it makes the two terminal points equal to their
+        average. If `dimensions` = 2, it applies the averages to both pairs
+        of edges and then again to all four corner points.
+
         :return: the closed MDT.
         :rtype: `mdt`
         """
@@ -512,7 +544,7 @@ class mdt(mdt_section):
 
     def entropy_full(self):
         """Print full entropy information."""
-        return _mdt.mdt_entropy_full(self._modpt, self._mlib.modpt)
+        return _mdt.mdt_entropy_full(self._modpt, self._mlib._modpt)
 
     def entropy_hx(self):
         """
@@ -535,9 +567,9 @@ class mdt(mdt_section):
         Sali and Overington, Prot Sci. 1994.
 
         Briefly, the idea is to recursively construct the best possible
-        prior distribution for smoothing 1D data *p(x|a, b, c, ...)*.
+        prior distribution for smoothing 1D data *p(x | a, b, c, ...)*.
         The best prior is a weighted sum (weights optionally based on
-        entropy) of the best possible estimate of *p(x|a, b, ...)*
+        entropy) of the best possible estimate of *p(x | a, b, ...)*
         integrated over *c* for each *c*. Each one of these can itself be
         obtained from a prior and the data, and so on recursively.
 
@@ -575,7 +607,7 @@ class mdt(mdt_section):
           - `y_decimal`: the number of decimal places used to write
             Y feature values.
         """
-        return _mdt.mdt_write_asgl(self._modpt, self._mlib.modpt, asglroot,
+        return _mdt.mdt_write_asgl(self._modpt, self._mlib._modpt, asglroot,
                                    text, dimensions, every_x_numbered,
                                    every_y_numbered, plot_density_cutoff,
                                    plots_per_page, plot_position, plot_type,
@@ -613,13 +645,13 @@ class mdt(mdt_section):
             are symmetric.
         """
         if io is None:
-            io = self._mlib.env.io
+            io = self._mlib._env.io
         if edat is None:
-            edat = self._mlib.env.edat
-        _mdt.mdt_add_alignment(self._modpt, self._mlib.modpt, aln.modpt,
+            edat = self._mlib._env.edat
+        _mdt.mdt_add_alignment(self._modpt, self._mlib._modpt, aln.modpt,
                                distngh, False, surftyp, accessibility_type,
                                residue_span_range, sympairs, symtriples,
-                               io.modpt, edat.modpt, self._mlib.env.libs.modpt)
+                               io.modpt, edat.modpt, self._mlib._env.libs.modpt)
 
 
     def open_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
@@ -649,8 +681,8 @@ class mdt(mdt_section):
     sample_size = property(__get_sample_size, doc="Number of sample points")
 
 
-class feature_list(modlist.fixlist):
-    """A list of all features in an MDT"""
+class _feature_list(modlist.fixlist):
+    """A list of all features in an MDT."""
 
     def __init__(self, mdt):
         self.__mdt = mdt
@@ -665,32 +697,35 @@ class feature_list(modlist.fixlist):
 
 
 class feature(object):
-    """A single feature in an MDT"""
+    """A single feature in an MDT. Generally accessed as `mdt.features`."""
 
     def __init__(self, mdt, indx):
         self._mdt = mdt
         self._indx = indx
 
     def __get_ifeat(self):
-        return _mdt.mod_mdt_feature_ifeat_get(self.modpt)
+        return _mdt.mod_mdt_feature_ifeat_get(self._modpt)
     def __get_bins(self):
-        return bin_list(self)
+        return _bin_list(self)
     def __get_offset(self):
-        return _mdt.mod_mdt_feature_istart_get(self.modpt) - 1
+        return _mdt.mod_mdt_feature_istart_get(self._modpt) - 1
     def __get_periodic(self):
         return _mdt.mdt_feature_is_periodic(self.ifeat)
     def __get_modpt(self):
         return _mdt.mod_mdt_feature_get(self._mdt._modpt, self._indx)
 
-    modpt = property(__get_modpt)
+    _modpt = property(__get_modpt)
     ifeat = property(__get_ifeat, doc="Integer type")
-    bins = property(__get_bins, doc="Feature bins")
-    offset = property(__get_offset, doc="Offset of first bin")
+    bins = property(__get_bins, doc="Feature bins; a list of `bin` objects")
+    offset = property(__get_offset,
+                      doc="Offset of first bin compared to the MDT library " + \
+                          "feature (usually 0, but can be changed with " + \
+                          "`mdt.reshape`)")
     periodic = property(__get_periodic, doc="Whether feature is periodic")
 
 
-class bin_list(modlist.fixlist):
-    """A list of all bins in a feature"""
+class _bin_list(modlist.fixlist):
+    """A list of all bins in a feature."""
 
     def __init__(self, feature):
         self.__feature = feature
@@ -698,35 +733,38 @@ class bin_list(modlist.fixlist):
         modlist.fixlist.__init__(self)
 
     def __len__(self):
-        return _mdt.mod_mdt_feature_nbins_get(self.__feature.modpt)
+        return _mdt.mod_mdt_feature_nbins_get(self.__feature._modpt)
 
     def _getfunc(self, indx):
         return bin(self.__feature, indx)
 
 
 class bin(object):
-    """A single bin in a feature"""
+    """A single bin in a feature. Generally accessed as `feature.bins`."""
 
     def __init__(self, feature, indx):
         self.__feature = feature
         self.__indx = indx
 
     def __get_symb(self):
-        return _mdt.mod_mdt_bin_symbol_get(self.modpt)
+        return _mdt.mod_mdt_bin_symbol_get(self._modpt)
 
     def __get_range(self):
-        return ( _mdt.mod_mdt_bin_rang1_get(self.modpt),
-                 _mdt.mod_mdt_bin_rang2_get(self.modpt) )
+        return ( _mdt.mod_mdt_bin_rang1_get(self._modpt),
+                 _mdt.mod_mdt_bin_rang2_get(self._modpt) )
 
     def __get_modpt(self):
         nfeat = self.__feature._indx
         mdt = self.__feature._mdt._modpt
-        mlib = self.__feature._mdt._mlib.modpt
+        mlib = self.__feature._mdt._mlib._modpt
         return _mdt.mdt_library_bin_get(mdt, mlib, nfeat, self.__indx)
 
-    modpt = property(__get_modpt)
+    _modpt = property(__get_modpt)
     symbol = property(__get_symb, doc="Bin symbol")
-    range = property(__get_range, doc="Bin range")
+    range = property(__get_range,
+                     doc="Bin range; usually the minimum and maximum " + \
+                         "floating-point values for the feature to be " + \
+                         "placed in this bin.")
 
 
 class source(object):
@@ -739,15 +777,15 @@ class source(object):
         self._mlib = mlib
         self._aln = aln
         if io is None:
-            io = mlib.env.io
+            io = mlib._env.io
         if edat is None:
-            edat = mlib.env.edat
+            edat = mlib._env.edat
         self._edat = edat
-        self._modpt = _mdt.mdt_alignment_open(mdt._modpt, mlib.modpt, aln.modpt,
-                                              distngh, False, surftyp,
-                                              accessibility_type, sympairs,
-                                              symtriples, io.modpt,
-                                              mlib.env.libs.modpt)
+        self._modpt = _mdt.mdt_alignment_open(mdt._modpt, mlib._modpt,
+                                              aln.modpt, distngh, False,
+                                              surftyp, accessibility_type,
+                                              sympairs, symtriples, io.modpt,
+                                              mlib._env.libs.modpt)
 
     def __del__(self):
         if hasattr(self, "_modpt"):
@@ -756,8 +794,8 @@ class source(object):
     def sum(self, residue_span_range=(-99999, -2, 2, 99999)):
         """Scan all data points in the source, and return the sum."""
         f = _mdt.mdt_source_sum
-        return f(self._modpt, self._mdt._modpt, self._mlib.modpt,
-                 residue_span_range, self._mlib.env.libs.modpt,
+        return f(self._modpt, self._mdt._modpt, self._mlib._modpt,
+                 residue_span_range, self._mlib._env.libs.modpt,
                  self._edat.modpt)
 
     def index(self, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
@@ -766,6 +804,9 @@ class source(object):
         Return the bin index (starting at 1) of a single MDT feature.
         (Arguments ending in 2 and 3 are used for features involving pairs
         or triples of proteins.)
+
+        .. warning:: This is a low-level interface, and no bounds checking
+           is performed on these parameters. Avoid this function if possible.
 
         :Parameters:
           - `ifeat`: MDT feature type.
@@ -781,8 +822,8 @@ class source(object):
         """
         f = _mdt.mdt_alignment_index
         return f(self._modpt, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
-                 ia1p, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, self._mlib.modpt,
-                 self._mlib.env.libs.modpt, self._edat.modpt)
+                 ia1p, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, self._mlib._modpt,
+                 self._mlib._env.libs.modpt, self._edat.modpt)
 
 
 def _pass_cutoffs(mdt, num, bin, density_cutoff, entropy_cutoff):
@@ -833,14 +874,39 @@ def _degrees_to_radians(a):
     return a / 180.0 * pi
 
 def write_bondlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
+    """
+    Write out a Modeller bond library file from an MDT. The input MDT should be
+    a 2D table (usually of bond type and bond distance). For each bond type,
+    the 1D MDT section (see `mdt_section`) of bond distance is examined, and
+    its mean and standard deviation used to generate a Modeller harmonic
+    restraint.
+
+    :Parameters:
+      - `fh`: Python file to write to
+      - `mdt`: input MDT
+      - `density_cutoff`: if specified, MDT bond distance sections with sums
+        below this value are not used
+      - `entropy_cutoff`: if specified, MDT bond distance sections with
+        entropies above this value are not used
+    """
     _write_meanstdevlib(fh, mdt, 2, "physical.bond", "features.distance",
                         _noconv, density_cutoff, entropy_cutoff)
 
 def write_anglelib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
+    """
+    Write out a Modeller angle library file from an MDT. See `write_bondlib` for
+    more details. The MDT should be a 2D table, usually of angle type and bond
+    angle.
+    """
     _write_meanstdevlib(fh, mdt, 3, "physical.angle", "features.angle",
                         _degrees_to_radians, density_cutoff, entropy_cutoff)
 
 def write_improperlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
+    """
+    Write out a Modeller dihedral angle library file from an MDT. See
+    `write_bondlib` for more details. The MDT should be a 2D table, usually of
+    dihedral type and bond dihedral angle.
+    """
     _write_meanstdevlib(fh, mdt, 4, "physical.improper", "features.dihedral",
                         _degrees_to_radians, density_cutoff, entropy_cutoff)
 
@@ -863,6 +929,17 @@ def _get_splinerange(feat):
     return periodic, dx, x1, x2
 
 def write_splinelib(fh, mdt, dihtype, density_cutoff=None, entropy_cutoff=None):
+    """
+    Write out a Modeller 1D spline library file from an MDT.
+    The MDT should be a 2D table, usually of residue type and a chi dihedral
+    angle. `dihtype` should identify the dihedral type
+    (i.e. chi1/chi2/chi3/chi4). The operation is similar to `write_bondlib`,
+    but each MDT section is treated as the spline values. No special processing
+    is done, so it is expected that the user has first done any necessary
+    transformations (e.g. normalization with `mdt.normalize` to convert raw
+    counts into a PDF, negative log transform with `mdt.log_transform` and
+    `mdt.linear_transform` to convert a PDF into a statistical potential).
+    """
     (periodic, dx, x1, x2) = _get_splinerange(mdt.features[1])
 
     print >> fh, "#   residue   spline values"
@@ -891,10 +968,8 @@ def make_restraints(atmsel, restraints, num_selected):
 def write_2dsplinelib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     """
     Write out a Modeller 2D spline library file from an MDT.
-
-    :Parameters:
-      - `fh`: Python file to write to
-      - `mdt`: input MDT, which should be a 2D table (e.g. phi/psi features)
+    See `write_splinelib` for more details. The input MDT should be a 3D table,
+    e.g. of residue type, phi angle, and psi angle.
     """
     (yperiodic, dy, y1, y2) = _get_splinerange(mdt.features[1])
     (zperiodic, dz, z1, z2) = _get_splinerange(mdt.features[2])

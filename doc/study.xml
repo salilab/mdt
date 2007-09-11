@@ -182,7 +182,7 @@ The final &MODELLER; &MDT; library is produced with:
 Here we use the <ulink url="&epydoc;mdt.integrate">mdt.integrate</ulink> method,
 which removes a feature from the table by integrating the remaining features
 over all of that feature's bins, and the
-<ulink url="&epydoc;mdt.write_bondlib">mdt.write_bondlib</ulink> function
+<ulink url="&epydoc;write_bondlib">write_bondlib</ulink> function
 to write out a &MODELLER; script which builds restraints using the &MDT;-derived
 distributions.
 </para>

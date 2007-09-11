@@ -39,7 +39,7 @@ from modeller.util import modlist
 import _modeller
 
 #: Generic exception
-error = _mdt.error
+MDTError = _mdt.MDTError
 
 class mdt_library(modobject):
     """Library data used in the construction and use of MDTs"""

@@ -28,8 +28,8 @@
 
 %init {
 #ifdef SWIGPYTHON
-  mdterror = PyErr_NewException("_mdt.error", NULL, NULL);
+  mdterror = PyErr_NewException("_mdt.MDTError", NULL, NULL);
   Py_INCREF(mdterror);
-  PyModule_AddObject(m, "error", mdterror);
+  PyModule_AddObject(m, "MDTError", mdterror);
 #endif
 }

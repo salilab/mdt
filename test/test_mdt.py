@@ -76,8 +76,8 @@ class MDTTests(ModellerTest):
         """Check that bad bin files raise an error"""
         env = self.get_environ()
         mlib = mdt.mdt_library(env, 'test/data/bad.bin')
-        self.assertRaises(mdt.error, mdt.mdt, mlib, features=3)
-        self.assertRaises(mdt.error, mdt.mdt, mlib, features=30)
+        self.assertRaises(mdt.MDTError, mdt.mdt, mlib, features=3)
+        self.assertRaises(mdt.MDTError, mdt.mdt, mlib, features=30)
 
     def test_mdt_formats(self):
         """Make sure we can read and write MDT files"""
@@ -94,7 +94,8 @@ class MDTTests(ModellerTest):
         m2 = mdt.mdt(mlib, file='test.mdt')
         self.assertMDTsEqual(m, m2)
         m.write_hdf5('test.hdf5')
-        self.assertRaises(mdt.error, m.write_hdf5, '/does/not/exist/foo.hdf5')
+        self.assertRaises(mdt.MDTError, m.write_hdf5,
+                          '/does/not/exist/foo.hdf5')
         m2 = mdt.mdt(mlib, file='test.hdf5')
         self.assertMDTsEqual(m, m2)
         m2 = mdt.mdt(mlib)
@@ -358,7 +359,7 @@ class MDTTests(ModellerTest):
             m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))
         for f in (107, 108):
             m = mdt.mdt(mlib, features=f)
-            self.assertRaises(mdt.error, m.add_alignment, aln)
+            self.assertRaises(mdt.MDTError, m.add_alignment, aln)
         self.assertEqual(m1.shape, (7,))
         self.assertEqual(m2.shape, (7,))
         self.assertInTolerance(m1[0], 311.0, 0.0005)

@@ -219,8 +219,8 @@ class mdt_section(modobject):
             if indx < 0:
                 indx += iend + 1
             if not istart <= indx <= iend:
-                raise IndexError, "index (%d) not in range %d<=index<=%d" \
-                                  % (indx, istart, iend)
+                raise IndexError("index (%d) not in range %d<=index<=%d"
+                                 % (indx, istart, iend))
 
     def __getitem__(self, indx):
         if isinstance(indx, list):
@@ -239,7 +239,7 @@ class mdt_section(modobject):
         elif not isinstance(indx, tuple):
             indx = (indx,)
         if len(indx) < len(self.features):
-            raise ValueError, "Cannot set sections of MDTs"
+            raise ValueError("Cannot set sections of MDTs")
         else:
             _mdt.mdt_set(self._modpt, self._indices + indx, val)
 
@@ -852,8 +852,8 @@ def _write_meanstdevlib(fh, mdt, numat, phystype, feattype, convfunc,
             res = symbols[0]
             ats = tuple(symbols[1:])
             if len(ats) != numat:
-                raise ValueError, "Bin name %s should be res. plus %d atoms" \
-                                  % (bin.symbol, numat)
+                raise ValueError("Bin name %s should be res. plus %d atoms"
+                                 % (bin.symbol, numat))
             mean, stdev = mdt[num].mean_stdev()
             print >> fh, "    ( '%s', %s, %.4f, %.4f )," \
                          % (res, str(ats), convfunc(mean), convfunc(stdev))

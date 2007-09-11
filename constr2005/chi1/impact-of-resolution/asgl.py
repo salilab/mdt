@@ -6,6 +6,8 @@ env = environ()
 mlib = mdt.mdt_library(env, '../../lib/mdt1.bin')
 
 m = mdt.mdt(mlib, file='mdt.mdt')
+# Remove undefined bins (and gap residue type)
+m = m.reshape(features=(35,1,3), offset=m.offset, shape=(0,-2,-1))
 
 text = """
 SET TICK_FONT = 5, CAPTION_FONT = 5

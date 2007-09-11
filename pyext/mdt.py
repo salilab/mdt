@@ -31,6 +31,10 @@
 
 __docformat__ = "restructuredtext"
 
+__all__ = ['MDTError', 'TableSection', 'mdt', 'mdt_library',
+           'write_2dsplinelib', 'write_anglelib', 'write_bondlib',
+           'write_improperlib', 'write_splinelib']
+
 import _mdt
 from modeller.util.modobject import modobject
 from modeller.util import modlist
@@ -99,32 +103,32 @@ class mdt_library(modobject):
     def __get_deltaj_ali(self):
         return _mdt.mdt_library_deltaj_ali_get(self._modpt)
     def __get_atom_classes(self):
-        return bond_classes(self, 1)
+        return BondClasses(self, 1)
     def __get_bond_classes(self):
-        return bond_classes(self, 2)
+        return BondClasses(self, 2)
     def __get_angle_classes(self):
-        return bond_classes(self, 3)
+        return BondClasses(self, 3)
     def __get_dihedral_classes(self):
-        return bond_classes(self, 4)
+        return BondClasses(self, 4)
     def __get_tuple_classes(self):
-        return tuple_classes(self)
+        return TupleClasses(self)
     def __get_hbond_classes(self):
-        return hbond_classes(self)
+        return HydrogenBondClasses(self)
 
     _basept = property(__get_basept)
     atom_classes = property(__get_atom_classes,
-                            doc="Atom classes; see `bond_classes`")
+                            doc="Atom classes; see `BondClasses`")
     bond_classes = property(__get_bond_classes,
-                            doc="Bond classes; see `bond_classes`")
+                            doc="Bond classes; see `BondClasses`")
     angle_classes = property(__get_angle_classes,
-                             doc="Angle classes; see `bond_classes`")
+                             doc="Angle classes; see `BondClasses`")
     dihedral_classes = property(__get_dihedral_classes,
-                                doc="Dihedral classes; see `bond_classes`")
+                                doc="Dihedral classes; see `BondClasses`")
     tuple_classes = property(__get_tuple_classes,
-                             doc="Atom tuple classes; see `tuple_classes`")
+                             doc="Atom tuple classes; see `TupleClasses`")
     hbond_classes = property(__get_hbond_classes,
                              doc="Hydrogen bond atom classes; " + \
-                                 "see `hbond_classes`")
+                                 "see `HydrogenBondClasses`")
     deltai = property(__get_deltai, doc="delta i for some feature types")
     deltaj = property(__get_deltaj, doc="delta j for some feature types")
     deltai_ali = property(__get_deltai_ali,
@@ -135,7 +139,7 @@ class mdt_library(modobject):
                               "positions, or False if residue positions")
 
 
-class bond_classes(object):
+class BondClasses(object):
     """Classifications of atoms/bonds/angles/dihedrals into classes"""
 
     def __init__(self, mlib, n_atom):
@@ -149,39 +153,39 @@ class bond_classes(object):
 
 
 
-class tuple_classes(bond_classes):
+class TupleClasses(BondClasses):
     """Classifications of tuples of atoms into classes"""
 
     def __init__(self, mlib):
-        bond_classes.__init__(self, mlib, 0)
+        BondClasses.__init__(self, mlib, 0)
 
     def read(self, filename):
         """Read atom tuple information from a file"""
         return _mdt.mdt_tuple_read(filename, self._mlib._modpt)
 
 
-class hbond_classes(bond_classes):
+class HydrogenBondClasses(BondClasses):
     """Classifications of atoms into hydrogen bond classes"""
 
     def __init__(self, mlib):
-        bond_classes.__init__(self, mlib, 1)
+        BondClasses.__init__(self, mlib, 1)
 
     def read(self, filename):
         """Read hydrogen bond atom class information from a file"""
         return _mdt.mdt_hbond_read(filename, self._mlib._modpt)
 
 
-class mdt_section(modobject):
-    """A section of a multi-dimensional table. You should not create mdt_section
-       objects directly, but rather by indexing an `mdt` object, as an
-       mdt_section is just a 'view' into an existing table. For example,
+class TableSection(modobject):
+    """A section of a multi-dimensional table. You should not create
+       TableSection objects directly, but rather by indexing an `mdt` object,
+       as a TableSection is just a 'view' into an existing table. For example,
 
        >>> m = mdt.mdt(mlib, features=(1,35))
        >>> print m[0].entropy()
 
        would create a section (using m[0]) which is a 1D table over the 2nd
        feature (feature 35) for the first bin (0) of the first feature
-       (feature 1), and then get the entropy using the `mdt_section.entropy`
+       (feature 1), and then get the entropy using the `TableSection.entropy`
        method."""
     _indices = ()
     __mdt = None
@@ -229,7 +233,7 @@ class mdt_section(modobject):
             indx = (indx,)
         if len(indx) < len(self.features):
             self.__check_indices(indx)
-            return mdt_section(self, self._indices + indx)
+            return TableSection(self, self._indices + indx)
         else:
             return _mdt.mdt_get(self._modpt, self._indices + indx)
 
@@ -244,19 +248,19 @@ class mdt_section(modobject):
             _mdt.mdt_set(self._modpt, self._indices + indx, val)
 
     def __get_features(self):
-        return _feature_list(self)
+        return _FeatureList(self)
     def __get_offset(self):
         return tuple([f.offset for f in self.features])
     def __get_shape(self):
         return tuple([len(f.bins) for f in self.features])
     features = property(__get_features,
-                        doc="Features in this MDT; a list of `feature` objects")
-    offset = property(__get_offset, doc="Array offsets; see `feature.offset`")
+                        doc="Features in this MDT; a list of `Feature` objects")
+    offset = property(__get_offset, doc="Array offsets; see `Feature.offset`")
     shape = property(__get_shape, doc="Array shape; the number of " + \
                                       "bins for each feature")
 
 
-class mdt(mdt_section):
+class mdt(TableSection):
     """A multi-dimensional table.
        Individual elements from the table can be accessed in standard Python
        fashion, e.g.
@@ -269,13 +273,13 @@ class mdt(mdt_section):
        >>> print m[0,0,0]
 
        You can also access an element as m[0][0][0], a 1D section as m[0][0],
-       or a 2D section as m[0]. See `mdt_section`.
+       or a 2D section as m[0]. See `TableSection`.
     """
     _modpt = None
     _mlib = None
 
     def __new__(cls, *args, **vars):
-        obj = mdt_section.__new__(cls)
+        obj = TableSection.__new__(cls)
         obj._modpt = _modeller.mod_mdt_new()
         return obj
 
@@ -658,11 +662,11 @@ class mdt(mdt_section):
                        sympairs=False, symtriples=False, io=None, edat=None):
         """
         Open a Modeller alignment to allow MDT indices to be queried
-        (see `source`). Arguments are as for `add_alignment`.
+        (see `Source`). Arguments are as for `add_alignment`.
 
-        :rtype: `source`
+        :rtype: `Source`
         """
-        return source(self, self._mlib, aln, distngh, surftyp,
+        return Source(self, self._mlib, aln, distngh, surftyp,
                       accessibility_type, sympairs, symtriples, io, edat)
 
     def __get_pdf(self):
@@ -681,7 +685,7 @@ class mdt(mdt_section):
     sample_size = property(__get_sample_size, doc="Number of sample points")
 
 
-class _feature_list(modlist.fixlist):
+class _FeatureList(modlist.fixlist):
     """A list of all features in an MDT."""
 
     def __init__(self, mdt):
@@ -693,10 +697,10 @@ class _feature_list(modlist.fixlist):
         return _mdt.mod_mdt_nfeat_get(self.__mdt._modpt) - self.__removed_rank
 
     def _getfunc(self, indx):
-        return feature(self.__mdt, indx + self.__removed_rank)
+        return Feature(self.__mdt, indx + self.__removed_rank)
 
 
-class feature(object):
+class Feature(object):
     """A single feature in an MDT. Generally accessed as `mdt.features`."""
 
     def __init__(self, mdt, indx):
@@ -706,7 +710,7 @@ class feature(object):
     def __get_ifeat(self):
         return _mdt.mod_mdt_feature_ifeat_get(self._modpt)
     def __get_bins(self):
-        return _bin_list(self)
+        return _BinList(self)
     def __get_offset(self):
         return _mdt.mod_mdt_feature_istart_get(self._modpt) - 1
     def __get_periodic(self):
@@ -716,7 +720,7 @@ class feature(object):
 
     _modpt = property(__get_modpt)
     ifeat = property(__get_ifeat, doc="Integer type")
-    bins = property(__get_bins, doc="Feature bins; a list of `bin` objects")
+    bins = property(__get_bins, doc="Feature bins; a list of `Bin` objects")
     offset = property(__get_offset,
                       doc="Offset of first bin compared to the MDT library " + \
                           "feature (usually 0, but can be changed with " + \
@@ -724,7 +728,7 @@ class feature(object):
     periodic = property(__get_periodic, doc="Whether feature is periodic")
 
 
-class _bin_list(modlist.fixlist):
+class _BinList(modlist.fixlist):
     """A list of all bins in a feature."""
 
     def __init__(self, feature):
@@ -736,11 +740,11 @@ class _bin_list(modlist.fixlist):
         return _mdt.mod_mdt_feature_nbins_get(self.__feature._modpt)
 
     def _getfunc(self, indx):
-        return bin(self.__feature, indx)
+        return Bin(self.__feature, indx)
 
 
-class bin(object):
-    """A single bin in a feature. Generally accessed as `feature.bins`."""
+class Bin(object):
+    """A single bin in a feature. Generally accessed as `Feature.bins`."""
 
     def __init__(self, feature, indx):
         self.__feature = feature
@@ -767,7 +771,7 @@ class bin(object):
                          "placed in this bin.")
 
 
-class source(object):
+class Source(object):
     """A source of data for an MDT (generally a Modeller alignment, opened
        with `mdt.open_alignment()`)."""
 
@@ -877,7 +881,7 @@ def write_bondlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     """
     Write out a Modeller bond library file from an MDT. The input MDT should be
     a 2D table (usually of bond type and bond distance). For each bond type,
-    the 1D MDT section (see `mdt_section`) of bond distance is examined, and
+    the 1D MDT section (see `TableSection`) of bond distance is examined, and
     its mean and standard deviation used to generate a Modeller harmonic
     restraint.
 

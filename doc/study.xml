@@ -136,7 +136,7 @@ The &MDT; table is constructed with the following &MDT; Python script:
 In this case, the bin file does not contain all of the necessary information,
 and we must read the file <filename>bndgrp.lib</filename> which defines all
 chemical bonds, using the
-<ulink url="&epydoc;bond_classes.read">bond_classes_read</ulink> method. The
+<ulink url="&epydoc;BondClasses.read">BondClasses.read</ulink> method. The
 MDT we then construct is a 3D table of X-ray resolution, bond type, and bond
 length. The contents of the &MDT; table are then plotted with &ASGL; as follows:
 </para>

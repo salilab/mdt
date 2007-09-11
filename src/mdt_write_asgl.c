@@ -105,7 +105,8 @@ static void appasgl(FILE *fp, const struct mod_mdt *mdt,
   } else {
     fprintf(fp, "SET X_LABEL_STYLE = 1\n"
             "SET POSITION %5d 1\n"
-            "SET Y_LABEL_STYLE = 1\nSET Y_TICK_LABEL = 1\n", ipos);
+            "SET Y_LABEL_STYLE = 1\nSET Y_TICK_LABEL = 1 %3d\n", ipos,
+            every_y_numbered);
     if (itsymbx == 2 || itsymbx == 3) {
       fputs("SET Y_TICK = 0.5 1 -999\nSET X_TICK = 0.5 1 -999\n", fp);
     } else {

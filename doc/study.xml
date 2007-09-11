@@ -272,7 +272,7 @@ obtained by constructing and inspecting
 &chi1res-asgl;
 </programlisting></informalexample>
 <para>giving <ulink url="pdf/chi1-impact.pdf">this output</ulink>
-which clearly show that x-ray structures at resolution of at least 2.0 &Aring;
+which clearly shows that X-ray structures at resolution of at least 2.0 &Aring;
 are just fine. X-ray structures above that resolution and NMR structures
 (whose resolution is set artificially to 0.45 &Aring; for the purposes of &MDT;
 tabulation) do not appear to be suitable for deriving restraints for modeling,

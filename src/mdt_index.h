@@ -91,9 +91,9 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  const struct mod_energy_data *edat,
                  struct mdt_properties *prop, GError **err);
 
-/** Convert a raw number to the corresponding MDT bin index */
+/** Convert a raw number to the corresponding feature's MDT bin index */
 G_GNUC_INTERNAL
-int iclsbin(float x, const struct mdt_library *mlib, int ifi, int nrang);
+int iclsbin(float x, const struct mod_mdt_libfeature *feat);
 
 G_END_DECLS
 

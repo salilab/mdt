@@ -50,12 +50,13 @@ static int irestab(const struct mod_int2_array *ialn, int naln, int iseq,
 
 /** Return the bin index itab[ir], or the undefined bin index if anything is
     out of range */
-static int itable(const int *itab, int nr, int ir, int ndim)
+static int itable(const int *itab, int nr, int ir,
+                  const struct mod_mdt_libfeature *feat)
 {
-  if (ir >= 0 && ir < nr && itab[ir] >= 1 && itab[ir] <= ndim) {
+  if (ir >= 0 && ir < nr && itab[ir] >= 1 && itab[ir] <= feat->nbins) {
     return itab[ir];
   } else {
-    return ndim;
+    return feat->nbins;
   }
 }
 
@@ -66,21 +67,20 @@ static int index_inrange(int index, const struct mod_mdt_libfeature *feat)
   return (index >= 1 && index < feat->nbins) ? index : feat->nbins;
 }
 
-/** Convert a raw number to the corresponding MDT bin index */
-int iclsbin(float x, const struct mdt_library *mlib, int ifi, int nrang)
+/** Convert a raw number to the corresponding feature's MDT bin index */
+int iclsbin(float x, const struct mod_mdt_libfeature *feat)
 {
   int i;
-  const struct mod_mdt_libfeature *feat = &mlib->base.features[ifi - 1];
   const struct mod_mdt_bin *bin = feat->bins;
-  for (i = 0; i < nrang - 1; i++, bin++) {
+  for (i = 1; i < feat->nbins; i++, bin++) {
     if (x >= bin->rang1 && x <= bin->rang2) {
-      return i + 1;
+      return i;
     }
   }
   bin = &feat->bins[0];
   mod_logwarning("iclsbin", "Undefined value; X,x1,x2,n,bin: %f %f %f %d",
-                 x, bin->rang1, bin->rang2, nrang);
-  return nrang;
+                 x, bin->rang1, bin->rang2, feat->nbins);
+  return feat->nbins;
 }
 
 /** Return the distance between two coordinates */
@@ -176,7 +176,7 @@ static float dihedral1(float x1, float y1, float z1, float x2, float y2,
 /** Return the bin index for the distance between two specified atoms in the
     same protein. */
 static int idist0(int ia1, int ia1p, const struct mod_structure *struc,
-                  const struct mdt_library *mlib, int ifi, int nrang)
+                  const struct mod_mdt_libfeature *feat)
 {
   if (ia1 >= 0 && ia1p >= 0) {
     float d, *x, *y, *z;
@@ -184,9 +184,9 @@ static int idist0(int ia1, int ia1p, const struct mod_structure *struc,
     y = mod_float1_pt(&struc->cd.y);
     z = mod_float1_pt(&struc->cd.z);
     d = dist1(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p]);
-    return iclsbin(d, mlib, ifi, nrang);
+    return iclsbin(d, feat);
   } else {
-    return nrang;
+    return feat->nbins;
   }
 }
 
@@ -194,7 +194,7 @@ static int idist0(int ia1, int ia1p, const struct mod_structure *struc,
     same protein. */
 static int iangle0(int ia1, int ia2, int ia3,
                    const struct mod_structure *struc,
-                   const struct mdt_library *mlib, int ifi, int nrang)
+                   const struct mod_mdt_libfeature *feat)
 {
   if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0) {
     float d, *x, *y, *z;
@@ -203,9 +203,9 @@ static int iangle0(int ia1, int ia2, int ia3,
     z = mod_float1_pt(&struc->cd.z);
     d = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
                y[ia3], z[ia3]);
-    return iclsbin(d, mlib, ifi, nrang);
+    return iclsbin(d, feat);
   } else {
-    return nrang;
+    return feat->nbins;
   }
 }
 
@@ -213,7 +213,7 @@ static int iangle0(int ia1, int ia2, int ia3,
     in the same protein. */
 static int idihedral0(int ia1, int ia2, int ia3, int ia4,
                       const struct mod_structure *struc,
-                      const struct mdt_library *mlib, int ifi, int nrang)
+                      const struct mod_mdt_libfeature *feat)
 {
   if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0 && ia4 >= 0) {
     gboolean outrange;
@@ -224,12 +224,12 @@ static int idihedral0(int ia1, int ia2, int ia3, int ia4,
     d = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
                   y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
     if (outrange) {
-      return nrang;
+      return feat->nbins;
     } else {
-      return iclsbin(d, mlib, ifi, nrang);
+      return iclsbin(d, feat);
     }
   } else {
-    return nrang;
+    return feat->nbins;
   }
 }
 
@@ -382,10 +382,10 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   seq2 = mod_alignment_sequence_get(aln, is2);
   switch (ifi) {
   case 35:
-    iresol = property_iresol(aln, is1, prop, mlib, ifi, feat);
+    iresol = property_iresol(aln, is1, prop, feat);
     return index_inrange(iresol, feat);
   case 38:
-    iresol = property_iresol(aln, is2, prop, mlib, ifi, feat);
+    iresol = property_iresol(aln, is2, prop, feat);
     return index_inrange(iresol, feat);
   case 66:
     return irestab(&aln->ialn, aln->naln, is1, mod_int1_pt(&seq1->irestyp),
@@ -408,25 +408,25 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     if (!binprop) {
       return 0.;
     }
-    return itable(binprop, struc1->cd.natm, ia1, feat->nbins);
+    return itable(binprop, struc1->cd.natm, ia1, feat);
   case 80:
-    return itable(property_iatmacc(aln, is1, prop, mlib, ifi, feat),
-                  struc1->cd.natm, ia1, feat->nbins);
+    return itable(property_iatmacc(aln, is1, prop, feat), struc1->cd.natm,
+                  ia1, feat);
   case 81:
-    binprop = property_ifatmacc(aln, is1, prop, mlib, ifi, feat, libs, err);
+    binprop = property_ifatmacc(aln, is1, prop, feat, libs, err);
     if (!binprop) {
       return 0;
     }
-    return itable(binprop, struc1->cd.natm, ia1, feat->nbins);
+    return itable(binprop, struc1->cd.natm, ia1, feat);
   case 82:
   case 103:
-    return idist0(ia1, ia1p, struc1, mlib, ifi, feat->nbins);
+    return idist0(ia1, ia1p, struc1, feat);
   case 83:
     binprop = property_iatta(aln, is1, prop, mlib, ifi, libs, err);
     if (!binprop) {
       return 0;
     }
-    return itable(binprop, struc1->cd.natm, ia1p, feat->nbins);
+    return itable(binprop, struc1->cd.natm, ia1p, feat);
   case 84:
     binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
     if (!binprop) {
@@ -445,7 +445,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     if (!property_hbpot(aln, is1, prop, mlib, ifi, libs, &fprop, err)) {
       return 0;
     }
-    return iclsbin(fprop, mlib, ifi, feat->nbins);
+    return iclsbin(fprop, feat);
   case 87:
     binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
     if (!binprop) {
@@ -457,12 +457,12 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case 95:
   case 97:
   case 99:
-    return itable(mod_int1_pt(&struc1->iacc), seq1->nres, ir1, feat->nbins);
+    return itable(mod_int1_pt(&struc1->iacc), seq1->nres, ir1, feat);
   case 94:
   case 96:
   case 98:
   case 100:
-    return itable(mod_int1_pt(&struc2->iacc), seq2->nres, ir2, feat->nbins);
+    return itable(mod_int1_pt(&struc2->iacc), seq2->nres, ir2, feat);
   case 101:
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
     return index_inrange(tup->tupclass, feat);
@@ -474,37 +474,34 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
       return 0;
     }
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return iangle0(ia1, ia1p, tup->iata[0], struc1, mlib, ifi, feat->nbins);
+    return iangle0(ia1, ia1p, tup->iata[0], struc1, feat);
   case 105:
     if (!tuple_require_natom(mlib, 2, ifi, err)) {
       return 0;
     }
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
-    return iangle0(tup->iata[0], ia1, ia1p, struc1, mlib, ifi, feat->nbins);
+    return iangle0(tup->iata[0], ia1, ia1p, struc1, feat);
   case 106:
     if (!tuple_require_natom(mlib, 2, ifi, err)) {
       return 0;
     }
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
     tup2 = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return idihedral0(tup->iata[0], ia1, ia1p, tup2->iata[0], struc1,
-                      mlib, ifi, feat->nbins);
+    return idihedral0(tup->iata[0], ia1, ia1p, tup2->iata[0], struc1, feat);
   case 107:
     if (!tuple_require_natom(mlib, 3, ifi, err)) {
       return 0;
     }
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
     tup2 = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return idihedral0(tup->iata[1], tup2->iata[0], ia1, ia1p, struc1,
-                      mlib, ifi, feat->nbins);
+    return idihedral0(tup->iata[1], tup2->iata[0], ia1, ia1p, struc1, feat);
   case 108:
     if (!tuple_require_natom(mlib, 3, ifi, err)) {
       return 0;
     }
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
     tup2 = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return idihedral0(ia1, ia1p, tup->iata[0], tup2->iata[1], struc1,
-                      mlib, ifi, feat->nbins);
+    return idihedral0(ia1, ia1p, tup->iata[0], tup2->iata[1], struc1, feat);
   case 109:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
                              libs);
@@ -512,8 +509,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case 110:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
                              libs);
-    return idist0(bond->iata[0], bond->iata[1], struc1, mlib, ifi,
-                  feat->nbins);
+    return idist0(bond->iata[0], bond->iata[1], struc1, feat);
   case 111:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_ANGLE, ibnd1,
                              libs);
@@ -521,8 +517,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case 112:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_ANGLE, ibnd1,
                              libs);
-    return iangle0(bond->iata[0], bond->iata[1], bond->iata[2], struc1, mlib,
-                   ifi, feat->nbins);
+    return iangle0(bond->iata[0], bond->iata[1], bond->iata[2], struc1, feat);
   case 113:
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_DIHEDRAL,
                              ibnd1, libs);
@@ -531,9 +526,9 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_DIHEDRAL,
                              ibnd1, libs);
     return idihedral0(bond->iata[0], bond->iata[1], bond->iata[2],
-                      bond->iata[3], struc1, mlib, ifi, feat->nbins);
+                      bond->iata[3], struc1, feat);
   case 115:
-    irad = property_radius_gyration(aln, is1, prop, mlib, ifi, feat);
+    irad = property_radius_gyration(aln, is1, prop, feat);
     return index_inrange(irad, feat);
   default:
     /* If we don't implement this feature, maybe Modeller does */

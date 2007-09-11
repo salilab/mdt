@@ -70,7 +70,6 @@ const struct mdt_tuple *property_one_tuple(const struct mod_alignment *aln,
 G_GNUC_INTERNAL
 int property_iresol(const struct mod_alignment *aln, int is,
                     struct mdt_properties *prop,
-                    const struct mdt_library *mlib, int ifi,
                     const struct mod_mdt_libfeature *feat);
 
 /** Get/calculate the array of atom type bin indices */
@@ -99,14 +98,12 @@ gboolean property_hbpot(const struct mod_alignment *aln, int is,
 G_GNUC_INTERNAL
 const int *property_iatmacc(const struct mod_alignment *aln, int is,
                             struct mdt_properties *prop,
-                            const struct mdt_library *mlib, int ifi,
                             const struct mod_mdt_libfeature *feat);
 
 /** Get/calculate the array of fractional atom accessibility bin indices */
 G_GNUC_INTERNAL
 const int *property_ifatmacc(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
-                             const struct mdt_library *mlib, int ifi,
                              const struct mod_mdt_libfeature *feat,
                              const struct mod_libraries *libs, GError **err);
 
@@ -114,7 +111,6 @@ const int *property_ifatmacc(const struct mod_alignment *aln, int is,
 G_GNUC_INTERNAL
 int property_radius_gyration(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
-                             const struct mdt_library *mlib, int ifi,
                              const struct mod_mdt_libfeature *feat);
 
 G_END_DECLS

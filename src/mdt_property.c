@@ -65,11 +65,11 @@ void mdt_properties_free(struct mdt_properties *prop,
 }
 
 static void alliclsbin(int nvec, const float *x, int *ix,
-                       const struct mdt_library *mlib, int ifi, int nrang)
+                       const struct mod_mdt_libfeature *feat)
 {
   int i;
   for (i = 0; i < nvec; i++) {
-    ix[i] = iclsbin(x[i], mlib, ifi, nrang);
+    ix[i] = iclsbin(x[i], feat);
   }
 }
 
@@ -263,7 +263,6 @@ gboolean property_hbpot(const struct mod_alignment *aln, int is,
 /** Get/calculate the resolution bin index */
 int property_iresol(const struct mod_alignment *aln, int is,
                     struct mdt_properties *prop,
-                    const struct mdt_library *mlib, int ifi,
                     const struct mod_mdt_libfeature *feat)
 {
   if (prop[is].iresol == 0) {
@@ -277,7 +276,7 @@ int property_iresol(const struct mod_alignment *aln, int is,
        separating NMR from X-ray structures: */
     resol = (seq->resol == -1.00 ? 0.45 : seq->resol);
 
-    alliclsbin(1, &resol, &iresol, mlib, ifi, feat->nbins - 1);
+    alliclsbin(1, &resol, &iresol, feat);
     prop[is].iresol = iresol;
   }
   return prop[is].iresol;
@@ -324,7 +323,6 @@ static float get_radius_gyration(const float x[], const float y[],
 /** Get/calculate the radius of gyration bin index */
 int property_radius_gyration(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
-                             const struct mdt_library *mlib, int ifi,
                              const struct mod_mdt_libfeature *feat)
 {
   if (prop[is].radius_gyration == -1) {
@@ -337,8 +335,7 @@ int property_radius_gyration(const struct mod_alignment *aln, int is,
     get_mass_center(x, y, z, struc->cd.natm, &cx, &cy, &cz);
     /* get radius of gyration */
     radius_gyration = get_radius_gyration(x, y, z, struc->cd.natm, cx, cy, cz);
-    alliclsbin(1, &radius_gyration, &prop[is].radius_gyration, mlib, ifi,
-               feat->nbins - 1);
+    alliclsbin(1, &radius_gyration, &prop[is].radius_gyration, feat);
   }
   return prop[is].radius_gyration;
 }
@@ -346,14 +343,13 @@ int property_radius_gyration(const struct mod_alignment *aln, int is,
 /** Get/calculate the array of atom accessibility bin indices */
 const int *property_iatmacc(const struct mod_alignment *aln, int is,
                             struct mdt_properties *prop,
-                            const struct mdt_library *mlib, int ifi,
                             const struct mod_mdt_libfeature *feat)
 {
   if (!prop[is].iatmacc) {
     struct mod_structure *struc = mod_alignment_structure_get(aln, is);
     prop[is].iatmacc = g_malloc(sizeof(int) * struc->cd.natm);
     alliclsbin(struc->cd.natm, mod_float1_pt(&struc->cd.atmacc),
-               prop[is].iatmacc, mlib, ifi, feat->nbins - 1);
+               prop[is].iatmacc, feat);
   }
   return prop[is].iatmacc;
 }
@@ -361,7 +357,6 @@ const int *property_iatmacc(const struct mod_alignment *aln, int is,
 /** Get/calculate the array of fractional atom accessibility bin indices */
 const int *property_ifatmacc(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
-                             const struct mdt_library *mlib, int ifi,
                              const struct mod_mdt_libfeature *feat,
                              const struct mod_libraries *libs, GError **err)
 {
@@ -387,7 +382,7 @@ const int *property_ifatmacc(const struct mod_alignment *aln, int is,
       /* Calculate fractional atom accessibility from raw values */
       fatmacc = mod_float1_get(&struc->cd.atmacc, i) / (4. * G_PI * r * r);
       /* Get the corresponding bin index */
-      ifatmacc[i] = iclsbin(fatmacc, mlib, ifi, feat->nbins - 1);
+      ifatmacc[i] = iclsbin(fatmacc, feat);
     }
     prop[is].ifatmacc = ifatmacc;
   }

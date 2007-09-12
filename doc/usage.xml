@@ -8,12 +8,12 @@
 &MDT; prepares a raw frequency table, given information from &MODELLER;
 alignments and/or &PDB; files. It can also process the raw frequency table in
 several ways (e.g., normalization with
-<ulink url="&epydoc;mdt.normalize">mdt.normalize</ulink>, smoothing with
-<ulink url="&epydoc;mdt.smooth">mdt.smooth</ulink>), perform entropy
+<ulink url="&epydoc;Table.normalize">Table.normalize</ulink>, smoothing with
+<ulink url="&epydoc;Table.smooth">Table.smooth</ulink>), perform entropy
 calculations with
-<ulink url="&epydoc;mdt.entropy_full">mdt.entropy_full</ulink>, and write
+<ulink url="&epydoc;Table.entropy_full">Table.entropy_full</ulink>, and write
 out the data in various formats, including for plotting by &ASGL;
-(<ulink url="&epydoc;mdt.write_asgl">mdt.write_asgl</ulink>) and use as
+(<ulink url="&epydoc;Table.write_asgl">Table.write_asgl</ulink>) and use as
 restraints by &MODELLER;.
 </para>
 
@@ -32,7 +32,8 @@ a bin file which can be changed by the user.
 
 <para>
 &MDT; works by accumulating the table N by processing each sequence or alignment
-in turn. See <ulink url="&epydoc;mdt.add_alignment">mdt.add_alignment</ulink>.
+in turn. See
+<ulink url="&epydoc;Table.add_alignment">Table.add_alignment</ulink>.
 </para>
 </sect1>
 
@@ -50,10 +51,11 @@ atom type, and bond length.
 &MDT; understands that different features act on different sets of proteins,
 or parts of proteins, and will automatically scan over the correct range to
 collect necessary statistics (e.g. when you call
-<ulink url="&epydoc;mdt.add_alignment">mdt.add_alignment</ulink>). For example,
-to collect statistics for the residue type feature, it is necessary to scan
-all residues in all proteins in the alignment. The X-ray resolution feature,
-on the other hand, only requires each protein in the alignment to be scanned.
+<ulink url="&epydoc;Table.add_alignment">Table.add_alignment</ulink>).
+For example, to collect statistics for the residue type feature, it is
+necessary to scan all residues in all proteins in the alignment. The
+X-ray resolution feature, on the other hand, only requires each protein
+in the alignment to be scanned.
 The atom-atom distance feature requires scanning over all pairs of atoms in
 all proteins in the alignment, while the sequence identity feature requires
 scanning all pairs of proteins in the alignment. If you construct a table of
@@ -78,7 +80,7 @@ ranges. The last bin is always reserved as an 'undefined' bin, for values that
 don't fall into any other bin<footnote>
 <para>
 You can, however, remove the 'undefined' bin using
-<ulink url="&epydoc;mdt.reshape">mdt.reshape</ulink>.
+<ulink url="&epydoc;Table.reshape">Table.reshape</ulink>.
 </para>
 </footnote>.
 (Some features are predetermined by the setup of the system - for
@@ -114,7 +116,7 @@ features, such as feature 16, which is the distance between the 'special
 atom' in two residues. This special atom is usually
 C<subscript>&alpha;</subscript>, but can be overridden by specifying the
 <varname>distance_atoms</varname> parameter when creating the
-<ulink url="&epydoc;mdt_library">mdt_library</ulink> object.
+<ulink url="&epydoc;Library">Library</ulink> object.
 </para>
 </footnote></entry>
 <entry>Feature 4, &chi;<subscript>1</subscript> of protein B</entry>
@@ -207,7 +209,7 @@ combination with other Python modules, such as &MODELLER;.
 
 <para>
 Generally speaking, to use &MDT;, you should first create an
-<ulink url="&epydoc;mdt_library">mdt_library</ulink> object. This defines
+<ulink url="&epydoc;Library">Library</ulink> object. This defines
 the bin ranges, and in most cases is the only prerequisite for creating
 MDT tables themselves<footnote>
 <para>
@@ -216,7 +218,7 @@ the definitions of chemical bonds (see <xref linkend="chembonds" /> for an
 example), or atom tuples.
 </para>
 </footnote>. You can then create one or more
-<ulink url="&epydoc;mdt">mdt</ulink> objects which hold the frequency tables
+<ulink url="&epydoc;Table">Table</ulink> objects which hold the frequency tables
 themselves. See <xref linkend="chi1" /> for an example.
 </para>
 

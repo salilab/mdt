@@ -3,9 +3,9 @@ import os
 import mdt
 
 env = environ()
-mlib = mdt.mdt_library(env, '../../lib/mdt1.bin')
+mlib = mdt.Library(env, '../../lib/mdt1.bin')
 
-m = mdt.mdt(mlib, file='mdt.mdt')
+m = mdt.Table(mlib, file='mdt.mdt')
 # Remove undefined bins (and gap residue type)
 m = m.reshape(features=(35,1,3), offset=m.offset, shape=(0,-2,-1))
 

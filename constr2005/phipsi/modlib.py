@@ -2,9 +2,9 @@ from modeller import *
 import mdt
 
 env = environ()
-mlib = mdt.mdt_library(env, '../lib/mdt2.bin')
+mlib = mdt.Library(env, '../lib/mdt2.bin')
 
-m = mdt.mdt(mlib, file='mdt.mdt')
+m = mdt.Table(mlib, file='mdt.mdt')
 
 # eliminate the bins corresponding to undefined values:
 m = m.reshape(features=(35,1,9,7), offset=(0,0,0,0), shape=(1,-2,-1,-1))

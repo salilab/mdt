@@ -95,17 +95,17 @@ for all 9,365 representative chains, using this &MDT; script:
 &impact-resolution;
 </programlisting></informalexample>
 
-<para>This script first creates an
-<ulink url="&epydoc;mdt_library">mdt_library</ulink> object with the bin
-file <filename>mdt_test_xray.bin</filename>. It then creates an
-<ulink url="&epydoc;mdt">mdt</ulink> object, which is the MDT table itself.
+<para>This script first creates a
+<ulink url="&epydoc;Library">Library</ulink> object with the bin
+file <filename>mdt_test_xray.bin</filename>. It then creates a
+<ulink url="&epydoc;Table">Table</ulink> object, which is the MDT table itself.
 This starts off as an empty 1D table defined for feature 35, which is the X-ray
 resolution feature. It then uses a &MODELLER; alignment object to read the
 sequences from <filename>pdb_60.pir</filename> one by one, and for each one it
 updates the X-ray resolution feature in the MDT table by calling
-<ulink url="&epydoc;mdt.add_alignment">mdt.add_alignment</ulink>. Finally,
+<ulink url="&epydoc;Table.add_alignment">Table.add_alignment</ulink>. Finally,
 the table is written out to the file <filename>mdt2.mdt</filename> using
-<ulink url="&epydoc;mdt.write">mdt.write</ulink>.
+<ulink url="&epydoc;Table.write">Table.write</ulink>.
 </para>
 
 <para>The resulting &MDT; table <filename>mdt2.mdt</filename> was then
@@ -114,7 +114,7 @@ plotted with the script:</para>
 &impact-resolution-asgl;
 </programlisting></informalexample>
 
-<para>where the <ulink url="&epydoc;mdt.write_asgl">mdt.write_asgl</ulink>
+<para>where the <ulink url="&epydoc;Table.write_asgl">Table.write_asgl</ulink>
 method writes out an &ASGL; script and the MDT data in a form suitable for
 plotting (which we then execute with &ASGL; using Python's
 <command>os.system</command> method). This gives
@@ -144,7 +144,7 @@ length. The contents of the &MDT; table are then plotted with &ASGL; as follows:
 &bonds-asgl;
 </programlisting></informalexample>
 <para>giving <ulink url="pdf/bonds.pdf">this output</ulink>. Notice that
-here we use the <ulink url="&epydoc;mdt.reshape">mdt.reshape</ulink> method,
+here we use the <ulink url="&epydoc;Table.reshape">Table.reshape</ulink> method,
 which can reshape a table by reordering the features, and/or reducing the bin
 ranges (offset or shape) of these features. In this case we don't change the
 feature order, or the offset (leaving it at the default 0,0,0) but we do
@@ -179,9 +179,9 @@ The final &MODELLER; &MDT; library is produced with:
 </programlisting></informalexample>
 
 <para>
-Here we use the <ulink url="&epydoc;mdt.integrate">mdt.integrate</ulink> method,
-which removes a feature from the table by integrating the remaining features
-over all of that feature's bins, and the
+Here we use the <ulink url="&epydoc;Table.integrate">Table.integrate</ulink>
+method, which removes a feature from the table by integrating the remaining
+features over all of that feature's bins, and the
 <ulink url="&epydoc;write_bondlib">write_bondlib</ulink> function
 to write out a &MODELLER; script which builds restraints using the &MDT;-derived
 distributions.
@@ -335,14 +335,14 @@ The final &MODELLER; &MDT; library is produced with:
 
 <para>
 This script also uses
-<ulink url="&epydoc;mdt.smooth">mdt.smooth</ulink> to smooth the raw
+<ulink url="&epydoc;Table.smooth">Table.smooth</ulink> to smooth the raw
 frequencies and
-<ulink url="&epydoc;mdt.normalize">mdt.normalize</ulink> to convert the
+<ulink url="&epydoc;Table.normalize">Table.normalize</ulink> to convert the
 distribution into a PDF. It is then converted into a statistical potential
 by taking the negative log of the values (using the
-<ulink url="&epydoc;mdt.log_transform">mdt.log_transform</ulink>,
-<ulink url="&epydoc;mdt.linear_transform">mdt.linear_transform</ulink>, and
-<ulink url="&epydoc;mdt.offset_min">mdt.offset_min</ulink> methods).
+<ulink url="&epydoc;Table.log_transform">Table.log_transform</ulink>,
+<ulink url="&epydoc;Table.linear_transform">Table.linear_transform</ulink>, and
+<ulink url="&epydoc;Table.offset_min">Table.offset_min</ulink> methods).
 The smoothing parameter <varname>weight</varname> of
 <replaceable>10</replaceable> was selected by trial and error, inspecting the
 resulting restraints in <filename>modlib-a.ps</filename>, also produced by the

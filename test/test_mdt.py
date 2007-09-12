@@ -21,13 +21,13 @@ class MDTTests(ModellerTest):
     def get_mdt_library(self, **vars):
         """Read in MDT library and bin definitions"""
         env = self.get_environ()
-        return mdt.mdt_library(env, 'data/mdt.bin', **vars)
+        return mdt.Library(env, 'data/mdt.bin', **vars)
 
     def get_test_mdt(self, features):
         """Build a simple test MDT"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.mdt(mlib, features=features)
+        m = mdt.Table(mlib, features=features)
         aln = alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         return m
@@ -75,15 +75,15 @@ class MDTTests(ModellerTest):
     def test_bad_bins(self):
         """Check that bad bin files raise an error"""
         env = self.get_environ()
-        mlib = mdt.mdt_library(env, 'test/data/bad.bin')
-        self.assertRaises(mdt.MDTError, mdt.mdt, mlib, features=3)
-        self.assertRaises(mdt.MDTError, mdt.mdt, mlib, features=30)
+        mlib = mdt.Library(env, 'test/data/bad.bin')
+        self.assertRaises(mdt.MDTError, mdt.Table, mlib, features=3)
+        self.assertRaises(mdt.MDTError, mdt.Table, mlib, features=30)
 
     def test_mdt_formats(self):
         """Make sure we can read and write MDT files"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.mdt(mlib, features=(1,2))
+        m = mdt.Table(mlib, features=(1,2))
         aln = alignment(env)
         aln.append_sequence('AFVVTDNCIKCKYTDCVEVXPVDCFYEG')
         aln.append_sequence('CVEVCPVDCFYEGAFVVTDNCIKCKYTX')
@@ -91,14 +91,14 @@ class MDTTests(ModellerTest):
         m.write('test.mdt')
         m2 = m.copy()
         self.assertMDTsEqual(m, m2)
-        m2 = mdt.mdt(mlib, file='test.mdt')
+        m2 = mdt.Table(mlib, file='test.mdt')
         self.assertMDTsEqual(m, m2)
         m.write_hdf5('test.hdf5')
         self.assertRaises(mdt.MDTError, m.write_hdf5,
                           '/does/not/exist/foo.hdf5')
-        m2 = mdt.mdt(mlib, file='test.hdf5')
+        m2 = mdt.Table(mlib, file='test.hdf5')
         self.assertMDTsEqual(m, m2)
-        m2 = mdt.mdt(mlib)
+        m2 = mdt.Table(mlib)
         # Trying to read an HDF5 file in text format should fail gracefully:
         self.assertRaises(ModellerError, m2.read, 'test.hdf5')
         os.unlink('test.hdf5')
@@ -121,7 +121,7 @@ class MDTTests(ModellerTest):
         """Test access to sections of MDTs"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.mdt(mlib, features=(1,3,18))
+        m = mdt.Table(mlib, features=(1,3,18))
         m[0,1,2] = 1.0
         self.assertEqual(m[0][1][2], 1.0)
         m[1][-2][3] = 4.0
@@ -141,7 +141,7 @@ class MDTTests(ModellerTest):
         """Test set of MDT data"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.mdt(mlib, features=(1,2))
+        m = mdt.Table(mlib, features=(1,2))
         # Make sure that index checks work:
         self.assertRaises(ValueError, m.__setitem__, [0,22,10], 0.0)
         self.assertRaises(IndexError, m.__setitem__, [0,22], 0.0)
@@ -157,7 +157,7 @@ class MDTTests(ModellerTest):
         """Make sure a 1D MDT matches known residue data"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.mdt(mlib, features=1)
+        m = mdt.Table(mlib, features=1)
         aln = alignment(env)
         seq = "AFVVTDNCIKXCKYTDCVEVCPVDCFYEG"
         aln.append_sequence(seq)
@@ -190,20 +190,20 @@ class MDTTests(ModellerTest):
         # When deltai=j=0, features 66,67 (residue type in A,B at deltai)
         # and 77,78 (residue type in A,B at deltaj) should match 1,2:
         mlib = self.get_mdt_library(deltai=0, deltaj=0)
-        m1 = mdt.mdt(mlib, features=(1,2))
+        m1 = mdt.Table(mlib, features=(1,2))
         m1.add_alignment(aln)
-        m2 = mdt.mdt(mlib, features=(66,67))
+        m2 = mdt.Table(mlib, features=(66,67))
         m2.add_alignment(aln)
-        m3 = mdt.mdt(mlib, features=(77,78))
+        m3 = mdt.Table(mlib, features=(77,78))
         m3.add_alignment(aln)
         self.assertMDTDataEqual(m1, m2)
         self.assertMDTDataEqual(m1, m3)
         # When deltai=j != 0, 66,67 should still match 77,78, but not the
         # original MDT (m3)
         mlib = self.get_mdt_library(deltai=3, deltaj=3)
-        m1 = mdt.mdt(mlib, features=(66,67))
+        m1 = mdt.Table(mlib, features=(66,67))
         m1.add_alignment(aln)
-        m2 = mdt.mdt(mlib, features=(77,78))
+        m2 = mdt.Table(mlib, features=(77,78))
         m2.add_alignment(aln)
         self.assertMDTDataEqual(m1, m2)
         self.assertInTolerance(m2[0,2], 0.0, 0.0005)
@@ -214,7 +214,7 @@ class MDTTests(ModellerTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.atom_classes.read('${LIB}/atmcls-melo.lib')
-        m = mdt.mdt(mlib, features=79)
+        m = mdt.Table(mlib, features=79)
         aln = alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         self.assertInTolerance(m[0], 103.0, 0.0005)
@@ -227,9 +227,9 @@ class MDTTests(ModellerTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.hbond_classes.read('data/atmcls-hbda.lib')
-        m = mdt.mdt(mlib, features=84)
-        m2 = mdt.mdt(mlib, features=85)
-        m3 = mdt.mdt(mlib, features=86)
+        m = mdt.Table(mlib, features=84)
+        m2 = mdt.Table(mlib, features=85)
+        m3 = mdt.Table(mlib, features=86)
         aln = alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         m2.add_alignment(aln)
@@ -264,7 +264,7 @@ class MDTTests(ModellerTest):
 
         for (code, bin) in (('bin0', 0), ('bin1', 1), ('bin2', 2),
                             ('undef1', 3), ('undef2', 3)):
-            m = mdt.mdt(mlib, features=35)
+            m = mdt.Table(mlib, features=35)
             aln = alignment(env, file='test/data/resol.ali', align_codes=code)
             m.add_alignment(aln)
             self.assertEqual(m[bin], 1.0)
@@ -289,8 +289,8 @@ class MDTTests(ModellerTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.bond_classes.read('data/bndgrp.lib')
-        m = mdt.mdt(mlib, features=109)
-        m2 = mdt.mdt(mlib, features=110)
+        m = mdt.Table(mlib, features=109)
+        m2 = mdt.Table(mlib, features=110)
         aln = alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         m2.add_alignment(aln)
@@ -310,8 +310,8 @@ class MDTTests(ModellerTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.angle_classes.read('data/anggrp.lib')
-        m = mdt.mdt(mlib, features=111)
-        m2 = mdt.mdt(mlib, features=112)
+        m = mdt.Table(mlib, features=111)
+        m2 = mdt.Table(mlib, features=112)
         aln = alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         m2.add_alignment(aln)
@@ -331,8 +331,8 @@ class MDTTests(ModellerTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.dihedral_classes.read('data/impgrp.lib')
-        m = mdt.mdt(mlib, features=113)
-        m2 = mdt.mdt(mlib, features=114)
+        m = mdt.Table(mlib, features=113)
+        m2 = mdt.Table(mlib, features=114)
         aln = alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         m2.add_alignment(aln)
@@ -352,13 +352,13 @@ class MDTTests(ModellerTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.tuple_classes.read('data/dblcls.lib')
-        m1 = mdt.mdt(mlib, features=105)
-        m2 = mdt.mdt(mlib, features=106)
+        m1 = mdt.Table(mlib, features=105)
+        m2 = mdt.Table(mlib, features=106)
         aln = alignment(env, file='test/data/tiny.ali')
         for m in (m1, m2):
             m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))
         for f in (107, 108):
-            m = mdt.mdt(mlib, features=f)
+            m = mdt.Table(mlib, features=f)
             self.assertRaises(mdt.MDTError, m.add_alignment, aln)
         self.assertEqual(m1.shape, (7,))
         self.assertEqual(m2.shape, (7,))
@@ -370,11 +370,11 @@ class MDTTests(ModellerTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.tuple_classes.read('data/trpcls.lib')
-        m1 = mdt.mdt(mlib, features=101)
-        m2 = mdt.mdt(mlib, features=102)
-        m3 = mdt.mdt(mlib, features=103)
-        m4 = mdt.mdt(mlib, features=104)
-        m5 = mdt.mdt(mlib, features=106)
+        m1 = mdt.Table(mlib, features=101)
+        m2 = mdt.Table(mlib, features=102)
+        m3 = mdt.Table(mlib, features=103)
+        m4 = mdt.Table(mlib, features=104)
+        m5 = mdt.Table(mlib, features=106)
         aln = alignment(env, file='test/data/tiny.ali')
         for m in (m1, m2, m3, m4, m5):
             m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))
@@ -408,15 +408,15 @@ class MDTTests(ModellerTest):
         """Test residue_span_range argument"""
         env = self.get_environ()
         aln = alignment(env, file='test/data/tiny.ali')
-        mlib = mdt.mdt_library(env, 'test/data/dist.bin')
+        mlib = mdt.Library(env, 'test/data/dist.bin')
         mlib.tuple_classes.read('data/dblcls.lib')
         # All residue-residue pairs should be out of range, so this MDT should
         # end up empty:
-        m = mdt.mdt(mlib, features=103)
+        m = mdt.Table(mlib, features=103)
         m.add_alignment(aln, residue_span_range=(-999, -999, 999, 999))
         self.assertEqual(m.sum(), 0.0)
-        m1 = mdt.mdt(mlib, features=103)
-        m2 = mdt.mdt(mlib, features=103)
+        m1 = mdt.Table(mlib, features=103)
+        m2 = mdt.Table(mlib, features=103)
         # When excluding only intra-residue interactions, the short-range
         # bins should differ but the long-range behavior should be the same:
         m1.add_alignment(aln, residue_span_range=(-999, 0, 0, 999))
@@ -448,8 +448,8 @@ class MDTTests(ModellerTest):
         """Make sure that alignments and models both work as sources"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m1 = mdt.mdt(mlib, features=82)
-        m2 = mdt.mdt(mlib, features=82)
+        m1 = mdt.Table(mlib, features=82)
+        m2 = mdt.Table(mlib, features=82)
         a1 = alignment(env, file='test/data/tiny.ali', align_codes='5fd1')
         m1.add_alignment(a1)
         mdl = model(env, file='test/data/5fd1.atm', model_segment=('1:', '6:'))
@@ -467,9 +467,9 @@ class MDTTests(ModellerTest):
         """Make sure MDT integration works"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m1 = mdt.mdt(mlib, features=1)
-        m2 = mdt.mdt(mlib, features=2)
-        mboth = mdt.mdt(mlib, features=(1,2))
+        m1 = mdt.Table(mlib, features=1)
+        m2 = mdt.Table(mlib, features=2)
+        mboth = mdt.Table(mlib, features=(1,2))
         seq1 = "AFVVTDNCIK"
         seq2 = "DCVEVCPVDC"
         aln = alignment(env)
@@ -597,7 +597,7 @@ class MDTTests(ModellerTest):
         """Check for correctness of super smoothing"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.mdt(mlib, features=(1,2))
+        m = mdt.Table(mlib, features=(1,2))
         # A super-smoothed empty MDT should be the prior, i.e. 1/nbin:
         m2 = m.super_smooth(1.0, True)
         inds = []
@@ -608,7 +608,7 @@ class MDTTests(ModellerTest):
         """Check for correctness of smoothing"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.mdt(mlib, features=(1,2))
+        m = mdt.Table(mlib, features=(1,2))
         # Dimensions must be 1 or 2:
         for dim in (0, 3):
             self.assertRaises(ValueError, m.smooth, dim, 1.0)
@@ -629,9 +629,9 @@ class MDTTests(ModellerTest):
         m = m.reshape(features=(1,2), offset=(4,2), shape=(11,10))
         m.write('test.mdt')
         m.write_hdf5('test.hdf5')
-        m2 = mdt.mdt(mlib, 'test.mdt')
+        m2 = mdt.Table(mlib, 'test.mdt')
         self.assertMDTsEqual(m, m2)
-        m2 = mdt.mdt(mlib, 'test.hdf5')
+        m2 = mdt.Table(mlib, 'test.hdf5')
         self.assertMDTsEqual(m, m2)
         os.unlink('test.mdt')
         os.unlink('test.hdf5')
@@ -692,7 +692,7 @@ class MDTTests(ModellerTest):
         """Check that normalize works"""
         m = self.get_test_mdt(features=(1,2))
         mlib = self.get_mdt_library()
-        m = mdt.mdt(mlib, features=(1,2))
+        m = mdt.Table(mlib, features=(1,2))
         # Dimensions must be 1 or 2:
         for dim in (0, 3):
             self.assertRaises(ValueError, m.normalize, dimensions=dim,

@@ -3,10 +3,10 @@
 
    MDT prepares a raw frequency table, given information from MODELLER
    alignments and/or PDB files. It can also process the raw frequency table in
-   several ways (e.g., normalization with `mdt.normalize`,
-   smoothing with `mdt.smooth`), perform entropy calculations with
-   `mdt.entropy_full`, and write out the data in various formats, including
-   for plotting by ASGL (`mdt.write_asgl`) and use as restraints by MODELLER.
+   several ways (e.g., normalization with `Table.normalize`,
+   smoothing with `Table.smooth`), perform entropy calculations with
+   `Table.entropy_full`, and write out the data in various formats, including
+   for plotting by ASGL (`Table.write_asgl`) and use as restraints by MODELLER.
 
    More precisely, MDT uses a sample of sequences, structures, and/or
    alignments to construct a table *N(a,b,c,...,d)* for features 
@@ -21,7 +21,7 @@
    which can be changed by the user.
 
    MDT works by accumulating the table *N* by processing each sequence or
-   alignment in turn. See `mdt.add_alignment`.
+   alignment in turn. See `Table.add_alignment`.
 
    See the 'Sample studies with MDT' chapter in the `MDT manual <https://salilab.org/internal/manuals/mdt/>`__ for copious examples.
 
@@ -31,7 +31,7 @@
 
 __docformat__ = "restructuredtext"
 
-__all__ = ['MDTError', 'TableSection', 'mdt', 'mdt_library',
+__all__ = ['MDTError', 'TableSection', 'Table', 'Library',
            'write_2dsplinelib', 'write_anglelib', 'write_bondlib',
            'write_improperlib', 'write_splinelib']
 
@@ -45,7 +45,7 @@ import _modeller
 #: Generic exception
 MDTError = _mdt.MDTError
 
-class mdt_library(modobject):
+class Library(modobject):
     """Library data used in the construction and use of MDTs"""
     _modpt = None
     _env = None
@@ -177,10 +177,10 @@ class HydrogenBondClasses(BondClasses):
 
 class TableSection(modobject):
     """A section of a multi-dimensional table. You should not create
-       TableSection objects directly, but rather by indexing an `mdt` object,
+       TableSection objects directly, but rather by indexing a `Table` object,
        as a TableSection is just a 'view' into an existing table. For example,
 
-       >>> m = mdt.mdt(mlib, features=(1,35))
+       >>> m = mdt.Table(mlib, features=(1,35))
        >>> print m[0].entropy()
 
        would create a section (using m[0]) which is a 1D table over the 2nd
@@ -260,7 +260,7 @@ class TableSection(modobject):
                                       "bins for each feature")
 
 
-class mdt(TableSection):
+class Table(TableSection):
     """A multi-dimensional table.
        Individual elements from the table can be accessed in standard Python
        fashion, e.g.
@@ -268,8 +268,8 @@ class mdt(TableSection):
        >>> import mdt
        >>> import modeller
        >>> env = modeller.environ()
-       >>> mlib = mdt.mdt_library(env, '${LIB}/mdt.bin')
-       >>> m = mdt.mdt(mlib, features=(1,2,5))
+       >>> mlib = mdt.Library(env, '${LIB}/mdt.bin')
+       >>> m = mdt.Table(mlib, features=(1,2,5))
        >>> print m[0,0,0]
 
        You can also access an element as m[0][0][0], a 1D section as m[0][0],
@@ -288,10 +288,10 @@ class mdt(TableSection):
         Create a new MDT.
 
         :Parameters:
-          - `mlib`: the MDT library to use
+          - `mlib`: the MDT `Library` object to use
           - `file`: if specified, the filename to read the initial table from
-            (if the name ends with '.hdf5', `mdt.read_hdf5` is used, otherwise
-            `mdt.read`)
+            (if the name ends with '.hdf5', `Table.read_hdf5` is used, otherwise
+            `Table.read`)
           - `features`: if specified (and `file` is not), a list of feature
             types to initialize the table with
         """
@@ -317,19 +317,19 @@ class mdt(TableSection):
 
     def copy(self):
         """
-        :return: a copy of this MDT.
-        :rtype: `mdt`
+        :return: a copy of this MDT table.
+        :rtype: `Table`
         """
-        mdtout = mdt(self._mlib)
+        mdtout = Table(self._mlib)
         _mdt.mdt_copy(self._modpt, mdtout._modpt)
         return mdtout
 
     def make(self, features):
-        """Clear the MDT, and set the features"""
+        """Clear the table, and set the features"""
         _mdt.mdt_make(self._modpt, self._mlib._modpt, features)
 
     def write(self, file, write_preamble=True):
-        """Write an MDT to `file`. If `write_preamble` is False, it will
+        """Write the table to `file`. If `write_preamble` is False, it will
            only write out the contents of the MDT table, without the preamble
            including the feature list, bins, etc. This is useful for example
            for creating a file to be read by another program, such as
@@ -344,7 +344,7 @@ class mdt(TableSection):
         """
         Reorder the MDT features and optionally decrease their ranges.
         When an MDT is created, each feature has exactly the bins defined in
-        the `mdt_library`'s bin file. However, for each feature, you can change
+        the `Library`'s bin file. However, for each feature, you can change
         the offset (initial number of bins from the bin file to omit) from the
         default 0, and the shape (total number of bins).
 
@@ -359,9 +359,9 @@ class mdt(TableSection):
             new value. Thus, a value of 0 would leave the shape unchanged, -1
             would remove the last (undefined) bin, etc.
         :return: the reshaped MDT.
-        :rtype: `mdt`
+        :rtype: `Table`
         """
-        mdtout = mdt(self._mlib)
+        mdtout = Table(self._mlib)
         _mdt.mdt_reshape(self._modpt, mdtout._modpt, features, offset, shape)
         return mdtout
 
@@ -393,14 +393,14 @@ class mdt(TableSection):
         1 if the bin widths are not 1.
 
         :return: the smoothed MDT.
-        :rtype: `mdt`
+        :rtype: `Table`
 
         .. |sum| unicode:: U+03A3
         .. |w1| replace:: w\ :sub:`1`
         .. |w2| replace:: w\ :sub:`2`
         .. |vi| replace:: v\ :sub:`i`
         """
-        mdtout = mdt(self._mlib)
+        mdtout = Table(self._mlib)
         _mdt.mdt_smooth(self._modpt, mdtout._modpt, dimensions, weight)
         return mdtout
 
@@ -434,11 +434,11 @@ class mdt(TableSection):
             |sum| :sub:`i,j` p(x :sub:`i,j`) dx dy = 1 for 2D, where dx and
             dy are the widths of the bins. 
         :return: the normalized MDT.
-        :rtype: `mdt`
+        :rtype: `Table`
 
         .. |sum| unicode:: U+03A3
         """
-        mdtout = mdt(self._mlib)
+        mdtout = Table(self._mlib)
         _mdt.mdt_normalize(self._modpt, mdtout._modpt, self._mlib._modpt,
                            dimensions, dx_dy, to_zero, to_pdf)
         return mdtout
@@ -448,15 +448,15 @@ class mdt(TableSection):
         Integrate the MDT, and reorder the features. This is useful for
         squeezing large MDT arrays into smaller ones, and also for
         eliminating unwanted features (such as X-ray resolution) in
-        preparation for `mdt.write`.
+        preparation for `Table.write`.
 
         :Parameters:
           - `features`: the new features (all must be present in the
             original MDT).
         :return: the integrated MDT.
-        :rtype: `mdt`
+        :rtype: `Table`
         """
-        mdtout = mdt(self._mlib)
+        mdtout = Table(self._mlib)
         _mdt.mdt_integrate(self._modpt, mdtout._modpt, features)
         return mdtout
 
@@ -467,7 +467,7 @@ class mdt(TableSection):
         MDT element *a*, using the following relation:
         *b = offset + exp(expoffset + multiplier \* a ^ power)*.
 
-        :rtype: `mdt`
+        :rtype: `Table`
         """
         mdtout = self.copy()
         _mdt.mdt_exp_transform(mdtout._modpt, offset, expoffset, multiplier,
@@ -483,7 +483,7 @@ class mdt(TableSection):
         logarithm of a negative number, *b* is assigned to be `undefined`.
 
         :return: the transformed MDT.
-        :rtype: `mdt`
+        :rtype: `Table`
         """
         mdtout = self.copy()
         _mdt.mdt_log_transform(mdtout._modpt, offset, multiplier, undefined)
@@ -497,7 +497,7 @@ class mdt(TableSection):
         *b = offset + a \* multiplier*.
 
         :return: the transformed MDT.
-        :rtype: `mdt`
+        :rtype: `Table`
         """
         mdtout = self.copy()
         _mdt.mdt_linear_transform(mdtout._modpt, offset, multiplier)
@@ -512,7 +512,7 @@ class mdt(TableSection):
         assigned to be `undefined`.
 
         :return: the transformed MDT.
-        :rtype: `mdt`
+        :rtype: `Table`
         """
         mdtout = self.copy()
         _mdt.mdt_inverse_transform(mdtout._modpt, offset, multiplier, undefined)
@@ -524,7 +524,7 @@ class mdt(TableSection):
         (`dimensions` = 1) or in each 2D section (`dimensions` = 2).
 
         :return: the transformed MDT.
-        :rtype: `mdt`
+        :rtype: `Table`
         """
         mdtout = self.copy()
         _mdt.mdt_offset_min(mdtout._modpt, dimensions)
@@ -540,7 +540,7 @@ class mdt(TableSection):
         of edges and then again to all four corner points.
 
         :return: the closed MDT.
-        :rtype: `mdt`
+        :rtype: `Table`
         """
         mdtout = self.copy()
         _mdt.mdt_close(mdtout._modpt, dimensions)
@@ -578,9 +578,9 @@ class mdt(TableSection):
         obtained from a prior and the data, and so on recursively.
 
         :return: the smoothed MDT.
-        :rtype: `mdt`
+        :rtype: `Table`
         """
-        mdtout = mdt(self._mlib)
+        mdtout = Table(self._mlib)
         _mdt.mdt_super_smooth(self._modpt, mdtout._modpt, prior_weight,
                               entropy_weighing)
         return mdtout
@@ -701,7 +701,7 @@ class _FeatureList(modlist.fixlist):
 
 
 class Feature(object):
-    """A single feature in an MDT. Generally accessed as `mdt.features`."""
+    """A single feature in an MDT. Generally accessed as `Table.features`."""
 
     def __init__(self, mdt, indx):
         self._mdt = mdt
@@ -724,7 +724,7 @@ class Feature(object):
     offset = property(__get_offset,
                       doc="Offset of first bin compared to the MDT library " + \
                           "feature (usually 0, but can be changed with " + \
-                          "`mdt.reshape`)")
+                          "`Table.reshape`)")
     periodic = property(__get_periodic, doc="Whether feature is periodic")
 
 
@@ -773,7 +773,7 @@ class Bin(object):
 
 class Source(object):
     """A source of data for an MDT (generally a Modeller alignment, opened
-       with `mdt.open_alignment()`)."""
+       with `Table.open_alignment()`)."""
 
     def __init__(self, mdt, mlib, aln, distngh, surftyp, accessibility_type,
                  sympairs, symtriples, io, edat):
@@ -887,7 +887,7 @@ def write_bondlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
 
     :Parameters:
       - `fh`: Python file to write to
-      - `mdt`: input MDT
+      - `mdt`: input MDT `Table` object
       - `density_cutoff`: if specified, MDT bond distance sections with sums
         below this value are not used
       - `entropy_cutoff`: if specified, MDT bond distance sections with
@@ -940,9 +940,9 @@ def write_splinelib(fh, mdt, dihtype, density_cutoff=None, entropy_cutoff=None):
     (i.e. chi1/chi2/chi3/chi4). The operation is similar to `write_bondlib`,
     but each MDT section is treated as the spline values. No special processing
     is done, so it is expected that the user has first done any necessary
-    transformations (e.g. normalization with `mdt.normalize` to convert raw
-    counts into a PDF, negative log transform with `mdt.log_transform` and
-    `mdt.linear_transform` to convert a PDF into a statistical potential).
+    transformations (e.g. normalization with `Table.normalize` to convert raw
+    counts into a PDF, negative log transform with `Table.log_transform` and
+    `Table.linear_transform` to convert a PDF into a statistical potential).
     """
     (periodic, dx, x1, x2) = _get_splinerange(mdt.features[1])
 

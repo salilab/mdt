@@ -3,9 +3,9 @@ import os
 import mdt
 
 env = environ()
-mlib = mdt.mdt_library(env, 'mdt_test_xray.bin')
+mlib = mdt.Library(env, 'mdt_test_xray.bin')
 
-m = mdt.mdt(mlib, file='mdt2.mdt')
+m = mdt.Table(mlib, file='mdt2.mdt')
 
 text = """
 SET TICK_FONT = 5, CAPTION_FONT = 5

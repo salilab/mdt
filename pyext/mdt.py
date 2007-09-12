@@ -294,7 +294,7 @@ class Table(TableSection):
             (if the name ends with '.hdf5', `Table.read_hdf5` is used, otherwise
             `Table.read`)
           - `features`: if specified (and `file` is not), a list of feature
-            types to initialize the table with
+            types to initialize the table with (using `Table.make`)
         """
         self._mlib = mlib
         if file:

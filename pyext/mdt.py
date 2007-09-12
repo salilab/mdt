@@ -32,8 +32,9 @@
 __docformat__ = "restructuredtext"
 
 __all__ = ['MDTError', 'TableSection', 'Table', 'Library',
-           'write_2dsplinelib', 'write_anglelib', 'write_bondlib',
-           'write_improperlib', 'write_splinelib']
+           'Feature', 'Bin', 'Source', 'BondClasses', 'TupleClasses',
+           'HydrogenBondClasses', 'write_2dsplinelib', 'write_anglelib',
+           'write_bondlib', 'write_improperlib', 'write_splinelib']
 
 import _mdt
 from modeller.util.modobject import modobject
@@ -42,7 +43,7 @@ from modeller.util import modlist
 # path for the former:
 import _modeller
 
-#: Generic exception
+#: Generic MDT exception
 MDTError = _mdt.MDTError
 
 class Library(modobject):

@@ -686,13 +686,13 @@ class Table(TableSection):
     sample_size = property(__get_sample_size, doc="Number of sample points")
 
 
-class _FeatureList(modlist.fixlist):
+class _FeatureList(modlist.FixList):
     """A list of all features in an MDT."""
 
     def __init__(self, mdt):
         self.__mdt = mdt
         self.__removed_rank = mdt._get_removed_rank()
-        modlist.fixlist.__init__(self)
+        modlist.FixList.__init__(self)
 
     def __len__(self):
         return _mdt.mod_mdt_nfeat_get(self.__mdt._modpt) - self.__removed_rank
@@ -729,13 +729,13 @@ class Feature(object):
     periodic = property(__get_periodic, doc="Whether feature is periodic")
 
 
-class _BinList(modlist.fixlist):
+class _BinList(modlist.FixList):
     """A list of all bins in a feature."""
 
     def __init__(self, feature):
         self.__feature = feature
         self._mdt = feature._mdt
-        modlist.fixlist.__init__(self)
+        modlist.FixList.__init__(self)
 
     def __len__(self):
         return _mdt.mod_mdt_feature_nbins_get(self.__feature._modpt)

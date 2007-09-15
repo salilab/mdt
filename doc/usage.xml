@@ -76,8 +76,9 @@ full scan is performed.
 <para>
 The bin file determines how to convert a feature value into a frequency table.
 For most feature types, you can specify how many bins to use, and their value
-ranges. The last bin is always reserved as an 'undefined' bin, for values that
-don't fall into any other bin<footnote>
+ranges - see <xref linkend="binfile" /> for more information. The last bin
+is always reserved as an 'undefined' bin, for values that don't fall into
+any other bin<footnote>
 <para>
 You can, however, remove the 'undefined' bin using
 <ulink url="&epydoc;Table.reshape">Table.reshape</ulink>.
@@ -170,6 +171,74 @@ C<subscript>&alpha;</subscript>, but can be overridden by specifying the
 </tbody>
 </tgroup>
 </table>
+
+</sect2>
+
+<sect2 id="binfile">
+<title>Format of the bin file</title>
+
+<para>
+The bin file is a text file with a simple format which defines the bins for
+one or more of the &MDT; features. A blank line separates feature entries.
+Each entry starts with a FEATURE line which identifies the feature number.
+Following this is a single comment line (it is usually the name and number
+of the feature, but has no special significance). The third line contains
+two integers - the number of bins and the type of the ranges. This type is
+usually 3, in which case the next line contains two numbers - the first
+defines the lower range of the first bin, and the second the width of the bin.
+All bins are of the same size and follow after the first bin. For example,
+the following bins feature 82 (atom-atom distance in protein A) into
+61 bins, each 0.5 &Aring; wide, with the first bin starting at 0 &Aring;. The
+first bin is thus 0-0.5 &Aring;, the second 0.5-1.0 &Aring;, and so on, up to
+bin 60 which is 29.5-30.0 &Aring; (recall that the last bin is reserved for
+undefined, which would be anything below 0 &Aring;, above 30.0 &Aring;, or which
+could not be calculated for some reason).
+</para>
+
+<example id="binsequential">
+<title>Example bin file entry for sequential bins</title>
+<screen>
+FEATURE 82
+ANY ATOM DISTANCE IN A (82)
+61    3
+  0   0.5
+</screen>
+</example>
+
+<para>
+The bin range type can also be 2, in which case each bin's range is specified
+explicitly on a separate line in the file. Each bin can also have a name
+specified in columns 21 and up. For example, the following bins feature 35
+(X-ray resolution of protein A) into 5 bins, the first for 0.51-1.5 &Aring;,
+the second for 1.4-1.6 &Aring;, and so on. Anything below 0.51 &Aring; or above
+2.0 &Aring; (or an undefined value) will be placed into the last (undefined)
+bin, so there is no need to specify a range for this bin.
+</para>
+
+<example id="binexplicit">
+<title>Example bin file entry for explicit bins</title>
+<screen>
+FEATURE 35
+X-RAY RESOLUTION OF A (35)
+ 5     2
+ 0.51  1.4          &lt;1.4
+ 1.4   1.6          1.4-1.6
+ 1.6   1.8          1.6-1.8
+ 1.8   2.0          1.8-2.0
+ 0.0   0.0          NMR_&amp;_&gt;2
+</screen>
+</example>
+
+<para>
+You may also see files containing bin range types of 0. These are for features
+which always have a fixed number of bins, such as residue type, dihedral class,
+or atom/bond class. Anything you specify in the bin file for these bins will
+thus be ignored.
+</para>
+
+<para>
+The bin file is ended by the word END on a line by its own.
+</para>
 
 </sect2>
 

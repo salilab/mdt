@@ -52,7 +52,7 @@ struct mdt_library {
   int deltai, deltaj;
   /** TRUE if deltas refer to align. positions, or FALSE if residue positions */
   gboolean deltai_ali, deltaj_ali;
-  /** Whether to treat disulfides and terminii specially for atom types */
+  /** Whether to treat disulfides and termini specially for atom types */
   gboolean special_atoms;
   /** Cutoff distance for hydrogen bonds */
   float hbond_cutoff;

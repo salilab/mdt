@@ -43,10 +43,9 @@ homology-derived restraints:</para>
 The following sections will outline the process of starting with the Protein
 Data Bank (&PDB;) and ending up with the &MODELLER; restraint
 library files. We will describe the rationale for the process, input data sets,
-programs and scripts used, and even the analysis of the results. Many of the
-input and output files are not part of the &MDT; distribution, but they should
-be available from the restraint-generation directory
-(e.g., <filename>~sali/My/Work/Projects/constr2005/</filename>).
+programs and scripts used, and even the analysis of the results. All of the
+input files should be found in the &MDT; distribution, in the 
+<filename>constr2005</filename> directory.
 </para>
 
 <para>
@@ -77,9 +76,13 @@ chains with &MODELLER;, such that the representative chains are from 30 to
 each other (or are more than 30 residues different in length). This
 is the corresponding &MODELLER; script:
 </para>
-<informalexample><programlisting>
+<example id="make-pdb60">
+<title>&MODELLER; &PDB;-clustering script,
+<filename>constr2005/cluster-PDB/make-pdb60.py</filename></title>
+<programlisting>
 &make-pdb60;
-</programlisting></informalexample>
+</programlisting>
+</example>
 
 <para>
 The actual chains for restraint derivation are in fact a subset of the 9,365
@@ -91,9 +94,13 @@ decision was made by looking at the distribution of the
 (see <xref linkend="chi1" />) and the distribution of resolutions themselves
 for all 9,365 representative chains, using this &MDT; script:
 </para>
-<informalexample><programlisting>
+<example id="impact-resolution">
+<title>Distribution of resolution,
+<filename>constr2005/impact-of-resolution/make-mdt.py</filename></title>
+<programlisting>
 &impact-resolution;
-</programlisting></informalexample>
+</programlisting>
+</example>
 
 <para>This script first creates a
 <ulink url="&epydoc;Library">Library</ulink> object with the bin
@@ -110,9 +117,13 @@ the table is written out to the file <filename>mdt2.mdt</filename> using
 
 <para>The resulting &MDT; table <filename>mdt2.mdt</filename> was then
 plotted with the script:</para>
-<informalexample><programlisting>
+<example id="impact-resolution-asgl">
+<title>Plot of distribution of resolution,
+<filename>constr2005/impact-of-resolution/asgl.py</filename></title>
+<programlisting>
 &impact-resolution-asgl;
-</programlisting></informalexample>
+</programlisting>
+</example>
 
 <para>where the <ulink url="&epydoc;Table.write_asgl">Table.write_asgl</ulink>
 method writes out an &ASGL; script and the MDT data in a form suitable for
@@ -128,9 +139,13 @@ plotting (which we then execute with &ASGL; using Python's
 <para>
 The &MDT; table is constructed with the following &MDT; Python script:
 </para>
-<informalexample><programlisting>
+<example id="bonds-make">
+<title>Distribution of bond length against bond type,
+<filename>constr2005/bonds/make-mdt.py</filename></title>
+<programlisting>
 &bonds-make;
-</programlisting></informalexample>
+</programlisting>
+</example>
 
 <para>
 In this case, the bin file does not contain all of the necessary information,
@@ -140,9 +155,13 @@ chemical bonds, using the
 MDT we then construct is a 3D table of X-ray resolution, bond type, and bond
 length. The contents of the &MDT; table are then plotted with &ASGL; as follows:
 </para>
-<informalexample><programlisting>
+<example id="bonds-asgl">
+<title>Plot of bond length distributions,
+<filename>constr2005/bonds/asgl.py</filename></title>
+<programlisting>
 &bonds-asgl;
-</programlisting></informalexample>
+</programlisting>
+</example>
 <para>giving <ulink url="pdf/bonds.pdf">this output</ulink>. Notice that
 here we use the <ulink url="&epydoc;Table.reshape">Table.reshape</ulink> method,
 which can reshape a table by reordering the features, and/or reducing the bin

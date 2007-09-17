@@ -1,0 +1,41 @@
+import os.path
+
+Import('env', 'modconfig', 'pyext', 'pyso')
+
+# Build epydoc documentation:
+def action_epydoc(target, source, env):
+    outdir = os.path.dirname(target[0].path)
+    app = "cd doc && ./epydoc.sh %s/" % modconfig['bin']
+    return env.Execute(app)
+
+def emit_epydoc(target, source, env):
+    outdir = os.path.dirname(target[0].path)
+    modname = os.path.splitext(os.path.basename(source[0].path))[0]
+    
+    # Temporary hack: should get this by importing or parsing pyext:
+    for cls in ('Bin', 'BondClasses', 'Feature', 'HydrogenBondClasses',
+                'Library', 'Source', 'Table', 'TableSection', 'TupleClasses'):
+        target.append(os.path.join('#' + outdir,
+                                   '%s.%s-class.html' % (modname, cls)))
+    target.append(os.path.join('#' + outdir, '_mdt.MDTError-class.html'))
+
+    for extra in ('module', 'pysrc'):
+        target.append(os.path.join('#' + outdir,
+                                   '%s-%s.html' % (modname, extra)))
+    for extra in ('api-objects.txt', 'class-tree.html', 'crarr.png',
+                  'epydoc.css', 'epydoc.js', 'help.html',
+                  'identifier-index.html', 'module-tree.html',
+                  'redirect.html'):
+        target.append(os.path.join('#' + outdir, extra))
+    return target, source
+
+builder_epydoc = Builder(action=action_epydoc, emitter=emit_epydoc)
+
+env.Append(BUILDERS = {'Epydoc': builder_epydoc})
+
+epydoc = env.Epydoc("index.html", (pyext, pyso))
+env.Alias("doc", epydoc)
+
+docdir = ARGUMENTS.get('docdir', '/usr/share/doc/mdt')
+env.Install(os.path.join(docdir, 'epydoc'), epydoc)
+env.Alias('docinstall', docdir)

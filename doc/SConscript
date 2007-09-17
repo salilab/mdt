@@ -1,22 +1,2 @@
-Import('env', 'modconfig')
-
-# Build epydoc documentation:
-def builder_epydoc(target, source, env):
-    app = "cd doc && ./epydoc.sh " + modconfig['bin'] + "/"
-    return env.Execute(app)
-
-# Build DocBook documentation:
-def builder_docbook(target, source, env):
-    app = "cd doc && xmlto -o html -m html-style.xml xhtml manual.xml"
-    return env.Execute(app)
-
-env.Append(BUILDERS = {'Epydoc': Builder(action=builder_epydoc),
-                       'Docbook': Builder(action=builder_docbook)})
-
-# Always build:
-epydoc = env.Epydoc("epydoc.built", "epydoc.sh")
-docbook = env.Docbook("docbook.built", "manual.xml")
-env.Alias("doc", epydoc)
-env.Alias("doc", docbook)
-env.AlwaysBuild("epydoc.built")
-env.AlwaysBuild("docbook.built")
+# Subdirectories:
+SConscript('html/SConscript')

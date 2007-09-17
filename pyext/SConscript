@@ -18,12 +18,13 @@ if modconfig['exetype'].startswith('mac10'):
     e.Depends('_mdt.so', '#src/libmdt.dylib')
 
 # Build the Python extension from SWIG interface file:
-lib = e.SharedLibrary('_mdt', 'mdt.i',
-                      SWIGFLAGS='-python -noproxy ' + \
-                                '-nodefaultctor -nodefaultdtor')
+pyso = e.SharedLibrary('_mdt', 'mdt.i',
+                       SWIGFLAGS='-python -noproxy ' + \
+                                 '-nodefaultctor -nodefaultdtor')
 
+pyext = File('mdt.py')
 # Install the Python extension and any .py files:
-libinst = e.Install(modconfig['libinstall'], lib)
-pyinst = e.Install(modconfig['pyinstall'], 'mdt.py')
+libinst = e.Install(modconfig['libinstall'], pyso)
+pyinst = e.Install(modconfig['pyinstall'], pyext)
 e.Alias('install', [libinst, pyinst])
-Return('lib')
+Return('pyso', 'pyext')

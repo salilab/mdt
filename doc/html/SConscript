@@ -1,0 +1,37 @@
+import os.path
+
+Import('env')
+
+# Build DocBook documentation:
+def action_docbook(target, source, env):
+    app = "cd doc && xmlto -o html -m html-style.xml xhtml manual.xml"
+    return env.Execute(app)
+
+def emit_docbook(target, source, env):
+    outdir = os.path.dirname(target[0].path)
+    # Temporary hacks: should parse XML directly:
+    for (nchap, nsect) in enumerate((3, 3)):
+        # Chapter:
+        target.append(os.path.join('#' + outdir, 'ch%02d.html' % (nchap + 1)))
+        for sec in range(nsect):
+            # Section:
+            secname = 'ch%02ds%02d.html' % (nchap + 1, sec + 2)
+            target.append(os.path.join('#' + outdir, secname))
+    target.append(os.path.join('#' + outdir, 'pr01.html'))
+    for xml in ('acknowl.xml', 'html-style.xml', 'study.xml', 'usage.xml'):
+        source.append(os.path.join('..', xml))
+    return target, source
+
+builder_docbook = Builder(action=action_docbook, emitter=emit_docbook)
+
+env.Append(BUILDERS = {'Docbook': builder_docbook})
+
+docbook = env.Docbook("index.html", "../manual.xml")
+env.Alias("doc", docbook)
+
+docdir = ARGUMENTS.get('docdir', '/usr/share/doc/mdt')
+env.Install(docdir, docbook)
+env.Alias('docinstall', docdir)
+
+# Subdirectories:
+SConscript('epydoc/SConscript')

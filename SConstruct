@@ -12,9 +12,10 @@ Export('env', 'modconfig', 'pythoninc', 'configure_for_pyext',
 
 # Subdirectories to build:
 test = SConscript('test/SConscript')
-pyext = SConscript('pyext/SConscript')
+pyso, pyext = SConscript('pyext/SConscript')
 src = SConscript('src/SConscript')
 data = SConscript('data/SConscript')
+Export('pyext', 'pyso')
 doc = SConscript('doc/SConscript')
 
 # testcases first require Python extensions to be built:

@@ -34,7 +34,6 @@ builder_epydoc = Builder(action=action_epydoc, emitter=emit_epydoc)
 env.Append(BUILDERS = {'Epydoc': builder_epydoc})
 
 epydoc = env.Epydoc("index.html", (pyext, pyso))
-env.Alias("doc", epydoc)
 
 docdir = ARGUMENTS.get('docdir', '/usr/share/doc/mdt')
 env.Install(os.path.join(docdir, 'epydoc'), epydoc)

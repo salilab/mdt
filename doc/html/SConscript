@@ -27,7 +27,6 @@ builder_docbook = Builder(action=action_docbook, emitter=emit_docbook)
 env.Append(BUILDERS = {'Docbook': builder_docbook})
 
 docbook = env.Docbook("index.html", "../manual.xml")
-env.Alias("doc", docbook)
 
 docdir = ARGUMENTS.get('docdir', '/usr/share/doc/mdt')
 env.Install(docdir, docbook)

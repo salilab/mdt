@@ -307,6 +307,11 @@ See the <ulink url="epydoc/index.html">&MDT; reference manual</ulink> for
 documentation on the &MDT; Python interface, generated automatically from
 the source code.
 </para>
+
+<para>
+For information on the low-level &MDT; code, see the
+<ulink url="doxygen/index.html">C API reference</ulink>.
+</para>
 </sect1>
 
 </chapter>

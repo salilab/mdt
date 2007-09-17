@@ -34,3 +34,4 @@ env.Alias('docinstall', docdir)
 
 # Subdirectories:
 SConscript('epydoc/SConscript')
+SConscript('pdf/SConscript')

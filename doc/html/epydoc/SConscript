@@ -37,4 +37,3 @@ epydoc = env.Epydoc("index.html", (pyext, pyso))
 
 docdir = ARGUMENTS.get('docdir', '/usr/share/doc/mdt')
 env.Install(os.path.join(docdir, 'epydoc'), epydoc)
-env.Alias('docinstall', docdir)

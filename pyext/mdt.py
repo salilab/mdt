@@ -657,7 +657,7 @@ class Table(TableSection):
             io = self._mlib._env.io
         if edat is None:
             edat = self._mlib._env.edat
-        _mdt.mdt_add_alignment(self._basept, self._mlib._modpt, aln.modpt,
+        _mdt.mdt_add_alignment(self._modpt, self._mlib._modpt, aln.modpt,
                                distngh, False, surftyp, accessibility_type,
                                residue_span_range, sympairs, symtriples,
                                io.modpt, edat.modpt, self._mlib._env.libs.modpt)
@@ -793,7 +793,7 @@ class Source(object):
         if edat is None:
             edat = mlib._env.edat
         self._edat = edat
-        self._modpt = _mdt.mdt_alignment_open(mdt._basept, mlib._modpt,
+        self._modpt = _mdt.mdt_alignment_open(mdt._modpt, mlib._modpt,
                                               aln.modpt, distngh, False,
                                               surftyp, accessibility_type,
                                               sympairs, symtriples, io.modpt,
@@ -806,7 +806,7 @@ class Source(object):
     def sum(self, residue_span_range=(-99999, -2, 2, 99999)):
         """Scan all data points in the source, and return the sum."""
         f = _mdt.mdt_source_sum
-        return f(self._modpt, self._mdt._basept, self._mlib._modpt,
+        return f(self._modpt, self._mdt._modpt, self._mlib._modpt,
                  residue_span_range, self._mlib._env.libs.modpt,
                  self._edat.modpt)
 

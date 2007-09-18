@@ -15,6 +15,8 @@ struct mdt *mdt_new(void)
   struct mdt *mdt;
   mdt = g_malloc(sizeof(struct mdt));
   mod_mdt_init(&mdt->base);
+  mdt->symmetric = FALSE;
+  mdt->scantype = 0;
   return mdt;
 }
 

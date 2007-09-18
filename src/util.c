@@ -634,6 +634,6 @@ void mdt_setup(struct mdt *mdt, const struct mdt_library *mlib)
        is asymmetric */
     naa = MAX(naa, feat->isymm);
   }
-  mdt->base.nresfeat = n;
-  mdt->base.symmetric = (naa == 0);
+  mdt->scantype = n;
+  mdt->symmetric = (naa == 0);
 }

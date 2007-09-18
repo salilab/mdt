@@ -17,7 +17,7 @@ struct mdt_source;
 
 /** Prepare a source alignment to add data to an MDT. Returns a source pointer
     (to be later freed with mdt_alignment_close()), or NULL on error. */
-struct mdt_source *mdt_alignment_open(struct mod_mdt *mdt,
+struct mdt_source *mdt_alignment_open(struct mdt *mdt,
                                       const struct mdt_library *mlib,
                                       struct mod_alignment *aln, float distngh,
                                       gboolean sdchngh, int surftyp,
@@ -30,7 +30,7 @@ struct mdt_source *mdt_alignment_open(struct mod_mdt *mdt,
 void mdt_alignment_close(struct mdt_source *source);
 
 /** Scan all data points in the source, and return the sum. */
-double mdt_source_sum(struct mdt_source *source, struct mod_mdt *mdt,
+double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
                       const struct mdt_library *mlib,
                       const int residue_span_range[4],
                       const struct mod_libraries *libs,
@@ -46,7 +46,7 @@ int mdt_alignment_index(struct mdt_source *source, int ifeat, int is1, int ip1,
                         struct mod_energy_data *edat, GError **err);
 
 /** Add data from an alignment to an MDT. Return TRUE on success. */
-gboolean mdt_add_alignment(struct mod_mdt *mdt, const struct mdt_library *mlib,
+gboolean mdt_add_alignment(struct mdt *mdt, const struct mdt_library *mlib,
                            struct mod_alignment *aln, float distngh,
                            gboolean sdchngh, int surftyp, int iacc1typ,
                            const int residue_span_range[4], gboolean sympairs,

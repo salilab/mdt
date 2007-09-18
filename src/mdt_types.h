@@ -48,6 +48,10 @@ struct mdt_atom_class_list {
 struct mdt {
   /** Base Modeller type */
   struct mod_mdt base;
+  /** TRUE if all features are symmetric */
+  gboolean symmetric;
+  /** Scan type */
+  int scantype;
 };
 
 /** Library of feature data used by MDTs */

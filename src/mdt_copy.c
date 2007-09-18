@@ -22,9 +22,7 @@ static void mod_mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
   for (i = 0; i < MAXDATATYP; i++) {
     mdtout->readin[i] = mdtin->readin[i];
   }
-  mdtout->symmetric = mdtin->symmetric;
   mdtout->nprotcmp = mdtin->nprotcmp;
-  mdtout->nresfeat = mdtin->nresfeat;
 
   mod_mdt_nfeat_set(mdtout, mdtin->nfeat);
   mod_mdt_nelems_set(mdtout, mdtin->nelems);
@@ -45,4 +43,6 @@ static void mod_mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
 void mdt_copy(const struct mdt *mdtin, struct mdt *mdtout)
 {
   mod_mdt_copy(&mdtin->base, &mdtout->base);
+  mdtout->scantype = mdtin->scantype;
+  mdtout->symmetric = mdtin->symmetric;
 }

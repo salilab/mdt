@@ -153,6 +153,14 @@ class MDTTests(ModellerTest):
                 m[i,j] = val
                 self.assertEqual(m[i,j], val)
 
+    def test_empty_aln(self):
+        """Make sure that adding an empty alignment works OK"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        m = mdt.Table(mlib, features=(1,109))
+        aln = alignment(env)
+        self.assertRaises(mdt.MDTError, m.add_alignment, aln)
+
     def test_1d_mdt(self):
         """Make sure a 1D MDT matches known residue data"""
         env = self.get_environ()

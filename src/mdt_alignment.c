@@ -577,6 +577,12 @@ static gboolean mdt_source_scan(struct mdt *mdt,
 {
   int ip1;
 
+  if (source->aln->nseq == 0) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                "alignment contains no sequences!");
+    return FALSE;
+  }
+
   update_protein_pairs(mdt, nseqacc, source->sympairs, source->symtriples);
 
   switch (mdt->scantype) {

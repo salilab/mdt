@@ -313,11 +313,11 @@ class Table(TableSection):
 
     def read(self, file):
         """Read an MDT from `file`."""
-        _modeller.mod_mdt_read(self._basept, self._mlib._basept, file)
+        _mdt.mdt_read(self._modpt, self._mlib._modpt, file)
 
     def read_hdf5(self, file):
         """Read an MDT in HDF5 format from `file`."""
-        _mdt.mdt_read_hdf5(self._basept, self._mlib._modpt, file)
+        _mdt.mdt_read_hdf5(self._modpt, self._mlib._modpt, file)
 
     def copy(self):
         """
@@ -330,7 +330,7 @@ class Table(TableSection):
 
     def make(self, features):
         """Clear the table, and set the features"""
-        _mdt.mdt_make(self._basept, self._mlib._modpt, features)
+        _mdt.mdt_make(self._modpt, self._mlib._modpt, features)
 
     def write(self, file, write_preamble=True):
         """Write the table to `file`. If `write_preamble` is False, it will
@@ -338,11 +338,11 @@ class Table(TableSection):
            including the feature list, bins, etc. This is useful for example
            for creating a file to be read by another program, such as
            Mathematica."""
-        _mdt.mdt_write(self._basept, self._mlib._modpt, file, write_preamble)
+        _mdt.mdt_write(self._modpt, self._mlib._modpt, file, write_preamble)
 
     def write_hdf5(self, file):
         """Write an MDT in HDF5 format to `file`."""
-        _mdt.mdt_write_hdf5(self._basept, self._mlib._modpt, file)
+        _mdt.mdt_write_hdf5(self._modpt, self._mlib._modpt, file)
 
     def reshape(self, features, offset, shape):
         """

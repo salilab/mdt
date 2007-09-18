@@ -153,7 +153,7 @@ static gboolean read_mdt_data(hid_t file_id, struct mod_mdt *mdt, GError **err)
 }
 
 /** Read in an MDT in HDF5 format. Return TRUE on success. */
-gboolean mdt_read_hdf5(struct mod_mdt *mdt, const struct mdt_library *mlib,
+gboolean mdt_read_hdf5(struct mdt *mdt, const struct mdt_library *mlib,
                        const char *filename, GError **err)
 {
   hid_t file_id;
@@ -161,15 +161,16 @@ gboolean mdt_read_hdf5(struct mod_mdt *mdt, const struct mdt_library *mlib,
 
   file_id = mdt_hdf_open(filename, H5F_ACC_RDONLY, H5P_DEFAULT, &file_info,
                          err);
-  if (file_id < 0 || !read_mdt_features(file_id, mdt, err)
-      || !check_mdt_features(file_id, mdt, mlib, err)
-      || !read_mdt_data(file_id, mdt, err)
+  if (file_id < 0 || !read_mdt_features(file_id, &mdt->base, err)
+      || !check_mdt_features(file_id, &mdt->base, mlib, err)
+      || !read_mdt_data(file_id, &mdt->base, err)
       || !mdt_hdf_close(file_id, &file_info, err)) {
     return FALSE;
   } else {
     int ierr;
-    mod_mdt_setup_check(mdt, &mlib->base, &ierr);
+    mod_mdt_setup_check(&mdt->base, &mlib->base, &ierr);
     if (ierr == 0) {
+      mdt_setup(mdt, mlib);
       return TRUE;
     } else {
       handle_modeller_error(err);

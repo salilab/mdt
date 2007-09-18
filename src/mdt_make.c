@@ -10,7 +10,7 @@
 #include "util.h"
 
 /** Clear the MDT array, and set feature types. Return TRUE on success. */
-gboolean mdt_make(struct mod_mdt *mdt, const struct mdt_library *mlib,
+gboolean mdt_make(struct mdt *mdt, const struct mdt_library *mlib,
                   const int features[], int n_features, GError **err)
 {
   int i, nelems, ierr;
@@ -23,22 +23,23 @@ gboolean mdt_make(struct mod_mdt *mdt, const struct mdt_library *mlib,
     }
     nelems *= mlib->base.features[ifeat - 1].nbins;
   }
-  mod_mdt_nelems_set(mdt, nelems);
-  mod_mdt_nfeat_set(mdt, n_features);
-  memset(mdt->bin, 0, sizeof(double) * nelems);
-  mdt->nalns = mdt->n_protein_pairs = mdt->n_proteins = 0;
-  mdt->sample_size = 0.;
+  mod_mdt_nelems_set(&mdt->base, nelems);
+  mod_mdt_nfeat_set(&mdt->base, n_features);
+  memset(mdt->base.bin, 0, sizeof(double) * nelems);
+  mdt->base.nalns = mdt->base.n_protein_pairs = mdt->base.n_proteins = 0;
+  mdt->base.sample_size = 0.;
 
   for (i = 0; i < n_features; i++) {
     int ifeat = features[i];
-    struct mod_mdt_feature *feat = &mdt->features[i];
+    struct mod_mdt_feature *feat = &mdt->base.features[i];
     feat->ifeat = ifeat;
     feat->istart = 1;
     feat->iend = mlib->base.features[ifeat - 1].nbins;
   }
 
-  mod_mdt_setup_check(mdt, &mlib->base, &ierr);
+  mod_mdt_setup_check(&mdt->base, &mlib->base, &ierr);
   if (ierr == 0) {
+    mdt_setup(mdt, mlib);
     return TRUE;
   } else {
     handle_modeller_error(err);

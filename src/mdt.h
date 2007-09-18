@@ -51,17 +51,20 @@ float mdt_entropy_hx(const struct mod_mdt *mdt, GError **err);
 gboolean mdt_entropy_full(const struct mod_mdt *mdt,
                           const struct mdt_library *mlib, GError **err);
 
-/** Write out an MDT. Return TRUE on success. */
-gboolean mdt_write(const struct mod_mdt *mdt, const struct mdt_library *mlib,
+/** Read in an MDT in text format. Return TRUE on success. */
+gboolean mdt_read(struct mdt *mdt, const struct mdt_library *mlib,
+                  const char *filename, GError **err);
+
+/** Write out an MDT in text format. Return TRUE on success. */
+gboolean mdt_write(const struct mdt *mdt, const struct mdt_library *mlib,
                    const char *filename, gboolean write_preamble, GError **err);
 
 /** Write out an MDT in HDF5 format. Return TRUE on success. */
-gboolean mdt_write_hdf5(const struct mod_mdt *mdt,
-                        const struct mdt_library *mlib, const char *filename,
-                        GError **err);
+gboolean mdt_write_hdf5(const struct mdt *mdt, const struct mdt_library *mlib,
+                        const char *filename, GError **err);
 
 /** Read in an MDT in HDF5 format. Return TRUE on success. */
-gboolean mdt_read_hdf5(struct mod_mdt *mdt, const struct mdt_library *mlib,
+gboolean mdt_read_hdf5(struct mdt *mdt, const struct mdt_library *mlib,
                        const char *filename, GError **err);
 
 /** Normalize an MDT. */
@@ -81,7 +84,7 @@ gboolean mdt_reshape(const struct mdt *mdtin, struct mdt *mdtout,
                      GError **err);
 
 /** Clear the MDT array, and set feature types. Return TRUE on success. */
-gboolean mdt_make(struct mod_mdt *mdt, const struct mdt_library *mlib,
+gboolean mdt_make(struct mdt *mdt, const struct mdt_library *mlib,
                   const int features[], int n_features, GError **err);
 
 /** Make mdtout a copy of mdtin. */

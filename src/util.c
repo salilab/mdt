@@ -616,3 +616,24 @@ gboolean get_bin_index(const struct mod_mdt *mdt, const int indices[],
   *bin_index = indx;
   return TRUE;
 }
+
+/** Do some basic setup of an MDT's features */
+void mdt_setup(struct mdt *mdt, const struct mdt_library *mlib)
+{
+  int n, naa, i;
+
+  n = naa = 0;
+  for (i = 0; i < mdt->base.nfeat; i++) {
+    int ifeat = mdt->base.features[i].ifeat;
+    const struct mod_mdt_libfeature *feat = &mlib->base.features[ifeat - 1];
+    /* you will compare proteins, residues or residue pairs if at least one
+       feature requires comparison of proteins, residues or residue pairs,
+       respectively. */
+    n = MAX(n, feat->iresfeat);
+    /* you will generate all NxN residue pairs if any of the relationships
+       is asymmetric */
+    naa = MAX(naa, feat->isymm);
+  }
+  mdt->base.nresfeat = n;
+  mdt->base.symmetric = (naa == 0);
+}

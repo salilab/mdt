@@ -70,16 +70,15 @@ static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
 }
 
 /** Write out an MDT in HDF5 format. Return TRUE on success. */
-gboolean mdt_write_hdf5(const struct mod_mdt *mdt,
-                        const struct mdt_library *mlib, const char *filename,
-                        GError **err)
+gboolean mdt_write_hdf5(const struct mdt *mdt, const struct mdt_library *mlib,
+                        const char *filename, GError **err)
 {
   hid_t file_id;
   struct mod_file file_info;
 
   file_id = mdt_hdf_create(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT,
                            &file_info, err);
-  if (file_id < 0 || !write_mdt_data(file_id, mdt, mlib, err)
+  if (file_id < 0 || !write_mdt_data(file_id, &mdt->base, mlib, err)
       || !mdt_hdf_close(file_id, &file_info, err)) {
     return FALSE;
   } else {

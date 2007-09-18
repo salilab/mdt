@@ -100,7 +100,7 @@ class MDTTests(ModellerTest):
         self.assertMDTsEqual(m, m2)
         m2 = mdt.Table(mlib)
         # Trying to read an HDF5 file in text format should fail gracefully:
-        self.assertRaises(ModellerError, m2.read, 'test.hdf5')
+        self.assertRaises(mdt.MDTError, m2.read, 'test.hdf5')
         os.unlink('test.hdf5')
 
     def test_bin_info(self):

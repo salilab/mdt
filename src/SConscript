@@ -28,7 +28,8 @@ files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',
          'mdt_section.c', 'mdt_feature.c', 'mdt_super_smooth.c',
          'mdt_alignment.c', 'mdt_atom_classes.c', 'mdt_hydrogen_bonds.c',
          'mdt_stereo.c', 'mdt_tuples.c', 'mdt_property.c', 'mdt_make.c',
-         'mdt_copy.c', 'mdt_read_hdf5.c', 'mdt_hdf5.c', 'mdt_set.c')
+         'mdt_copy.c', 'mdt_read.c', 'mdt_read_hdf5.c', 'mdt_hdf5.c',
+         'mdt_set.c')
 
 # Public headers
 headers = ('mdt.h', 'mdt_alignment.h', 'mdt_error.h',

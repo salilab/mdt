@@ -10,32 +10,32 @@
 
 /** Smooth a histogram or the 2D plot with a uniform prior.
     Return TRUE on success. */
-gboolean mdt_smooth(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
+gboolean mdt_smooth(const struct mdt *mdtin, struct mdt *mdtout,
                     int dimensions, float weight, GError **err)
 {
   static const float divisor = 1e-15;
   static const char *routine = "mdt_smooth";
   int nbins, nbinx, nbiny, *indf;
 
-  if (!get_binx_biny(dimensions, mdtin, routine, &nbinx, &nbiny, err)) {
+  if (!get_binx_biny(dimensions, &mdtin->base, routine, &nbinx, &nbiny, err)) {
     return FALSE;
   }
   nbins = nbinx * nbiny;
 
   mdt_copy(mdtin, mdtout);
 
-  indf = mdt_start_indices(mdtin);
+  indf = mdt_start_indices(&mdtin->base);
 
   do {
     int i1, i2, i;
     float norm, w1, w2, wunifp;
 
-    i1 = indmdt(indf, mdtin);
+    i1 = indmdt(indf, &mdtin->base);
     i2 = i1 + nbins;
 
     norm = 0.;
     for (i = i1; i < i2; i++) {
-      norm += mdtin->bin[i];
+      norm += mdtin->base.bin[i];
     }
 
 /*  The final distribution is: P = w1 * P(uniform) + w2 * P(data)
@@ -52,13 +52,13 @@ gboolean mdt_smooth(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
     w2 = (norm > divisor ? w2 / norm : 0.);
 
     for (i = i1; i < i2; i++) {
-      mdtout->bin[i] = wunifp + w2 * mdtin->bin[i];
+      mdtout->base.bin[i] = wunifp + w2 * mdtin->base.bin[i];
     }
 
 /* roll the indices of the "constant" features one forward: */
-  } while (roll_ind_mdt(indf, mdtin, mdtin->nfeat - dimensions));
+  } while (roll_ind_mdt(indf, &mdtin->base, mdtin->base.nfeat - dimensions));
 
-  mdtout->pdf = 1;
+  mdtout->base.pdf = 1;
   free(indf);
   return TRUE;
 }

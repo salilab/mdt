@@ -112,7 +112,7 @@ static gboolean check_start_end(const struct mod_mdt *mdt, const int offset[],
 
 
 /** Reshape an MDT. Return TRUE on success. */
-gboolean mdt_reshape(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
+gboolean mdt_reshape(const struct mdt *mdtin, struct mdt *mdtout,
                      const int features[], int n_features, const int offset[],
                      int n_offset, const int shape[], int n_shape,
                      GError **err)
@@ -120,20 +120,20 @@ gboolean mdt_reshape(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
   const char *routine = "mdt_reshape";
   int *old_position, *new_position;
 
-  if (n_features != mdtin->nfeat || n_offset != mdtin->nfeat
-      || n_shape != mdtin->nfeat) {
+  if (n_features != mdtin->base.nfeat || n_offset != mdtin->base.nfeat
+      || n_shape != mdtin->base.nfeat) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
                 "%s: features, offset and shape must all match"
-                " the dimension of the MDT (%d)", routine, mdtin->nfeat);
+                " the dimension of the MDT (%d)", routine, mdtin->base.nfeat);
     return FALSE;
   }
 
-  old_position = g_malloc(sizeof(int) * mdtin->nfeat);
-  new_position = g_malloc(sizeof(int) * mdtin->nfeat);
+  old_position = g_malloc(sizeof(int) * mdtin->base.nfeat);
+  new_position = g_malloc(sizeof(int) * mdtin->base.nfeat);
 
-  if (!get_position_mappings(mdtin, features, old_position, new_position,
-                             routine, err)
-      || !check_start_end(mdtin, offset, shape, old_position, features,
+  if (!get_position_mappings(&mdtin->base, features, old_position,
+                             new_position, routine, err)
+      || !check_start_end(&mdtin->base, offset, shape, old_position, features,
                           routine, err)) {
     g_free(old_position);
     g_free(new_position);
@@ -141,14 +141,15 @@ gboolean mdt_reshape(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
   }
 
   mdt_copy(mdtin, mdtout);
-  reshape_mdt_indices(mdtin, mdtout, offset, shape, features, old_position);
+  reshape_mdt_indices(&mdtin->base, &mdtout->base, offset, shape, features,
+                      old_position);
 
   /* reshape the MDT table: */
-  reshape_mdt_table(mdtin, mdtout, new_position);
+  reshape_mdt_table(&mdtin->base, &mdtout->base, new_position);
 
   /* a little heuristic here: */
-  if (!mdtout->pdf) {
-    mdtout->sample_size = get_sum(mdtout->bin, mdtout->nelems);
+  if (!mdtout->base.pdf) {
+    mdtout->base.sample_size = get_sum(mdtout->base.bin, mdtout->base.nelems);
   }
 
   g_free(old_position);

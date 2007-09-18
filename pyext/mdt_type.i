@@ -7,9 +7,17 @@ struct mod_mdt {
   gboolean pdf;
 };
 
+struct mdt {
+%immutable;
+  struct mod_mdt base;
+};
+
 struct mod_mdt_feature {
   int istart, iend, nbins, ifeat;
 };
+
+struct mdt *mdt_new(void);
+void mdt_free(struct mdt *mdt);
 
 %inline %{
 static struct mod_mdt_bin *mdt_library_bin_get(const struct mod_mdt *mdt,

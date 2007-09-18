@@ -120,37 +120,37 @@ static void integrate_mdt_table(const struct mod_mdt *mdtin,
 }
 
 /** Integrate an MDT. Return TRUE on success. */
-gboolean mdt_integrate(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
+gboolean mdt_integrate(const struct mdt *mdtin, struct mdt *mdtout,
                        const int features[], int n_features, GError **err)
 {
   static const char *routine = "mdt_integrate";
   int *inew_features, *int_features, n_int_features;
 
-  if (n_features <= 0 || n_features >= mdtin->nfeat) {
+  if (n_features <= 0 || n_features >= mdtin->base.nfeat) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
                 "%s: Number of features to be integrated (%d)"
                 " must be less than the current number of"
                 " features in the MDT (%d) and greater than zero.",
-                routine, n_features, mdtin->nfeat);
+                routine, n_features, mdtin->base.nfeat);
     return FALSE;
   }
 
-  if (!get_feature_indices(mdtin, features, n_features, &inew_features,
+  if (!get_feature_indices(&mdtin->base, features, n_features, &inew_features,
                            &n_int_features, &int_features, routine, err)) {
     return FALSE;
   }
 
   mdt_copy(mdtin, mdtout);
-  mdtout->nfeat = n_features;
-  copy_mdt_indices_subset(mdtin, mdtout, inew_features);
+  mdtout->base.nfeat = n_features;
+  copy_mdt_indices_subset(&mdtin->base, &mdtout->base, inew_features);
 
   /* Integrate the MDT table */
-  integrate_mdt_table(mdtin, mdtout, n_features, inew_features, n_int_features,
-                      int_features);
+  integrate_mdt_table(&mdtin->base, &mdtout->base, n_features, inew_features,
+                      n_int_features, int_features);
 
   /* a little heuristic here */
-  if (!mdtout->pdf) {
-    mdtout->sample_size = get_sum(mdtout->bin, mdtout->nelems);
+  if (!mdtout->base.pdf) {
+    mdtout->base.sample_size = get_sum(mdtout->base.bin, mdtout->base.nelems);
   }
   g_free(inew_features);
   g_free(int_features);

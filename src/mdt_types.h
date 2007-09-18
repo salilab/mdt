@@ -44,6 +44,12 @@ struct mdt_atom_class_list {
   struct mdt_atom_class *classes;
 };
 
+/** A single MDT */
+struct mdt {
+  /** Base Modeller type */
+  struct mod_mdt base;
+};
+
 /** Library of feature data used by MDTs */
 struct mdt_library {
   /** Base Modeller type */
@@ -63,6 +69,12 @@ struct mdt_library {
   /** Tuple classes */
   struct mdt_atom_class_list *tupclass;
 };
+
+/** Make a new mdt structure */
+struct mdt *mdt_new(void);
+
+/** Free an mdt structure */
+void mdt_free(struct mdt *mdt);
 
 /** Make a new mdt_library structure */
 struct mdt_library *mdt_library_new(void);

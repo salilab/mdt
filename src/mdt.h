@@ -18,7 +18,7 @@ G_BEGIN_DECLS
 
 /** Smooth a histogram or the 2D plot with a uniform prior.
     Return TRUE on success. */
-gboolean mdt_smooth(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
+gboolean mdt_smooth(const struct mdt *mdtin, struct mdt *mdtout,
                     int dimensions, float weight, GError **err);
 
 /** Transform an MDT with an exp function */
@@ -65,17 +65,17 @@ gboolean mdt_read_hdf5(struct mod_mdt *mdt, const struct mdt_library *mlib,
                        const char *filename, GError **err);
 
 /** Normalize an MDT. */
-gboolean mdt_normalize(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
+gboolean mdt_normalize(const struct mdt *mdtin, struct mdt *mdtout,
                        const struct mdt_library *mlib, int dimensions,
                        const float dx_dy[], int n_dx_dy, gboolean to_zero,
                        gboolean to_pdf, GError **err);
 
 /** Integrate an MDT. Return TRUE on success. */
-gboolean mdt_integrate(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
+gboolean mdt_integrate(const struct mdt *mdtin, struct mdt *mdtout,
                        const int features[], int n_features, GError **err);
 
 /** Reshape an MDT. Return TRUE on success. */
-gboolean mdt_reshape(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
+gboolean mdt_reshape(const struct mdt *mdtin, struct mdt *mdtout,
                      const int features[], int n_features, const int offset[],
                      int n_offset, const int shape[], int n_shape,
                      GError **err);
@@ -85,7 +85,7 @@ gboolean mdt_make(struct mod_mdt *mdt, const struct mdt_library *mlib,
                   const int features[], int n_features, GError **err);
 
 /** Make mdtout a copy of mdtin. */
-void mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout);
+void mdt_copy(const struct mdt *mdtin, struct mdt *mdtout);
 
 /** Get an element from an MDT. */
 double mdt_get(const struct mod_mdt *mdt, const int indices[], int n_indices,
@@ -107,7 +107,7 @@ gboolean mdt_write_asgl(const struct mod_mdt *mdt,
 
 /** Super-duper multi-level hierarchical recursive multi-dimensional
     smoothing of sparse MDT frequency tables. */
-void mdt_super_smooth(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
+void mdt_super_smooth(const struct mdt *mdtin, struct mdt *mdtout,
                       float prior_weight, gboolean entropy_weighing);
 
 /** Sum an MDT section. */

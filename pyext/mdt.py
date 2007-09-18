@@ -192,10 +192,12 @@ class TableSection(modobject):
     __mdt = None
     _mlib = None
     _modpt = None
+    _basept = None
 
     def __init__(self, mdt, indices):
         self.__mdt = mdt  # Keep a reference to the MDT
         self._modpt = mdt._modpt
+        self._basept = mdt._basept
         self._mlib = mdt._mlib
         self._indices = indices
 
@@ -206,15 +208,15 @@ class TableSection(modobject):
 
     def sum(self):
         """Sum of all points in the table"""
-        return _mdt.mdt_section_sum(self._modpt, self._indices)
+        return _mdt.mdt_section_sum(self._basept, self._indices)
 
     def entropy(self):
         """Entropy of all points in the table"""
-        return _mdt.mdt_section_entropy(self._modpt, self._indices)
+        return _mdt.mdt_section_entropy(self._basept, self._indices)
 
     def mean_stdev(self):
         """Mean and standard deviation of the table"""
-        return _mdt.mdt_section_meanstdev(self._modpt, self._mlib._modpt,
+        return _mdt.mdt_section_meanstdev(self._basept, self._mlib._modpt,
                                           self._indices)
 
     def __check_indices(self, indices):
@@ -236,7 +238,7 @@ class TableSection(modobject):
             self.__check_indices(indx)
             return TableSection(self, self._indices + indx)
         else:
-            return _mdt.mdt_get(self._modpt, self._indices + indx)
+            return _mdt.mdt_get(self._basept, self._indices + indx)
 
     def __setitem__(self, indx, val):
         if isinstance(indx, list):
@@ -246,7 +248,7 @@ class TableSection(modobject):
         if len(indx) < len(self.features):
             raise ValueError("Cannot set sections of MDTs")
         else:
-            _mdt.mdt_set(self._modpt, self._indices + indx, val)
+            _mdt.mdt_set(self._basept, self._indices + indx, val)
 
     def __get_features(self):
         return _FeatureList(self)
@@ -277,11 +279,12 @@ class Table(TableSection):
        or a 2D section as m[0]. See `TableSection`.
     """
     _modpt = None
+    _basept = None
     _mlib = None
 
     def __new__(cls, *args, **vars):
         obj = TableSection.__new__(cls)
-        obj._modpt = _modeller.mod_mdt_new()
+        obj._modpt = _mdt.mdt_new()
         return obj
 
     def __init__(self, mlib, file=None, features=None):
@@ -306,15 +309,15 @@ class Table(TableSection):
             self.make(features)
 
     def __del__(self):
-        _modeller.mod_mdt_free(self._modpt)
+        _mdt.mdt_free(self._modpt)
 
     def read(self, file):
         """Read an MDT from `file`."""
-        _modeller.mod_mdt_read(self._modpt, self._mlib._basept, file)
+        _modeller.mod_mdt_read(self._basept, self._mlib._basept, file)
 
     def read_hdf5(self, file):
         """Read an MDT in HDF5 format from `file`."""
-        _mdt.mdt_read_hdf5(self._modpt, self._mlib._modpt, file)
+        _mdt.mdt_read_hdf5(self._basept, self._mlib._modpt, file)
 
     def copy(self):
         """
@@ -327,7 +330,7 @@ class Table(TableSection):
 
     def make(self, features):
         """Clear the table, and set the features"""
-        _mdt.mdt_make(self._modpt, self._mlib._modpt, features)
+        _mdt.mdt_make(self._basept, self._mlib._modpt, features)
 
     def write(self, file, write_preamble=True):
         """Write the table to `file`. If `write_preamble` is False, it will
@@ -335,11 +338,11 @@ class Table(TableSection):
            including the feature list, bins, etc. This is useful for example
            for creating a file to be read by another program, such as
            Mathematica."""
-        _mdt.mdt_write(self._modpt, self._mlib._modpt, file, write_preamble)
+        _mdt.mdt_write(self._basept, self._mlib._modpt, file, write_preamble)
 
     def write_hdf5(self, file):
         """Write an MDT in HDF5 format to `file`."""
-        _mdt.mdt_write_hdf5(self._modpt, self._mlib._modpt, file)
+        _mdt.mdt_write_hdf5(self._basept, self._mlib._modpt, file)
 
     def reshape(self, features, offset, shape):
         """
@@ -471,7 +474,7 @@ class Table(TableSection):
         :rtype: `Table`
         """
         mdtout = self.copy()
-        _mdt.mdt_exp_transform(mdtout._modpt, offset, expoffset, multiplier,
+        _mdt.mdt_exp_transform(mdtout._basept, offset, expoffset, multiplier,
                                power)
         return mdtout
 
@@ -487,7 +490,7 @@ class Table(TableSection):
         :rtype: `Table`
         """
         mdtout = self.copy()
-        _mdt.mdt_log_transform(mdtout._modpt, offset, multiplier, undefined)
+        _mdt.mdt_log_transform(mdtout._basept, offset, multiplier, undefined)
         return mdtout
 
     def linear_transform(self, offset, multiplier):
@@ -501,7 +504,7 @@ class Table(TableSection):
         :rtype: `Table`
         """
         mdtout = self.copy()
-        _mdt.mdt_linear_transform(mdtout._modpt, offset, multiplier)
+        _mdt.mdt_linear_transform(mdtout._basept, offset, multiplier)
         return mdtout
 
     def inverse_transform(self, offset, multiplier, undefined=0.):
@@ -516,7 +519,8 @@ class Table(TableSection):
         :rtype: `Table`
         """
         mdtout = self.copy()
-        _mdt.mdt_inverse_transform(mdtout._modpt, offset, multiplier, undefined)
+        _mdt.mdt_inverse_transform(mdtout._basept, offset, multiplier,
+                                   undefined)
         return mdtout
 
     def offset_min(self, dimensions):
@@ -528,7 +532,7 @@ class Table(TableSection):
         :rtype: `Table`
         """
         mdtout = self.copy()
-        _mdt.mdt_offset_min(mdtout._modpt, dimensions)
+        _mdt.mdt_offset_min(mdtout._basept, dimensions)
         return mdtout
 
     def close(self, dimensions):
@@ -544,7 +548,7 @@ class Table(TableSection):
         :rtype: `Table`
         """
         mdtout = self.copy()
-        _mdt.mdt_close(mdtout._modpt, dimensions)
+        _mdt.mdt_close(mdtout._basept, dimensions)
         return mdtout
 
     def entropy_full(self):
@@ -562,7 +566,7 @@ class Table(TableSection):
 
         .. |sum| unicode:: U+03A3
         """
-        return _mdt.mdt_entropy_hx(self._modpt)
+        return _mdt.mdt_entropy_hx(self._basept)
 
     def super_smooth(self, prior_weight, entropy_weighing):
         """
@@ -612,7 +616,7 @@ class Table(TableSection):
           - `y_decimal`: the number of decimal places used to write
             Y feature values.
         """
-        return _mdt.mdt_write_asgl(self._modpt, self._mlib._modpt, asglroot,
+        return _mdt.mdt_write_asgl(self._basept, self._mlib._modpt, asglroot,
                                    text, dimensions, every_x_numbered,
                                    every_y_numbered, plot_density_cutoff,
                                    plots_per_page, plot_position, plot_type,
@@ -653,7 +657,7 @@ class Table(TableSection):
             io = self._mlib._env.io
         if edat is None:
             edat = self._mlib._env.edat
-        _mdt.mdt_add_alignment(self._modpt, self._mlib._modpt, aln.modpt,
+        _mdt.mdt_add_alignment(self._basept, self._mlib._modpt, aln.modpt,
                                distngh, False, surftyp, accessibility_type,
                                residue_span_range, sympairs, symtriples,
                                io.modpt, edat.modpt, self._mlib._env.libs.modpt)
@@ -671,14 +675,17 @@ class Table(TableSection):
                       accessibility_type, sympairs, symtriples, io, edat)
 
     def __get_pdf(self):
-        return _mdt.mod_mdt_pdf_get(self._modpt)
+        return _mdt.mod_mdt_pdf_get(self._basept)
     def __get_n_proteins(self):
-        return _mdt.mod_mdt_n_proteins_get(self._modpt)
+        return _mdt.mod_mdt_n_proteins_get(self._basept)
     def __get_n_protein_pairs(self):
-        return _mdt.mod_mdt_n_protein_pairs_get(self._modpt)
+        return _mdt.mod_mdt_n_protein_pairs_get(self._basept)
     def __get_sample_size(self):
-        return _mdt.mod_mdt_sample_size_get(self._modpt)
+        return _mdt.mod_mdt_sample_size_get(self._basept)
+    def __get_basept(self):
+        return _mdt.mdt_base_get(self._modpt)
 
+    _basept = property(__get_basept)
     pdf = property(__get_pdf, doc="Whether this MDT is a PDF")
     n_proteins = property(__get_n_proteins, doc="Number of proteins")
     n_protein_pairs = property(__get_n_protein_pairs,
@@ -695,7 +702,7 @@ class _FeatureList(modlist.FixList):
         modlist.FixList.__init__(self)
 
     def __len__(self):
-        return _mdt.mod_mdt_nfeat_get(self.__mdt._modpt) - self.__removed_rank
+        return _mdt.mod_mdt_nfeat_get(self.__mdt._basept) - self.__removed_rank
 
     def _getfunc(self, indx):
         return Feature(self.__mdt, indx + self.__removed_rank)
@@ -717,7 +724,7 @@ class Feature(object):
     def __get_periodic(self):
         return _mdt.mdt_feature_is_periodic(self.ifeat)
     def __get_modpt(self):
-        return _mdt.mod_mdt_feature_get(self._mdt._modpt, self._indx)
+        return _mdt.mod_mdt_feature_get(self._mdt._basept, self._indx)
 
     _modpt = property(__get_modpt)
     ifeat = property(__get_ifeat, doc="Integer type")
@@ -760,7 +767,7 @@ class Bin(object):
 
     def __get_modpt(self):
         nfeat = self.__feature._indx
-        mdt = self.__feature._mdt._modpt
+        mdt = self.__feature._mdt._basept
         mlib = self.__feature._mdt._mlib._modpt
         return _mdt.mdt_library_bin_get(mdt, mlib, nfeat, self.__indx)
 
@@ -786,7 +793,7 @@ class Source(object):
         if edat is None:
             edat = mlib._env.edat
         self._edat = edat
-        self._modpt = _mdt.mdt_alignment_open(mdt._modpt, mlib._modpt,
+        self._modpt = _mdt.mdt_alignment_open(mdt._basept, mlib._modpt,
                                               aln.modpt, distngh, False,
                                               surftyp, accessibility_type,
                                               sympairs, symtriples, io.modpt,
@@ -799,7 +806,7 @@ class Source(object):
     def sum(self, residue_span_range=(-99999, -2, 2, 99999)):
         """Scan all data points in the source, and return the sum."""
         f = _mdt.mdt_source_sum
-        return f(self._modpt, self._mdt._modpt, self._mlib._modpt,
+        return f(self._modpt, self._mdt._basept, self._mlib._modpt,
                  residue_span_range, self._mlib._env.libs.modpt,
                  self._edat.modpt)
 

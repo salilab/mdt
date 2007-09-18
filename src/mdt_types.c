@@ -9,6 +9,22 @@
 #include "mdt_types.h"
 #include "mdt_atom_classes.h"
 
+/** Make a new mdt structure */
+struct mdt *mdt_new(void)
+{
+  struct mdt *mdt;
+  mdt = g_malloc(sizeof(struct mdt));
+  mod_mdt_init(&mdt->base);
+  return mdt;
+}
+
+/** Free an mdt structure */
+void mdt_free(struct mdt *mdt)
+{
+  mod_mdt_dealloc(&mdt->base);
+  g_free(mdt);
+}
+
 /** Make a new mdt_library structure */
 struct mdt_library *mdt_library_new(void)
 {

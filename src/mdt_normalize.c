@@ -76,7 +76,7 @@ static void do_normalize(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
 
 
 /** Normalize an MDT. Return TRUE on success. */
-gboolean mdt_normalize(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
+gboolean mdt_normalize(const struct mdt *mdtin, struct mdt *mdtout,
                        const struct mdt_library *mlib, int dimensions,
                        const float dx_dy[], int n_dx_dy, gboolean to_zero,
                        gboolean to_pdf, GError **err)
@@ -91,12 +91,12 @@ gboolean mdt_normalize(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
                 "to agree with 'dimensions'.", routine, dimensions);
     return FALSE;
   }
-  if (!get_binx_biny(dimensions, mdtin, routine, &nbinx, &nbiny, err)) {
+  if (!get_binx_biny(dimensions, &mdtin->base, routine, &nbinx, &nbiny, err)) {
     return FALSE;
   }
   nbins = nbinx * nbiny;
   if (to_pdf) {
-    dxdy = get_dxdy(dx_dy, mdtin, dimensions, mlib);
+    dxdy = get_dxdy(dx_dy, &mdtin->base, dimensions, mlib);
   } else {
     dxdy = 1.0;
   }
@@ -108,10 +108,10 @@ gboolean mdt_normalize(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
   mod_lognote("%s______> dx*dy         : %10.4f", routine, dxdy);
   mod_lognote("%s______> to_zero       : %d", routine, to_zero);
 
-  indf = mdt_start_indices(mdtin);
-  do_normalize(mdtin, mdtout, indf, dxdy, to_zero, nbins,
-               mdtin->nfeat - dimensions);
+  indf = mdt_start_indices(&mdtin->base);
+  do_normalize(&mdtin->base, &mdtout->base, indf, dxdy, to_zero, nbins,
+               mdtin->base.nfeat - dimensions);
   free(indf);
-  mdtout->pdf = 1;
+  mdtout->base.pdf = 1;
   return TRUE;
 }

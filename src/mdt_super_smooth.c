@@ -396,7 +396,7 @@ static void super_smooth_level(const struct mod_mdt *mdtin,
 
 /** Super-duper multi-level hierarchical recursive multi-dimensional
     smoothing of sparse MDT frequency tables. */
-void mdt_super_smooth(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
+void mdt_super_smooth(const struct mdt *mdtin, struct mdt *mdtout,
                       float prior_weight, gboolean entropy_weighing)
 {
   int level, ncomb1, *i_feat_fix, *n_bins_fix, *i_val_fix, *i_start_fix,
@@ -405,11 +405,11 @@ void mdt_super_smooth(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
   struct combination_vector *vec = new_combination_vector();
 
   mdt_copy(mdtin, mdtout);
-  nbinx = mdtin->features[mdtin->nfeat - 1].nbins;
-  i_feat_fix = g_malloc(sizeof(int) * mdtin->nfeat);
-  n_bins_fix = g_malloc(sizeof(int) * mdtin->nfeat);
-  i_start_fix = g_malloc(sizeof(int) * mdtin->nfeat);
-  i_val_fix = g_malloc(sizeof(int) * mdtin->nfeat);
+  nbinx = mdtin->base.features[mdtin->base.nfeat - 1].nbins;
+  i_feat_fix = g_malloc(sizeof(int) * mdtin->base.nfeat);
+  n_bins_fix = g_malloc(sizeof(int) * mdtin->base.nfeat);
+  i_start_fix = g_malloc(sizeof(int) * mdtin->base.nfeat);
+  i_val_fix = g_malloc(sizeof(int) * mdtin->base.nfeat);
   apriori = g_malloc(sizeof(double) * nbinx);
   frq = g_malloc(sizeof(double) * nbinx);
   bin2 = NULL;
@@ -417,10 +417,11 @@ void mdt_super_smooth(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
   /* initialize variables 'from the previous level' */
   ncomb1 = 0;
 
-  for (level = 1; level <= mdtin->nfeat; level++) {
-    super_smooth_level(mdtin, mdtout, prior_weight, entropy_weighing, level,
-                       &ncomb1, vec, i_feat_fix, n_bins_fix, i_val_fix,
-                       i_start_fix, apriori, frq, &bin2, &nelm2, &maxelm2);
+  for (level = 1; level <= mdtin->base.nfeat; level++) {
+    super_smooth_level(&mdtin->base, &mdtout->base, prior_weight,
+                       entropy_weighing, level, &ncomb1, vec, i_feat_fix,
+                       n_bins_fix, i_val_fix, i_start_fix, apriori, frq,
+                       &bin2, &nelm2, &maxelm2);
   }
 
   free_combination_vector(vec);

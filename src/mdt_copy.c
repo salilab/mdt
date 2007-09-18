@@ -8,8 +8,8 @@
 #include "modeller.h"
 #include "mdt.h"
 
-/** Make mdtout a copy of mdtin. */
-void mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
+/** Copy the base Modeller MDT */
+static void mod_mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
 {
   int i;
   mdtout->nalns = mdtin->nalns;
@@ -39,4 +39,10 @@ void mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
     out->nbins = in->nbins;
   }
   memcpy(mdtout->bin, mdtin->bin, sizeof(double) * mdtin->nelems);
+}
+
+/** Make mdtout a copy of mdtin. */
+void mdt_copy(const struct mdt *mdtin, struct mdt *mdtout)
+{
+  mod_mdt_copy(&mdtin->base, &mdtout->base);
 }

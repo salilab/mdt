@@ -21,6 +21,7 @@ doc = SConscript('doc/SConscript')
 
 # testcases first require Python extensions to be built:
 env.Depends(test, pyext)
+env.Depends(test, pyso)
 
 # Build the C library (src directory) and Python extension by default:
-env.Default(src, pyext)
+env.Default(src, pyext, pyso)

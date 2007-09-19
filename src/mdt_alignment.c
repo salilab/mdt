@@ -368,7 +368,7 @@ static gboolean gen_residue_pairs(struct mdt *mdt,
   int ip1, ip2;
   const struct mod_alignment *aln = source->aln;
 
-  for (ip1 = 0; ip1 < aln->naln - 1; ip1++) {
+  for (ip1 = 0; ip1 < aln->naln; ip1++) {
 
     /* only if any of the residue relationships is asymmetric, go NxN
        (mainchain H-bonds are an example) */

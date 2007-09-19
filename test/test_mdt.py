@@ -161,6 +161,21 @@ class MDTTests(ModellerTest):
         aln = alignment(env)
         self.assertRaises(mdt.MDTError, m.add_alignment, aln)
 
+    def test_feature_resind_diff(self):
+        """Test the residue index difference feature"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        aln = alignment(env, file='test/data/alignment.ali', align_codes='5fd1')
+        m = mdt.Table(mlib, features=51)
+        m.add_alignment(aln, residue_span_range=(-999, -2, 2, 999))
+        # span range should result in 0, +/- 1 bins being zero:
+        self.assertEqual(m[9], 0.)
+        self.assertEqual(m[10], 0.)
+        self.assertEqual(m[11], 0.)
+        # other bins should be symmetrically distributed:
+        for i in range(9):
+            self.assertEqual(m[i], m[-2 - i])
+
     def test_1d_mdt(self):
         """Make sure a 1D MDT matches known residue data"""
         env = self.get_environ()

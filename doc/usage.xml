@@ -68,9 +68,9 @@ simultaneously. See <xref linkend="scantypes" /> for all of the scan types.
 </para>
 
 <para>
-&MDT; also knows that some features are symmetric, and will perform a
-non-redundant scan in this case. If, however, any feature is asymmetric, a
-full scan is performed.
+&MDT; also knows that some residue pair features are symmetric, and will
+perform a non-redundant scan in this case. If, however, any feature in the
+table is asymmetric, a full scan is performed.
 </para>
 
 <para>
@@ -125,11 +125,6 @@ C<subscript>&alpha;</subscript>, but can be overridden by specifying the
 
 <row>
 <entry>Residue pair<footnoteref linkend="resatompair" /></entry>
-<entry>Feature 51, residue index difference in protein A</entry>
-</row>
-
-<row>
-<entry>Residue pair</entry>
 <entry>Feature 51, residue index difference in protein A</entry>
 </row>
 
@@ -204,6 +199,19 @@ ANY ATOM DISTANCE IN A (82)
   0   0.5
 </screen>
 </example>
+
+<note><para>
+Bin ranges in &MDT; are inclusive, so a feature value can be equal to the lower
+or upper range of the bin and still be included in the bin. For example, in
+the case above, both 0 &Aring; and 0.5 &Aring; will be placed into the first
+bin, even though the second bin also starts at 0.5 &Aring;. (If, as in this
+case, the value fits within the range of more than one bin, it is placed in
+the first one which matches.) This is also useful to be aware of for integer
+features, such as the residue index difference (feature 51) - for example,
+don't define bins 1-2, 2-3, etc. but instead use a small offset: 0.99-1.99,
+1.99-2.99 etc. so that feature values 1 and 2 do not both get placed in the
+first bin.
+</para></note>
 
 <para>
 The bin range type can also be 2, in which case each bin's range is specified

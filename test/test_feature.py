@@ -83,7 +83,7 @@ class FeatureTests(MDTTest):
         m = self.get_test_mdt(features=35)
         m2 = self.get_test_mdt(features=38)
         self.assertEqual(m.shape, (4,))
-        self.assertEqual([b for b in m], [0., 2., 0., 0.])
+        self.assertEqual([b for b in m], [0., 1., 1., 0.])
         self.assertMDTDataEqual(m, m2)
 
         for (code, bin) in (('bin0', 0), ('bin1', 1), ('bin2', 2),
@@ -225,7 +225,7 @@ class FeatureTests(MDTTest):
         self.assertEqual(m4[-1], 0.0)
         self.assertInTolerance(m5[0], 556.0, 0.0005)
         self.assertInTolerance(m5[1], 642.0, 0.0005)
-        self.assertInTolerance(m5[2], 528.0, 6.0005)
+        self.assertInTolerance(m5[2], 470.0, 6.0005)
         self.assertEqual(m5.shape, (7,))
         self.assertInTolerance(m5[-1], 180.0, 0.0005)
 

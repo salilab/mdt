@@ -73,7 +73,7 @@ int iclsbin(float x, const struct mod_mdt_libfeature *feat)
   int i;
   const struct mod_mdt_bin *bin = feat->bins;
   for (i = 1; i < feat->nbins; i++, bin++) {
-    if (x >= bin->rang1 && x <= bin->rang2) {
+    if (x >= bin->rang1 && x < bin->rang2) {
       return i;
     }
   }

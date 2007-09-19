@@ -201,16 +201,11 @@ ANY ATOM DISTANCE IN A (82)
 </example>
 
 <note><para>
-Bin ranges in &MDT; are inclusive, so a feature value can be equal to the lower
-or upper range of the bin and still be included in the bin. For example, in
-the case above, both 0 &Aring; and 0.5 &Aring; will be placed into the first
-bin, even though the second bin also starts at 0.5 &Aring;. (If, as in this
-case, the value fits within the range of more than one bin, it is placed in
-the first one which matches.) This is also useful to be aware of for integer
-features, such as the residue index difference (feature 51) - for example,
-don't define bins 1-2, 2-3, etc. but instead use a small offset: 0.99-1.99,
-1.99-2.99 etc. so that feature values 1 and 2 do not both get placed in the
-first bin.
+Bin ranges in &MDT; are half-closed, i.e. a feature value must be greater than
+or equal to the lower value of the range, and less than the upper value, to be
+counted in the bin. For example, in the case above, 0 &Aring; would be placed
+into the first bin, and 0.5 &Aring; into the second. (If you define bins with
+overlapping ranges, values will be placed into the first bin that matches.)
 </para></note>
 
 <para>
@@ -218,9 +213,9 @@ The bin range type can also be 2, in which case each bin's range is specified
 explicitly on a separate line in the file. Each bin can also have a name
 specified in columns 21 and up. For example, the following bins feature 35
 (X-ray resolution of protein A) into 5 bins, the first for 0.51-1.5 &Aring;,
-the second for 1.4-1.6 &Aring;, and so on. Anything below 0.51 &Aring; or above
-2.0 &Aring; (or an undefined value) will be placed into the last (undefined)
-bin, so there is no need to specify a range for this bin.
+the second for 1.4-1.6 &Aring;, and so on. Anything below 0.51 &Aring; or 
+2.0 &Aring; or above (or an undefined value) will be placed into the last
+(undefined) bin, so there is no need to specify a range for this bin.
 </para>
 
 <example id="binexplicit">
@@ -233,7 +228,7 @@ X-RAY RESOLUTION OF A (35)
  1.4   1.6          1.4-1.6
  1.6   1.8          1.6-1.8
  1.8   2.0          1.8-2.0
- 0.0   0.0          NMR_&amp;_&gt;2
+ 0.0   0.0          NMR_&amp;_&gt;=2
 </screen>
 </example>
 

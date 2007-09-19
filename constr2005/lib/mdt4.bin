@@ -183,8 +183,8 @@ AVERAGE SIDECHAIN Biso IN B (34)
 FEATURE 35
 X-RAY RESOLUTION OF A (35)
  2     2
- 0.51  2.0          <2
- 0     0            NMR_&_>2
+ 0.51  2.001        <=2.0
+ 0     0            NMR_&_>2.0
 
 
 FEATURE 38

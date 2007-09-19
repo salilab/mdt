@@ -23,7 +23,7 @@ def builder_unit_test(target, source, env):
 e.Append(BUILDERS = {'Test': Builder(action=builder_unit_test)})
 
 # Always run our unit test:
-test = e.Test("test.passed", "test_mdt.py")
+test = e.Test("test.passed", "run-all-tests.py")
 e.Alias("test", test)
 e.AlwaysBuild("test.passed")
 Return('test')

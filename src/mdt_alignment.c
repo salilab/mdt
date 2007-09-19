@@ -354,7 +354,7 @@ static gboolean check_sequence_separation(int ir1, int ir1p,
 }
 
 
-/** Scan all residue pairs in the first alignment sequence. */
+/** Scan all residue pairs in the alignment sequence(s). */
 static gboolean gen_residue_pairs(struct mdt *mdt,
                                   const struct mdt_library *mlib,
                                   const int rsrang[4],

@@ -1,12 +1,8 @@
-Import('env', 'modconfig')
+Import('env', 'modconfig', 'bin')
 
 e = env.Copy()
 
 if modconfig['exetype'] != 'i386-w32':
-    # Make sure python can find our shared libraries:
-    e['ENV']['LD_LIBRARY_PATH'] = 'src/'
-    e['ENV']['DYLD_LIBRARY_PATH'] = 'src/'
-    e['ENV']['LIBPATH'] = 'src/'
     python = 'python'
 else:
     # Link the shared library into the current directory so that Windows can
@@ -15,13 +11,10 @@ else:
     e.Command('#libmdt.dll', '#src/libmdt.dll', 'ln -sf $SOURCE $TARGET')
     e.Depends('test.passed', '#libmdt.dll')
     python = 'w32python'
-# Make sure python can find our .py files:
-e['ENV']['PYTHONPATH'] = 'pyext'
 
 # Custom builder to run unit tests:
 def builder_unit_test(target, source, env):
-    app = "%s/modpy.sh %s %s -v > /dev/null" % (modconfig['bin'], python,
-                                                source[0].abspath)
+    app = "%s %s %s -v > /dev/null" % (bin[0], python, source[0])
     if env.Execute(app) == 0:
         file(str(target[0]), 'w').write('PASSED\n')
     else:

@@ -12,6 +12,8 @@ Export('env', 'modconfig', 'pythoninc', 'configure_for_pyext',
        'is_wine_platform')
 
 # Subdirectories to build:
+bin = SConscript('bin/SConscript')
+Export('bin')
 test = SConscript('test/SConscript')
 pyso, pyext = SConscript('pyext/SConscript')
 src = SConscript('src/SConscript')
@@ -19,9 +21,9 @@ data = SConscript('data/SConscript')
 Export('pyext', 'pyso')
 doc = SConscript('doc/SConscript')
 
-# testcases first require Python extensions to be built:
-env.Depends(test, pyext)
-env.Depends(test, pyso)
+# bin script first require Python extensions to be built:
+env.Depends(bin, pyext)
+env.Depends(bin, pyso)
 
 # Build the C library (src directory) and Python extension by default:
-env.Default(src, pyext, pyso)
+env.Default(src, pyso, bin)

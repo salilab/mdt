@@ -286,12 +286,12 @@ static void prepare_level(int level, struct combination_vector *vec,
       /* save the feature combination for the next level: */
       comb->i_feat_fixn2[i] = i_feat_fix[i];
     }
-    g_free(i_feat_fix);
     comb->ndims2[level - 1] = mdtin->features[mdtin->nfeat - 1].nbins;
 
     *nelm2 += make_mdt_stride_full(comb->ndims2, level, comb->stride2);
     ic2++;
   }
+  g_free(i_feat_fix);
 
   if (*nelm2 > *maxelm2) {
     *maxelm2 = MAX(*maxelm2 * 3 / 2, *nelm2);

@@ -302,17 +302,6 @@ class TableTests(MDTTest):
         for y in range(ny):
             self.assertEqual(m2[0,y], m2[nx-1,y])
 
-    def test_super_smooth(self):
-        """Check for correctness of super smoothing"""
-        env = self.get_environ()
-        mlib = self.get_mdt_library()
-        m = mdt.Table(mlib, features=(1,2))
-        # A super-smoothed empty MDT should be the prior, i.e. 1/nbin:
-        m2 = m.super_smooth(1.0, True)
-        inds = []
-        while self.roll_inds(inds, m.shape, m.offset):
-            self.assertAlmostEqual(1./22., m2[inds], places=3)
-
     def test_smooth(self):
         """Check for correctness of smoothing"""
         env = self.get_environ()

@@ -148,8 +148,8 @@ gboolean mdt_reshape(const struct mdt *mdtin, struct mdt *mdtout,
   reshape_mdt_table(&mdtin->base, &mdtout->base, new_position);
 
   /* a little heuristic here: */
-  if (!mdtout->base.pdf) {
-    mdtout->base.sample_size = get_sum(mdtout->base.bin, mdtout->base.nelems);
+  if (!mdtout->pdf) {
+    mdtout->sample_size = get_sum(mdtout->base.bin, mdtout->base.nelems);
   }
 
   g_free(old_position);

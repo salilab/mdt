@@ -676,13 +676,13 @@ class Table(TableSection):
                       accessibility_type, sympairs, symtriples, io, edat)
 
     def __get_pdf(self):
-        return _mdt.mod_mdt_pdf_get(self._basept)
+        return _mdt.mdt_pdf_get(self._modpt)
     def __get_n_proteins(self):
-        return _mdt.mod_mdt_n_proteins_get(self._basept)
+        return _mdt.mdt_n_proteins_get(self._modpt)
     def __get_n_protein_pairs(self):
-        return _mdt.mod_mdt_n_protein_pairs_get(self._basept)
+        return _mdt.mdt_n_protein_pairs_get(self._modpt)
     def __get_sample_size(self):
-        return _mdt.mod_mdt_sample_size_get(self._basept)
+        return _mdt.mdt_sample_size_get(self._modpt)
     def __get_symmetric(self):
         return _mdt.mdt_symmetric_get(self._modpt)
     def __get_basept(self):

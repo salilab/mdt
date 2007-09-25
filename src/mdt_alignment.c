@@ -67,7 +67,7 @@ static gboolean scan_update(void *data, struct mdt *mdt, int indx,
                             GError **err)
 {
   mdt->base.bin[indx] += 1.0;
-  mdt->base.sample_size += 1.0;
+  mdt->sample_size += 1.0;
   return TRUE;
 }
 
@@ -147,22 +147,22 @@ static void update_protein_pairs(struct mdt *mdt, int nseqacc,
 {
   switch (mdt->base.nprotcmp) {
   case 1:
-    mdt->base.n_protein_pairs += nseqacc;
+    mdt->n_protein_pairs += nseqacc;
     break;
 
   case 2:
     if (sympairs) {
-      mdt->base.n_protein_pairs += nseqacc * (nseqacc - 1) / 2;
+      mdt->n_protein_pairs += nseqacc * (nseqacc - 1) / 2;
     } else {
-      mdt->base.n_protein_pairs += nseqacc * (nseqacc - 1);
+      mdt->n_protein_pairs += nseqacc * (nseqacc - 1);
     }
     break;
 
   case 3:
     if (symtriples) {
-      mdt->base.n_protein_pairs += nseqacc * (nseqacc - 1) * (nseqacc - 2) / 6;
+      mdt->n_protein_pairs += nseqacc * (nseqacc - 1) * (nseqacc - 2) / 6;
     } else {
-      mdt->base.n_protein_pairs += nseqacc * (nseqacc - 1) * (nseqacc - 2);
+      mdt->n_protein_pairs += nseqacc * (nseqacc - 1) * (nseqacc - 2);
     }
     break;
   }
@@ -799,8 +799,8 @@ gboolean mdt_add_alignment(struct mdt *mdt, const struct mdt_library *mlib,
   if (source) {
     gboolean ret;
 
-    mdt->base.nalns++;
-    mdt->base.n_proteins += source->nseqacc;
+    mdt->nalns++;
+    mdt->n_proteins += source->nseqacc;
 
     mod_lognote("Updating the statistics array:");
     ret = mdt_source_scan(mdt, mlib, source, residue_span_range, libs, edat,

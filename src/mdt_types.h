@@ -48,6 +48,16 @@ struct mdt_atom_class_list {
 struct mdt {
   /** Base Modeller type */
   struct mod_mdt base;
+  /** Number of alignments used to get this MDT */
+  int nalns;
+  /** Number of prots/prot pairs in analyzed alignments */
+  int n_protein_pairs;
+  /** Number of proteins in analyzed alignments */
+  int n_proteins;
+  /** Sample points in the current MDT */
+  double sample_size;
+  /** TRUE if the MDT is a pdf, FALSE if frequencies */
+  gboolean pdf;
   /** TRUE if all features are symmetric */
   gboolean symmetric;
   /** Scan type */

@@ -149,8 +149,8 @@ gboolean mdt_integrate(const struct mdt *mdtin, struct mdt *mdtout,
                       n_int_features, int_features);
 
   /* a little heuristic here */
-  if (!mdtout->base.pdf) {
-    mdtout->base.sample_size = get_sum(mdtout->base.bin, mdtout->base.nelems);
+  if (!mdtout->pdf) {
+    mdtout->sample_size = get_sum(mdtout->base.bin, mdtout->base.nelems);
   }
   g_free(inew_features);
   g_free(int_features);

@@ -10,7 +10,7 @@
 #include "util.h"
 
 /** Write MDT data to an HDF5 file. Return TRUE on success. */
-static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
+static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
                                const struct mdt_library *mlib, GError **err)
 {
   herr_t ret;
@@ -18,13 +18,13 @@ static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
   int *ifeat, *offset, *nbins;
   int i;
 
-  dims = g_malloc(mdt->nfeat * sizeof(hsize_t));
-  ifeat = g_malloc(mdt->nfeat * sizeof(int));
-  offset = g_malloc(mdt->nfeat * sizeof(int));
-  nbins = g_malloc(mdt->nfeat * sizeof(int));
-  for (i = 0; i < mdt->nfeat; i++) {
+  dims = g_malloc(mdt->base.nfeat * sizeof(hsize_t));
+  ifeat = g_malloc(mdt->base.nfeat * sizeof(int));
+  offset = g_malloc(mdt->base.nfeat * sizeof(int));
+  nbins = g_malloc(mdt->base.nfeat * sizeof(int));
+  for (i = 0; i < mdt->base.nfeat; i++) {
     const struct mod_mdt_libfeature *libfeat;
-    const struct mod_mdt_feature *feat = &mdt->features[i];
+    const struct mod_mdt_feature *feat = &mdt->base.features[i];
     libfeat = &mlib->base.features[feat->ifeat - 1];
     dims[i] = feat->nbins;
     ifeat[i] = feat->ifeat;
@@ -32,9 +32,10 @@ static gboolean write_mdt_data(hid_t file_id, const struct mod_mdt *mdt,
     nbins[i] = libfeat->nbins;
   }
 
-  ret = H5LTmake_dataset_double(file_id, "/mdt", mdt->nfeat, dims, mdt->bin);
+  ret = H5LTmake_dataset_double(file_id, "/mdt", mdt->base.nfeat, dims,
+                                mdt->base.bin);
   if (ret >= 0) {
-    hsize_t featdim = mdt->nfeat;
+    hsize_t featdim = mdt->base.nfeat;
     if (H5LTmake_dataset_int(file_id, "/features", 1, &featdim, ifeat) < 0
         || H5LTmake_dataset_int(file_id, "/offset", 1, &featdim, offset) < 0
         || H5LTmake_dataset_int(file_id, "/nbins", 1, &featdim, nbins) < 0) {
@@ -78,7 +79,7 @@ gboolean mdt_write_hdf5(const struct mdt *mdt, const struct mdt_library *mlib,
 
   file_id = mdt_hdf_create(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT,
                            &file_info, err);
-  if (file_id < 0 || !write_mdt_data(file_id, &mdt->base, mlib, err)
+  if (file_id < 0 || !write_mdt_data(file_id, mdt, mlib, err)
       || !mdt_hdf_close(file_id, &file_info, err)) {
     return FALSE;
   } else {

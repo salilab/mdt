@@ -204,7 +204,7 @@ static gboolean read_mdt_data(struct mdt *mdt, FILE *fp, const char *header,
     }
 
     if (retval) {
-      retval = read_mdt_footer(fp, str, &mdt->base.pdf, err);
+      retval = read_mdt_footer(fp, str, &mdt->pdf, err);
     }
     g_string_free(str, TRUE);
     return retval;
@@ -228,14 +228,14 @@ static gboolean read_mdt_file_line(struct mdt *mdt,
   } else if (strncmp(str->str, "MDT TABLE START:", 16) == 0) {
     return read_mdt_data(mdt, fp, str->str, err);
   } else if (!read_int_line(str->str, "Number of alignments", 39,
-                            &mdt->base.nalns, err)
+                            &mdt->nalns, err)
              || !read_int_line(str->str,
                                "Number of proteins in the alignments", 39,
-                               &mdt->base.n_proteins, err)
+                               &mdt->n_proteins, err)
              || !read_int_line(str->str, "Number of proteins or their pairs",
-                               39, &mdt->base.n_protein_pairs, err)
+                               39, &mdt->n_protein_pairs, err)
              || !read_double_line(str->str, "Sample size", 39,
-                                  &mdt->base.sample_size, err)) {
+                                  &mdt->sample_size, err)) {
     return FALSE;
   }
   return TRUE;

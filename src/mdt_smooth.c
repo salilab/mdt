@@ -58,7 +58,7 @@ gboolean mdt_smooth(const struct mdt *mdtin, struct mdt *mdtout,
 /* roll the indices of the "constant" features one forward: */
   } while (roll_ind_mdt(indf, &mdtin->base, mdtin->base.nfeat - dimensions));
 
-  mdtout->base.pdf = 1;
+  mdtout->pdf = 1;
   free(indf);
   return TRUE;
 }

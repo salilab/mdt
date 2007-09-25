@@ -26,8 +26,8 @@ gboolean mdt_make(struct mdt *mdt, const struct mdt_library *mlib,
   mod_mdt_nelems_set(&mdt->base, nelems);
   mod_mdt_nfeat_set(&mdt->base, n_features);
   memset(mdt->base.bin, 0, sizeof(double) * nelems);
-  mdt->base.nalns = mdt->base.n_protein_pairs = mdt->base.n_proteins = 0;
-  mdt->base.sample_size = 0.;
+  mdt->nalns = mdt->n_protein_pairs = mdt->n_proteins = 0;
+  mdt->sample_size = 0.;
 
   for (i = 0; i < n_features; i++) {
     int ifeat = features[i];

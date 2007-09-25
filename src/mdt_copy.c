@@ -12,13 +12,8 @@
 static void mod_mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
 {
   int i;
-  mdtout->nalns = mdtin->nalns;
-  mdtout->n_protein_pairs = mdtin->n_protein_pairs;
-  mdtout->n_proteins = mdtin->n_proteins;
   mdtout->nbinx = mdtin->nbinx;
-  mdtout->sample_size = mdtin->sample_size;
   mdtout->nfeat1 = mdtin->nfeat1;
-  mdtout->pdf = mdtin->pdf;
   for (i = 0; i < MAXDATATYP; i++) {
     mdtout->readin[i] = mdtin->readin[i];
   }
@@ -45,4 +40,9 @@ void mdt_copy(const struct mdt *mdtin, struct mdt *mdtout)
   mod_mdt_copy(&mdtin->base, &mdtout->base);
   mdtout->scantype = mdtin->scantype;
   mdtout->symmetric = mdtin->symmetric;
+  mdtout->nalns = mdtin->nalns;
+  mdtout->n_protein_pairs = mdtin->n_protein_pairs;
+  mdtout->n_proteins = mdtin->n_proteins;
+  mdtout->sample_size = mdtin->sample_size;
+  mdtout->pdf = mdtin->pdf;
 }

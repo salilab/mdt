@@ -2,15 +2,15 @@ struct mod_mdt {
 %immutable;
   int nelems;
   int nfeat;
-  int n_proteins, n_protein_pairs;
-  double sample_size;
-  gboolean pdf;
 };
 
 struct mdt {
 %immutable;
   struct mod_mdt base;
   gboolean symmetric;
+  int n_proteins, n_protein_pairs;
+  double sample_size;
+  gboolean pdf;
 };
 
 struct mod_mdt_feature {

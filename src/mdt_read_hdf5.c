@@ -109,22 +109,23 @@ static gboolean check_mdt_features(hid_t file_id, const struct mod_mdt *mdt,
 
 
 /** Read MDT data from an HDF5 file. Return TRUE on success. */
-static gboolean read_mdt_data(hid_t file_id, struct mod_mdt *mdt, GError **err)
+static gboolean read_mdt_data(hid_t file_id, struct mdt *mdt, GError **err)
 {
   herr_t ret;
   hsize_t *dims;
   int i, nelems;
 
-  dims = g_malloc(mdt->nfeat * sizeof(hsize_t));
+  dims = g_malloc(mdt->base.nfeat * sizeof(hsize_t));
   nelems = 1;
-  for (i = 0; i < mdt->nfeat; i++) {
-    const struct mod_mdt_feature *feat = &mdt->features[i];
+  for (i = 0; i < mdt->base.nfeat; i++) {
+    const struct mod_mdt_feature *feat = &mdt->base.features[i];
     dims[i] = feat->nbins;
     nelems *= feat->nbins;
   }
 
-  mod_mdt_nelems_set(mdt, nelems);
-  ret = mod_dataset_read_double(file_id, "/mdt", mdt->nfeat, dims, mdt->bin);
+  mod_mdt_nelems_set(&mdt->base, nelems);
+  ret = mod_dataset_read_double(file_id, "/mdt", mdt->base.nfeat, dims,
+                                mdt->base.bin);
   if (ret >= 0) {
     hsize_t featdim = 1;
     char is_pdf;
@@ -163,7 +164,7 @@ gboolean mdt_read_hdf5(struct mdt *mdt, const struct mdt_library *mlib,
                          err);
   if (file_id < 0 || !read_mdt_features(file_id, &mdt->base, err)
       || !check_mdt_features(file_id, &mdt->base, mlib, err)
-      || !read_mdt_data(file_id, &mdt->base, err)
+      || !read_mdt_data(file_id, mdt, err)
       || !mdt_hdf_close(file_id, &file_info, err)) {
     return FALSE;
   } else {

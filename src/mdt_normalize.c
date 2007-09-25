@@ -112,6 +112,6 @@ gboolean mdt_normalize(const struct mdt *mdtin, struct mdt *mdtout,
   do_normalize(&mdtin->base, &mdtout->base, indf, dxdy, to_zero, nbins,
                mdtin->base.nfeat - dimensions);
   free(indf);
-  mdtout->base.pdf = 1;
+  mdtout->pdf = TRUE;
   return TRUE;
 }

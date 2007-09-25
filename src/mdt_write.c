@@ -10,7 +10,7 @@
 #include "util.h"
 
 /** Write MDT header to a file */
-static void write_mdt_header(FILE *fp, const struct mod_mdt *mdt,
+static void write_mdt_header(FILE *fp, const struct mdt *mdt,
                              const struct mdt_library *mlib)
 {
   int i;
@@ -26,10 +26,10 @@ static void write_mdt_header(FILE *fp, const struct mod_mdt *mdt,
   fprintf(fp, "FEATURES TABULATED IN THIS MULTIDIMENSIONAL TABLE:\n\n");
   fprintf(fp, "  #  FEATURE NBINS NAME\n");
 
-  for (i = 0; i < mdt->nfeat; i++) {
+  for (i = 0; i < mdt->base.nfeat; i++) {
     int ifeat;
     struct mod_mdt_libfeature *feat;
-    ifeat = mdt->features[i].ifeat - 1;
+    ifeat = mdt->base.features[i].ifeat - 1;
     feat = &mlib->base.features[ifeat];
     fprintf(fp, "%3d %8d %5d %s\n", i + 1, ifeat + 1, feat->nbins, feat->name);
   }
@@ -38,18 +38,18 @@ static void write_mdt_header(FILE *fp, const struct mod_mdt *mdt,
           "THAT ARE ACTUALLY PRESENT IN THIS FILE (last indx rolls first):\n\n"
           "  # ISTART   IEND\n");
 
-  for (i = 0; i < mdt->nfeat; i++) {
-    const struct mod_mdt_feature *feat = &mdt->features[i];
+  for (i = 0; i < mdt->base.nfeat; i++) {
+    const struct mod_mdt_feature *feat = &mdt->base.features[i];
     fprintf(fp, "%3d %6d %6d\n", i + 1, feat->istart, feat->iend);
   }
 
-  fprintf(fp, "\n\nMDT TABLE START:%9d\n", mdt->nelems);
+  fprintf(fp, "\n\nMDT TABLE START:%9d\n", mdt->base.nelems);
 
   g_free(version);
 }
 
 /** Write MDT footer to a file */
-static void write_mdt_footer(FILE *fp, const struct mod_mdt *mdt)
+static void write_mdt_footer(FILE *fp, const struct mdt *mdt)
 {
   fprintf(fp, "MDT TABLE END%s\n", mdt->pdf ? ":PDF" : "");
 }
@@ -74,11 +74,11 @@ gboolean mdt_write(const struct mdt *mdt, const struct mdt_library *mlib,
   fp = mdt_open_file(filename, "w", &file_info, err);
   if (fp) {
     if (write_preamble) {
-      write_mdt_header(fp, &mdt->base, mlib);
+      write_mdt_header(fp, mdt, mlib);
     }
     write_mdt_data(fp, &mdt->base);
     if (write_preamble) {
-      write_mdt_footer(fp, &mdt->base);
+      write_mdt_footer(fp, mdt);
     }
     return mdt_close_file(fp, &file_info, err);
   } else {

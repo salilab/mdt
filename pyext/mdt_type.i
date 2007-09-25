@@ -10,6 +10,7 @@ struct mod_mdt {
 struct mdt {
 %immutable;
   struct mod_mdt base;
+  gboolean symmetric;
 };
 
 struct mod_mdt_feature {

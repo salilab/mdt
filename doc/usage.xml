@@ -70,7 +70,9 @@ simultaneously. See <xref linkend="scantypes" /> for all of the scan types.
 <para>
 &MDT; also knows that some residue pair features are symmetric, and will
 perform a non-redundant scan in this case. If, however, any feature in the
-table is asymmetric, a full scan is performed.
+table is asymmetric, a full scan is performed. If in doubt, you can query
+<ulink url="&epydoc;Table.symmetric">Table.symmetric</ulink> to see whether
+a symmetric scan will be performed for the current set of features.
 </para>
 
 <para>

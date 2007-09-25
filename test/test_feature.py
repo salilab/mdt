@@ -246,5 +246,24 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[32], 10095.0, 0.0005)
         self.assertInTolerance(m[-1], 4892.0, 0.0005)
 
+    def test_symmetric(self):
+        """Test symmetric/asymmetric residue pair features"""
+        sym_features = (24, 25, 39, 48)
+        asym_features = (16, 17, 40, 49, 51, 52)
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        for a in sym_features:
+            m = mdt.Table(mlib, features=a)
+            self.assertEqual(m.symmetric, True)
+        for a in asym_features:
+            m = mdt.Table(mlib, features=a)
+            self.assertEqual(m.symmetric, False)
+        # Combinations are only symmetric if all features are symmetric:
+        for (a, b, symm) in ((sym_features[0], sym_features[1], True),
+                             (asym_features[0], asym_features[1], False),
+                             (sym_features[0], asym_features[0], False)):
+            m = mdt.Table(mlib, features=(a,b))
+            self.assertEqual(m.symmetric, symm)
+
 if __name__ == '__main__':
     unittest.main()

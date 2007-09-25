@@ -683,6 +683,8 @@ class Table(TableSection):
         return _mdt.mod_mdt_n_protein_pairs_get(self._basept)
     def __get_sample_size(self):
         return _mdt.mod_mdt_sample_size_get(self._basept)
+    def __get_symmetric(self):
+        return _mdt.mdt_symmetric_get(self._modpt)
     def __get_basept(self):
         return _mdt.mdt_base_get(self._modpt)
 
@@ -692,6 +694,8 @@ class Table(TableSection):
     n_protein_pairs = property(__get_n_protein_pairs,
                                doc="Number of protein pairs")
     sample_size = property(__get_sample_size, doc="Number of sample points")
+    symmetric = property(__get_symmetric,
+                         doc="True if a symmetric scan can be performed")
 
 
 class _FeatureList(modlist.FixList):

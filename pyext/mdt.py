@@ -372,7 +372,8 @@ class Table(TableSection):
     def smooth(self, dimensions, weight):
         """
         Smooth the MDT with a uniform prior. The MDT is treated either as a
-        histogram (if `dimensions` = 1) or a 2D density (`dimensions` = 2),
+        histogram (if `dimensions` = 1) or a 2D density (`dimensions` = 2)
+        of dependent features (the last 1 or 2 features in the table)
         and a uniform distribution is added followed by scaling:
 
         p\ :sub:`i` = |w1| / n + |w2| |vi| / S

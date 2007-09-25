@@ -169,6 +169,25 @@ C<subscript>&alpha;</subscript>, but can be overridden by specifying the
 
 </sect2>
 
+<sect2 id="depfeat">
+<title>Dependent and independent features</title>
+<para>
+An &MDT; <ulink url="&epydoc;Table">Table</ulink> object is simply a table of
+counts N(a,b,c,...,d) for features a, b, c, ..., d. However, this is often used
+to generate a conditional PDF, p(x,y,...,z | a,b,...,c) for independent features
+a, b, ..., c and dependent features x, y, ..., z. By convention in &MDT; the
+dependent features are the last or rightmost features in the table, and so
+methods which are designed to deal with PDFs such as
+<ulink url="&epydoc;Table.smooth">Table.smooth</ulink>,
+<ulink url="&epydoc;Table.super_smooth">Table.super_smooth</ulink>,
+<ulink url="&epydoc;Table.normalize">Table.normalize</ulink>,
+<ulink url="&epydoc;Table.offset_min">Table.offset_min</ulink>, and
+<ulink url="&epydoc;Table.close">Table.close</ulink> expect the dependent
+features to be the last features. If necessary you can reorder the features
+using <ulink url="&epydoc;Table.integrate">Table.integrate</ulink>.
+</para>
+</sect2>
+
 <sect2 id="binfile">
 <title>Format of the bin file</title>
 

@@ -617,10 +617,18 @@ gboolean get_bin_index(const struct mod_mdt *mdt, const int indices[],
   return TRUE;
 }
 
-/** Do some basic setup of an MDT's features */
-void mdt_setup(struct mdt *mdt, const struct mdt_library *mlib)
+/** Do some basic setup of an MDT's features. Return TRUE on success. */
+gboolean mdt_setup(struct mdt *mdt, const struct mdt_library *mlib,
+                   GError **err)
 {
-  int n, naa, i;
+  int n, naa, i, ierr;
+
+  /* Do Modeller-specific setup */
+  mod_mdt_setup_check(&mdt->base, &mlib->base, &ierr);
+  if (ierr != 0) {
+    handle_modeller_error(err);
+    return FALSE;
+  }
 
   n = naa = 0;
   for (i = 0; i < mdt->base.nfeat; i++) {
@@ -636,4 +644,5 @@ void mdt_setup(struct mdt *mdt, const struct mdt_library *mlib)
   }
   mdt->scantype = n;
   mdt->symmetric = (naa == 0);
+  return TRUE;
 }

@@ -140,9 +140,10 @@ G_GNUC_INTERNAL
 gboolean get_bin_index(const struct mod_mdt *mdt, const int indices[],
                        int n_indices, int *bin_index, GError **err);
 
-/** Do some basic setup of an MDT's features */
+/** Do some basic setup of an MDT's features. Return TRUE on success. */
 G_GNUC_INTERNAL
-void mdt_setup(struct mdt *mdt, const struct mdt_library *mlib);
+gboolean mdt_setup(struct mdt *mdt, const struct mdt_library *mlib,
+                   GError **err);
 
 G_END_DECLS
 

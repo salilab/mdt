@@ -168,14 +168,6 @@ gboolean mdt_read_hdf5(struct mdt *mdt, const struct mdt_library *mlib,
       || !mdt_hdf_close(file_id, &file_info, err)) {
     return FALSE;
   } else {
-    int ierr;
-    mod_mdt_setup_check(&mdt->base, &mlib->base, &ierr);
-    if (ierr == 0) {
-      mdt_setup(mdt, mlib);
-      return TRUE;
-    } else {
-      handle_modeller_error(err);
-      return FALSE;
-    }
+    return mdt_setup(mdt, mlib, err);
   }
 }

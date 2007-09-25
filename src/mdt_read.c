@@ -10,6 +10,20 @@
 #include "mdt.h"
 #include "util.h"
 
+/** Read a single line of text from the file. Return TRUE on success. */
+static gboolean mdt_file_read_line(FILE *fp, GString *str, int *eof,
+                                   GError **err)
+{
+  int ierr;
+  mod_file_read_line(fp, str, &ierr, eof);
+  if (ierr != 0) {
+    handle_modeller_error(err);
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}
+
 /** Read an integer value from a line of text. Return TRUE on success. */
 static gboolean read_int_line(const char *text, const char *starttext,
                               int intoffset, int *output, GError **err)
@@ -75,7 +89,7 @@ static gboolean read_mdt_features(struct mdt *mdt,
                                   const struct mdt_library *mlib, FILE *fp,
                                   GError **err)
 {
-  int nfeat = 0, ierr = 0, eof = 0;
+  int nfeat = 0, eof;
   gboolean retval = TRUE;
   GString *str = g_string_new(NULL);
 
@@ -83,9 +97,7 @@ static gboolean read_mdt_features(struct mdt *mdt,
   while (retval) {
     int ifeat, nbins;
 
-    mod_file_read_line(fp, str, &ierr, &eof);
-    if (ierr != 0) {
-      handle_modeller_error(err);
+    if (!mdt_file_read_line(fp, str, &eof, err)) {
       retval = FALSE;
     } else if (eof != 0 || strlen(str->str) == 0) {
       break;
@@ -112,10 +124,8 @@ static gboolean read_mdt_offsets(struct mdt *mdt, FILE *fp, GError **err)
   GString *str = g_string_new(NULL);
 
   for (i = 0; i < mdt->base.nfeat && retval; i++) {
-    int ierr, eof, nfeat, istart, iend;
-    mod_file_read_line(fp, str, &ierr, &eof);
-    if (ierr != 0) {
-      handle_modeller_error(err);
+    int eof, nfeat, istart, iend;
+    if (!mdt_file_read_line(fp, str, &eof, err)) {
       retval = FALSE;
     } else if (eof != 0) {
       g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
@@ -143,11 +153,9 @@ static gboolean read_mdt_offsets(struct mdt *mdt, FILE *fp, GError **err)
 static gboolean read_mdt_data_line(FILE *fp, GString *str, double *output,
                                    GError **err)
 {
-  int ierr, eof;
+  int eof;
 
-  mod_file_read_line(fp, str, &ierr, &eof);
-  if (ierr != 0) {
-    handle_modeller_error(err);
+  if (!mdt_file_read_line(fp, str, &eof, err)) {
     return FALSE;
   } else if (eof != 0) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
@@ -166,11 +174,9 @@ static gboolean read_mdt_data_line(FILE *fp, GString *str, double *output,
 static gboolean read_mdt_footer(FILE *fp, GString *str, gboolean *pdf,
                                 GError **err)
 {
-  int ierr, eof;
+  int eof;
 
-  mod_file_read_line(fp, str, &ierr, &eof);
-  if (ierr != 0) {
-    handle_modeller_error(err);
+  if (!mdt_file_read_line(fp, str, &eof, err)) {
     return FALSE;
   } else if (eof != 0) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
@@ -250,17 +256,15 @@ gboolean mdt_read(struct mdt *mdt, const struct mdt_library *mlib,
 
   fp = mdt_open_file(filename, "r", &file_info, err);
   if (fp) {
-    int ierr = 0, eof = 0;
+    int eof = 0;
     gboolean retval = TRUE;
     GString *str = g_string_new(NULL);
 
-    while (ierr == 0 && eof == 0 && retval) {
-      mod_file_read_line(fp, str, &ierr, &eof);
-      if (ierr == 0 && eof == 0) {
-        retval = read_mdt_file_line(mdt, mlib, fp, str, err);
-      } else if (ierr != 0) {
-        handle_modeller_error(err);
+    while (eof == 0 && retval) {
+      if (!mdt_file_read_line(fp, str, &eof, err)) {
         retval = FALSE;
+      } else if (eof == 0) {
+        retval = read_mdt_file_line(mdt, mlib, fp, str, err);
       }
     }
 
@@ -268,13 +272,7 @@ gboolean mdt_read(struct mdt *mdt, const struct mdt_library *mlib,
     retval &= mdt_close_file(fp, &file_info, err);
 
     if (retval) {
-      mod_mdt_setup_check(&mdt->base, &mlib->base, &ierr);
-      if (ierr == 0) {
-        mdt_setup(mdt, mlib);
-      } else {
-        handle_modeller_error(err);
-        retval = FALSE;
-      }
+      retval = mdt_setup(mdt, mlib, err);
     }
     return retval;
   } else {

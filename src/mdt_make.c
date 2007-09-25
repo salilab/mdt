@@ -13,7 +13,7 @@
 gboolean mdt_make(struct mdt *mdt, const struct mdt_library *mlib,
                   const int features[], int n_features, GError **err)
 {
-  int i, nelems, ierr;
+  int i, nelems;
 
   nelems = 1;
   for (i = 0; i < n_features; i++) {
@@ -37,12 +37,5 @@ gboolean mdt_make(struct mdt *mdt, const struct mdt_library *mlib,
     feat->iend = mlib->base.features[ifeat - 1].nbins;
   }
 
-  mod_mdt_setup_check(&mdt->base, &mlib->base, &ierr);
-  if (ierr == 0) {
-    mdt_setup(mdt, mlib);
-    return TRUE;
-  } else {
-    handle_modeller_error(err);
-    return FALSE;
-  }
+  return mdt_setup(mdt, mlib, err);
 }

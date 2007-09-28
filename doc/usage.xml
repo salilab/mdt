@@ -273,7 +273,7 @@ The bin file is ended by the word END on a line by its own.
 You can get the current &MDT; code, by running the following:
 </para>
 <screen>
-<command>svn co svn+ssh://synth.ucsf.edu/synth2/home/svn/imp/trunk imp</command>
+<command>svn co https://svn.salilab.org/imp/trunk imp</command>
 </screen>
 
 <para>

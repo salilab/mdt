@@ -266,7 +266,7 @@ void mdt_register_features(struct mod_mdt_library *mlib)
                               FALSE, MOD_MDTF_STRUCTURE, MOD_MDTF_PSA, 0);
   mod_mdt_libfeature_register(mlib, 82, "ANY ATOM DISTANCE IN A (82)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM_PAIR,
-                              TRUE, MOD_MDTF_STRUCTURE, 0);
+                              FALSE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 83, "MODELLER ATOM TYPE AT POS2 OF A (83)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM, FALSE,
                               MOD_MDTF_STRUCTURE, 0);
@@ -312,29 +312,29 @@ void mdt_register_features(struct mod_mdt_library *mlib)
                               FALSE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 102, "ATOM TUPLE TYPE IN A AT POS2 (102)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
+                              TRUE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 103,
                               "TUPLE NON-BONDED DISTANCE IN A (103)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
+                              TRUE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 104, "NON-BONDED TUPLE ANGLE1 IN A (104)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
+                              TRUE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 105, "NON-BONDED TUPLE ANGLE1 IN A (105)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
+                              TRUE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 106,
                               "NON-BONDED TUPLE DIHEDRAL1 IN A (106)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
+                              TRUE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 107,
                               "NON-BONDED TUPLE DIHEDRAL2 IN A (107)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
+                              TRUE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 108,
                               "NON-BONDED TUPLE DIHEDRAL3 IN A (108)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
+                              TRUE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 109, "BOND TYPE IN A (109)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_BOND,
                               FALSE, MOD_MDTF_STRUCTURE, 0);

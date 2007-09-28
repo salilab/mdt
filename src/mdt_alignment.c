@@ -422,6 +422,26 @@ static gboolean gen_atoms(struct mdt *mdt, const struct mdt_library *mlib,
   return TRUE;
 }
 
+/** Add MDT data for a single atom pair. Return TRUE on success. */
+static gboolean gen_atompair(struct mdt *mdt, const struct mdt_library *mlib,
+                             const int rsrang[4], int is1, int ir1, int ia1,
+                             int ia1p, const int iresatm[],
+                             const struct mod_libraries *libs,
+                             const struct mod_energy_data *edat,
+                             struct mdt_source *source, mdt_scan_cb scanfunc,
+                             void *scandata, GError **err)
+{
+  int ir1p = iresatm[ia1p] - 1;
+  if (check_sequence_separation(ir1, ir1p, rsrang)) {
+    if (!update_mdt(mdt, mlib, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
+                    ia1p, 1, 1, 1, 1, 1, libs, edat, source, scanfunc,
+                    scandata, err)) {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
 /** Scan all atom pairs in the first alignment sequence. */
 static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
                                const int rsrang[4], int is1,
@@ -431,7 +451,7 @@ static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
                                mdt_scan_cb scanfunc, void *scandata,
                                GError **err)
 {
-  int ia1, ia1p, ir1, ir1p, *iresatm;
+  int ia1, ia1p, ir1, *iresatm;
   struct mod_structure *s1;
 
   s1 = mod_alignment_structure_get(source->aln, is1);
@@ -440,15 +460,26 @@ static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
     return FALSE;
   }
   iresatm = mod_int1_pt(&s1->cd.iresatm);
-  for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
-    ir1 = iresatm[ia1] - 1;
-    for (ia1p = ia1 + 1; ia1p < s1->cd.natm; ia1p++) {
-      ir1p = iresatm[ia1p] - 1;
-      if (check_sequence_separation(ir1, ir1p, rsrang)) {
-        if (!update_mdt(mdt, mlib, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
-                        ia1p, 1, 1, 1, 1, 1, libs, edat, source, scanfunc,
-                        scandata, err)) {
+
+  if (mdt->symmetric) {
+    for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
+      ir1 = iresatm[ia1] - 1;
+      for (ia1p = ia1 + 1; ia1p < s1->cd.natm; ia1p++) {
+        if (!gen_atompair(mdt, mlib, rsrang, is1, ir1, ia1, ia1p, iresatm,
+                          libs, edat, source, scanfunc, scandata, err)) {
           return FALSE;
+        }
+      }
+    }
+  } else {
+    for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
+      ir1 = iresatm[ia1] - 1;
+      for (ia1p = 0; ia1p < s1->cd.natm; ia1p++) {
+        if (ia1 != ia1p) {
+          if (!gen_atompair(mdt, mlib, rsrang, is1, ir1, ia1, ia1p, iresatm,
+                            libs, edat, source, scanfunc, scandata, err)) {
+            return FALSE;
+          }
         }
       }
     }

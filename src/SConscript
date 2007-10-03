@@ -1,8 +1,10 @@
 import sys
 
-Import('env', 'modconfig', 'is_wine_platform')
+Import('env', 'modconfig', 'is_wine_platform', 'get_sharedlib_environment')
 
-e = env.Copy()
+# Get an environment suitable for building a shared library:
+e = get_sharedlib_environment(env, 'MDT_EXPORTS')
+
 if is_wine_platform(modconfig):
     e.Append(SHLINKFLAGS=' glib-2.0.lib')
 else:
@@ -10,11 +12,6 @@ else:
 e.Append(CPPPATH=modconfig['include'])
 e.Append(LIBPATH=modconfig['libpath'])
 e.Append(LIBS=modconfig['libs'] + modconfig['libm'])
-
-# Pass gcc or MSVC suitable options to mark dynamic symbols as exported or
-# private:
-e.Append(CPPDEFINES=['MDT_EXPORTS', '${VIS_CPPDEFINES}'],
-         CCFLAGS='${VIS_CCFLAGS}')
 
 # AIX and w32 link complain about undefined symbols unless we explicitly
 # link HDF5:
@@ -35,10 +32,6 @@ files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',
          'mdt_stereo.c', 'mdt_tuples.c', 'mdt_property.c', 'mdt_make.c',
          'mdt_copy.c', 'mdt_read.c', 'mdt_read_hdf5.c', 'mdt_hdf5.c',
          'mdt_set.c')
-
-# Public headers
-headers = ('mdt.h', 'mdt_alignment.h', 'mdt_error.h',
-           'mdt_types.h', 'mdt_atom_classes.h', 'mdt_config.h')
 
 # Build the shared library
 lib = e.SharedLibrary('mdt', files)

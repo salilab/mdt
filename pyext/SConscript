@@ -1,16 +1,14 @@
-Import('env', 'modconfig', 'pythoninc', 'configure_for_pyext',
-       'is_wine_platform')
+Import('env', 'modconfig', 'get_pyext_environment', 'is_wine_platform')
 
 # Get a modified build environment suitable for building Python extensions:
-e = env.Copy()
+e = get_pyext_environment(env)
 if is_wine_platform(modconfig):
     e.Append(SHLINKFLAGS=' glib-2.0.lib')
 else:
     e.ParseConfig('pkg-config --cflags --libs glib-2.0')
-e.Append(CPPPATH=modconfig['include'] + [pythoninc])
+e.Append(CPPPATH=modconfig['include'])
 e.Append(LIBPATH=['../src'] + modconfig['libpath'])
 e.Append(LIBS=modconfig['libs'] + ['mdt'])
-e = configure_for_pyext(e, modconfig)
 
 # On Mac, add an explicit dependency on the C shared library, since this
 # isn't done by default:

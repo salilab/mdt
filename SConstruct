@@ -1,14 +1,13 @@
-# Include NMP build utility functions:
+# Include IMP build utility functions:
 execfile('../SCons.include')
 
-# Get Modeller and Python locations, and set up a build environment:
+# Get Modeller location, and set up a build environment:
 modconfig = get_modeller_config()
-pythoninc = get_python_include(modconfig)
 env = MyEnvironment(modconfig, tools=["default", "doxygen"],
                     toolpath=["../tools"])
 
 # Make these objects available to SConscript files:
-Export('env', 'modconfig', 'pythoninc', 'configure_for_pyext',
+Export('env', 'modconfig', 'get_pyext_environment', 'get_sharedlib_environment',
        'is_wine_platform')
 
 # Subdirectories to build:
@@ -22,8 +21,7 @@ Export('pyext', 'pyso')
 doc = SConscript('doc/SConscript')
 
 # bin script first require Python extensions to be built:
-env.Depends(bin, pyext)
-env.Depends(bin, pyso)
+env.Depends(bin, [pyext, pyso])
 
-# Build the C library (src directory) and Python extension by default:
-env.Default(src, pyso, bin)
+# Build the binaries by default:
+env.Default(bin)

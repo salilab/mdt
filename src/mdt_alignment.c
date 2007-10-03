@@ -253,9 +253,13 @@ static gboolean update_multiple(struct mdt *mdt,
       /* residue indices in the first and second position for protein 2 */
       if (mdt->scantype != MOD_MDTS_PROTEIN) {
         ir2 = mod_int2_get(&aln->ialn, ip1, is2) - 1;
+      } else {
+        ir2 = 0;
       }
       if (mdt->scantype == MOD_MDTS_RESIDUE_PAIR) {
         ir2p = mod_int2_get(&aln->ialn, ip2, is2) - 1;
+      } else {
+        ir2p = 0;
       }
       is3 = is2;
       ir3 = ir2;
@@ -319,11 +323,15 @@ static gboolean genpair(struct mdt *mdt, const struct mdt_library *mlib,
       /* residue index for a residue of protein A in the 1st position: */
       if (mdt->scantype != MOD_MDTS_PROTEIN) {
         ir1 = mod_int2_get(&aln->ialn, ip1, is1) - 1;
+      } else {
+        ir1 = 0;
       }
       /* residue index for a residue of protein A in the 2nd position:
          (not used if residue relationships are not compared) */
       if (mdt->scantype == MOD_MDTS_RESIDUE_PAIR) {
         ir1p = mod_int2_get(&aln->ialn, ip2, is1) - 1;
+      } else {
+        ir1p = 0;
       }
 
       if (mdt->base.nprotcmp == 1) {

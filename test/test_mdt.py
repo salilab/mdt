@@ -47,6 +47,9 @@ class TableTests(MDTTest):
         m2 = mdt.Table(mlib)
         # Trying to read an HDF5 file in text format should fail gracefully:
         self.assertRaises(mdt.MDTError, m2.read, 'test.hdf5')
+        # Same problem should occur starting with a non-empty MDT:
+        m2 = mdt.Table(mlib, features=(1,2))
+        self.assertRaises(mdt.MDTError, m2.read, 'test.hdf5')
         os.unlink('test.hdf5')
 
     def test_bin_info(self):

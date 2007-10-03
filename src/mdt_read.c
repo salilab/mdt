@@ -254,6 +254,9 @@ gboolean mdt_read(struct mdt *mdt, const struct mdt_library *mlib,
   struct mod_file file_info;
   FILE *fp;
 
+  /* First, blank out any existing features */
+  mod_mdt_nfeat_set(&mdt->base, 0);
+
   fp = mdt_open_file(filename, "r", &file_info, err);
   if (fp) {
     int eof = 0;

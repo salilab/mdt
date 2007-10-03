@@ -586,6 +586,9 @@ class Table(TableSection):
         integrated over *c* for each *c*. Each one of these can itself be
         obtained from a prior and the data, and so on recursively.
 
+        This currently works only for one dependent feature, which should be
+        the last feature in the table.
+
         :return: the smoothed MDT.
         :rtype: `Table`
         """

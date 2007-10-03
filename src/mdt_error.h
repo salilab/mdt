@@ -7,6 +7,7 @@
 #define __MDT_ERROR_H
 
 #include <glib.h>
+#include "mdt_config.h"
 
 G_BEGIN_DECLS
 
@@ -23,6 +24,7 @@ typedef enum {
 } MDTError;
 
 /** Domain for MDT errors */
+MDTDLLEXPORT
 GQuark mdt_error_quark(void);
 
 G_END_DECLS

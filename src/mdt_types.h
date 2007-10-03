@@ -7,12 +7,8 @@
 #define __MDT_TYPES_H
 
 #include <glib.h>
+#include "mdt_config.h"
 #include "mod_types.h"
-
-/* Allow building with glib < 2.6 */
-#ifndef G_GNUC_INTERNAL
-#define G_GNUC_INTERNAL
-#endif
 
 G_BEGIN_DECLS
 
@@ -85,15 +81,19 @@ struct mdt_library {
 };
 
 /** Make a new mdt structure */
+MDTDLLEXPORT
 struct mdt *mdt_new(void);
 
 /** Free an mdt structure */
+MDTDLLEXPORT
 void mdt_free(struct mdt *mdt);
 
 /** Make a new mdt_library structure */
+MDTDLLEXPORT
 struct mdt_library *mdt_library_new(void);
 
 /** Free an mdt_library structure */
+MDTDLLEXPORT
 void mdt_library_free(struct mdt_library *mlib);
 
 G_END_DECLS

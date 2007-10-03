@@ -7,18 +7,14 @@
 #define __MDT_TUPLE_H
 
 #include <glib.h>
+#include "mdt_config.h"
 #include "mdt_types.h"
 #include "mod_types.h"
-
-/* Allow building with glib < 2.6 */
-#ifndef G_GNUC_INTERNAL
-#define G_GNUC_INTERNAL
-#endif
 
 G_BEGIN_DECLS
 
 /** Get all tuples for a structure. */
-G_GNUC_INTERNAL
+MDTDLLLOCAL
 struct mdt_tuple_list *tupclass(const struct mod_structure *struc,
                                 const struct mod_sequence *seq,
                                 const struct mdt_atom_class_list *atclass,

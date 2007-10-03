@@ -7,6 +7,10 @@
 #include "modeller.h"
 %}
 
+/* Ignore shared object import/export stuff */
+#define MDTDLLEXPORT
+#define MDTDLLLOCAL
+
 %include "fortran-pointers.i"
 %include "mdt_exceptions.i"
 %include "mdt_lists.i"

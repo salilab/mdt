@@ -11,6 +11,11 @@ e.Append(CPPPATH=modconfig['include'])
 e.Append(LIBPATH=modconfig['libpath'])
 e.Append(LIBS=modconfig['libs'] + modconfig['libm'])
 
+# Pass gcc or MSVC suitable options to mark dynamic symbols as exported or
+# private:
+e.Append(CPPDEFINES=['MDT_EXPORTS', '${VIS_CPPDEFINES}'],
+         CCFLAGS='${VIS_CCFLAGS}')
+
 # AIX and w32 link complain about undefined symbols unless we explicitly
 # link HDF5:
 if sys.platform == 'aix5':
@@ -33,14 +38,10 @@ files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',
 
 # Public headers
 headers = ('mdt.h', 'mdt_alignment.h', 'mdt_error.h',
-           'mdt_types.h', 'mdt_atom_classes.h')
-
-# Build a Windows DLL exports file from the public header files:
-e.W32Def('libmdt.def', headers)
+           'mdt_types.h', 'mdt_atom_classes.h', 'mdt_config.h')
 
 # Build the shared library
-lib = e.SharedLibrary('mdt', files, WIN32DEFPREFIX='lib', WIN32_INSERT_DEF=1,
-                      WINDOWSEXPPREFIX='lib')
+lib = e.SharedLibrary('mdt', files)
 
 # Install the shared library
 libinst = e.Install(modconfig['libinstall'], lib)

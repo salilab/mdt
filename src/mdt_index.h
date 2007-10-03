@@ -7,13 +7,9 @@
 #define __MDT_INDEX_H
 
 #include <glib.h>
+#include "mdt_config.h"
 #include "mod_types.h"
 #include "mdt_types.h"
-
-/* Allow building with glib < 2.6 */
-#ifndef G_GNUC_INTERNAL
-#define G_GNUC_INTERNAL
-#endif
 
 G_BEGIN_DECLS
 
@@ -78,11 +74,11 @@ struct mdt_properties {
 };
 
 /** Register our MDT feature types */
-G_GNUC_INTERNAL
+MDTDLLLOCAL
 void mdt_register_features(struct mod_mdt_library *mlib);
 
 /** Calculate a single MDT feature index */
-G_GNUC_INTERNAL
+MDTDLLLOCAL
 int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,
                  int ia1p, const struct mdt_library *mlib, int ip2,
@@ -92,7 +88,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  struct mdt_properties *prop, GError **err);
 
 /** Convert a raw number to the corresponding feature's MDT bin index */
-G_GNUC_INTERNAL
+MDTDLLLOCAL
 int iclsbin(float x, const struct mod_mdt_libfeature *feat);
 
 G_END_DECLS

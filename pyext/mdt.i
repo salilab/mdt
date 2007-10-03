@@ -31,5 +31,10 @@
   mdterror = PyErr_NewException("_mdt.MDTError", NULL, NULL);
   Py_INCREF(mdterror);
   PyModule_AddObject(m, "MDTError", mdterror);
+
+  file_format_error = PyErr_NewException("_mdt.FileFormatError", mdterror,
+                                         NULL);
+  Py_INCREF(file_format_error);
+  PyModule_AddObject(m, "FileFormatError", file_format_error);
 #endif
 }

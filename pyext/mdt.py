@@ -31,7 +31,7 @@
 
 __docformat__ = "restructuredtext"
 
-__all__ = ['MDTError', 'TableSection', 'Table', 'Library',
+__all__ = ['MDTError', 'FileFormatError', 'TableSection', 'Table', 'Library',
            'Feature', 'Bin', 'Source', 'BondClasses', 'TupleClasses',
            'HydrogenBondClasses', 'write_2dsplinelib', 'write_anglelib',
            'write_bondlib', 'write_improperlib', 'write_splinelib']
@@ -45,6 +45,9 @@ import _modeller
 
 #: Generic MDT exception
 MDTError = _mdt.MDTError
+
+#: File format error
+FileFormatError = _mdt.FileFormatError
 
 class Library(modobject):
     """Library data used in the construction and use of MDTs"""

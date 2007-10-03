@@ -1,7 +1,7 @@
 %{
 #ifdef SWIGPYTHON
-/* Generic error */
-static PyObject *mdterror;
+/* Errors */
+static PyObject *mdterror, *file_format_error;
 
 /** Raise an exception if an error code was returned. */
 static void handle_error(GError *err)
@@ -17,6 +17,9 @@ static void handle_error(GError *err)
       break;
     case MDT_ERROR_INDEX:
       py_err_type = PyExc_IndexError;
+      break;
+    case MDT_ERROR_FILE_FORMAT:
+      py_err_type = file_format_error;
       break;
     }
   }

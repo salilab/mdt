@@ -31,7 +31,7 @@ static gboolean read_int_line(const char *text, const char *starttext,
   if (strncmp(text, starttext, strlen(starttext)) == 0) {
     if (strlen(text) <= intoffset
         || sscanf(&text[intoffset], "%14d", output) != 1) {
-      g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+      g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
                   "Was expecting to read an integer from file line: %s", text);
       return FALSE;
     }
@@ -46,7 +46,7 @@ static gboolean read_double_line(const char *text, const char *starttext,
   if (strncmp(text, starttext, strlen(starttext)) == 0) {
     if (strlen(text) <= intoffset
         || sscanf(&text[intoffset], "%14lg", output) != 1) {
-      g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+      g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
                   "Was expecting to read a double from file line: %s", text);
       return FALSE;
     }
@@ -105,7 +105,7 @@ static gboolean read_mdt_features(struct mdt *mdt,
                && sscanf(&str->str[6], "%6d%6d", &ifeat, &nbins) == 2) {
       retval = read_mdt_feature(mdt, mlib, ++nfeat, ifeat, nbins, err);
     } else {
-      g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+      g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
                   "Was expecting to read feature information from "
                   "MDT line: %s", str->str);
       retval = FALSE;
@@ -128,13 +128,13 @@ static gboolean read_mdt_offsets(struct mdt *mdt, FILE *fp, GError **err)
     if (!mdt_file_read_line(fp, str, &eof, err)) {
       retval = FALSE;
     } else if (eof != 0) {
-      g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+      g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
                   "End of file encountered while reading feature offsets "
                   "and shape: expected to read data for %d features",
                   mdt->base.nfeat);
       retval = FALSE;
     } else if (sscanf(str->str, "%3d %6d %6d", &nfeat, &istart, &iend) != 3) {
-      g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+      g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
                   "Was expecting to read feature offset and shape: got %s",
                   str->str);
       retval = FALSE;
@@ -158,11 +158,11 @@ static gboolean read_mdt_data_line(FILE *fp, GString *str, double *output,
   if (!mdt_file_read_line(fp, str, &eof, err)) {
     return FALSE;
   } else if (eof != 0) {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
                 "End of file while reading MDT bin data");
     return FALSE;
   } else if (sscanf(str->str, "%15lg", output) != 1) {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
                 "Expected to read a double: got %s", str->str);
     return FALSE;
   } else {
@@ -179,7 +179,7 @@ static gboolean read_mdt_footer(FILE *fp, GString *str, gboolean *pdf,
   if (!mdt_file_read_line(fp, str, &eof, err)) {
     return FALSE;
   } else if (eof != 0) {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
                 "End of file while reading MDT footer");
     return FALSE;
   } else if (strcmp(str->str, "MDT TABLE END:PDF") == 0) {
@@ -189,7 +189,7 @@ static gboolean read_mdt_footer(FILE *fp, GString *str, gboolean *pdf,
     *pdf = FALSE;
     return TRUE;
   } else {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, "Corrupt MDT footer");
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT, "Corrupt MDT footer");
     return FALSE;
   }
 }
@@ -215,7 +215,7 @@ static gboolean read_mdt_data(struct mdt *mdt, FILE *fp, const char *header,
     g_string_free(str, TRUE);
     return retval;
   } else {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
                 "Expecting to read MDT table number of elements: got %s",
                 header);
     return FALSE;

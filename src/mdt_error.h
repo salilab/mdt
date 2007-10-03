@@ -15,10 +15,11 @@ G_BEGIN_DECLS
 
 /** MDT error types */
 typedef enum {
-  MDT_ERROR_IO,    /* Input/output error */
-  MDT_ERROR_VALUE, /* Incorrect value */
-  MDT_ERROR_INDEX, /* Index out of range */
-  MDT_ERROR_FAILED /* Generic error */
+  MDT_ERROR_IO,          /* Input/output error */
+  MDT_ERROR_VALUE,       /* Incorrect value */
+  MDT_ERROR_INDEX,       /* Index out of range */
+  MDT_ERROR_FILE_FORMAT, /* File format error */
+  MDT_ERROR_FAILED       /* Generic error */
 } MDTError;
 
 /** Domain for MDT errors */

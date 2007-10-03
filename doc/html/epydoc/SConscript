@@ -17,7 +17,8 @@ def emit_epydoc(target, source, env):
                 'Library', 'Source', 'Table', 'TableSection', 'TupleClasses'):
         target.append(os.path.join('#' + outdir,
                                    '%s.%s-class.html' % (modname, cls)))
-    target.append(os.path.join('#' + outdir, '_mdt.MDTError-class.html'))
+    for cls in ('MDTError', 'FileFormatError'):
+        target.append(os.path.join('#' + outdir, '_mdt.%s-class.html' % cls))
 
     for extra in ('module', 'pysrc'):
         target.append(os.path.join('#' + outdir,

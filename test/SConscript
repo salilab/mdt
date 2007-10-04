@@ -2,15 +2,10 @@ Import('env', 'modconfig', 'bin')
 
 e = env.Copy()
 
-if modconfig['exetype'] != 'i386-w32':
-    python = 'python'
-else:
-    # Link the shared library into the current directory so that Windows can
-    # find it:
-    import shutil
-    e.Command('#libmdt.dll', '#src/libmdt.dll', 'ln -sf $SOURCE $TARGET')
-    e.Depends('test.passed', '#libmdt.dll')
+if modconfig['exetype'] == 'i386-w32':
     python = 'w32python'
+else:
+    python = 'python'
 
 # Custom builder to run unit tests:
 def builder_unit_test(target, source, env):

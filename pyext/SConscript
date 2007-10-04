@@ -10,15 +10,10 @@ e.Append(CPPPATH=modconfig['include'])
 e.Append(LIBPATH=['../src'] + modconfig['libpath'])
 e.Append(LIBS=modconfig['libs'] + ['mdt'])
 
-# On Mac, add an explicit dependency on the C shared library, since this
-# isn't done by default:
-if modconfig['exetype'].startswith('mac10'):
-    e.Depends('_mdt.so', '#src/libmdt.dylib')
-
 # Build the Python extension from SWIG interface file:
-pyso = e.SharedLibrary('_mdt', 'mdt.i',
-                       SWIGFLAGS='-python -noproxy ' + \
-                                 '-nodefaultctor -nodefaultdtor')
+pyso = e.LoadableModule('_mdt', 'mdt.i',
+                        SWIGFLAGS='-python -noproxy ' + \
+                                  '-nodefaultctor -nodefaultdtor')
 
 pyext = File('mdt.py')
 # Install the Python extension and any .py files:

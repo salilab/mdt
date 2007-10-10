@@ -1,9 +1,9 @@
-Import('env', 'modconfig')
+Import('env')
 
 # Source files
 files = ['anggrp.lib', 'bndgrp.lib', 'impgrp.lib', 'trpcls.lib', 'dblcls.lib',
          'atmcls-hbda.lib', 'mdt.bin']
 
 # Install the files
-inst = env.Install(modconfig['modlib'], files)
+inst = env.Install(env['datadir'], files)
 env.Alias('install', inst)

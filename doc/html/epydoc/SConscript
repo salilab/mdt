@@ -1,11 +1,16 @@
 import os.path
 
-Import('env', 'modconfig', 'pyext', 'pyso')
+Import('env', 'pyext', 'pyso', 'bin')
+
+epydoc_bin = "/synth1/home/ben/bin/bin/epydoc"
+epydoc_opts = "--inheritance grouped --no-private --no-frames --html"
 
 # Build epydoc documentation:
 def action_epydoc(target, source, env):
     outdir = os.path.dirname(target[0].path)
-    app = "cd doc && ./epydoc.sh %s/" % modconfig['bin']
+    pyext = source[0].path
+    bin = source[1].path
+    app = "%s %s %s -o %s %s" % (bin, epydoc_bin, epydoc_opts, outdir, pyext)
     return env.Execute(app)
 
 def emit_epydoc(target, source, env):
@@ -34,7 +39,7 @@ builder_epydoc = Builder(action=action_epydoc, emitter=emit_epydoc)
 
 env.Append(BUILDERS = {'Epydoc': builder_epydoc})
 
-epydoc = env.Epydoc("index.html", (pyext, pyso))
+epydoc = env.Epydoc("index.html", (pyext, bin, pyso))
 
-docdir = ARGUMENTS.get('docdir', '/usr/share/doc/mdt')
+docdir = env['docdir']
 env.Install(os.path.join(docdir, 'epydoc'), epydoc)

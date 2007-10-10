@@ -1,15 +1,11 @@
-Import('env', 'modconfig', 'bin')
+Import('env', 'bin')
 
 e = env.Copy()
 
-if modconfig['exetype'] == 'i386-w32':
-    python = 'w32python'
-else:
-    python = 'python'
-
 # Custom builder to run unit tests:
 def builder_unit_test(target, source, env):
-    app = "%s %s %s -v > /dev/null" % (bin[0], python, source[0])
+    app = "%s %s %s -v > /dev/null" % (source[1].abspath, e['PYTHON'],
+                                       source[0])
     if env.Execute(app) == 0:
         file(str(target[0]), 'w').write('PASSED\n')
     else:
@@ -18,8 +14,7 @@ def builder_unit_test(target, source, env):
 e.Append(BUILDERS = {'Test': Builder(action=builder_unit_test)})
 
 # Always run our unit test:
-test = e.Test("test.passed", "run-all-tests.py")
-e.Depends(test, bin)
+test = e.Test("test.passed", ["run-all-tests.py", bin])
 e.Alias("test", test)
 e.AlwaysBuild("test.passed")
 Return('test')

@@ -1,23 +1,24 @@
 import sys
 
-Import('env', 'modconfig', 'is_wine_platform', 'get_sharedlib_environment')
+Import('env', 'get_sharedlib_environment')
 
 # Get an environment suitable for building a shared library:
 e = get_sharedlib_environment(env, 'MDT_EXPORTS')
 
-if is_wine_platform(modconfig):
+if e['PLATFORM'] == 'win32':
     e.Append(SHLINKFLAGS=' glib-2.0.lib')
 else:
     e.ParseConfig('pkg-config --cflags --libs glib-2.0')
-e.Append(CPPPATH=modconfig['include'])
-e.Append(LIBPATH=modconfig['libpath'])
-e.Append(LIBS=modconfig['libs'] + modconfig['libm'])
+    e.Append(LIBS=['m'])
+e.Append(CPPPATH=e['MODELLER_CPPPATH'])
+e.Append(LIBPATH=e['MODELLER_LIBPATH'])
+e.Append(LIBS=e['MODELLER_LIBS'])
 
 # AIX and w32 link complain about undefined symbols unless we explicitly
 # link HDF5:
 if sys.platform == 'aix5':
     e.Append(LIBS=['hdf5', 'hdf5_hl'])
-if is_wine_platform(modconfig):
+if e['PLATFORM'] == 'win32':
     e.Append(SHLINKFLAGS=' hdf5dll.lib hdf5_hl.lib')
 
 # Source files
@@ -37,5 +38,5 @@ files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',
 lib = e.SharedLibrary('mdt', files)
 
 # Install the shared library
-libinst = e.Install(modconfig['libinstall'], lib)
+libinst = e.Install(e['libdir'], lib)
 e.Alias('install', libinst)

@@ -1,14 +1,14 @@
-Import('env', 'modconfig', 'get_pyext_environment', 'is_wine_platform')
+Import('env', 'get_pyext_environment')
 
 # Get a modified build environment suitable for building Python extensions:
 e = get_pyext_environment(env)
-if is_wine_platform(modconfig):
+if e['PLATFORM'] == 'win32':
     e.Append(SHLINKFLAGS=' glib-2.0.lib')
 else:
     e.ParseConfig('pkg-config --cflags --libs glib-2.0')
-e.Append(CPPPATH=modconfig['include'])
-e.Append(LIBPATH=['../src'] + modconfig['libpath'])
-e.Append(LIBS=modconfig['libs'] + ['mdt'])
+e.Append(CPPPATH=e['MODELLER_CPPPATH'])
+e.Append(LIBPATH=['../src'] + e['MODELLER_LIBPATH'])
+e.Append(LIBS=e['MODELLER_LIBS'] + ['mdt'])
 
 # Build the Python extension from SWIG interface file:
 pyso = e.LoadableModule('_mdt', 'mdt.i',
@@ -17,7 +17,7 @@ pyso = e.LoadableModule('_mdt', 'mdt.i',
 
 pyext = File('mdt.py')
 # Install the Python extension and any .py files:
-libinst = e.Install(modconfig['libinstall'], pyso)
-pyinst = e.Install(modconfig['pyinstall'], pyext)
+libinst = e.Install(e['pyextdir'], pyso)
+pyinst = e.Install(e['pythondir'], pyext)
 e.Alias('install', [libinst, pyinst])
 Return('pyso', 'pyext')

@@ -1,4 +1,4 @@
-Import('env', 'modconfig')
+Import('env')
 
 # Custom builder to generate file:
 def builder_script_file(target, source, env):
@@ -7,11 +7,11 @@ def builder_script_file(target, source, env):
     for line in infile:
         line = line.rstrip('\r\n')
         if line.endswith("@TOPDIR@"):
-            line = "TOPDIR=" + env.Dir('#').abspath
+            line = "TOPDIR=" + source[1].get_contents()
         elif line.endswith("@MODPY@"):
-            line = "MODPY=%s/modpy.sh" % modconfig['bin']
-        elif line.endswith("@EXETYPE@"):
-            line = "EXETYPE=" + modconfig['exetype']
+            line = "MODPY=" + source[2].get_contents()
+        elif line.endswith("@PATHSEP@"):
+            line = "PATHSEP=\"" + source[3].get_contents() + "\""
         print >> outfile, line
     outfile.close()
     infile.close()
@@ -19,5 +19,8 @@ def builder_script_file(target, source, env):
 
 env.Append(BUILDERS = {'ScriptFile': Builder(action=builder_script_file)})
 
-bin = env.ScriptFile("mdtpy.sh", "mdtpy.sh.in")
+bin = env.ScriptFile("mdtpy.sh",
+                     ["mdtpy.sh.in", env.Value(env.Dir('#').abspath),
+                      env.Value(env['MODELLER_MODPY']),
+                      env.Value(env['PATHSEP'])])
 Return('bin')

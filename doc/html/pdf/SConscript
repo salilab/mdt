@@ -5,5 +5,5 @@ Import('env')
 
 pdfs = glob.glob("*.pdf")
 
-docdir = ARGUMENTS.get('docdir', '/usr/share/doc/mdt')
+docdir = env['docdir']
 env.Install(os.path.join(docdir, 'pdf'), pdfs)

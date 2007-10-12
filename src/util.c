@@ -77,8 +77,6 @@ int roll_ind(int indf[], const int istart[], const int iend[], int nfeat)
     if (indf[i] + 1 <= iend[i]) {
       indf[i]++;
       return 1;
-    } else if (i == 0) {
-      return 0;
     } else {
       indf[i] = istart[i];
       i--;

@@ -815,7 +815,9 @@ class Source(object):
             _mdt.mdt_alignment_close(self._modpt)
 
     def sum(self, residue_span_range=(-99999, -2, 2, 99999)):
-        """Scan all data points in the source, and return the sum."""
+        """Scan all data points in the source, and return the sum.
+           See `Table.add_alignment` for a description of the
+           `residue_span_range` argument."""
         f = _mdt.mdt_source_sum
         return f(self._modpt, self._mdt._modpt, self._mlib._modpt,
                  residue_span_range, self._mlib._env.libs.modpt,

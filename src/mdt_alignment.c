@@ -571,7 +571,7 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
                                      mdt_scan_cb scanfunc, void *scandata,
                                      GError **err)
 {
-  int ia1, ir1, ibnd1, ibnd1p, ia1p, ir1p, nr, *iresatm;
+  int ia1, ir1, ibnd1, ibnd1p, ia1p, ir1p, *iresatm;
   struct mod_structure *s1;
   const struct mdt_tuple_list *tup;
 
@@ -585,7 +585,6 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
         ir1p = iresatm[ia1p] - 1;
 
         /* the same conditions on sequence separation as for residue pairs */
-        nr = ir1p - ir1;
         if (ia1 != ia1p && check_sequence_separation(ir1, ir1p, rsrang)) {
           for (ibnd1p = 0; ibnd1p < tup[ia1p].ntuples; ibnd1p++) {
             if (!update_mdt(mdt, mlib, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,

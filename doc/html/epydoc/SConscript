@@ -16,7 +16,7 @@ def action_epydoc(target, source, env):
 def emit_epydoc(target, source, env):
     outdir = os.path.dirname(target[0].path)
     modname = os.path.splitext(os.path.basename(source[0].path))[0]
-    
+
     # Temporary hack: should get this by importing or parsing pyext:
     for cls in ('Bin', 'BondClasses', 'Feature', 'HydrogenBondClasses',
                 'Library', 'Source', 'Table', 'TableSection', 'TupleClasses'):

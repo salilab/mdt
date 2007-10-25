@@ -9,7 +9,7 @@
    for plotting by ASGL (`Table.write_asgl`) and use as restraints by MODELLER.
 
    More precisely, MDT uses a sample of sequences, structures, and/or
-   alignments to construct a table *N(a,b,c,...,d)* for features 
+   alignments to construct a table *N(a,b,c,...,d)* for features
    *a, b, c, ..., d*. The sample for generating the frequencies *N* is
    obtained depending on the type of features *a, b, c, ..., d*.
    The sample can contain individual proteins, pairs of proteins, pairs of
@@ -152,7 +152,7 @@ class BondClasses(object):
 
     def read(self, filename):
         """Read bond class information from a file"""
-        return _mdt.mdt_atom_classes_read(filename, self._mlib._modpt, 
+        return _mdt.mdt_atom_classes_read(filename, self._mlib._modpt,
                                           self.__n_atom)
 
 
@@ -438,9 +438,9 @@ class Table(TableSection):
 
             If it is True, the normalization takes into account `dx_dy` so
             that the normalized distribution is actually a PDF. That is,
-            |sum| :sub:`i` p(x :sub:`i`) dx = 1 for 1D and 
+            |sum| :sub:`i` p(x :sub:`i`) dx = 1 for 1D and
             |sum| :sub:`i,j` p(x :sub:`i,j`) dx dy = 1 for 2D, where dx and
-            dy are the widths of the bins. 
+            dy are the widths of the bins.
         :return: the normalized MDT.
         :rtype: `Table`
 

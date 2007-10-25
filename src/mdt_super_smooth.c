@@ -216,7 +216,7 @@ static void getapriori(gboolean entropy_weighing, const double bin1[],
         if (entropy_weighing) {
           /* w is proportional to rho_c in Eq. 12; w is the nominator in
              Eq. 14, also defined by Eq. 13: */
-          w = emax - entrp1(bin1, nbinx);
+          w = emax - entrp1(&bin1[is1], nbinx);
         } else {
           w = 1.0;
         }

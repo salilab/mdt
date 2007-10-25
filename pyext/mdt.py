@@ -572,7 +572,7 @@ class Table(TableSection):
         """
         return _mdt.mdt_entropy_hx(self._basept)
 
-    def super_smooth(self, prior_weight, entropy_weighing):
+    def super_smooth(self, dimensions, prior_weight, entropy_weighing):
         """
         Multi-level smoothing. This super-smoothes the raw frequencies in
         the MDT using the hierarchical smoothing procedure for 1D histograms
@@ -586,15 +586,24 @@ class Table(TableSection):
         integrated over *c* for each *c*. Each one of these can itself be
         obtained from a prior and the data, and so on recursively.
 
-        This currently works only for one dependent feature, which should be
-        the last feature in the table.
+        The example above is for a single dependent feature (*x*), which is the
+        case when `dimensions` = 1. *x* should be the last feature in the table.
+        `dimensions` can be set to other values if you have more dependent
+        features - for example, `dimensions` = 2 will work with
+        *p(x, y | a, b, c, ...)* where *x* and *y* are the last two features
+        in the table.
 
+        :Parameters:
+          - `dimensions`: Number of dependent features.
+          - `prior_weight`: Weight for the prior distribution.
+          - `entropy_weighing`: Whether to weight distributions by their
+                                entropies.
         :return: the smoothed MDT.
         :rtype: `Table`
         """
         mdtout = Table(self._mlib)
-        _mdt.mdt_super_smooth(self._modpt, mdtout._modpt, prior_weight,
-                              entropy_weighing)
+        _mdt.mdt_super_smooth(self._modpt, mdtout._modpt, dimensions,
+                              prior_weight, entropy_weighing)
         return mdtout
 
     def write_asgl(self, asglroot, text, dimensions, plot_position,

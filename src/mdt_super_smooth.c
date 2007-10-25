@@ -66,10 +66,11 @@ static void free_combination_vector(struct combination_vector *vec)
 /** Calculate number of feature combinations, and reallocate arrays if
     necessary. */
 static void calculate_combinations(struct combination_vector *vec,
-                                   const struct mod_mdt *mdt, int n_feat_fix)
+                                   const struct mod_mdt *mdt, int dimensions,
+                                   int n_feat_fix)
 {
-  vec->length = nperm(mdt->nfeat - 1)
-      / (nperm(n_feat_fix) * nperm(mdt->nfeat - 1 - n_feat_fix));
+  vec->length = nperm(mdt->nfeat - dimensions)
+      / (nperm(n_feat_fix) * nperm(mdt->nfeat - dimensions - n_feat_fix));
   if (vec->length > vec->allocated) {
     int i;
     int maxcom = MAX(vec->allocated * 3 / 2, vec->length);
@@ -197,7 +198,8 @@ static void getapriori(gboolean entropy_weighing, const double bin1[],
     /* for ALL combinations from the previous level: */
     for (i1 = 0; i1 < ncomb1; i1++) {
       const struct combination *comb = &vec->combinations[i1];
-      if (get_inds_combination(comb, n_feat_fix, i_feat_fix, i_val_fix, inds1)) {
+      if (get_inds_combination(comb, n_feat_fix, i_feat_fix, i_val_fix,
+                               inds1)) {
         float w;
         int is1;
         /* calculate the weight (prop. to negentropy) of the ncmbtst-th
@@ -259,13 +261,14 @@ static void finish_level(int level, int n_feat_fix, int nelm2,
 
 /** Prepare arrays for smoothing at level level */
 static void prepare_level(int level, struct combination_vector *vec,
-                          int *nelm2, int *maxelm2, double **bin2,
-                          const struct mod_mdt *mdtin, int n_feat_fix)
+                          int nbinx, int dimensions, int *nelm2, int *maxelm2,
+                          double **bin2, const struct mod_mdt *mdtin,
+                          int n_feat_fix)
 {
   int *i_feat_fix = NULL, ic2;
   /* get the number of different combinations of n_feat_fix features
-     from the set of nfeat-1 possible features */
-  calculate_combinations(vec, mdtin, n_feat_fix);
+     from the set of nfeat-dimensions possible features */
+  calculate_combinations(vec, mdtin, dimensions, n_feat_fix);
 
   /* number of elements in the bin2 array for all 1 .. ncomb2 combinations
      of independent features; bin2 stores ncomb2 MDT's linearly ... */
@@ -274,7 +277,7 @@ static void prepare_level(int level, struct combination_vector *vec,
   /* prepare the indices for counting feature indices at this level
      (save them for the next cycle as well) */
   ic2 = 0;
-  while (roll_ind_comb(&i_feat_fix, n_feat_fix, mdtin->nfeat - 1)) {
+  while (roll_ind_comb(&i_feat_fix, n_feat_fix, mdtin->nfeat - dimensions)) {
     int i;
     struct combination *comb = &vec->combinations[ic2];
 
@@ -286,7 +289,7 @@ static void prepare_level(int level, struct combination_vector *vec,
       /* save the feature combination for the next level: */
       comb->i_feat_fixn2[i] = i_feat_fix[i];
     }
-    comb->ndims2[level - 1] = mdtin->features[mdtin->nfeat - 1].nbins;
+    comb->ndims2[level - 1] = nbinx;
 
     *nelm2 += make_mdt_stride_full(comb->ndims2, level, comb->stride2);
     ic2++;
@@ -300,7 +303,8 @@ static void prepare_level(int level, struct combination_vector *vec,
 }
 
 /** Scan all generated combinations of independent features at level level */
-static void build_level_combination(int level, struct combination_vector *vec,
+static void build_level_combination(int level, int nbinx,
+                                    struct combination_vector *vec,
                                     int icomb, int n_feat_fix,
                                     int i_feat_fix[], int n_bins_fix[],
                                     int i_val_fix[], int i_start_fix[],
@@ -309,10 +313,9 @@ static void build_level_combination(int level, struct combination_vector *vec,
                                     int nelm2, double apriori[], double frq[],
                                     double prior_weight, double bin2[])
 {
-  int i, nbinx;
+  int i;
   struct combination *comb = &vec->combinations[icomb];
 
-  nbinx = mdtin->features[mdtin->nfeat - 1].nbins;
   for (i = 0; i < n_feat_fix; i++) {
     i_feat_fix[i] = comb->i_feat_fixn2[i];
     n_bins_fix[i] = mdtin->features[i_feat_fix[i]].nbins;
@@ -327,7 +330,7 @@ static void build_level_combination(int level, struct combination_vector *vec,
      included in level LEVEL */
 
   /* for each generated combination of features i_feat_fix, scan all
-     combinations of values i_val_fix(1:nfeat_fix) of features
+     combinations of values i_val_fix(1:n_feat_fix) of features
      i_feat_fix(1:n_feat_fix): */
 
   do {
@@ -368,11 +371,12 @@ static void build_level_combination(int level, struct combination_vector *vec,
 /** Do one level of smoothing */
 static void super_smooth_level(const struct mod_mdt *mdtin,
                                struct mod_mdt *mdtout, float prior_weight,
-                               gboolean entropy_weighing, int level,
+                               gboolean entropy_weighing, int level, int nbinx,
                                int *ncomb1, struct combination_vector *vec,
-                               int i_feat_fix[], int n_bins_fix[],
-                               int i_val_fix[], int i_start_fix[],
-                               double apriori[], double frq[], double **bin2,
+                               int dimensions, int i_feat_fix[],
+                               int n_bins_fix[], int i_val_fix[],
+                               int i_start_fix[], double apriori[],
+                               double frq[], double **bin2,
                                int *nelm2, int *maxelm2)
 {
   int n_feat_fix, i;
@@ -381,31 +385,59 @@ static void super_smooth_level(const struct mod_mdt *mdtin,
      at level level */
   n_feat_fix = level - 1;
 
-  prepare_level(level, vec, nelm2, maxelm2, bin2, mdtin, n_feat_fix);
+  prepare_level(level, vec, nbinx, dimensions, nelm2, maxelm2, bin2, mdtin,
+                n_feat_fix);
 
   for (i = 0; i < vec->length; i++) {
-    build_level_combination(level, vec, i, n_feat_fix, i_feat_fix, n_bins_fix,
-                            i_val_fix, i_start_fix, mdtin, entropy_weighing,
-                            *ncomb1, *nelm2, apriori, frq, prior_weight,
-                            *bin2);
+    build_level_combination(level, nbinx, vec, i, n_feat_fix, i_feat_fix,
+                            n_bins_fix, i_val_fix, i_start_fix, mdtin,
+                            entropy_weighing, *ncomb1, *nelm2, apriori, frq,
+                            prior_weight, *bin2);
   }
 
   finish_level(level, n_feat_fix, *nelm2, vec, mdtout, ncomb1, *bin2);
 }
 
 
+/** Get the number of bins for dependent features. Return TRUE on success. */
+static gboolean get_nbinx(const struct mdt *mdt, int dimensions, int *nbinx,
+                          GError **err)
+{
+  int nfeat = mdt->base.nfeat;
+  if (dimensions <= 0 || dimensions >= nfeat) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "'dimensions' is %d; it must be greater than 0, and less than "
+                "the dimensionality of this MDT (%d)", dimensions, nfeat);
+    return FALSE;
+  } else {
+    int i;
+    *nbinx = 1;
+    for (i = 0; i < dimensions; i++) {
+      (*nbinx) *= mdt->base.features[nfeat - 1 - i].nbins;
+    }
+    return TRUE;
+  }
+}
+
+
 /** Super-duper multi-level hierarchical recursive multi-dimensional
-    smoothing of sparse MDT frequency tables. */
-void mdt_super_smooth(const struct mdt *mdtin, struct mdt *mdtout,
-                      float prior_weight, gboolean entropy_weighing)
+    smoothing of sparse MDT frequency tables. Return TRUE on success. */
+gboolean mdt_super_smooth(const struct mdt *mdtin, struct mdt *mdtout,
+                          int dimensions, float prior_weight,
+                          gboolean entropy_weighing, GError **err)
 {
   int level, ncomb1, *i_feat_fix, *n_bins_fix, *i_val_fix, *i_start_fix,
       nelm2 = 0, maxelm2 = 0, nbinx;
   double *apriori, *frq, *bin2;
-  struct combination_vector *vec = new_combination_vector();
+  struct combination_vector *vec;
 
+  if (!get_nbinx(mdtin, dimensions, &nbinx, err)) {
+    return FALSE;
+  }
+
+  vec = new_combination_vector();
   mdt_copy(mdtin, mdtout);
-  nbinx = mdtin->base.features[mdtin->base.nfeat - 1].nbins;
+
   i_feat_fix = g_malloc(sizeof(int) * mdtin->base.nfeat);
   n_bins_fix = g_malloc(sizeof(int) * mdtin->base.nfeat);
   i_start_fix = g_malloc(sizeof(int) * mdtin->base.nfeat);
@@ -417,11 +449,11 @@ void mdt_super_smooth(const struct mdt *mdtin, struct mdt *mdtout,
   /* initialize variables 'from the previous level' */
   ncomb1 = 0;
 
-  for (level = 1; level <= mdtin->base.nfeat; level++) {
+  for (level = 1; level <= mdtin->base.nfeat - dimensions + 1; level++) {
     super_smooth_level(&mdtin->base, &mdtout->base, prior_weight,
-                       entropy_weighing, level, &ncomb1, vec, i_feat_fix,
-                       n_bins_fix, i_val_fix, i_start_fix, apriori, frq,
-                       &bin2, &nelm2, &maxelm2);
+                       entropy_weighing, level, nbinx, &ncomb1, vec, dimensions,
+                       i_feat_fix, n_bins_fix, i_val_fix, i_start_fix,
+                       apriori, frq, &bin2, &nelm2, &maxelm2);
   }
 
   free_combination_vector(vec);
@@ -432,4 +464,5 @@ void mdt_super_smooth(const struct mdt *mdtin, struct mdt *mdtout,
   g_free(apriori);
   g_free(frq);
   g_free(bin2);
+  return TRUE;
 }

@@ -131,10 +131,11 @@ gboolean mdt_write_asgl(const struct mod_mdt *mdt,
                         GError **err);
 
 /** Super-duper multi-level hierarchical recursive multi-dimensional
-    smoothing of sparse MDT frequency tables. */
+    smoothing of sparse MDT frequency tables. Return TRUE on success. */
 MDTDLLEXPORT
-void mdt_super_smooth(const struct mdt *mdtin, struct mdt *mdtout,
-                      float prior_weight, gboolean entropy_weighing);
+gboolean mdt_super_smooth(const struct mdt *mdtin, struct mdt *mdtout,
+                          int dimensions, float prior_weight,
+                          gboolean entropy_weighing, GError **err);
 
 /** Sum an MDT section. */
 MDTDLLEXPORT

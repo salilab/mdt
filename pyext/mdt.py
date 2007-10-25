@@ -597,7 +597,7 @@ class Table(TableSection):
           - `dimensions`: Number of dependent features.
           - `prior_weight`: Weight for the prior distribution.
           - `entropy_weighing`: Whether to weight distributions by their
-                                entropies.
+            entropies.
         :return: the smoothed MDT.
         :rtype: `Table`
         """

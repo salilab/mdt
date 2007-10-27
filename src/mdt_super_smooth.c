@@ -309,6 +309,7 @@ static void build_level_combination(int level, int nbinx,
                                     int i_feat_fix[], int n_bins_fix[],
                                     int i_val_fix[], int i_start_fix[],
                                     const struct mod_mdt *mdtin,
+                                    const struct mod_mdt *mdtout,
                                     gboolean entropy_weighing, int ncomb1,
                                     int nelm2, double apriori[], double frq[],
                                     double prior_weight, double bin2[])
@@ -335,16 +336,16 @@ static void build_level_combination(int level, int nbinx,
 
   do {
     /* calculate the a priori pdf ic2 for the current i_val_fix,
-       apriori()      A^n         (a priori distribution)
-       mdtin%bin()    p^(n-1)     (smoothed distribution at level-1)
-       mdtout%bin()   W'          (raw frequencies)
-       frq()          W^n         (normalized frequencies) */
+       apriori[]      A^n         (a priori distribution)
+       mdtin->bin[]   W'          (raw frequencies)
+       mdtout->bin[]  p^(n-1)     (smoothed distribution at level-1)
+       frq[]          W^n         (normalized frequencies) */
 
-    /* initialize APRIORI, based on BIN1 (which depends on what happened
+    /* initialize APRIORI, based on mdtout->bin (which depends on what happened
        in the previous LEVEL cycle);
        apriori will be 1/nbinx, if prior_weight = 0 and no data:
        this routine does the job of Eq. 12: */
-    getapriori(entropy_weighing, mdtin->bin, vec, nbinx,
+    getapriori(entropy_weighing, mdtout->bin, vec, nbinx,
                i_feat_fix, i_val_fix, ncomb1, n_feat_fix, i_start_fix,
                mdtin->nfeat, apriori);
 
@@ -390,7 +391,7 @@ static void super_smooth_level(const struct mod_mdt *mdtin,
 
   for (i = 0; i < vec->length; i++) {
     build_level_combination(level, nbinx, vec, i, n_feat_fix, i_feat_fix,
-                            n_bins_fix, i_val_fix, i_start_fix, mdtin,
+                            n_bins_fix, i_val_fix, i_start_fix, mdtin, mdtout,
                             entropy_weighing, *ncomb1, *nelm2, apriori, frq,
                             prior_weight, *bin2);
   }

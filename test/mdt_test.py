@@ -58,3 +58,8 @@ class MDTTest(ModellerTest):
             self.assertEqual(len(f1.bins), len(f2.bins))
             self.assertEqual(f1.ifeat, f2.ifeat)
         self.assertMDTDataEqual(mdt1, mdt2)
+
+    def assertSectionNormalized(self, section):
+        """Make sure that a table section is normalized"""
+        sum = section.sum()
+        self.assertInTolerance(sum, 1.0, 1e-5)

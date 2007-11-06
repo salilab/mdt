@@ -64,7 +64,7 @@ class SuperSmoothTests(MDTTest):
         # Where no data, m2==even distribution:
         for i in range(2,22):
             for a in m2[i]:
-                self.assertEqual(a, 1.0 / 22.0)
+                self.assertInTolerance(a, 1.0 / 22.0, 1e-5)
 
     def test_simple_smooth(self):
         """Test smoothing of a simple input distribution"""

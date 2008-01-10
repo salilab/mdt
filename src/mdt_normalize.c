@@ -1,6 +1,6 @@
 /** \file mdt_normalize.c  Functions to normalize MDTs.
  *
- *             Part of MDT, Copyright(c) 1989-2007 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2008 Andrej Sali
  */
 
 #include <stdlib.h>

@@ -1,6 +1,6 @@
 /** \file mdt_types.h      Functions to handle MDT types.
  *
- *             Part of MDT, Copyright(c) 1989-2007 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2008 Andrej Sali
  */
 
 #ifndef __MDT_TYPES_H

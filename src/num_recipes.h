@@ -1,6 +1,6 @@
 /** \file num_recipes.h    Numerical functions, largely from Numerical Recipes.
  *
- *             Part of MDT, Copyright(c) 1989-2007 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2008 Andrej Sali
  */
 
 #ifndef __NUM_RECIPES_H

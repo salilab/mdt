@@ -26,7 +26,7 @@
    See the 'Sample studies with MDT' chapter in the `MDT manual <https://salilab.org/internal/manuals/mdt/>`__ for copious examples.
 
    :author: Andrej Sali, Ben Webb
-   :copyright: 1989-2007 Andrej Sali
+   :copyright: 1989-2008 Andrej Sali
 """
 
 __docformat__ = "restructuredtext"

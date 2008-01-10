@@ -1,6 +1,6 @@
 /** \file mdt_hdf5.h      Functions to handle HDF5 files.
  *
- *             Part of MDT, Copyright(c) 1989-2007 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2008 Andrej Sali
  */
 
 #ifndef __MDT_HDF5_H

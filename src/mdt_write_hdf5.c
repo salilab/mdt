@@ -1,6 +1,6 @@
 /** \file mdt_write_hdf5.c   Functions to write MDTs to binary (HDF5) files.
  *
- *             Part of MDT, Copyright(c) 1989-2007 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2008 Andrej Sali
  */
 
 #include <glib.h>

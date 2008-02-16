@@ -225,17 +225,17 @@ double entrp1(const double frq[], int nbinx)
 }
 
 /** Given a set of independent (fixed) variables, find the complementary set
-    of dependent features, excluding the last. Return the indices and the number
-    of the dependent (variable) features.
+    of dependent features, excluding the last dimensions features. Return the
+    indices and the number of the dependent (variable) features.
    */
 static int *complem(const int i_feat_fix[], int n_feat_fix, int numb_features,
-                    int *n_feat_var)
+                    int dimensions, int *n_feat_var)
 {
   int i, *i_feat_var;
 
   i_feat_var = g_malloc(sizeof(int) * numb_features);
   *n_feat_var = 0;
-  for (i = 0; i < numb_features - 1; i++) {
+  for (i = 0; i < numb_features - dimensions; i++) {
     int j, match = 0;
     for (j = 0; j < n_feat_fix; j++) {
       if (i_feat_fix[j] == i) {
@@ -248,7 +248,7 @@ static int *complem(const int i_feat_fix[], int n_feat_fix, int numb_features,
       (*n_feat_var)++;
     }
   }
-  assert(*n_feat_var + n_feat_fix + 1 == numb_features);
+  assert(*n_feat_var + n_feat_fix + dimensions == numb_features);
   return i_feat_var;
 }
 
@@ -272,13 +272,14 @@ static void setup_mdt_feature_arrays(const struct mod_mdt *mdt,
     independent features and their values except for the n_feat_fix fixed
     independent features. */
 void getfrq(const struct mod_mdt *mdt, const int i_feat_fix[], int n_feat_fix,
-            const int i_val_fix[], int nbinx, double frq[])
+            const int i_val_fix[], int dimensions, int nbinx, double frq[])
 {
   int *indf, *i_val_var, *i_feat_var, *var_feature_bins, *istart, n_feat_var,
       i, i1;
 
   /* Find the dependent features */
-  i_feat_var = complem(i_feat_fix, n_feat_fix, mdt->nfeat, &n_feat_var);
+  i_feat_var = complem(i_feat_fix, n_feat_fix, mdt->nfeat, dimensions,
+                       &n_feat_var);
 
   indf = mdt_start_indices(mdt);
 
@@ -306,6 +307,7 @@ void getfrq(const struct mod_mdt *mdt, const int i_feat_fix[], int n_feat_fix,
 
     /* for each x, sum mdt over all possible values for n_feat_var features */
     i1 = indmdt(indf, mdt);
+    assert(i1 + nbinx - 1 < mdt->nelems);
     for (i = 0; i < nbinx; i++) {
       frq[i] += mdt->bin[i1 + i];
     }
@@ -346,7 +348,7 @@ double entrp2(double summdt, const int i_feat_fix[],
   do {
     /* get pdf p(x/y,z,...) for the current combination of values of the
        current combination of independent features */
-    getfrq(mdt, i_feat_fix, n_feat_fix, i_val_fix, nbinx, fijk);
+    getfrq(mdt, i_feat_fix, n_feat_fix, i_val_fix, 1, nbinx, fijk);
 
     /* over all values of the dependent variable */
     sumfrq = get_sum(fijk, nbinx);
@@ -435,7 +437,7 @@ double chisqr(double summdt, const int i_feat_fix[],
 
     /* get pdf p(x/y,z,...) for the current combination of values of the
        current combination of independent features */
-    getfrq(mdt, i_feat_fix, n_feat_fix, i_val_fix, nbinx, fijk);
+    getfrq(mdt, i_feat_fix, n_feat_fix, i_val_fix, 1, nbinx, fijk);
 
     sumj = get_sum(fijk, nbinx);
     sumjmdt += sumj;

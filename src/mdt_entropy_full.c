@@ -119,7 +119,7 @@ gboolean mdt_entropy_full(const struct mod_mdt *mdt,
   /* get pdf p(x) irrespective of the values of the independent variables */
   sumi = g_malloc(sizeof(float) * nbinx);
   frq = g_malloc(sizeof(double) * nbinx);
-  getfrq(mdt, NULL, 0, NULL, nbinx, frq);
+  getfrq(mdt, NULL, 0, NULL, 1, nbinx, frq);
 
 
   /* get its chi^2 characterization by comparison with the uniform pdf: */

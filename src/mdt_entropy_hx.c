@@ -30,7 +30,7 @@ float mdt_entropy_hx(const struct mod_mdt *mdt, GError **err)
 
   /* get pdf p(x) irrespective of the values of the independent variables */
   frq = g_malloc(sizeof(double) * nbinx);
-  getfrq(mdt, NULL, 0, NULL, nbinx, frq);
+  getfrq(mdt, NULL, 0, NULL, 1, nbinx, frq);
 
   /* get its entropy: */
   sumfrq = get_sum(frq, nbinx);

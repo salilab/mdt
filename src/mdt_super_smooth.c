@@ -303,7 +303,7 @@ static void prepare_level(int level, struct combination_vector *vec,
 }
 
 /** Scan all generated combinations of independent features at level level */
-static void build_level_combination(int level, int nbinx,
+static void build_level_combination(int level, int dimensions, int nbinx,
                                     struct combination_vector *vec,
                                     int icomb, int n_feat_fix,
                                     int i_feat_fix[], int n_bins_fix[],
@@ -356,7 +356,7 @@ static void build_level_combination(int level, int nbinx,
 
     /* initializes FRQ based on BIN;
        this routine does the job of Eq. 11 (without normalization): */
-    getfrq(mdtin, i_feat_fix, n_feat_fix, i_val_fix, nbinx, frq);
+    getfrq(mdtin, i_feat_fix, n_feat_fix, i_val_fix, dimensions, nbinx, frq);
 
     /* calculate bin2 = weighted sum of the a priori and experimental
        pdf's: sets BIN2, based on APRIORI and FRQ
@@ -390,10 +390,10 @@ static void super_smooth_level(const struct mod_mdt *mdtin,
                 n_feat_fix);
 
   for (i = 0; i < vec->length; i++) {
-    build_level_combination(level, nbinx, vec, i, n_feat_fix, i_feat_fix,
-                            n_bins_fix, i_val_fix, i_start_fix, mdtin, mdtout,
-                            entropy_weighing, *ncomb1, *nelm2, apriori, frq,
-                            prior_weight, *bin2);
+    build_level_combination(level, dimensions, nbinx, vec, i, n_feat_fix,
+                            i_feat_fix, n_bins_fix, i_val_fix, i_start_fix,
+                            mdtin, mdtout, entropy_weighing, *ncomb1, *nelm2,
+                            apriori, frq, prior_weight, *bin2);
   }
 
   finish_level(level, n_feat_fix, *nelm2, vec, mdtout, ncomb1, *bin2);

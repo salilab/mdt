@@ -86,7 +86,7 @@ double entrp1(const double frq[], int nbinx);
     independent features. */
 MDTDLLLOCAL
 void getfrq(const struct mod_mdt *mdt, const int i_feat_fix[], int n_feat_fix,
-            const int i_val_fix[], int nbinx, double frq[]);
+            const int i_val_fix[], int dimensions, int nbinx, double frq[]);
 
 /** Return entropy of p(x/y,z,...) where y,z are the independent features.
     See pages 480-483 in Numerical Recipes for equations. */

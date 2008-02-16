@@ -4,7 +4,7 @@ sys.path.append('../')
 from tools import *
 
 # Set up build environment:
-opts = Options()
+opts = Options('config.py', ARGUMENTS)
 add_common_options(opts, 'mdt')
 env = MyEnvironment(options=opts, require_modeller=True,
                     tools=["default", "doxygen"], toolpath=["../tools"])

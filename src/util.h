@@ -77,6 +77,10 @@ gboolean get_binx_biny(int dimensions, const struct mod_mdt *mdt,
 MDTDLLLOCAL
 double get_sum(const double bin[], int nbins);
 
+/** Return the sum of an MDT. */
+MDTDLLLOCAL
+double get_mdt_sum(const struct mod_mdt *mdt);
+
 /** Return the entropy of a set. */
 MDTDLLLOCAL
 double entrp1(const double frq[], int nbinx);

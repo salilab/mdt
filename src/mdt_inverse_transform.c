@@ -18,10 +18,11 @@ void mdt_inverse_transform(struct mod_mdt *mdt, float offset,
               "                y = a + b/y", offset, multiplier);
 
   for (i = 0; i < mdt->nelems; i++) {
-    if (abs(mdt->bin[i]) < divisor) {
-      mdt->bin[i] = undefined;
+    double binval = mod_mdt_bin_get(mdt, i);
+    if (abs(binval) < divisor) {
+      mod_mdt_bin_set(mdt, i, undefined);
     } else {
-      mdt->bin[i] = offset + multiplier / mdt->bin[i];
+      mod_mdt_bin_set(mdt, i, offset + multiplier / binval);
     }
   }
 }

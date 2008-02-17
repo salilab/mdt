@@ -124,8 +124,13 @@ static gboolean read_mdt_data(hid_t file_id, struct mdt *mdt, GError **err)
   }
 
   mod_mdt_nelems_set(&mdt->base, nelems);
-  ret = mod_dataset_read_double(file_id, "/mdt", mdt->base.nfeat, dims,
-                                mdt->base.bin);
+  if (mdt->base.bin_type == MOD_MDTB_FLOAT) {
+    ret = mod_dataset_read_float(file_id, "/mdt", mdt->base.nfeat, dims,
+                                 (float *)mdt->base.bindata);
+  } else {
+    ret = mod_dataset_read_double(file_id, "/mdt", mdt->base.nfeat, dims,
+                                  (double *)mdt->base.bindata);
+  }
   if (ret >= 0) {
     hsize_t featdim = 1;
     char is_pdf;

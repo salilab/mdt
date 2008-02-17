@@ -107,7 +107,7 @@ gboolean mdt_entropy_full(const struct mod_mdt *mdt,
   nbinx = mdt->features[mdt->nfeat - 1].nbins;
 
   /* the number of points in mdt */
-  summdt = get_sum(mdt->bin, mdt->nelems);
+  summdt = get_mdt_sum(mdt);
 
   if (summdt < small) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,

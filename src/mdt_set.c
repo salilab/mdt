@@ -12,7 +12,7 @@ gboolean mdt_set(struct mod_mdt *mdt, const int indices[], int n_indices,
 {
   int bin_index;
   if (get_bin_index(mdt, indices, n_indices, &bin_index, err)) {
-    mdt->bin[bin_index] = val;
+    mod_mdt_bin_set(mdt, bin_index, val);
     return TRUE;
   } else {
     return FALSE;

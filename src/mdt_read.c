@@ -206,7 +206,11 @@ static gboolean read_mdt_data(struct mdt *mdt, FILE *fp, const char *header,
 
     mod_mdt_nelems_set(&mdt->base, nelems);
     for (i = 0; i < nelems && retval; i++) {
-      retval = read_mdt_data_line(fp, str, &mdt->base.bin[i], err);
+      double output;
+      retval = read_mdt_data_line(fp, str, &output, err);
+      if (retval) {
+        mod_mdt_bin_set(&mdt->base, i, output);
+      }
     }
 
     if (retval) {

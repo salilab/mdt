@@ -20,6 +20,7 @@ struct mdt *mdt_new(void)
   mdt->nalns = mdt->n_proteins = mdt->n_protein_pairs = 0;
   mdt->symmetric = FALSE;
   mdt->scantype = 0;
+  mdt->base.bin_type = MOD_MDTB_DOUBLE;
   return mdt;
 }
 

@@ -208,6 +208,17 @@ double get_sum(const double bin[], int nbins)
   return sum;
 }
 
+/** Return the sum of an MDT. */
+double get_mdt_sum(const struct mod_mdt *mdt)
+{
+  int i;
+  double sum = 0.;
+  for (i = 0; i < mdt->nelems; ++i) {
+    sum += mod_mdt_bin_get(mdt, i);
+  }
+  return sum;
+}
+
 
 /** Return the entropy of a set. */
 double entrp1(const double frq[], int nbinx)
@@ -309,7 +320,7 @@ void getfrq(const struct mod_mdt *mdt, const int i_feat_fix[], int n_feat_fix,
     i1 = indmdt(indf, mdt);
     assert(i1 + nbinx - 1 < mdt->nelems);
     for (i = 0; i < nbinx; i++) {
-      frq[i] += mdt->bin[i1 + i];
+      frq[i] += mod_mdt_bin_get(mdt, i1 + i);
     }
   } while (roll_ind(i_val_var, istart, var_feature_bins, n_feat_var));
 

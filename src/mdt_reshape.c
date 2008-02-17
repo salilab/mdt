@@ -50,7 +50,7 @@ static void reshape_mdt_table(const struct mod_mdt *mdtin,
     }
     i1 = indmdt(in_indf, mdtin);
     i2 = indmdt(out_indf, mdtout);
-    mdtout->bin[i2] = mdtin->bin[i1];
+    mod_mdt_bin_set(mdtout, i2, mod_mdt_bin_get(mdtin, i1));
   } while (roll_ind_mdt(out_indf, mdtout, mdtout->nfeat));
   g_free(in_indf);
   g_free(out_indf);
@@ -149,7 +149,7 @@ gboolean mdt_reshape(const struct mdt *mdtin, struct mdt *mdtout,
 
   /* a little heuristic here: */
   if (!mdtout->pdf) {
-    mdtout->sample_size = get_sum(mdtout->base.bin, mdtout->base.nelems);
+    mdtout->sample_size = get_mdt_sum(&mdtout->base);
   }
 
   g_free(old_position);

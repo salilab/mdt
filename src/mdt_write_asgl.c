@@ -11,8 +11,9 @@
 #include "util.h"
 
 /** Write the raw data to be plotted with ASGL. */
-static gboolean wrdata(const char *datfil, int dimensions, const double bin[],
-                       int nbinx, int nbiny, GError **err)
+static gboolean wrdata(const char *datfil, int dimensions,
+                       const struct mod_mdt *mdt, int offset, int nbinx,
+                       int nbiny, GError **err)
 {
   FILE *fp;
   struct mod_file file_info;
@@ -23,7 +24,7 @@ static gboolean wrdata(const char *datfil, int dimensions, const double bin[],
       fprintf(fp, "%d %d\n", nbiny, nbinx);
     }
     for (i = 0; i < nbinx * nbiny; i++) {
-      fprintf(fp, "%#14.5g\n", bin[i]);
+      fprintf(fp, "%#14.5g\n", mod_mdt_bin_get(mdt, offset + i));
     }
     mdt_close_file(fp, &file_info, err);
     return (*err == NULL);
@@ -197,14 +198,16 @@ static void write_script_file(FILE *fp, const struct mod_mdt *mdt,
   nhist = nempty = iposc = idrawn = 0;
 
   do {
-    int i1;
-    double sum;
+    int i1, i;
+    double sum = 0.0;
     /* one more attempted plot */
     nhist++;
     i1 = indmdt(indf, mdt);
 
     /* is it dense enough to be worth processing at all? */
-    sum = get_sum(&mdt->bin[i1], nbins);
+    for (i = 0; i < nbins; ++i) {
+      sum += mod_mdt_bin_get(mdt, i1 + i);
+    }
     if (sum >= plot_density_cutoff) {
       int ipos;
       char *datfil;
@@ -223,7 +226,7 @@ static void write_script_file(FILE *fp, const struct mod_mdt *mdt,
               y_decimal, sum);
 
       /* write the numbers file */
-      wrdata(datfil, dimensions, &mdt->bin[i1], nbinx, nbiny, err);
+      wrdata(datfil, dimensions, mdt, i1, nbinx, nbiny, err);
       g_free(datfil);
 
       /* new page?

@@ -66,7 +66,9 @@ typedef gboolean (*mdt_scan_cb) (void *data, struct mdt * mdt, int indx,
 static gboolean scan_update(void *data, struct mdt *mdt, int indx,
                             GError **err)
 {
-  mdt->base.bin[indx] += 1.0;
+  double binval = mod_mdt_bin_get(&mdt->base, indx);
+  binval += 1.0;
+  mod_mdt_bin_set(&mdt->base, indx, binval);
   mdt->sample_size += 1.0;
   return TRUE;
 }
@@ -75,7 +77,7 @@ static gboolean scan_update(void *data, struct mdt *mdt, int indx,
 static gboolean scan_sum(void *data, struct mdt *mdt, int indx, GError **err)
 {
   double *sum = (double *)data;
-  *sum += mdt->base.bin[indx];
+  *sum += mod_mdt_bin_get(&mdt->base, indx);
   return TRUE;
 }
 

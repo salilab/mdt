@@ -14,6 +14,7 @@ static void mod_mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
   int i;
   mdtout->nbinx = mdtin->nbinx;
   mdtout->nfeat1 = mdtin->nfeat1;
+  mdtout->bin_type = mdtin->bin_type;
   for (i = 0; i < MAXDATATYP; i++) {
     mdtout->readin[i] = mdtin->readin[i];
   }
@@ -31,7 +32,8 @@ static void mod_mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
     out->iend = in->iend;
     out->nbins = in->nbins;
   }
-  memcpy(mdtout->bin, mdtin->bin, sizeof(double) * mdtin->nelems);
+  memcpy(mdtout->bindata, mdtin->bindata,
+         mod_mdt_bin_get_size(mdtin) * mdtin->nelems);
 }
 
 /** Make mdtout a copy of mdtin. */

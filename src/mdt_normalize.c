@@ -48,25 +48,26 @@ static void do_normalize(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
   static const float divisor = 1e-15;
 
   do {
-    double norm;
+    double norm = 0.0;
+    int i;
     int i1 = indmdt(indf, mdtin);
     int i2 = i1 + nbins;
 
-    norm = get_sum(mdtin->bin, nbins) * dxdy;
+    for (i = i1; i < i2; i++) {
+      norm += mod_mdt_bin_get(mdtin, i);
+    }
+    norm *= dxdy;
     if (norm > divisor) {
-      int i;
       for (i = i1; i < i2; i++) {
-        mdtout->bin[i] = mdtin->bin[i] / norm;
+        mod_mdt_bin_set(mdtout, i, mod_mdt_bin_get(mdtin, i) / norm);
       }
     } else if (to_zero) {
-      int i;
       for (i = i1; i < i2; i++) {
-        mdtout->bin[i] = 0.0;
+        mod_mdt_bin_set(mdtout, i, 0.0);
       }
     } else {
-      int i;
       for (i = i1; i < i2; i++) {
-        mdtout->bin[i] = 1.0 / ((float)nbins * dxdy);
+        mod_mdt_bin_set(mdtout, i, 1.0 / ((float)nbins * dxdy));
       }
     }
 

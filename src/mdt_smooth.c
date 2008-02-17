@@ -35,7 +35,7 @@ gboolean mdt_smooth(const struct mdt *mdtin, struct mdt *mdtout,
 
     norm = 0.;
     for (i = i1; i < i2; i++) {
-      norm += mdtin->base.bin[i];
+      norm += mod_mdt_bin_get(&mdtin->base, i);
     }
 
 /*  The final distribution is: P = w1 * P(uniform) + w2 * P(data)
@@ -52,7 +52,8 @@ gboolean mdt_smooth(const struct mdt *mdtin, struct mdt *mdtout,
     w2 = (norm > divisor ? w2 / norm : 0.);
 
     for (i = i1; i < i2; i++) {
-      mdtout->base.bin[i] = wunifp + w2 * mdtin->base.bin[i];
+      mod_mdt_bin_set(&mdtout->base, i,
+                      wunifp + w2 * mod_mdt_bin_get(&mdtin->base, i));
     }
 
 /* roll the indices of the "constant" features one forward: */

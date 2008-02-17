@@ -15,6 +15,6 @@ void mdt_linear_transform(struct mod_mdt *mdt, float offset, float multiplier)
               "                y = a + b*y", offset, multiplier);
 
   for (i = 0; i < mdt->nelems; i++) {
-    mdt->bin[i] = offset + multiplier * mdt->bin[i];
+    mod_mdt_bin_set(mdt, i, offset + multiplier * mod_mdt_bin_get(mdt, i));
   }
 }

@@ -18,7 +18,8 @@ void mdt_exp_transform(struct mod_mdt *mdt, float offset, float expoffset,
               multiplier, power);
 
   for (i = 0; i < mdt->nelems; i++) {
-    mdt->bin[i] = offset + exp(expoffset
-                               + multiplier * pow(mdt->bin[i], power));
+    double binval = mod_mdt_bin_get(mdt, i);
+    binval = offset + exp(expoffset + multiplier * pow(binval, power));
+    mod_mdt_bin_set(mdt, i, binval);
   }
 }

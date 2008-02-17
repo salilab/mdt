@@ -32,8 +32,13 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
     nbins[i] = libfeat->nbins;
   }
 
-  ret = H5LTmake_dataset_double(file_id, "/mdt", mdt->base.nfeat, dims,
-                                mdt->base.bin);
+  if (mdt->base.bin_type == MOD_MDTB_FLOAT) {
+    ret = H5LTmake_dataset_float(file_id, "/mdt", mdt->base.nfeat, dims,
+                                 (float *)mdt->base.bindata);
+  } else {
+    ret = H5LTmake_dataset_double(file_id, "/mdt", mdt->base.nfeat, dims,
+                                  (double *)mdt->base.bindata);
+  }
   if (ret >= 0) {
     hsize_t featdim = mdt->base.nfeat;
     if (H5LTmake_dataset_int(file_id, "/features", 1, &featdim, ifeat) < 0

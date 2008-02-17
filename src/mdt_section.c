@@ -48,12 +48,15 @@ static gboolean get_mdt_section_bins(const struct mod_mdt *mdt,
 
 
 /** Calculate the entropy of a histogram. */
-static double entropy_hist(const double x[], int n)
+static double entropy_hist(const struct mod_mdt *mdt, int offset, int n)
 {
   static const float divisor = 1.0e-15, tiny = 1.0e-30;
-  double area;
+  int i;
+  double area = 0.0;
 
-  area = get_sum(x, n);
+  for (i = 0; i < n; ++i) {
+    area += mod_mdt_bin_get(mdt, offset + i);
+  }
   if (fabs(area) < divisor && n > 0) {
     /* the curve is probably all 0. */
     return log(n);
@@ -62,7 +65,7 @@ static double entropy_hist(const double x[], int n)
     double accum;
     accum = 0.0;
     for (i = 0; i < n; i++) {
-      double probi = x[i] / area;
+      double probi = mod_mdt_bin_get(mdt, offset + i) / area;
       if (probi > tiny) {
         accum -= probi * log(probi);
       }
@@ -109,8 +112,8 @@ static float diffdeg(float ang2, float ang1)
 
 /** Return the average and standard deviation of the distribution
     defined by f(i). Works only for aperiodic features. */
-static void hist_avrstdev(const double f[], int n, double x0, double dx,
-                          double *avr, double *std)
+static void hist_avrstdev(const struct mod_mdt *mdt, int offset, int n,
+                          double x0, double dx, double *avr, double *std)
 {
   float a, s, x, norm;
   int i;
@@ -118,8 +121,9 @@ static void hist_avrstdev(const double f[], int n, double x0, double dx,
   a = norm = 0.;
   x = x0;
   for (i = 0; i < n; i++) {
-    norm += f[i];
-    a += f[i] * x;
+    double binval = mod_mdt_bin_get(mdt, offset + i);
+    norm += binval;
+    a += binval * x;
     x += dx;
   }
 
@@ -131,7 +135,8 @@ static void hist_avrstdev(const double f[], int n, double x0, double dx,
   s = 0.;
   x = x0;
   for (i = 0; i < n; i++) {
-    s += f[i] * pow(x - *avr, 2);
+    double binval = mod_mdt_bin_get(mdt, offset + i);
+    s += binval * pow(x - *avr, 2);
     x += dx;
   }
 
@@ -147,8 +152,8 @@ static void hist_avrstdev(const double f[], int n, double x0, double dx,
     angles in proteins). you can check the results from here against
     the analytical model fits obtained with ASGL. Bond angles
     (0 .. 180^o) don't need complication, but it does not hurt. */
-static void hist_avrstdev_deg(const double f[], int n, float x0, float dx,
-                              double *avr, double *std)
+static void hist_avrstdev_deg(const struct mod_mdt *mdt, int offset, int n,
+                              float x0, float dx, double *avr, double *std)
 {
   static const float pi2degr = 360.0, pidegr = 180.0;
   float a1, a2, s, x, norm1, norm2;
@@ -159,12 +164,13 @@ static void hist_avrstdev_deg(const double f[], int n, float x0, float dx,
   a1 = a2 = norm1 = norm2 = 0.0;
   x = x0;
   for (i = 0; i < n; i++) {
+    double binval = mod_mdt_bin_get(mdt, offset + i);
     if (x <= 0.) {
-      a1 += f[i] * x;
-      norm1 += f[i];
+      a1 += binval * x;
+      norm1 += binval;
     } else {
-      a2 += f[i] * x;
-      norm2 += f[i];
+      a2 += binval * x;
+      norm2 += binval;
     }
     x += dx;
   }
@@ -185,7 +191,8 @@ static void hist_avrstdev_deg(const double f[], int n, float x0, float dx,
   s = 0.;
   x = x0;
   for (i = 0; i < n; i++) {
-    s += f[i] * pow(diffdeg(x, *avr), 2);
+    double binval = mod_mdt_bin_get(mdt, offset + i);
+    s += binval * pow(diffdeg(x, *avr), 2);
     x += dx;
   }
 
@@ -198,11 +205,15 @@ static void hist_avrstdev_deg(const double f[], int n, float x0, float dx,
 double mdt_section_sum(const struct mod_mdt *mdt, const int indices[],
                        int n_indices, GError **err)
 {
-  int istart, nbins;
+  int istart, nbins, i;
+  double sum = 0.0;
   if (!get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, err)) {
     return 0.0;
   }
-  return get_sum(&mdt->bin[istart], nbins);
+  for (i = 0; i < nbins; ++i) {
+    sum += mod_mdt_bin_get(mdt, istart + i);
+  }
+  return sum;
 }
 
 /** Get the entropy of an MDT section. */
@@ -213,7 +224,7 @@ double mdt_section_entropy(const struct mod_mdt *mdt, const int indices[],
   if (!get_mdt_section_bins(mdt, indices, n_indices, &istart, &nbins, err)) {
     return 0.0;
   }
-  return entropy_hist(&mdt->bin[istart], nbins);
+  return entropy_hist(mdt, istart, nbins);
 }
 
 /** Get the mean and standard deviation of an MDT section. */
@@ -241,8 +252,8 @@ void mdt_section_meanstdev(const struct mod_mdt *mdt,
   x0 = feat->bins[0].rang1 + 0.5 * dx;
 
   if (periodic) {
-    hist_avrstdev_deg(&mdt->bin[istart], nbins, x0, dx, mean, stdev);
+    hist_avrstdev_deg(mdt, istart, nbins, x0, dx, mean, stdev);
   } else {
-    hist_avrstdev(&mdt->bin[istart], nbins, x0, dx, mean, stdev);
+    hist_avrstdev(mdt, istart, nbins, x0, dx, mean, stdev);
   }
 }

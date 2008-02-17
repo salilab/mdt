@@ -9,17 +9,18 @@
 #include "util.h"
 
 /** Get the minimum value in the bin array */
-static double get_bin_minval(const double *bin, int num)
+static double get_bin_minval(const struct mod_mdt *mdt, int offset, int num)
 {
   int i;
   double minval;
   if (num == 0) {
     return 0;
   }
-  minval = bin[0];
+  minval = mod_mdt_bin_get(mdt, offset);
   for (i = 1; i < num; i++) {
-    if (bin[i] < minval) {
-      minval = bin[i];
+    double binval = mod_mdt_bin_get(mdt, offset + i);
+    if (binval < minval) {
+      minval = binval;
     }
   }
   return minval;
@@ -47,10 +48,10 @@ gboolean mdt_offset_min(struct mod_mdt *mdt, int dimensions, GError **err)
 
     i1 = indmdt(indf, mdt);
     i2 = i1 + nbins;
-    minval = get_bin_minval(&mdt->bin[i1], nbins);
+    minval = get_bin_minval(mdt, i1, nbins);
 
     for (i = i1; i < i2; i++) {
-      mdt->bin[i] -= minval;
+      mod_mdt_bin_set(mdt, i, mod_mdt_bin_get(mdt, i) - minval);
     }
 
 /* roll the indices of the "constant" features one forward: */

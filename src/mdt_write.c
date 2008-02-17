@@ -60,7 +60,7 @@ static void write_mdt_data(FILE *fp, const struct mod_mdt *mdt)
   int i;
 
   for (i = 0; i < mdt->nelems; i++) {
-    fprintf(fp, "%#15.5g\n", mdt->bin[i]);
+    fprintf(fp, "%#15.5g\n", mod_mdt_bin_get(mdt, i));
   }
 }
 

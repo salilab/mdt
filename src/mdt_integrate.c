@@ -102,12 +102,13 @@ static void integrate_mdt_table(const struct mod_mdt *mdtin,
 
     /* will be adding the integrated mdtin to this element of mdtout next: */
     i2 = indmdt(out_indf, mdtout);
-    mdtout->bin[i2] = 0.0;
+    mod_mdt_bin_set(mdtout, i2, 0.0);
 
     /* integrate over all needed dimensions in the first table */
     do {
       int i1 = indmdt(in_indf, mdtin);
-      mdtout->bin[i2] += mdtin->bin[i1];
+      mod_mdt_bin_set(mdtout, i2, mod_mdt_bin_get(mdtout, i2)
+                                  + mod_mdt_bin_get(mdtin, i1));
 
       /* roll the indices of the "integrated" features one forward: */
     } while (roll_inds(in_indf, mdtin, int_features, n_int_features));
@@ -150,7 +151,7 @@ gboolean mdt_integrate(const struct mdt *mdtin, struct mdt *mdtout,
 
   /* a little heuristic here */
   if (!mdtout->pdf) {
-    mdtout->sample_size = get_sum(mdtout->base.bin, mdtout->base.nelems);
+    mdtout->sample_size = get_mdt_sum(&mdtout->base);
   }
   g_free(inew_features);
   g_free(int_features);

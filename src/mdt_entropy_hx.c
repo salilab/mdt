@@ -19,7 +19,7 @@ float mdt_entropy_hx(const struct mod_mdt *mdt, GError **err)
   nbinx = mdt->features[mdt->nfeat - 1].nbins;
 
   /* the number of points in mdt */
-  summdt = get_sum(mdt->bin, mdt->nelems);
+  summdt = get_mdt_sum(mdt);
 
   if (summdt < small) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,

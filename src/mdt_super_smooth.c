@@ -173,7 +173,7 @@ static gboolean get_inds_combination(const struct combination *comb,
 
 
 /** Return the a priori distribution, A^n in Eq. 12. */
-static void getapriori(gboolean entropy_weighing, const double bin1[],
+static void getapriori(gboolean entropy_weighing, const struct mod_mdt *mdt,
                        const struct combination_vector *vec, int nbinx,
                        const int i_feat_fix[], const int i_val_fix[],
                        int ncomb1, int n_feat_fix, const int i_start_fix[],
@@ -216,13 +216,18 @@ static void getapriori(gboolean entropy_weighing, const double bin1[],
         if (entropy_weighing) {
           /* w is proportional to rho_c in Eq. 12; w is the nominator in
              Eq. 14, also defined by Eq. 13: */
-          w = emax - entrp1(&bin1[is1], nbinx);
+          double *tmparr = (double *)g_malloc(sizeof(double) * nbinx);
+          for (i = 0; i < nbinx; ++i) {
+            tmparr[i] = mod_mdt_bin_get(mdt, is1 + i);
+          }
+          w = emax - entrp1(tmparr, nbinx);
+          g_free(tmparr);
         } else {
           w = 1.0;
         }
 
         for (i = 0; i < nbinx; i++) {
-          apriori[i] += w * bin1[is1 + i];
+          apriori[i] += w * mod_mdt_bin_get(mdt, is1 + i);
         }
       }
     }
@@ -240,7 +245,7 @@ static void finish_level(int level, int n_feat_fix, int nelm2,
                          struct combination_vector *vec, struct mod_mdt *mdt,
                          int *ncomb1, double bin2[])
 {
-  int icomb;
+  int icomb, i;
   *ncomb1 = vec->length;
 
   for (icomb = 0; icomb < vec->length; icomb++) {
@@ -255,7 +260,9 @@ static void finish_level(int level, int n_feat_fix, int nelm2,
       comb->i_feat_fixn1[ifeat] = comb->i_feat_fixn2[ifeat];
     }
   }
-  memcpy(mdt->bin, bin2, nelm2 * sizeof(double));
+  for (i = 0; i < nelm2; ++i) {
+    mod_mdt_bin_set(mdt, i, bin2[i]);
+  }
 }
 
 
@@ -345,7 +352,7 @@ static void build_level_combination(int level, int dimensions, int nbinx,
        in the previous LEVEL cycle);
        apriori will be 1/nbinx, if prior_weight = 0 and no data:
        this routine does the job of Eq. 12: */
-    getapriori(entropy_weighing, mdtout->bin, vec, nbinx,
+    getapriori(entropy_weighing, mdtout, vec, nbinx,
                i_feat_fix, i_val_fix, ncomb1, n_feat_fix, i_start_fix,
                mdtin->nfeat, apriori);
 

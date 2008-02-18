@@ -20,6 +20,8 @@ if sys.platform == 'aix5':
     e.Append(LIBS=['hdf5', 'hdf5_hl'])
 if e['PLATFORM'] == 'win32':
     e.Append(SHLINKFLAGS=' hdf5dll.lib hdf5_hl.lib')
+    # Necessary to link correctly with HDF5 DLLs:
+    e.Append(CPPDEFINES=['_HDF5USEDLL_', 'WIN32'])
 
 # Source files
 files = ('mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c',

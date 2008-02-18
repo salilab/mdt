@@ -33,8 +33,10 @@ __docformat__ = "restructuredtext"
 
 __all__ = ['MDTError', 'FileFormatError', 'TableSection', 'Table', 'Library',
            'Feature', 'Bin', 'Source', 'BondClasses', 'TupleClasses',
-           'HydrogenBondClasses', 'write_2dsplinelib', 'write_anglelib',
-           'write_bondlib', 'write_improperlib', 'write_splinelib']
+           'HydrogenBondClasses', 'Float', 'Double', 'Int32', 'UnsignedInt32',
+           'Int16', 'UnsignedInt16', 'Int8', 'UnsignedInt8',
+           'write_2dsplinelib', 'write_anglelib', 'write_bondlib',
+           'write_improperlib', 'write_splinelib']
 
 import _mdt
 from modeller.util.modobject import modobject
@@ -48,6 +50,26 @@ MDTError = _mdt.MDTError
 
 #: File format error
 FileFormatError = _mdt.FileFormatError
+
+class _BinType(object):
+    def __init__(self, bin_type):
+        self._bin_type = bin_type
+#: Single-precision floating-point bin storage
+Float = _BinType(_mdt.MOD_MDTB_FLOAT)
+#: Double-precision floating-point bin storage
+Double = _BinType(_mdt.MOD_MDTB_DOUBLE)
+#: 32-bit signed integer bin storage
+Int32 = _BinType(_mdt.MOD_MDTB_INT32)
+#: 32-bit unsigned integer bin storage
+UnsignedInt32 = _BinType(_mdt.MOD_MDTB_UINT32)
+#: 16-bit signed integer bin storage
+Int16 = _BinType(_mdt.MOD_MDTB_INT16)
+#: 16-bit unsigned integer bin storage
+UnsignedInt16 = _BinType(_mdt.MOD_MDTB_UINT16)
+#: 8-bit signed integer bin storage
+Int8 = _BinType(_mdt.MOD_MDTB_INT8)
+#: 8-bit unsigned integer bin storage
+UnsignedInt8 = _BinType(_mdt.MOD_MDTB_UINT8)
 
 class Library(modobject):
     """Library data used in the construction and use of MDTs"""
@@ -285,12 +307,7 @@ class Table(TableSection):
     _basept = None
     _mlib = None
 
-    def __new__(cls, *args, **vars):
-        obj = TableSection.__new__(cls)
-        obj._modpt = _mdt.mdt_new()
-        return obj
-
-    def __init__(self, mlib, file=None, features=None):
+    def __init__(self, mlib, file=None, features=None, bin_type=Double):
         """
         Create a new MDT.
 
@@ -301,7 +318,12 @@ class Table(TableSection):
             `Table.read`)
           - `features`: if specified (and `file` is not), a list of feature
             types to initialize the table with (using `Table.make`)
+          - `bin_type`: type of storage for bin data (e.g. Float, Double)
         """
+        if not isinstance(bin_type, _BinType):
+            raise TypeError("bin_type must be a BinType object - " + \
+                            "e.g. mdt.Float, mdt.Double")
+        self._modpt = _mdt.mdt_new(bin_type._bin_type)
         self._mlib = mlib
         if file:
             if file.endswith(".hdf5"):
@@ -311,8 +333,18 @@ class Table(TableSection):
         elif features:
             self.make(features)
 
+    def __getstate__(self):
+        d = Table.__getstate__(self)
+        d['bin_type'] = _mdt.mod_mdt_bin_type_get(self._basept)
+        return d
+
+    def __setstate__(self, d):
+        self.__dict__.update(d)
+        self._modpt = _mdt.mdt_new(d.pop('bin_type'))
+
     def __del__(self):
-        _mdt.mdt_free(self._modpt)
+        if self._modpt is not None:
+            _mdt.mdt_free(self._modpt)
 
     def read(self, file):
         """Read an MDT from `file`."""
@@ -322,13 +354,23 @@ class Table(TableSection):
         """Read an MDT in HDF5 format from `file`."""
         _mdt.mdt_read_hdf5(self._modpt, self._mlib._modpt, file)
 
-    def copy(self):
+    def copy(self, bin_type=None):
         """
+        :Parameters:
+          - `bin_type`: if specified, the storage type to convert the
+            bin data to
         :return: a copy of this MDT table.
         :rtype: `Table`
         """
+        if bin_type is None:
+            bin_type = _mdt.mod_mdt_bin_type_get(self._basept)
+        elif isinstance(bin_type, _BinType):
+            bin_type = bin_type._bin_type
+        else:
+            raise TypeError("bin_type must be a BinType object - " + \
+                            "e.g. mdt.Float, mdt.Double")
         mdtout = Table(self._mlib)
-        _mdt.mdt_copy(self._modpt, mdtout._modpt)
+        _mdt.mdt_copy(self._modpt, mdtout._modpt, bin_type)
         return mdtout
 
     def make(self, features):

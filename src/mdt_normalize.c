@@ -102,7 +102,7 @@ gboolean mdt_normalize(const struct mdt *mdtin, struct mdt *mdtout,
     dxdy = 1.0;
   }
 
-  mdt_copy(mdtin, mdtout);
+  mdt_copy(mdtin, mdtout, mdtin->base.bin_type);
 
   mod_lognote("%s______> to_pdf        : %d", routine, to_pdf);
   mod_lognote("%s______> dimensions    : %d", routine, dimensions);

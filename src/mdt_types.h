@@ -6,9 +6,10 @@
 #ifndef __MDT_TYPES_H
 #define __MDT_TYPES_H
 
-#include <glib.h>
 #include "mdt_config.h"
-#include "mod_types.h"
+#include "mod_mdt_type.h"
+
+#include <glib.h>
 
 G_BEGIN_DECLS
 
@@ -82,7 +83,7 @@ struct mdt_library {
 
 /** Make a new mdt structure */
 MDTDLLEXPORT
-struct mdt *mdt_new(void);
+struct mdt *mdt_new(mod_mdt_bin_type bin_type);
 
 /** Free an mdt structure */
 MDTDLLEXPORT

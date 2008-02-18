@@ -9,12 +9,13 @@
 #include "mdt.h"
 
 /** Copy the base Modeller MDT */
-static void mod_mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
+static void mod_mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
+                         mod_mdt_bin_type bin_type)
 {
   int i;
   mdtout->nbinx = mdtin->nbinx;
   mdtout->nfeat1 = mdtin->nfeat1;
-  mdtout->bin_type = mdtin->bin_type;
+  mdtout->bin_type = bin_type;
   for (i = 0; i < MAXDATATYP; i++) {
     mdtout->readin[i] = mdtin->readin[i];
   }
@@ -32,14 +33,23 @@ static void mod_mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout)
     out->iend = in->iend;
     out->nbins = in->nbins;
   }
-  memcpy(mdtout->bindata, mdtin->bindata,
-         mod_mdt_bin_get_size(mdtin) * mdtin->nelems);
+  /* If types are the same, copy bin data straight across */
+  if (mdtout->bin_type == mdtin->bin_type) {
+    memcpy(mdtout->bindata, mdtin->bindata,
+           mod_mdt_bin_get_size(mdtin) * mdtin->nelems);
+  } else {
+    /* Otherwise, convert each data point to the new storage type */
+    for (i = 0; i < mdtin->nelems; ++i) {
+      mod_mdt_bin_set(mdtout, i, mod_mdt_bin_get(mdtin, i));
+    }
+  }
 }
 
 /** Make mdtout a copy of mdtin. */
-void mdt_copy(const struct mdt *mdtin, struct mdt *mdtout)
+void mdt_copy(const struct mdt *mdtin, struct mdt *mdtout,
+              mod_mdt_bin_type bin_type)
 {
-  mod_mdt_copy(&mdtin->base, &mdtout->base);
+  mod_mdt_copy(&mdtin->base, &mdtout->base, bin_type);
   mdtout->scantype = mdtin->scantype;
   mdtout->symmetric = mdtin->symmetric;
   mdtout->nalns = mdtin->nalns;

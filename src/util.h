@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "mdt_config.h"
 #include "modeller.h"
+#include "mod_hdf5.h"
 #include "mdt_error.h"
 #include "mdt_types.h"
 
@@ -144,6 +145,10 @@ gboolean get_bin_index(const struct mod_mdt *mdt, const int indices[],
 MDTDLLLOCAL
 gboolean mdt_setup(struct mdt *mdt, const struct mdt_library *mlib,
                    GError **err);
+
+/** Get the HDF5 datatype for this MDT. */
+MDTDLLLOCAL
+hid_t mdt_get_hdf5_type(const struct mod_mdt *mdt);
 
 G_END_DECLS
 

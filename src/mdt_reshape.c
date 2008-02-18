@@ -140,7 +140,7 @@ gboolean mdt_reshape(const struct mdt *mdtin, struct mdt *mdtout,
     return FALSE;
   }
 
-  mdt_copy(mdtin, mdtout);
+  mdt_copy(mdtin, mdtout, mdtin->base.bin_type);
   reshape_mdt_indices(&mdtin->base, &mdtout->base, offset, shape, features,
                       old_position);
 

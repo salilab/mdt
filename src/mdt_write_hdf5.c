@@ -14,6 +14,7 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
                                const struct mdt_library *mlib, GError **err)
 {
   herr_t ret;
+  hid_t type_id;
   hsize_t *dims;
   int *ifeat, *offset, *nbins;
   int i;
@@ -32,13 +33,9 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
     nbins[i] = libfeat->nbins;
   }
 
-  if (mdt->base.bin_type == MOD_MDTB_FLOAT) {
-    ret = H5LTmake_dataset_float(file_id, "/mdt", mdt->base.nfeat, dims,
-                                 (float *)mdt->base.bindata);
-  } else {
-    ret = H5LTmake_dataset_double(file_id, "/mdt", mdt->base.nfeat, dims,
-                                  (double *)mdt->base.bindata);
-  }
+  type_id = mdt_get_hdf5_type(&mdt->base);
+  ret = H5LTmake_dataset(file_id, "/mdt", mdt->base.nfeat, dims, type_id,
+                         mdt->base.bindata);
   if (ret >= 0) {
     hsize_t featdim = mdt->base.nfeat;
     if (H5LTmake_dataset_int(file_id, "/features", 1, &featdim, ifeat) < 0

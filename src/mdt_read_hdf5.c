@@ -112,6 +112,7 @@ static gboolean check_mdt_features(hid_t file_id, const struct mod_mdt *mdt,
 static gboolean read_mdt_data(hid_t file_id, struct mdt *mdt, GError **err)
 {
   herr_t ret;
+  hid_t type_id;
   hsize_t *dims;
   int i, nelems;
 
@@ -124,13 +125,9 @@ static gboolean read_mdt_data(hid_t file_id, struct mdt *mdt, GError **err)
   }
 
   mod_mdt_nelems_set(&mdt->base, nelems);
-  if (mdt->base.bin_type == MOD_MDTB_FLOAT) {
-    ret = mod_dataset_read_float(file_id, "/mdt", mdt->base.nfeat, dims,
-                                 (float *)mdt->base.bindata);
-  } else {
-    ret = mod_dataset_read_double(file_id, "/mdt", mdt->base.nfeat, dims,
-                                  (double *)mdt->base.bindata);
-  }
+  type_id = mdt_get_hdf5_type(&mdt->base);
+  ret = mod_dataset_read(file_id, "/mdt", mdt->base.nfeat, dims, type_id,
+                         mdt->base.bindata);
   if (ret >= 0) {
     hsize_t featdim = 1;
     char is_pdf;

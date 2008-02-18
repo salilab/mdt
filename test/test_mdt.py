@@ -432,5 +432,22 @@ class TableTests(MDTTest):
             del f
             os.unlink(fname)
 
+    def test_bin_type(self):
+        """Check building tables with different bin storage types"""
+        env = self.get_environ()
+        features = (1, 2)
+        mlib = self.get_mdt_library()
+        aln = alignment(env, file='test/data/alignment.ali')
+        m1 = mdt.Table(mlib, features=features, bin_type=mdt.Double)
+        m1.add_alignment(aln)
+        for bin_type in (mdt.Int8, mdt.Int16, mdt.Int32, mdt.UnsignedInt8,
+                         mdt.UnsignedInt16, mdt.UnsignedInt32, mdt.Float,
+                         mdt.Double):
+            m2 = mdt.Table(mlib, features=features, bin_type=bin_type)
+            m2.add_alignment(aln)
+            self.assertMDTsEqual(m1, m2)
+            m3 = m1.copy(bin_type=bin_type)
+            self.assertMDTsEqual(m1, m3)
+
 if __name__ == '__main__':
     unittest.main()

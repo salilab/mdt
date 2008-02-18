@@ -267,6 +267,31 @@ The bin file is ended by the word END on a line by its own.
 
 </sect2>
 
+<sect2 id="binstorage">
+<title>Storage for bin data</title>
+<para>
+By default, when a table is created in &MDT; it uses double precision floating
+point to store the counts. This allows large counts themselves to be accurately
+scored, and can also store floating point data such as PDFs. However, for
+very large tables, this may use a prohibitive amount of memory. Therefore, it
+is possible to change the data type used to store bin data, by specifying
+the <varname>bin_type</varname> parameter when creating a
+<ulink url="&epydoc;Table">Table</ulink> object. The same parameter can be
+given to <ulink url="&epydoc;Table.copy">Table.copy</ulink>, to make a copy
+of the table using a different data type for its storage. Note that other
+data types use less storage, but can also store a smaller range of counts.
+For example, the <ulink url="&epydoc;UnsignedInt8">UnsignedInt8</ulink>
+data type uses only a single byte for each bin, but can only store integer
+counts between 0 and 255 (floating point values, or values outside of this
+range, will be truncated).
+</para>
+
+</sect2>
+
+<para>
+A 'feature' in &MDT; is simply some binnable property of your input alignment.
+Example features include the residue type, &chi; and &Phi; dihedral angles,
+
 <sect1 id="compilation">
 <title>Compilation from source code</title>
 <para>

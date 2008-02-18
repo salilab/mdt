@@ -107,7 +107,8 @@ gboolean mdt_make(struct mdt *mdt, const struct mdt_library *mlib,
 
 /** Make mdtout a copy of mdtin. */
 MDTDLLEXPORT
-void mdt_copy(const struct mdt *mdtin, struct mdt *mdtout);
+void mdt_copy(const struct mdt *mdtin, struct mdt *mdtout,
+              mod_mdt_bin_type bin_type);
 
 /** Get an element from an MDT. */
 MDTDLLEXPORT

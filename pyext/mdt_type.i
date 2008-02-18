@@ -1,5 +1,6 @@
 struct mod_mdt {
 %immutable;
+  int bin_type;
   int nelems;
   int nfeat;
 };
@@ -17,7 +18,18 @@ struct mod_mdt_feature {
   int istart, iend, nbins, ifeat;
 };
 
-struct mdt *mdt_new(void);
+typedef enum {
+  MOD_MDTB_FLOAT = 1,
+  MOD_MDTB_DOUBLE,
+  MOD_MDTB_INT32,
+  MOD_MDTB_UINT32,
+  MOD_MDTB_INT16,
+  MOD_MDTB_UINT16,
+  MOD_MDTB_INT8,
+  MOD_MDTB_UINT8
+} mod_mdt_bin_type;
+
+struct mdt *mdt_new(mod_mdt_bin_type bin_type);
 void mdt_free(struct mdt *mdt);
 
 %inline %{

@@ -444,7 +444,7 @@ gboolean mdt_super_smooth(const struct mdt *mdtin, struct mdt *mdtout,
   }
 
   vec = new_combination_vector();
-  mdt_copy(mdtin, mdtout);
+  mdt_copy(mdtin, mdtout, mdtin->base.bin_type);
 
   i_feat_fix = g_malloc(sizeof(int) * mdtin->base.nfeat);
   n_bins_fix = g_malloc(sizeof(int) * mdtin->base.nfeat);

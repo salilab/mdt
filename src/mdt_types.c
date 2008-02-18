@@ -10,7 +10,7 @@
 #include "mdt_atom_classes.h"
 
 /** Make a new mdt structure */
-struct mdt *mdt_new(void)
+struct mdt *mdt_new(mod_mdt_bin_type bin_type)
 {
   struct mdt *mdt;
   mdt = g_malloc(sizeof(struct mdt));
@@ -20,7 +20,7 @@ struct mdt *mdt_new(void)
   mdt->nalns = mdt->n_proteins = mdt->n_protein_pairs = 0;
   mdt->symmetric = FALSE;
   mdt->scantype = 0;
-  mdt->base.bin_type = MOD_MDTB_DOUBLE;
+  mdt->base.bin_type = bin_type;
   return mdt;
 }
 

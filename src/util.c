@@ -657,3 +657,29 @@ gboolean mdt_setup(struct mdt *mdt, const struct mdt_library *mlib,
   mdt->symmetric = (naa == 0);
   return TRUE;
 }
+
+/** Get the HDF5 datatype for this MDT. */
+hid_t mdt_get_hdf5_type(const struct mod_mdt *mdt)
+{
+  switch(mdt->bin_type) {
+  case MOD_MDTB_FLOAT:
+    return H5T_NATIVE_FLOAT;
+  case MOD_MDTB_DOUBLE:
+    return H5T_NATIVE_DOUBLE;
+  case MOD_MDTB_INT32:
+    return H5T_NATIVE_INT32;
+  case MOD_MDTB_UINT32:
+    return H5T_NATIVE_UINT32;
+  case MOD_MDTB_INT16:
+    return H5T_NATIVE_INT16;
+  case MOD_MDTB_UINT16:
+    return H5T_NATIVE_UINT16;
+  case MOD_MDTB_INT8:
+    return H5T_NATIVE_INT8;
+  case MOD_MDTB_UINT8:
+    return H5T_NATIVE_UINT8;
+   default:
+     g_assert_not_reached();
+     return 0;
+   }
+}

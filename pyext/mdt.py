@@ -54,21 +54,21 @@ FileFormatError = _mdt.FileFormatError
 class _BinType(object):
     def __init__(self, bin_type):
         self._bin_type = bin_type
-#: Single-precision floating-point bin storage
+#: Single-precision floating-point bin storage (approx. range 0 to +/- 1e38)
 Float = _BinType(_mdt.MOD_MDTB_FLOAT)
-#: Double-precision floating-point bin storage
+#: Double-precision floating-point bin storage (approx. range 0 to +/- 1e308)
 Double = _BinType(_mdt.MOD_MDTB_DOUBLE)
-#: 32-bit signed integer bin storage
+#: 32-bit signed integer bin storage (range -1e31 to 1e31)
 Int32 = _BinType(_mdt.MOD_MDTB_INT32)
-#: 32-bit unsigned integer bin storage
+#: 32-bit unsigned integer bin storage (range 0 to 1e32)
 UnsignedInt32 = _BinType(_mdt.MOD_MDTB_UINT32)
-#: 16-bit signed integer bin storage
+#: 16-bit signed integer bin storage (range -1e15 to 1e15)
 Int16 = _BinType(_mdt.MOD_MDTB_INT16)
-#: 16-bit unsigned integer bin storage
+#: 16-bit unsigned integer bin storage (range 0 to 1e16)
 UnsignedInt16 = _BinType(_mdt.MOD_MDTB_UINT16)
-#: 8-bit signed integer bin storage
+#: 8-bit signed integer bin storage (range -127 to 128)
 Int8 = _BinType(_mdt.MOD_MDTB_INT8)
-#: 8-bit unsigned integer bin storage
+#: 8-bit unsigned integer bin storage (range 0 to 255)
 UnsignedInt8 = _BinType(_mdt.MOD_MDTB_UINT8)
 
 class Library(modobject):
@@ -318,7 +318,7 @@ class Table(TableSection):
             `Table.read`)
           - `features`: if specified (and `file` is not), a list of feature
             types to initialize the table with (using `Table.make`)
-          - `bin_type`: type of storage for bin data (e.g. Float, Double)
+          - `bin_type`: type of storage for bin data (e.g. `Float`, `Double`)
         """
         if not isinstance(bin_type, _BinType):
             raise TypeError("bin_type must be a BinType object - " + \

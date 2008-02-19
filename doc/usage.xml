@@ -283,7 +283,11 @@ data types use less storage, but can also store a smaller range of counts.
 For example, the <ulink url="&epydoc;UnsignedInt8">UnsignedInt8</ulink>
 data type uses only a single byte for each bin, but can only store integer
 counts between 0 and 255 (floating point values, or values outside of this
-range, will be truncated).
+range, will be truncated). &MDT; uses double precision floating point for all
+internal operations, but any storage of bin values uses the user-selected
+bin type. Thus you should be careful not to use an inappropriate bin type -
+for example, don't use an integer bin type if you are planning to store PDFs
+or perform normalization, smoothing, etc.
 </para>
 
 </sect2>

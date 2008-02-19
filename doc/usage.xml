@@ -288,10 +288,6 @@ range, will be truncated).
 
 </sect2>
 
-<para>
-A 'feature' in &MDT; is simply some binnable property of your input alignment.
-Example features include the residue type, &chi; and &Phi; dihedral angles,
-
 <sect1 id="compilation">
 <title>Compilation from source code</title>
 <para>

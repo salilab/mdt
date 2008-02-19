@@ -298,7 +298,7 @@ or perform normalization, smoothing, etc.
 You can get the current &MDT; code, by running the following:
 </para>
 <screen>
-<command>svn co https://svn.salilab.org/imp/trunk imp</command>
+<command>svn co https://svn.salilab.org/impmod/trunk impmod</command>
 </screen>
 
 <para>
@@ -310,12 +310,13 @@ by running
 </screen>
 
 <para>
-To compile, set the <varname>MODINSTALLSVN</varname> environment variable to
-where you have &MODELLER; installed and run <command>scons</command> in the
-<filename>imp/mdt</filename> directory (and optionally
-<command>scons test</command>). To install, run
-<command>scons install</command>, which will install the &MDT;
-libraries in the same directories as &MODELLER;.
+To compile, create a file called <filename>config.py</filename> in the
+<filename>impmod/mdt</filename> directory, and in it set the
+<varname>modeller</varname> Python variable to the directory where you have
+&MODELLER; installed. Then run <command>scons</command> in the same directory
+(and optionally <command>scons test</command>). To install, run
+<command>scons prefix=/foo install</command>, which will install &MDT;
+in the <filename>/foo</filename> directory.
 </para>
 </sect1>
 

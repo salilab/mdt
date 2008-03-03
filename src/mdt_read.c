@@ -255,28 +255,27 @@ static gboolean read_mdt_file_line(struct mdt *mdt,
 gboolean mdt_read(struct mdt *mdt, const struct mdt_library *mlib,
                   const char *filename, GError **err)
 {
-  struct mod_file file_info;
-  FILE *fp;
+  struct mod_file *fh;
 
   /* First, blank out any existing features */
   mod_mdt_nfeat_set(&mdt->base, 0);
 
-  fp = mdt_open_file(filename, "r", &file_info, err);
-  if (fp) {
+  fh = mdt_open_file(filename, "r", err);
+  if (fh) {
     int eof = 0;
     gboolean retval = TRUE;
     GString *str = g_string_new(NULL);
 
     while (eof == 0 && retval) {
-      if (!mdt_file_read_line(fp, str, &eof, err)) {
+      if (!mdt_file_read_line(fh->filept, str, &eof, err)) {
         retval = FALSE;
       } else if (eof == 0) {
-        retval = read_mdt_file_line(mdt, mlib, fp, str, err);
+        retval = read_mdt_file_line(mdt, mlib, fh->filept, str, err);
       }
     }
 
     g_string_free(str, TRUE);
-    retval &= mdt_close_file(fp, &file_info, err);
+    retval &= mdt_close_file(fh, err);
 
     if (retval) {
       retval = mdt_setup(mdt, mlib, err);

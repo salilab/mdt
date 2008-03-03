@@ -251,19 +251,18 @@ static gboolean read_atom_class_file(const gchar *filename,
                                      gboolean read_hbond, gboolean tuples,
                                      GError **err)
 {
-  struct mod_file file_info;
-  FILE *fp;
+  struct mod_file *fh;
   char *text;
   int ierr;
   gboolean retval;
   unsigned filelen;
 
-  fp = mdt_open_file(filename, "r", &file_info, err);
-  if (!fp) {
+  fh = mdt_open_file(filename, "r", err);
+  if (!fh) {
     return FALSE;
   }
 
-  mod_file_read_contents(fp, &text, &filelen, &ierr);
+  mod_file_read_contents(fh->filept, &text, &filelen, &ierr);
   if (ierr != 0) {
     handle_modeller_error(err);
     return FALSE;
@@ -273,7 +272,7 @@ static gboolean read_atom_class_file(const gchar *filename,
     g_free(text);
   }
 
-  return mdt_close_file(fp, &file_info, err) && retval;
+  return mdt_close_file(fh, err) && retval;
 }
 
 /** Read atom class information from a file; return TRUE on success. */

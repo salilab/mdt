@@ -15,18 +15,17 @@ static gboolean wrdata(const char *datfil, int dimensions,
                        const struct mod_mdt *mdt, int offset, int nbinx,
                        int nbiny, GError **err)
 {
-  FILE *fp;
-  struct mod_file file_info;
-  fp = mdt_open_file(datfil, "w", &file_info, err);
-  if (fp) {
+  struct mod_file *fh;
+  fh = mdt_open_file(datfil, "w", err);
+  if (fh) {
     int i;
     if (dimensions == 2) {
-      fprintf(fp, "%d %d\n", nbiny, nbinx);
+      fprintf(fh->filept, "%d %d\n", nbiny, nbinx);
     }
     for (i = 0; i < nbinx * nbiny; i++) {
-      fprintf(fp, "%#14.5g\n", mod_mdt_bin_get(mdt, offset + i));
+      fprintf(fh->filept, "%#14.5g\n", mod_mdt_bin_get(mdt, offset + i));
     }
-    mdt_close_file(fp, &file_info, err);
+    mdt_close_file(fh, err);
     return (*err == NULL);
   } else {
     return FALSE;
@@ -274,24 +273,23 @@ gboolean mdt_write_asgl(const struct mod_mdt *mdt,
   const static char *routine = "mdt_write_asgl";
   char *topfile;
   int nbinx, nbiny;
-  FILE *fp;
-  struct mod_file file_info;
+  struct mod_file *fh;
 
   if (!get_binx_biny(dimensions, mdt, routine, &nbinx, &nbiny, err)) {
     return FALSE;
   }
 
   topfile = g_strdup_printf("%s.top", asglroot);
-  fp = mdt_open_file(topfile, "w", &file_info, err);
+  fh = mdt_open_file(topfile, "w", err);
   g_free(topfile);
 
-  if (fp) {
+  if (fh) {
     GError *tmperr = NULL;
-    write_script_file(fp, mdt, mlib, dimensions, nbinx, nbiny,
+    write_script_file(fh->filept, mdt, mlib, dimensions, nbinx, nbiny,
                       plot_density_cutoff, asglroot, plots_per_page,
                       plot_position, every_x_numbered, every_y_numbered, text,
                       plot_type, x_decimal, y_decimal, &tmperr);
-    mdt_close_file(fp, &file_info, &tmperr);
+    mdt_close_file(fh, &tmperr);
     if (tmperr) {
       g_propagate_error(err, tmperr);
       return FALSE;

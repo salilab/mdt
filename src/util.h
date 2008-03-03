@@ -116,14 +116,14 @@ int make_mdt_stride_full(const int nbins[], int nfeat, int stride[]);
 
 /** Open a file, and uncompress it if necessary. */
 MDTDLLLOCAL
-FILE *mdt_open_file(const char *path, const char *mode,
-                    struct mod_file *file_info, GError **err);
+struct mod_file *mdt_open_file(const char *path, const char *mode,
+                               GError **err);
 
 /** Close an open file, and do any other necessary tidy-up if it was
     compressed. The initial value of err is used (if an error was already
     set, it is not modified, but emergency cleanup is done here). */
 MDTDLLLOCAL
-gboolean mdt_close_file(FILE *fp, struct mod_file *file_info, GError **err);
+gboolean mdt_close_file(struct mod_file *fh, GError **err);
 
 /** Convert a Modeller error code into a GError */
 MDTDLLLOCAL

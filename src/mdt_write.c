@@ -68,19 +68,18 @@ static void write_mdt_data(FILE *fp, const struct mod_mdt *mdt)
 gboolean mdt_write(const struct mdt *mdt, const struct mdt_library *mlib,
                    const char *filename, gboolean write_preamble, GError **err)
 {
-  FILE *fp;
-  struct mod_file file_info;
+  struct mod_file *fh;
 
-  fp = mdt_open_file(filename, "w", &file_info, err);
-  if (fp) {
+  fh = mdt_open_file(filename, "w", err);
+  if (fh) {
     if (write_preamble) {
-      write_mdt_header(fp, mdt, mlib);
+      write_mdt_header(fh->filept, mdt, mlib);
     }
-    write_mdt_data(fp, &mdt->base);
+    write_mdt_data(fh->filept, &mdt->base);
     if (write_preamble) {
-      write_mdt_footer(fp, mdt);
+      write_mdt_footer(fh->filept, mdt);
     }
-    return mdt_close_file(fp, &file_info, err);
+    return mdt_close_file(fh, err);
   } else {
     return FALSE;
   }

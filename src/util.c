@@ -531,25 +531,23 @@ int make_mdt_stride_full(const int nbins[], int nfeat, int stride[])
 }
 
 /** Open a file, and uncompress it if necessary. */
-FILE *mdt_open_file(const char *path, const char *mode,
-                    struct mod_file *file_info, GError **err)
+struct mod_file *mdt_open_file(const char *path, const char *mode, GError **err)
 {
-  FILE *fp;
-  fp = mod_file_open(path, mode, file_info);
-  if (!fp) {
+  struct mod_file *fh = mod_file_open(path, mode);
+  if (!fh) {
     GError *moderr = mod_error_get();
     if (moderr) {
       g_set_error(err, MDT_ERROR, MDT_ERROR_IO, moderr->message);
       g_error_free(moderr);
     }
   }
-  return fp;
+  return fh;
 }
 
 /** Close an open file, and do any other necessary tidy-up if it was
     compressed. The initial value of err is used (if an error was already
     set, it is not modified, but emergency cleanup is done here). */
-gboolean mdt_close_file(FILE *fp, struct mod_file *file_info, GError **err)
+gboolean mdt_close_file(struct mod_file *fh, GError **err)
 {
   int ierr;
   if (err && *err) {
@@ -557,7 +555,7 @@ gboolean mdt_close_file(FILE *fp, struct mod_file *file_info, GError **err)
   } else {
     ierr = 0;
   }
-  mod_file_close(fp, file_info, &ierr);
+  mod_file_close(fh, &ierr);
   if (ierr) {
     GError *moderr = mod_error_get();
     if (moderr) {

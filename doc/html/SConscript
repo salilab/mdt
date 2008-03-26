@@ -30,6 +30,7 @@ docbook = env.Docbook("index.html", "../manual.xml")
 
 docdir = env['docdir']
 env.Install(docdir, docbook)
+env.Install(docdir, 'mdt.css')
 env.Alias('docinstall', docdir)
 
 # Subdirectories:

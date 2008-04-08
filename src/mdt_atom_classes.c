@@ -232,6 +232,7 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
   return retval;
 }
 
+/** Set the number of bins and the bin symbols for atom class features */
 static void update_mdt_feat_atclass(struct mod_mdt_libfeature *feat,
                                     const struct mdt_atom_class_list *atclass)
 {
@@ -297,6 +298,12 @@ gboolean mdt_atom_classes_read(const gchar *filename,
     /* Set MDT symbols */
     feat = &mlib->base.features[ifeat];
     update_mdt_feat_atclass(feat, mlib->atclass[natom - 1]);
+
+    /* Feature 83 is also atom-type based */
+    if (natom == 1) {
+      feat = &mlib->base.features[82];
+      update_mdt_feat_atclass(feat, mlib->atclass[natom - 1]);
+    }
   }
   return retval;
 }

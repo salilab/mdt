@@ -34,17 +34,23 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m3[0,2], 1.0, 0.0005)
 
     def test_feature_iatta(self):
-        """Check for atom type feature"""
+        """Check for atom type features"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.atom_classes.read('${LIB}/atmcls-melo.lib')
-        m = mdt.Table(mlib, features=79)
         aln = modeller.alignment(env, file='test/data/alignment.ali')
+        m = mdt.Table(mlib, features=79)
         m.add_alignment(aln)
         self.assertInTolerance(m[0], 103.0, 0.0005)
         self.assertInTolerance(m[1], 3.0, 0.0005)
         self.assertInTolerance(m[2], 97.0, 0.0005)
         self.assertEqual(m.shape, (41,))
+        # Feature 83 is for pos2, which we don't scan here, so the resulting
+        # table makes little sense:
+        m = mdt.Table(mlib, features=83)
+        m.add_alignment(aln)
+        self.assertEqual(m.shape, (41,))
+        self.assertInTolerance(m[0], 841.0, 0.0005)
 
     def test_feature_hbond(self):
         """Check hydrogen bond features"""

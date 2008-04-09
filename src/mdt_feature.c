@@ -32,8 +32,8 @@ gboolean mdt_feature_is_periodic(int ifeat)
   case 107:
   case 108:
   case 114:
-    return 1;
+    return TRUE;
   default:
-    return 0;
+    return FALSE;
   }
 }

@@ -127,7 +127,19 @@ C<subscript>&alpha;</subscript>, but can be overridden by specifying the
 </row>
 
 <row>
-<entry>Residue pair<footnoteref linkend="resatompair" /></entry>
+<entry>Residue pair<footnoteref linkend="resatompair" />
+<footnote id="pos2feature">
+<para>
+When looking at pairs of atoms or residues, it is useful to extract information
+about the 'other' atom or residue in the pair. This other atom or residue is
+denoted 'POS2' in the &MDT; bin file. For example, when building a
+table of atom-atom distances (feature 82, distance between two atoms in
+protein A) it may be useful to tabulate it against the atom types of both the
+first atom (feature 79, &MODELLER; atom type in protein A) and the second atom
+(feature 83, &MODELLER; atom type at pos2 of A).
+</para>
+</footnote>
+</entry>
 <entry>Feature 51, residue index difference in protein A</entry>
 </row>
 
@@ -137,7 +149,7 @@ C<subscript>&alpha;</subscript>, but can be overridden by specifying the
 </row>
 
 <row>
-<entry>Atom pair</entry>
+<entry>Atom pair<footnoteref linkend="pos2feature" /></entry>
 <entry>Feature 82, distance between two atoms in protein A</entry>
 </row>
 

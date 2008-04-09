@@ -268,8 +268,8 @@ void mdt_register_features(struct mod_mdt_library *mlib)
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM_PAIR,
                               FALSE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 83, "MODELLER ATOM TYPE AT POS2 OF A (83)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM, FALSE,
-                              MOD_MDTF_STRUCTURE, 0);
+                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM_PAIR,
+                              FALSE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 84, "H-BOND DONOR IN A (84)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM,
                               FALSE, MOD_MDTF_STRUCTURE, 0);

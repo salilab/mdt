@@ -4,12 +4,13 @@
  */
 
 #include <glib.h>
+#include <string.h>
 #include "mod_error.h"
 #include "mdt_hdf5.h"
 #include "mdt_error.h"
 
 /** Walk the HDF5 error stack, and get the topmost error */
-static herr_t errwalkfunc(int n, H5E_error_t *err_desc, void *data)
+static herr_t errwalkfunc(unsigned n, const H5E_error_t *err_desc, void *data)
 {
   GError **err = (GError **)data;
   if (n == 0) {
@@ -23,7 +24,7 @@ static herr_t errwalkfunc(int n, H5E_error_t *err_desc, void *data)
 /** Convert the HDF5 error into a GError */
 void handle_hdf5_error(GError **err)
 {
-  H5Ewalk(H5E_WALK_DOWNWARD, errwalkfunc, err);
+  H5Ewalk(H5E_DEFAULT, H5E_WALK_DOWNWARD, errwalkfunc, err);
   if (err && *err == NULL) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, "Generic HDF5 error");
   }

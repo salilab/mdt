@@ -5,14 +5,14 @@ Import('env', 'get_sharedlib_environment')
 # Get an environment suitable for building a shared library:
 e = get_sharedlib_environment(env, 'MDT_EXPORTS')
 
+e.Append(CPPPATH=e['MODELLER_CPPPATH'])
+e.Append(LIBPATH=e['MODELLER_LIBPATH'])
+e.Append(LIBS=e['MODELLER_LIBS'])
 if e['PLATFORM'] == 'win32':
     e.Append(SHLINKFLAGS=' glib-2.0.lib')
 else:
     e.ParseConfig('pkg-config --cflags --libs glib-2.0')
     e.Append(LIBS=['m'])
-e.Append(CPPPATH=e['MODELLER_CPPPATH'])
-e.Append(LIBPATH=e['MODELLER_LIBPATH'])
-e.Append(LIBS=e['MODELLER_LIBS'])
 
 # AIX and w32 link complain about undefined symbols unless we explicitly
 # link HDF5:

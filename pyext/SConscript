@@ -2,13 +2,13 @@ Import('env', 'get_pyext_environment')
 
 # Get a modified build environment suitable for building Python extensions:
 e = get_pyext_environment(env, 'mdt')
+e.Append(CPPPATH=e['MODELLER_CPPPATH'])
+e.Append(LIBPATH=['../src'] + e['MODELLER_LIBPATH'])
+e.Append(LIBS=e['MODELLER_LIBS'] + ['mdt'])
 if e['PLATFORM'] == 'win32':
     e.Append(SHLINKFLAGS=' glib-2.0.lib')
 else:
     e.ParseConfig('pkg-config --cflags --libs glib-2.0')
-e.Append(CPPPATH=e['MODELLER_CPPPATH'])
-e.Append(LIBPATH=['../src'] + e['MODELLER_LIBPATH'])
-e.Append(LIBS=e['MODELLER_LIBS'] + ['mdt'])
 
 # Build the Python extension from SWIG interface file:
 pyso = e.LoadableModule('_mdt', 'mdt.i',

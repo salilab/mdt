@@ -38,12 +38,12 @@ __all__ = ['MDTError', 'FileFormatError', 'TableSection', 'Table', 'Library',
            'write_2dsplinelib', 'write_anglelib', 'write_bondlib',
            'write_improperlib', 'write_splinelib']
 
-import _mdt
 from modeller.util.modobject import modobject
 from modeller.util import modlist
 # Import _modeller after modeller itself, since the latter modifies the search
 # path for the former:
 import _modeller
+import _mdt
 
 #: Generic MDT exception
 MDTError = _mdt.MDTError

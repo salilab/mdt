@@ -2,7 +2,7 @@ import os.path
 
 Import('env', 'pyext', 'pyso', 'bin')
 
-epydoc_bin = "/synth1/home/ben/bin/bin/epydoc"
+epydoc_bin = "/usr/bin/epydoc"
 epydoc_opts = "--inheritance grouped --no-private --no-frames --html"
 
 # Build epydoc documentation:

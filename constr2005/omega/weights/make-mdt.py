@@ -5,7 +5,7 @@ import mdt
 
 env = environ()
 log.minimal()
-env.io.atom_files_directory = '/diva3/database/pdb/uncompressed_files'
+env.io.atom_files_directory = ['/park2/database/pdb/divided/']
 
 mlib = mdt.Library(env, '../../lib/mdt2.bin', deltai=1)
 

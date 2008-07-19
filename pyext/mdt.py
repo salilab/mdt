@@ -346,6 +346,15 @@ class Table(TableSection):
         if self._modpt is not None:
             _mdt.mdt_free(self._modpt)
 
+    def __iadd__(self, other):
+        _mdt.mdt_add(self._modpt, other._modpt)
+        return self
+
+    def __add__(self, other):
+        mdtout = self.copy()
+        mdtout += other
+        return mdtout
+
     def read(self, file):
         """Read an MDT from `file`."""
         _mdt.mdt_read(self._modpt, self._mlib._modpt, file)

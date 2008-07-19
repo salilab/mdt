@@ -25,6 +25,25 @@ class TableTests(MDTTest):
         self.assertRaises(mdt.MDTError, mdt.Table, mlib, features=3)
         self.assertRaises(mdt.MDTError, mdt.Table, mlib, features=30)
 
+    def test_add(self):
+        """Check adding MDTs"""
+        mlib = self.get_mdt_library()
+        m1 = mdt.Table(mlib, features=35)
+        for (n, val) in enumerate((1,2,3,4)):
+            m1[n] = val
+        m2 = mdt.Table(mlib, features=35)
+        for (n, val) in enumerate((10,20,30,40)):
+            m2[n] = val
+        m3 = m1 + m2
+        m1 += m2
+        self.assertMDTsEqual(m1, m3)
+        for (n, val) in enumerate((11,22,33,44)):
+            self.assertEqual(m3[n], val)
+        badmdt = mdt.Table(mlib, features=38)
+        self.assertRaises(ValueError, m1.__add__, badmdt)
+        badmdt = m2.reshape(features=35, offset=0, shape=-1)
+        self.assertRaises(ValueError, m1.__add__, badmdt)
+
     def test_mdt_formats(self):
         """Make sure we can read and write MDT files"""
         env = self.get_environ()
@@ -398,7 +417,7 @@ class TableTests(MDTTest):
         for dim in (0, 3):
             self.assertRaises(ValueError, m.normalize, dimensions=dim,
                               dx_dy=(1,)*dim, to_zero=False, to_pdf=True)
-                               
+
         # A normalized empty MDT should be the prior, i.e. 1/nbin:
         m2 = m.normalize(dimensions=2, dx_dy=(1,1), to_zero=False, to_pdf=True)
         inds = []

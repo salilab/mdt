@@ -120,6 +120,10 @@ MDTDLLEXPORT
 gboolean mdt_set(struct mod_mdt *mdt, const int indices[], int n_indices,
                  double val, GError **err);
 
+/** Add mdt2 into mdt1. Return TRUE on success. */
+MDTDLLEXPORT
+gboolean mdt_add(struct mdt *mdt1, const struct mdt *mdt2, GError **err);
+
 /** Write input files to plot the given MDT with ASGL. Return TRUE on
     success. */
 MDTDLLEXPORT

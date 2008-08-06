@@ -8,6 +8,7 @@
 #include "mdt_index.h"
 #include "mdt_types.h"
 #include "mdt_atom_classes.h"
+#include "mdt_feature.h"
 
 /** Make a new mdt structure */
 struct mdt *mdt_new(mod_mdt_bin_type bin_type)
@@ -51,6 +52,8 @@ struct mdt_library *mdt_library_new(void)
   /* Set natom to 0 to start with; gets set to 2 or 3 when we read the
      doublet/triplet class file */
   mlib->tupclass = mdt_atom_class_list_new(0);
+  mlib->features = g_array_new(FALSE, TRUE, sizeof(struct mdt_feature));
+  mlib->features = g_array_set_size(mlib->features, mlib->base.nfeat);
   return mlib;
 }
 
@@ -64,5 +67,6 @@ void mdt_library_free(struct mdt_library *mlib)
   }
   mdt_atom_class_list_free(mlib->hbond);
   mdt_atom_class_list_free(mlib->tupclass);
+  g_array_free(mlib->features, TRUE);
   g_free(mlib);
 }

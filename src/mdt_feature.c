@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "modeller.h"
 #include "mdt.h"
+#include "mdt_feature.h"
 
 /** Is the given feature type periodic? */
 gboolean mdt_feature_is_periodic(int ifeat)
@@ -36,4 +37,61 @@ gboolean mdt_feature_is_periodic(int ifeat)
   default:
     return FALSE;
   }
+}
+
+void mdt_feature_nbins_set(struct mdt_library *mlib, int ifeat,
+                           int nbins)
+{
+  struct mod_mdt_libfeature *libfeat;
+  libfeat = &mlib->base.features[ifeat - 1];
+
+  /* Add one extra for the undefined bin */
+  mod_mdt_libfeature_nbins_set(libfeat, nbins + 1);
+  libfeat->bins[nbins].rang1 = 0.;
+  libfeat->bins[nbins].rang2 = 1.;
+  g_free(libfeat->bins[nbins].symbol);
+  libfeat->bins[nbins].symbol = g_strdup("U");
+}
+
+void mdt_feature_bin_set(struct mdt_library *mlib, int ifeat, int bin,
+                         float start, float end, const char *symbol)
+{
+  struct mod_mdt_libfeature *libfeat;
+  libfeat = &mlib->base.features[ifeat - 1];
+
+  libfeat->bins[bin].rang1 = start;
+  libfeat->bins[bin].rang2 = end;
+  g_free(libfeat->bins[bin].symbol);
+  libfeat->bins[bin].symbol = g_strdup(symbol ? symbol : "");
+}
+
+int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
+                            mod_mdt_calc precalc_type, int protein,
+                            mdt_cb_feature_protein getfeat, void *data,
+                            GError **err)
+{
+  GString *fullname;
+  struct mdt_feature *feat;
+  int nfeat = mlib->base.nfeat + 1;
+
+  if (protein < 0 || protein > 1) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "Protein features can act only on protein 0 or protein 1; "
+                "%d was given", protein);
+    return -1;
+  }
+
+  mlib->features = g_array_set_size(mlib->features, nfeat);
+  feat = &g_array_index(mlib->features, struct mdt_feature, nfeat - 1);
+  feat->type = MDT_FEATURE_PROTEIN;
+  feat->protein.protein = protein;
+  feat->protein.getfeat = getfeat;
+  feat->data = data;
+  fullname = g_string_new(name);
+  g_string_append_printf(fullname, " in protein %d", protein);
+  mod_mdt_libfeature_register(&mlib->base, nfeat, fullname->str, precalc_type,
+                              protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,
+                              MOD_MDTS_PROTEIN, FALSE, 0);
+  g_string_free(fullname, TRUE);
+  return nfeat;
 }

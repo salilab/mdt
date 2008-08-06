@@ -376,10 +376,20 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   const struct mdt_bond *bond;
   const struct mdt_tuple *tup, *tup2;
   struct mod_mdt_libfeature *feat = &mlib->base.features[ifi - 1];
+  struct mdt_feature *mfeat = &g_array_index(mlib->features,
+                                             struct mdt_feature, ifi - 1);
   struc1 = mod_alignment_structure_get(aln, is1);
   struc2 = mod_alignment_structure_get(aln, is2);
   seq1 = mod_alignment_sequence_get(aln, is1);
   seq2 = mod_alignment_sequence_get(aln, is2);
+  switch (mfeat->type) {
+  case MDT_FEATURE_NONE:
+    break;
+  case MDT_FEATURE_PROTEIN:
+    fprop = mfeat->protein.getfeat(aln, feat->iknown == MOD_MDTP_A ? is1 : is2,
+                                   prop, mfeat->data);
+    return iclsbin(fprop, feat);
+  }
   switch (ifi) {
   case 35:
     iresol = property_iresol(aln, is1, prop, feat);

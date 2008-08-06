@@ -4,6 +4,7 @@
 %{
 #include <glib.h>
 #include "../src/mdt.h"
+#include "../src/mdt_feature.h"
 #include "modeller.h"
 %}
 
@@ -25,6 +26,7 @@
 
 %include "../src/mdt.h"
 %include "../src/mdt_alignment.h"
+%include "../src/mdt_feature.h"
 
 # Wrap MDT types
 %include "mdt_type.i"

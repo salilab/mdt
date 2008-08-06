@@ -61,6 +61,34 @@ struct mdt {
   int scantype;
 };
 
+/** User-defined feature types */
+typedef enum {
+  MDT_FEATURE_NONE = 0,
+  MDT_FEATURE_PROTEIN
+} mdt_feature_type;
+
+struct mdt_properties;
+
+typedef float (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
+                                        int protein,
+                                        struct mdt_properties *prop,
+                                        void *data);
+
+/** User-defined protein feature */
+struct mdt_feature_protein {
+  int protein;
+  mdt_cb_feature_protein getfeat;
+};
+
+/** User-defined feature */
+struct mdt_feature {
+  mdt_feature_type type;
+  union {
+    struct mdt_feature_protein protein;
+  };
+  void *data;
+};
+
 /** Library of feature data used by MDTs */
 struct mdt_library {
   /** Base Modeller type */
@@ -73,6 +101,8 @@ struct mdt_library {
   gboolean special_atoms;
   /** Cutoff distance for hydrogen bonds */
   float hbond_cutoff;
+  /** User-defined features */
+  GArray *features;
   /** Atom, bond, angle, dihedral classes */
   struct mdt_atom_class_list *atclass[4];
   /** Hydrogen bond classes */

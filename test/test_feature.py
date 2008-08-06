@@ -123,6 +123,16 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[2], 35.0, 2.0005)
         self.assertEqual(m[-1], 0.0)
 
+    def test_feature_resacc(self):
+        """Check residue accessibility features"""
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=13)
+        self.assertEqual(m.shape, (31,))
+        self.assertInTolerance(m[0], 24.0, 1.0005)
+        self.assertInTolerance(m[1], 10.0, 2.0005)
+        self.assertInTolerance(m[2], 4.0, 1.0005)
+        self.assertEqual(m[-1], 0.0)
+
     def test_feature_bond_type(self):
         """Check bond type features"""
         env = self.get_environ()

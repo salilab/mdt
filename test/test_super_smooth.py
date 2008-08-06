@@ -35,7 +35,8 @@ class SuperSmoothTests(MDTTest):
 
     def test_3d(self):
         """Super-smoothed 3D MDT should not crash"""
-        m = self.get_test_mdt(features=(1,3,18))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,3,18))
         m1 = m.super_smooth(1, 0.5, False)
         # Every 1D section should be normalized:
         for sec in m1:

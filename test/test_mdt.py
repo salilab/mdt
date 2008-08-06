@@ -73,7 +73,8 @@ class TableTests(MDTTest):
 
     def test_bin_info(self):
         """Test query of bin symbol and range"""
-        m = self.get_test_mdt(features=66)
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=66)
         for (n, bin) in enumerate(m.features[0].bins):
             self.assertEqual(bin.range, (n, n+1))
         symbols = [bin.symbol for bin in m.features[0].bins]
@@ -192,7 +193,8 @@ class TableTests(MDTTest):
 
     def test_feature_combination(self):
         """Check that invalid feature combinations are rejected"""
-        self.assertRaises(ValueError, self.get_test_mdt, features=(17,82))
+        mlib = self.get_mdt_library()
+        self.assertRaises(ValueError, self.get_test_mdt, mlib, features=(17,82))
 
     def test_integrate(self):
         """Make sure MDT integration works"""
@@ -221,13 +223,15 @@ class TableTests(MDTTest):
 
     def test_entropy_hx(self):
         """Check for expected dependent entropy value"""
-        m = self.get_test_mdt(features=(1,3))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,3))
         # Check against ENTROPY_MDT_HX value for this system in MDT:
         self.assertAlmostEqual(m.entropy_hx(), 2.7048, places=3)
 
     def test_exp_transform(self):
         """Check for correctness of exp transform"""
-        m = self.get_test_mdt(features=(1,7))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,7))
         offset = 1.
         expoffset = 0.1
         multiplier = 0.8
@@ -240,7 +244,8 @@ class TableTests(MDTTest):
 
     def test_log_transform(self):
         """Check for correctness of log transform"""
-        m = self.get_test_mdt(features=(1,7))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,7))
         offset = 0.0
         multiplier = 0.7
         undefined = 500.0
@@ -256,7 +261,8 @@ class TableTests(MDTTest):
 
     def test_linear_transform(self):
         """Check for correctness of linear transform"""
-        m = self.get_test_mdt(features=(1,3))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,3))
         offset = -1.3
         multiplier = 0.8
         m2 = m.linear_transform(offset, multiplier)
@@ -267,7 +273,8 @@ class TableTests(MDTTest):
 
     def test_inverse_transform(self):
         """Check for correctness of inverse transform"""
-        m = self.get_test_mdt(features=(1,7))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,7))
         offset = 0.0
         multiplier = 0.8
         undefined = 300.0
@@ -282,7 +289,8 @@ class TableTests(MDTTest):
 
     def test_offset(self):
         """Check for correctness of offset transforms"""
-        m = self.get_test_mdt(features=(1,2))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,2))
         # Get a better range of values in our starting MDT
         m = m.log_transform(0.0, 0.7, 10.0)
         # Only 1D or 2D offsets should be allowed
@@ -305,7 +313,8 @@ class TableTests(MDTTest):
 
     def test_close(self):
         """Check for correctness of spline closing"""
-        m = self.get_test_mdt(features=(1,2))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,2))
         # Get a better range of values in our starting MDT
         m = m.log_transform(0.0, 0.7, 10.0)
         # Only 1D or 2D should be allowed
@@ -345,7 +354,7 @@ class TableTests(MDTTest):
     def test_save_reshape(self):
         """Check that we can correctly load and save reshaped MDTs"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(features=(1,2))
+        m = self.get_test_mdt(mlib, features=(1,2))
         m = m.reshape(features=(1,2), offset=(4,2), shape=(11,10))
         m.write('test.mdt')
         m.write_hdf5('test.hdf5')
@@ -358,8 +367,9 @@ class TableTests(MDTTest):
 
     def test_reshape(self):
         """Check that reshaping works correctly"""
-        m = self.get_test_mdt(features=(1,2))
-        m2 = self.get_test_mdt(features=(2,1))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,2))
+        m2 = self.get_test_mdt(mlib, features=(2,1))
         for features in ((3,1), (2,1,1)):
             self.assertRaises(ValueError, m.reshape, features=features,
                               offset=m.offset, shape=(22,22))
@@ -376,7 +386,8 @@ class TableTests(MDTTest):
 
     def test_sum(self):
         """Check that sum of each row sums to that of the whole table"""
-        m = self.get_test_mdt(features=(1,2))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,2))
         sum = m.sum()
         rowsum = 0.
         for i in range(len(m.features[0].bins)):
@@ -385,7 +396,8 @@ class TableTests(MDTTest):
 
     def test_entropy(self):
         """Check the entropy of each row"""
-        m = self.get_test_mdt(features=(1,2))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,2))
         nbins = len(m.features[0].bins)
         rowentr = [m[i].entropy() for i in range(nbins)]
         known_rowentr = [1.908535, 0.578325, 1.229918, 1.559581,
@@ -399,7 +411,8 @@ class TableTests(MDTTest):
 
     def test_mean_stdev(self):
         """Check the mean and entropy of each row"""
-        m = self.get_test_mdt(features=(1,2))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,2))
         mean_stdev = [m[i].mean_stdev() for i in range(3)]
         known = [[9.357142, 8.131571],
                  [3.264705, 4.492207],
@@ -410,7 +423,8 @@ class TableTests(MDTTest):
 
     def test_normalize(self):
         """Check that normalize works"""
-        m = self.get_test_mdt(features=(1,2))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,2))
         mlib = self.get_mdt_library()
         m = mdt.Table(mlib, features=(1,2))
         # Dimensions must be 1 or 2:
@@ -430,7 +444,8 @@ class TableTests(MDTTest):
 
     def test_write_asgl(self):
         """Check that ASGL output works"""
-        m = self.get_test_mdt(features=(1,2))
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=(1,2))
         root = 'asgl1-a'
         for dim in (0, 3):
             self.assertRaises(ValueError, m.write_asgl, dimensions=dim,

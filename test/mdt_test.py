@@ -10,10 +10,9 @@ class MDTTest(ModellerTest):
         env = self.get_environ()
         return mdt.Library(env, 'data/mdt.bin', **vars)
 
-    def get_test_mdt(self, features):
+    def get_test_mdt(self, mlib, features):
         """Build a simple test MDT"""
         env = self.get_environ()
-        mlib = self.get_mdt_library()
         m = mdt.Table(mlib, features=features)
         aln = modeller.alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)

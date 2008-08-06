@@ -18,8 +18,17 @@ class Protein(_Base):
         self._create_bins(mlib, bins)
 
 
+class Residue(_Base):
+    def __init__(self, mlib, bins, protein=0, delta=0, pos2=False):
+        self._ifeat = self._setup(mlib._modpt, protein, delta, pos2)
+        self._create_bins(mlib, bins)
+
+
 class XRayResolution(Protein):
     _setup = _mdt.mdt_feature_xray_resolution
 
 class RadiusOfGyration(Protein):
     _setup = _mdt.mdt_feature_radius_of_gyration
+
+class ResidueAccessibility(Residue):
+    _setup = _mdt.mdt_feature_residue_accessibility

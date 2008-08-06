@@ -21,6 +21,14 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
                             mdt_cb_feature_protein getbin, void *data,
                             GError **err);
 
+/** Add a residue feature.
+    \return the index of the new feature, or -1 on error. */
+MDTDLLEXPORT
+int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
+                            mod_mdt_calc precalc_type, int protein, int delta,
+                            gboolean pos2, mdt_cb_feature_residue getbin,
+                            void *data, GError **err);
+
 /** Add a data file type needed for a given feature */
 MDTDLLEXPORT
 void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
@@ -46,6 +54,11 @@ int mdt_feature_xray_resolution(struct mdt_library *mlib, int protein,
 MDTDLLEXPORT
 int mdt_feature_radius_of_gyration(struct mdt_library *mlib, int protein,
                                    GError **err);
+
+/** Add a residue accessibility feature. */
+MDTDLLEXPORT
+int mdt_feature_residue_accessibility(struct mdt_library *mlib, int protein,
+                                      int delta, gboolean pos2, GError **err);
 
 G_END_DECLS
 

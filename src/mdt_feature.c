@@ -74,6 +74,27 @@ void mdt_feature_bin_set(struct mdt_library *mlib, int ifeat, int bin,
   libfeat->bins[bin].symbol = g_strdup(symbol ? symbol : "");
 }
 
+/** \return TRUE iff 'protein' is in range. */
+static gboolean check_protein(int protein, const char *feattype, GError **err)
+{
+  if (protein < 0 || protein > 1) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "%s features can act only on protein 0 or protein 1; "
+                "%d was given", feattype, protein);
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}
+
+/** Helper function to add a new feature structure, and return it. */
+static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat)
+{
+  *nfeat = mlib->base.nfeat + 1;
+  mlib->features = g_array_set_size(mlib->features, *nfeat);
+  return &g_array_index(mlib->features, struct mdt_feature, *nfeat - 1);
+}
+
 int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
                             mod_mdt_calc precalc_type, int protein,
                             mdt_cb_feature_protein getbin, void *data,
@@ -81,26 +102,58 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
 {
   GString *fullname;
   struct mdt_feature *feat;
-  int nfeat = mlib->base.nfeat + 1;
+  int nfeat;
 
-  if (protein < 0 || protein > 1) {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
-                "Protein features can act only on protein 0 or protein 1; "
-                "%d was given", protein);
+  if (!check_protein(protein, "Protein", err)) {
     return -1;
   }
 
-  mlib->features = g_array_set_size(mlib->features, nfeat);
-  feat = &g_array_index(mlib->features, struct mdt_feature, nfeat - 1);
+  feat = add_feature(mlib, &nfeat);
   feat->type = MDT_FEATURE_PROTEIN;
   feat->u.protein.protein = protein;
   feat->u.protein.getbin = getbin;
   feat->data = data;
   fullname = g_string_new(name);
-  g_string_append_printf(fullname, " in protein %d", protein);
+  g_string_append_printf(fullname, " of protein %d", protein);
   mod_mdt_libfeature_register(&mlib->base, nfeat, fullname->str, precalc_type,
                               protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,
-                              MOD_MDTS_PROTEIN, FALSE, 0);
+                              MOD_MDTS_PROTEIN, TRUE, 0);
+  g_string_free(fullname, TRUE);
+  return nfeat;
+}
+
+int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
+                            mod_mdt_calc precalc_type, int protein, int delta,
+                            gboolean pos2, mdt_cb_feature_residue getbin,
+                            void *data, GError **err)
+{
+  GString *fullname;
+  struct mdt_feature *feat;
+  int nfeat;
+
+  if (!check_protein(protein, "Residue", err)) {
+    return -1;
+  }
+
+  feat = add_feature(mlib, &nfeat);
+  feat->type = MDT_FEATURE_RESIDUE;
+  feat->u.residue.protein = protein;
+  feat->u.residue.delta = delta;
+  feat->u.residue.pos2 = pos2;
+  feat->u.residue.getbin = getbin;
+  feat->data = data;
+  fullname = g_string_new(name);
+  g_string_append_printf(fullname, " of protein %d", protein);
+  if (pos2) {
+    g_string_append(fullname, " at pos2");
+  }
+  if (delta != 0) {
+    g_string_append_printf(fullname, ", at delta %d", delta);
+  }
+  mod_mdt_libfeature_register(&mlib->base, nfeat, fullname->str, precalc_type,
+                              protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,
+                              pos2 ? MOD_MDTS_RESIDUE_PAIR : MOD_MDTS_RESIDUE,
+                              TRUE, 0);
   g_string_free(fullname, TRUE);
   return nfeat;
 }

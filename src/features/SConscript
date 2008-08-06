@@ -1,4 +1,4 @@
-files = ['xray.c', 'radius_gyration.c']
+files = ['xray.c', 'radius_gyration.c', 'residue_accessibility.c']
 
 files = [File(x) for x in files]
 Return('files')

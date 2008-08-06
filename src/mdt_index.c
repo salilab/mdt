@@ -277,30 +277,6 @@ void mdt_register_features(struct mod_mdt_library *mlib)
   mod_mdt_libfeature_register(mlib, 87, "TOTAL CHARGE AROUND ATOM IN A (87)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM,
                               FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 93, "ACCESSIBILITY OF A (93)",
-                              MOD_MDTC_ACCESS, MOD_MDTP_A, MOD_MDTS_RESIDUE,
-                              FALSE, MOD_MDTF_STRUCTURE, MOD_MDTF_PSA, 0);
-  mod_mdt_libfeature_register(mlib, 94, "ACCESSIBILITY OF B (94)",
-                              MOD_MDTC_ACCESS, MOD_MDTP_B, MOD_MDTS_RESIDUE,
-                              FALSE, MOD_MDTF_STRUCTURE, MOD_MDTF_PSA, 0);
-  mod_mdt_libfeature_register(mlib, 95, "ACCESSIBILITY OF A (95)",
-                              MOD_MDTC_ACCESS, MOD_MDTP_A, MOD_MDTS_RESIDUE,
-                              FALSE, MOD_MDTF_STRUCTURE, MOD_MDTF_PSA, 0);
-  mod_mdt_libfeature_register(mlib, 96, "ACCESSIBILITY OF B (96)",
-                              MOD_MDTC_ACCESS, MOD_MDTP_B, MOD_MDTS_RESIDUE,
-                              FALSE, MOD_MDTF_STRUCTURE, MOD_MDTF_PSA, 0);
-  mod_mdt_libfeature_register(mlib, 97, "ACCESSIBILITY OF A (97)",
-                              MOD_MDTC_ACCESS, MOD_MDTP_A, MOD_MDTS_RESIDUE,
-                              FALSE, MOD_MDTF_STRUCTURE, MOD_MDTF_PSA, 0);
-  mod_mdt_libfeature_register(mlib, 98, "ACCESSIBILITY OF B (98)",
-                              MOD_MDTC_ACCESS, MOD_MDTP_B, MOD_MDTS_RESIDUE,
-                              FALSE, MOD_MDTF_STRUCTURE, MOD_MDTF_PSA, 0);
-  mod_mdt_libfeature_register(mlib, 99, "ACCESSIBILITY OF A (99)",
-                              MOD_MDTC_ACCESS, MOD_MDTP_A, MOD_MDTS_RESIDUE,
-                              FALSE, MOD_MDTF_STRUCTURE, MOD_MDTF_PSA, 0);
-  mod_mdt_libfeature_register(mlib, 100, "ACCESSIBILITY OF B (100)",
-                              MOD_MDTC_ACCESS, MOD_MDTP_B, MOD_MDTS_RESIDUE,
-                              FALSE, MOD_MDTF_STRUCTURE, MOD_MDTF_PSA, 0);
   mod_mdt_libfeature_register(mlib, 101, "ATOM TUPLE TYPE IN A (101)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE,
                               FALSE, MOD_MDTF_STRUCTURE, 0);
@@ -360,7 +336,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
 {
   int ret, ierr = 0;
   const int *binprop;
-  int ibin;
+  int ibin, ires, iseq, nres;
   float fprop;
   struct mod_structure *struc1, *struc2;
   struct mod_sequence *seq1, *seq2;
@@ -380,6 +356,23 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     ibin = mfeat->u.protein.getbin(aln, feat->iknown == MOD_MDTP_A ? is1 : is2,
                                    prop, mfeat->data, feat);
     return index_inrange(ibin, feat);
+  case MDT_FEATURE_RESIDUE:
+    ires = mfeat->u.residue.delta;
+    if (feat->iknown == MOD_MDTP_A) {
+      iseq = is1;
+      nres = seq1->nres;
+      ires += mfeat->u.residue.pos2 ? ir1p : ir1;
+    } else {
+      iseq = is2;
+      nres = seq2->nres;
+      ires += mfeat->u.residue.pos2 ? ir2p : ir2;
+    }
+    if (ires < 0 || ires >= nres) {
+      return feat->nbins;
+    } else {
+      ibin = mfeat->u.residue.getbin(aln, iseq, ires, prop, mfeat->data, feat);
+      return index_inrange(ibin, feat);
+    }
   }
   switch (ifi) {
   case 66:
@@ -448,16 +441,6 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     }
     return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     2, feat->nbins);
-  case 93:
-  case 95:
-  case 97:
-  case 99:
-    return itable(mod_int1_pt(&struc1->iacc), seq1->nres, ir1, feat);
-  case 94:
-  case 96:
-  case 98:
-  case 100:
-    return itable(mod_int1_pt(&struc2->iacc), seq2->nres, ir2, feat);
   case 101:
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
     return index_inrange(tup->tupclass, feat);

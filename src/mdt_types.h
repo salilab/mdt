@@ -64,7 +64,8 @@ struct mdt {
 /** User-defined feature types */
 typedef enum {
   MDT_FEATURE_NONE = 0,
-  MDT_FEATURE_PROTEIN
+  MDT_FEATURE_PROTEIN,
+  MDT_FEATURE_RESIDUE
 } mdt_feature_type;
 
 struct mdt_properties;
@@ -74,10 +75,23 @@ typedef int (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
                                       struct mdt_properties *prop, void *data,
                                       const struct mod_mdt_libfeature *feat);
 
+typedef int (*mdt_cb_feature_residue)(const struct mod_alignment *aln,
+                                      int protein, int residue,
+                                      struct mdt_properties *prop, void *data,
+                                      const struct mod_mdt_libfeature *feat);
+
 /** User-defined protein feature */
 struct mdt_feature_protein {
   int protein;
   mdt_cb_feature_protein getbin;
+};
+
+/** User-defined residue feature */
+struct mdt_feature_residue {
+  int protein;
+  int delta;
+  gboolean pos2;
+  mdt_cb_feature_residue getbin;
 };
 
 /** User-defined feature */
@@ -85,6 +99,7 @@ struct mdt_feature {
   mdt_feature_type type;
   union {
     struct mdt_feature_protein protein;
+    struct mdt_feature_residue residue;
   } u;
   void *data;
 };

@@ -126,7 +126,9 @@ class FeatureTests(MDTTest):
     def test_feature_resacc(self):
         """Check residue accessibility features"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=13)
+        bins = mdt.uniform_bins(30, 0.0, 5.0)
+        resacc = mdt.features.ResidueAccessibility(mlib, bins)
+        m = self.get_test_mdt(mlib, features=resacc)
         self.assertEqual(m.shape, (31,))
         self.assertInTolerance(m[0], 24.0, 1.0005)
         self.assertInTolerance(m[1], 10.0, 2.0005)

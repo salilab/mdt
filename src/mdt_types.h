@@ -69,15 +69,15 @@ typedef enum {
 
 struct mdt_properties;
 
-typedef float (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
-                                        int protein,
-                                        struct mdt_properties *prop,
-                                        void *data);
+typedef int (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
+                                      int protein,
+                                      struct mdt_properties *prop, void *data,
+                                      const struct mod_mdt_libfeature *feat);
 
 /** User-defined protein feature */
 struct mdt_feature_protein {
   int protein;
-  mdt_cb_feature_protein getfeat;
+  mdt_cb_feature_protein getbin;
 };
 
 /** User-defined feature */

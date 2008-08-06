@@ -369,7 +369,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
 {
   int ret, ierr = 0;
   const int *binprop;
-  int iresol;
+  int iresol, ibin;
   float fprop;
   struct mod_structure *struc1, *struc2;
   struct mod_sequence *seq1, *seq2;
@@ -386,9 +386,9 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case MDT_FEATURE_NONE:
     break;
   case MDT_FEATURE_PROTEIN:
-    fprop = mfeat->protein.getfeat(aln, feat->iknown == MOD_MDTP_A ? is1 : is2,
-                                   prop, mfeat->data);
-    return iclsbin(fprop, feat);
+    ibin = mfeat->protein.getbin(aln, feat->iknown == MOD_MDTP_A ? is1 : is2,
+                                 prop, mfeat->data, feat);
+    return index_inrange(ibin, feat);
   }
   switch (ifi) {
   case 35:

@@ -76,7 +76,7 @@ void mdt_feature_bin_set(struct mdt_library *mlib, int ifeat, int bin,
 
 int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
                             mod_mdt_calc precalc_type, int protein,
-                            mdt_cb_feature_protein getfeat, void *data,
+                            mdt_cb_feature_protein getbin, void *data,
                             GError **err)
 {
   GString *fullname;
@@ -94,7 +94,7 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
   feat = &g_array_index(mlib->features, struct mdt_feature, nfeat - 1);
   feat->type = MDT_FEATURE_PROTEIN;
   feat->protein.protein = protein;
-  feat->protein.getfeat = getfeat;
+  feat->protein.getbin = getbin;
   feat->data = data;
   fullname = g_string_new(name);
   g_string_append_printf(fullname, " in protein %d", protein);

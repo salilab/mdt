@@ -4,13 +4,16 @@
  */
 
 #include "modeller.h"
+#include "../mdt_index.h"
 #include "../mdt_feature.h"
 #include "../mdt_property.h"
 
-static float getfeat(const struct mod_alignment *aln, int protein,
-                     struct mdt_properties *prop, void *data)
+static int getbin(const struct mod_alignment *aln, int protein,
+                  struct mdt_properties *prop, void *data,
+                  const struct mod_mdt_libfeature *feat)
 {
-  return property_radius_gyration(aln, protein, prop);
+  float f = property_radius_gyration(aln, protein, prop);
+  return iclsbin(f, feat);
 }
 
 int mdt_feature_radius_of_gyration(struct mdt_library *mlib, int protein,
@@ -18,7 +21,7 @@ int mdt_feature_radius_of_gyration(struct mdt_library *mlib, int protein,
 {
   int ifeat;
   ifeat = mdt_feature_protein_add(mlib, "Radius of gyration", MOD_MDTC_NONE,
-                                  protein, getfeat, NULL, err);
+                                  protein, getbin, NULL, err);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   return ifeat;
 }

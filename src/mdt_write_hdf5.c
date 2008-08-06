@@ -9,6 +9,27 @@
 #include "mdt.h"
 #include "util.h"
 
+/** Write MDT feature names to file. Return TRUE on success. */
+static gboolean write_mdt_feature_names(hid_t file_id, char **name,
+                                        hsize_t featdim[])
+{
+  hid_t dtype;
+
+  dtype = H5Tcopy(H5T_C_S1);
+  if (dtype < 0) {
+    return FALSE;
+  } else {
+    gboolean ok = TRUE;
+    if (H5Tset_size(dtype, H5T_VARIABLE) < 0
+        || H5Tset_strpad(dtype, H5T_STR_NULLTERM) < 0
+        || H5LTmake_dataset(file_id, "/feature_names", 1, featdim, dtype,
+                            name) < 0) {
+      ok = FALSE;
+    }
+    return (H5Tclose(dtype) >= 0 && ok);
+  }
+}
+
 /** Write MDT data to an HDF5 file. Return TRUE on success. */
 static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
                                const struct mdt_library *mlib, GError **err)
@@ -17,12 +38,14 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
   hid_t type_id;
   hsize_t *dims;
   int *ifeat, *offset, *nbins;
+  char **name;
   int i;
 
   dims = g_malloc(mdt->base.nfeat * sizeof(hsize_t));
   ifeat = g_malloc(mdt->base.nfeat * sizeof(int));
   offset = g_malloc(mdt->base.nfeat * sizeof(int));
   nbins = g_malloc(mdt->base.nfeat * sizeof(int));
+  name = g_malloc(mdt->base.nfeat * sizeof(char *));
   for (i = 0; i < mdt->base.nfeat; i++) {
     const struct mod_mdt_libfeature *libfeat;
     const struct mod_mdt_feature *feat = &mdt->base.features[i];
@@ -31,6 +54,7 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
     ifeat[i] = feat->ifeat;
     offset[i] = feat->istart - 1;
     nbins[i] = libfeat->nbins;
+    name[i] = libfeat->name;
   }
 
   type_id = mdt_get_hdf5_type(&mdt->base);
@@ -40,7 +64,8 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
     hsize_t featdim = mdt->base.nfeat;
     if (H5LTmake_dataset_int(file_id, "/features", 1, &featdim, ifeat) < 0
         || H5LTmake_dataset_int(file_id, "/offset", 1, &featdim, offset) < 0
-        || H5LTmake_dataset_int(file_id, "/nbins", 1, &featdim, nbins) < 0) {
+        || H5LTmake_dataset_int(file_id, "/nbins", 1, &featdim, nbins) < 0
+        || write_mdt_feature_names(file_id, name, &featdim) < 0) {
       ret = -1;
     }
   }
@@ -62,6 +87,7 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
   g_free(dims);
   g_free(ifeat);
   g_free(offset);
+  g_free(name);
   g_free(nbins);
 
   if (ret < 0) {

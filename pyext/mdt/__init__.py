@@ -420,6 +420,7 @@ class Table(TableSection):
         :return: the reshaped MDT.
         :rtype: `Table`
         """
+        features = self._features_to_ifeat(features)
         mdtout = Table(self._mlib)
         _mdt.mdt_reshape(self._modpt, mdtout._modpt, features, offset, shape)
         return mdtout
@@ -516,6 +517,7 @@ class Table(TableSection):
         :return: the integrated MDT.
         :rtype: `Table`
         """
+        features = self._features_to_ifeat(features)
         mdtout = Table(self._mlib)
         _mdt.mdt_integrate(self._modpt, mdtout._modpt, features)
         return mdtout

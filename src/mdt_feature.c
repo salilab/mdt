@@ -93,8 +93,8 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
   mlib->features = g_array_set_size(mlib->features, nfeat);
   feat = &g_array_index(mlib->features, struct mdt_feature, nfeat - 1);
   feat->type = MDT_FEATURE_PROTEIN;
-  feat->protein.protein = protein;
-  feat->protein.getbin = getbin;
+  feat->u.protein.protein = protein;
+  feat->u.protein.getbin = getbin;
   feat->data = data;
   fullname = g_string_new(name);
   g_string_append_printf(fullname, " in protein %d", protein);

@@ -386,8 +386,8 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case MDT_FEATURE_NONE:
     break;
   case MDT_FEATURE_PROTEIN:
-    ibin = mfeat->protein.getbin(aln, feat->iknown == MOD_MDTP_A ? is1 : is2,
-                                 prop, mfeat->data, feat);
+    ibin = mfeat->u.protein.getbin(aln, feat->iknown == MOD_MDTP_A ? is1 : is2,
+                                   prop, mfeat->data, feat);
     return index_inrange(ibin, feat);
   }
   switch (ifi) {

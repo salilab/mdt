@@ -85,7 +85,7 @@ struct mdt_feature {
   mdt_feature_type type;
   union {
     struct mdt_feature_protein protein;
-  };
+  } u;
   void *data;
 };
 

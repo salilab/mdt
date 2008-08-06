@@ -21,6 +21,11 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
                             mdt_cb_feature_protein getbin, void *data,
                             GError **err);
 
+/** Add a data file type needed for a given feature */
+MDTDLLEXPORT
+void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
+                                 mod_mdt_file filetype);
+
 /** Set the number of bins for a given feature.
     \note One extra bin is always created - the 'undefined' bin. */
 MDTDLLEXPORT

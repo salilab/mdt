@@ -16,6 +16,9 @@ static float getfeat(const struct mod_alignment *aln, int protein,
 int mdt_feature_radius_of_gyration(struct mdt_library *mlib, int protein,
                                    GError **err)
 {
-  return mdt_feature_protein_add(mlib, "Radius of gyration", MOD_MDTC_NONE,
-                                 protein, getfeat, NULL, err);
+  int ifeat;
+  ifeat = mdt_feature_protein_add(mlib, "Radius of gyration", MOD_MDTC_NONE,
+                                  protein, getfeat, NULL, err);
+  mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
+  return ifeat;
 }

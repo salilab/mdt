@@ -39,6 +39,15 @@ gboolean mdt_feature_is_periodic(int ifeat)
   }
 }
 
+void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
+                                 mod_mdt_file filetype)
+{
+  struct mod_mdt_libfeature *feat = &mlib->base.features[ifeat - 1];
+  feat->ndatfil++;
+  feat->idatfil = g_realloc(feat->idatfil, sizeof(int) * feat->ndatfil);
+  feat->idatfil[feat->ndatfil - 1] = filetype;
+}
+
 void mdt_feature_nbins_set(struct mdt_library *mlib, int ifeat,
                            int nbins)
 {

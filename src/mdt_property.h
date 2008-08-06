@@ -62,12 +62,6 @@ const struct mdt_tuple *property_one_tuple(const struct mod_alignment *aln,
                                            int ibnd1, int ia1,
                                            const struct mod_libraries *libs);
 
-/** Get/calculate the resolution bin index */
-MDTDLLLOCAL
-int property_iresol(const struct mod_alignment *aln, int is,
-                    struct mdt_properties *prop,
-                    const struct mod_mdt_libfeature *feat);
-
 /** Get/calculate the array of atom type bin indices */
 MDTDLLLOCAL
 const int *property_iatta(const struct mod_alignment *aln, int is,

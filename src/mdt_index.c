@@ -236,12 +236,6 @@ static int idihedral0(int ia1, int ia2, int ia3, int ia4,
 /** Register our MDT feature types */
 void mdt_register_features(struct mod_mdt_library *mlib)
 {
-  mod_mdt_libfeature_register(mlib, 35, "X-RAY RESOLUTION OF A (35)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_PROTEIN,
-                              FALSE, 0);
-  mod_mdt_libfeature_register(mlib, 38, "X-RAY RESOLUTION OF B (38)",
-                              MOD_MDTC_NONE, MOD_MDTP_B, MOD_MDTS_PROTEIN,
-                              FALSE, 0);
   mod_mdt_libfeature_register(mlib, 66, "RESIDUE TYPE AT DELTA I IN A (66)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_RESIDUE,
                               FALSE, 0);
@@ -366,7 +360,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
 {
   int ret, ierr = 0;
   const int *binprop;
-  int iresol, ibin;
+  int ibin;
   float fprop;
   struct mod_structure *struc1, *struc2;
   struct mod_sequence *seq1, *seq2;
@@ -388,12 +382,6 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     return index_inrange(ibin, feat);
   }
   switch (ifi) {
-  case 35:
-    iresol = property_iresol(aln, is1, prop, feat);
-    return index_inrange(iresol, feat);
-  case 38:
-    iresol = property_iresol(aln, is2, prop, feat);
-    return index_inrange(iresol, feat);
   case 66:
     return irestab(&aln->ialn, aln->naln, is1, mod_int1_pt(&seq1->irestyp),
                    seq1->nres, ip1, mlib->deltai, mlib->deltai_ali,

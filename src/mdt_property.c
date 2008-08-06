@@ -27,7 +27,6 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
     prop[i].tuples = NULL;
     prop[i].hb_iatta = NULL;
     prop[i].hbpot = NULL;
-    prop[i].iresol = 0;
     prop[i].radius_gyration = -1;
     prop[i].iatta = NULL;
     prop[i].iatmacc = NULL;
@@ -258,28 +257,6 @@ gboolean property_hbpot(const struct mod_alignment *aln, int is,
   }
   *hbpot = *(prop[is].hbpot);
   return TRUE;
-}
-
-/** Get/calculate the resolution bin index */
-int property_iresol(const struct mod_alignment *aln, int is,
-                    struct mdt_properties *prop,
-                    const struct mod_mdt_libfeature *feat)
-{
-  if (prop[is].iresol == 0) {
-    struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
-    float resol;
-    int iresol;
-
-    /* artificially change the resolution of the NMR structures
-       from the defined -1.00 to 0.45, to decrease the number of
-       bins required to hold all defined resolutions while still
-       separating NMR from X-ray structures: */
-    resol = (seq->resol == -1.00 ? 0.45 : seq->resol);
-
-    alliclsbin(1, &resol, &iresol, feat);
-    prop[is].iresol = iresol;
-  }
-  return prop[is].iresol;
 }
 
 /** Get center of mass */

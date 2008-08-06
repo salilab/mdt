@@ -61,8 +61,6 @@ struct mdt_properties {
   int *hb_iatta;
   /** Hydrogen bond satisfaction index */
   float *hbpot;
-  /** Bin index for resolution */
-  int iresol;
   /** Radius of gyration, or -1 if not yet calculated */
   float radius_gyration;
   /** Bin indices for atom type */

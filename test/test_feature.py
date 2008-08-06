@@ -88,17 +88,20 @@ class FeatureTests(MDTTest):
 
     def test_feature_iresol(self):
         """Check resolution features"""
-        mlib = self.get_mdt_library()
         env = self.get_environ()
-        m = self.get_test_mdt(mlib, features=35)
-        m2 = self.get_test_mdt(mlib, features=38)
+        mlib = self.get_mdt_library()
+        bins = mdt.uniform_bins(3, -1.0, 1.5)
+        xray0 = mdt.features.XRayResolution(mlib, bins, protein=0)
+        xray1 = mdt.features.XRayResolution(mlib, bins, protein=1)
+        m = self.get_test_mdt(mlib, features=xray0)
+        m2 = self.get_test_mdt(mlib, features=xray1)
         self.assertEqual(m.shape, (4,))
         self.assertEqual([b for b in m], [0., 1., 1., 0.])
         self.assertMDTDataEqual(m, m2)
 
         for (code, bin) in (('bin0', 0), ('bin1', 1), ('bin2', 2),
                             ('undef1', 3), ('undef2', 3)):
-            m = mdt.Table(mlib, features=35)
+            m = mdt.Table(mlib, features=xray0)
             aln = modeller.alignment(env, file='test/data/resol.ali',
                                      align_codes=code)
             m.add_alignment(aln)

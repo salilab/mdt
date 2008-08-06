@@ -28,10 +28,13 @@ class TableTests(MDTTest):
     def test_add(self):
         """Check adding MDTs"""
         mlib = self.get_mdt_library()
-        m1 = mdt.Table(mlib, features=35)
+        bins = mdt.uniform_bins(3, -1.0, 1.5)
+        xray0 = mdt.features.XRayResolution(mlib, bins, protein=0)
+        xray1 = mdt.features.XRayResolution(mlib, bins, protein=1)
+        m1 = mdt.Table(mlib, features=xray0)
         for (n, val) in enumerate((1,2,3,4)):
             m1[n] = val
-        m2 = mdt.Table(mlib, features=35)
+        m2 = mdt.Table(mlib, features=xray0)
         for (n, val) in enumerate((10,20,30,40)):
             m2[n] = val
         m3 = m1 + m2
@@ -39,9 +42,9 @@ class TableTests(MDTTest):
         self.assertMDTsEqual(m1, m3)
         for (n, val) in enumerate((11,22,33,44)):
             self.assertEqual(m3[n], val)
-        badmdt = mdt.Table(mlib, features=38)
+        badmdt = mdt.Table(mlib, features=xray1)
         self.assertRaises(ValueError, m1.__add__, badmdt)
-        badmdt = m2.reshape(features=35, offset=0, shape=-1)
+        badmdt = m2.reshape(features=xray0, offset=0, shape=-1)
         self.assertRaises(ValueError, m1.__add__, badmdt)
 
     def test_mdt_formats(self):

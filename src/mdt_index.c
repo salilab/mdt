@@ -353,9 +353,6 @@ void mdt_register_features(struct mod_mdt_library *mlib)
   mod_mdt_libfeature_register(mlib, 114, "BOND DIHEDRAL ANGLE IN A (114)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_DIHEDRAL,
                               FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 115, "RADIUS OF GYRATION OF A (115)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_PROTEIN,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
 }
 
 /** Get the index into the MDT for the given alignment feature */
@@ -537,9 +534,6 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                              ibnd1, libs);
     return idihedral0(bond->iata[0], bond->iata[1], bond->iata[2],
                       bond->iata[3], struc1, feat);
-  case 115:
-    fprop = property_radius_gyration(aln, is1, prop);
-    return iclsbin(fprop, feat);
   default:
     /* If we don't implement this feature, maybe Modeller does */
     ret = mod_mdt_index(ifi, aln, is1 + 1, ip1 + 1, is2 + 1, ir1 + 1, ir2 + 1,

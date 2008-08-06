@@ -1,6 +1,7 @@
 import unittest
 from mdt_test import MDTTest
 import mdt
+import mdt.features
 import modeller
 
 class FeatureTests(MDTTest):
@@ -77,7 +78,9 @@ class FeatureTests(MDTTest):
     def test_feature_radius_gyration(self):
         """Check radius of gyration feature"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=115)
+        rgyr = mdt.features.RadiusOfGyration(mlib,
+                                             mdt.uniform_bins(45, 5.0, 1.0))
+        m = self.get_test_mdt(mlib, features=rgyr)
         self.assertEqual(m[7], 1.0)
         for (n, bin) in enumerate(m):
             if n != 7:

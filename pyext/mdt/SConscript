@@ -1,0 +1,12 @@
+import os
+
+Import('e')
+
+files = ('__init__.py', 'features.py')
+
+pyext = [File(x) for x in files]
+
+pyinst = e.Install(os.path.join(e['pythondir'], 'mdt'), pyext)
+e.Alias('install', pyinst)
+
+Return('pyext')

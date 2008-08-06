@@ -15,9 +15,12 @@ pyso = e.LoadableModule('_mdt', 'mdt.i',
                         SWIGFLAGS='-python -noproxy ' + \
                                   '-nodefaultctor -nodefaultdtor')
 
-pyext = File('mdt.py')
-# Install the Python extension and any .py files:
+# Subdirectories containing pure Python files:
+Export('e')
+pyext = SConscript('mdt/SConscript')
+
+# Install the Python extension:
 libinst = e.Install(e['pyextdir'], pyso)
-pyinst = e.Install(e['pythondir'], pyext)
-e.Alias('install', [libinst, pyinst])
+e.Alias('install', libinst)
+
 Return('pyso', 'pyext')

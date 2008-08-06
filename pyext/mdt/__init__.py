@@ -36,7 +36,7 @@ __all__ = ['MDTError', 'FileFormatError', 'TableSection', 'Table', 'Library',
            'HydrogenBondClasses', 'Float', 'Double', 'Int32', 'UnsignedInt32',
            'Int16', 'UnsignedInt16', 'Int8', 'UnsignedInt8',
            'write_2dsplinelib', 'write_anglelib', 'write_bondlib',
-           'write_improperlib', 'write_splinelib']
+           'write_improperlib', 'write_splinelib', 'uniform_bins']
 
 from modeller.util.modobject import modobject
 from modeller.util import modlist
@@ -384,6 +384,7 @@ class Table(TableSection):
 
     def make(self, features):
         """Clear the table, and set the features"""
+        features = self._features_to_ifeat(features)
         _mdt.mdt_make(self._modpt, self._mlib._modpt, features)
 
     def write(self, file, write_preamble=True):
@@ -741,6 +742,21 @@ class Table(TableSection):
         return Source(self, self._mlib, aln, distngh, surftyp,
                       accessibility_type, sympairs, symtriples, io, edat)
 
+    def _features_to_ifeat(self, features):
+        """Utility function to map objects from mdt.features to
+           integer feature types"""
+        ifeat = []
+        if not isinstance(features, (list, tuple)):
+            features = (features,)
+        for feat in features:
+            if isinstance(feat, int):
+                ifeat.append(feat)
+            elif hasattr(feat, '_ifeat') and feat._ifeat is not None:
+                ifeat.append(feat._ifeat)
+            else:
+                raise TypeError("features should be objects from mdt.features")
+        return ifeat
+
     def __get_pdf(self):
         return _mdt.mdt_pdf_get(self._modpt)
     def __get_n_proteins(self):
@@ -1089,3 +1105,15 @@ def make_restraints(atmsel, restraints, num_selected):
                                           len(mdt.features[2].bins),
                                           not yperiodic, y1, y2, dy,
                                           not zperiodic, z1, z2, dz)
+
+def uniform_bins(num, start, width):
+    """Make a list of `num` equally-sized bins, each of which has the given
+       `width`, and starting at `start`. This is suitable for input to any of
+       the classes in `mdt.features` which need a list of bins."""
+    bins = []
+    for i in range(num):
+        st = start + width * i
+        en = st + width
+        sym = "%.1f" % st
+        bins.append((st, en, sym))
+    return bins

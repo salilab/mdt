@@ -103,11 +103,10 @@ const int *property_ifatmacc(const struct mod_alignment *aln, int is,
                              const struct mod_mdt_libfeature *feat,
                              const struct mod_libraries *libs, GError **err);
 
-/** Get/calculate the radius of gyration bin index */
+/** Get/calculate the radius of gyration */
 MDTDLLLOCAL
-int property_radius_gyration(const struct mod_alignment *aln, int is,
-                             struct mdt_properties *prop,
-                             const struct mod_mdt_libfeature *feat);
+float property_radius_gyration(const struct mod_alignment *aln, int is,
+                               struct mdt_properties *prop);
 
 G_END_DECLS
 

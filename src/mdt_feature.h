@@ -37,6 +37,11 @@ MDTDLLEXPORT
 int mdt_feature_xray_resolution(struct mdt_library *mlib, int protein,
                                 GError **err);
 
+/** Add a protein radius of gyration feature. */
+MDTDLLEXPORT
+int mdt_feature_radius_of_gyration(struct mdt_library *mlib, int protein,
+                                   GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

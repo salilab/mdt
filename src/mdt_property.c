@@ -320,22 +320,21 @@ static float get_radius_gyration(const float x[], const float y[],
   return sqrt(sum);
 }
 
-/** Get/calculate the radius of gyration bin index */
-int property_radius_gyration(const struct mod_alignment *aln, int is,
-                             struct mdt_properties *prop,
-                             const struct mod_mdt_libfeature *feat)
+/** Get/calculate the radius of gyration */
+float property_radius_gyration(const struct mod_alignment *aln, int is,
+                               struct mdt_properties *prop)
 {
   if (prop[is].radius_gyration == -1) {
     struct mod_structure *struc = mod_alignment_structure_get(aln, is);
-    float *x, *y, *z, radius_gyration, cx, cy, cz;
+    float *x, *y, *z, cx, cy, cz;
     x = mod_float1_pt(&struc->cd.x);
     y = mod_float1_pt(&struc->cd.y);
     z = mod_float1_pt(&struc->cd.z);
     /* get center of mass */
     get_mass_center(x, y, z, struc->cd.natm, &cx, &cy, &cz);
     /* get radius of gyration */
-    radius_gyration = get_radius_gyration(x, y, z, struc->cd.natm, cx, cy, cz);
-    alliclsbin(1, &radius_gyration, &prop[is].radius_gyration, feat);
+    prop[is].radius_gyration = get_radius_gyration(x, y, z, struc->cd.natm,
+                                                   cx, cy, cz);
   }
   return prop[is].radius_gyration;
 }

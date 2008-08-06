@@ -63,8 +63,8 @@ struct mdt_properties {
   float *hbpot;
   /** Bin index for resolution */
   int iresol;
-  /** Radius of gyration bin index */
-  int radius_gyration;
+  /** Radius of gyration, or -1 if not yet calculated */
+  float radius_gyration;
   /** Bin indices for atom type */
   int *iatta;
   /** Bin indices for atom accessibility */

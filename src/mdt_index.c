@@ -369,7 +369,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
 {
   int ret, ierr = 0;
   const int *binprop;
-  int iresol, irad;
+  int iresol;
   float fprop;
   struct mod_structure *struc1, *struc2;
   struct mod_sequence *seq1, *seq2;
@@ -538,8 +538,8 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     return idihedral0(bond->iata[0], bond->iata[1], bond->iata[2],
                       bond->iata[3], struc1, feat);
   case 115:
-    irad = property_radius_gyration(aln, is1, prop, feat);
-    return index_inrange(irad, feat);
+    fprop = property_radius_gyration(aln, is1, prop);
+    return iclsbin(fprop, feat);
   default:
     /* If we don't implement this feature, maybe Modeller does */
     ret = mod_mdt_index(ifi, aln, is1 + 1, ip1 + 1, is2 + 1, ir1 + 1, ir2 + 1,

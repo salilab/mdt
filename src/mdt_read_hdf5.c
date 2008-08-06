@@ -4,10 +4,75 @@
  */
 
 #include <glib.h>
+#include <stdlib.h>
+#include <string.h>
 #include "modeller.h"
 #include "mdt_hdf5.h"
 #include "mdt.h"
 #include "util.h"
+
+/** Read an array of strings from an HDF5 file.
+    \return an array of string pointers, or NULL on failure. */
+static char **read_string_array(hid_t file_id, const char *dset_name,
+                                hsize_t n_str, GError **err)
+{
+  char **name = NULL;
+  hid_t dtype;
+
+  if ((dtype = H5Tcopy(H5T_C_S1)) < 0) {
+    handle_hdf5_error(err);
+    return NULL;
+  }
+
+  if (H5Tset_size(dtype, H5T_VARIABLE) >= 0
+      && H5Tset_strpad(dtype, H5T_STR_NULLTERM) >= 0) {
+    name = g_malloc(n_str * sizeof(char *));
+    if (mod_dataset_read(file_id, "/feature_names", 1, &n_str,
+                         dtype, name) < 0) {
+      handle_modeller_hdf5_error(err);
+      g_free(name);
+      name = NULL;
+    }
+  }
+
+  H5Tclose(dtype); /* Ignore errors */
+  return name;
+}
+
+/** Check to make sure that the names of all features in the table match those
+    currently in the library. \return TRUE on success. */
+static gboolean check_mdt_feature_names(hid_t file_id,
+                                        const struct mod_mdt *mdt,
+                                        const struct mdt_library *mlib,
+                                        GError **err)
+{
+  int i;
+  gboolean ret;
+  char **name;
+
+  if (!(name = read_string_array(file_id, "/feature_names", mdt->nfeat, err))) {
+    return FALSE;
+  }
+
+  ret = TRUE;
+  for (i = 0; i < mdt->nfeat && ret; ++i) {
+    int ifeat = mdt->features[i].ifeat;
+    struct mod_mdt_libfeature *feat = &mlib->base.features[ifeat - 1];
+    if (strcmp(feat->name, name[i]) != 0) {
+      g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                  "Feature name (%s) is different to that in the library "
+                  "(%s) for feature number %d, feature type %d", name[i],
+                  feat->name, i, ifeat);
+      ret = FALSE;
+    }
+  }
+
+  for (i = 0; i < mdt->nfeat; ++i) {
+    free(name[i]);
+  }
+  g_free(name);
+  return ret;
+}
 
 /** Read MDT feature information from an HDF5 file. Return TRUE on success. */
 static gboolean read_mdt_features(hid_t file_id, struct mod_mdt *mdt,
@@ -104,7 +169,7 @@ static gboolean check_mdt_features(hid_t file_id, const struct mod_mdt *mdt,
   }
 
   g_free(nbins);
-  return retval;
+  return retval && check_mdt_feature_names(file_id, mdt, mlib, err);
 }
 
 

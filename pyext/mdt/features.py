@@ -13,10 +13,8 @@ class _Base(object):
 
 
 class Protein(_Base):
-    _protein = 0
-
     def __init__(self, mlib, bins, protein=0):
-        self._ifeat = self._setup(mlib._modpt, self._protein)
+        self._ifeat = self._setup(mlib._modpt, protein)
         self._create_bins(mlib, bins)
 
 

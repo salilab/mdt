@@ -251,12 +251,6 @@ void mdt_register_features(struct mod_mdt_library *mlib)
   mod_mdt_libfeature_register(mlib, 82, "ANY ATOM DISTANCE IN A (82)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM_PAIR,
                               FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 101, "ATOM TUPLE TYPE IN A (101)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 102, "ATOM TUPLE TYPE IN A AT POS2 (102)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
-                              TRUE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 103,
                               "TUPLE NON-BONDED DISTANCE IN A (103)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
@@ -309,7 +303,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  struct mdt_properties *prop, GError **err)
 {
   int ret, ierr = 0;
-  int ibin, ires, iseq, nres;
+  int ibin, ires, iseq, nres, iatom, ibnd;
   struct mod_structure *struc1, *struc2;
   struct mod_sequence *seq1, *seq2;
   const struct mdt_bond *bond;
@@ -362,6 +356,22 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     } else {
       return index_inrange(ibin, feat);
     }
+  case MDT_FEATURE_TUPLE:
+    if (mfeat->u.tuple.pos2) {
+      iatom = ia1p;
+      ibnd = ibnd1p;
+    } else {
+      iatom = ia1;
+      ibnd = ibnd1;
+    }
+    tup = property_one_tuple(aln, is1, prop, mlib, ibnd, iatom, libs);
+    ibin = mfeat->u.tuple.getbin(aln, is1, iatom, tup, prop, mfeat->data,
+                                 feat, mlib, libs, err);
+    if (ibin < 0) {
+      return -1;
+    } else {
+      return index_inrange(ibin, feat);
+    }
   }
   switch (ifi) {
   case 66:
@@ -383,12 +393,6 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case 82:
   case 103:
     return idist0(ia1, ia1p, struc1, feat);
-  case 101:
-    tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
-    return index_inrange(tup->tupclass, feat);
-  case 102:
-    tup = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
-    return index_inrange(tup->tupclass, feat);
   case 104:
     if (!tuple_require_natom(mlib, 2, ifi, err)) {
       return 0;

@@ -320,16 +320,5 @@ gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib,
 gboolean mdt_tuple_read(const gchar *filename, struct mdt_library *mlib,
                         GError **err)
 {
-  gboolean retval;
-  retval = read_atom_class_file(filename, mlib, mlib->tupclass, FALSE, TRUE,
-                                err);
-  if (retval) {
-    int ifeat;
-    /* MDT atom tuple features; 101 and 102 */
-    for (ifeat = 100; ifeat < 102; ifeat++) {
-      struct mod_mdt_libfeature *feat = &mlib->base.features[ifeat];
-      update_mdt_feat_atclass(feat, mlib->tupclass);
-    }
-  }
-  return retval;
+  return read_atom_class_file(filename, mlib, mlib->tupclass, FALSE, TRUE, err);
 }

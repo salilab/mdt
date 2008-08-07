@@ -35,6 +35,17 @@ class AtomFixedBins(Atom):
         self._ifeat = self._setup(mlib._modpt, pos2)
 
 
+class Tuple(_Base):
+    def __init__(self, mlib, bins, pos2=False):
+        self._ifeat = self._setup(mlib._modpt, pos2)
+        self._create_bins(mlib, bins)
+
+
+class TupleFixedBins(Tuple):
+    def __init__(self, mlib, pos2=False):
+        self._ifeat = self._setup(mlib._modpt, pos2)
+
+
 class XRayResolution(Protein):
     _setup = _mdt.mdt_feature_xray_resolution
 
@@ -64,3 +75,6 @@ class HydrogenBondCharge(Atom):
 
 class HydrogenBondSatisfaction(Protein):
     _setup = _mdt.mdt_feature_hydrogen_bond_satisfaction
+
+class TupleType(TupleFixedBins):
+    _setup = _mdt.mdt_feature_tuple_type

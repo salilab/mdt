@@ -29,7 +29,6 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
     prop[i].hbpot = NULL;
     prop[i].radius_gyration = -1;
     prop[i].iatta = NULL;
-    prop[i].iatmacc = NULL;
     prop[i].fatmacc = NULL;
   }
   return prop;
@@ -57,19 +56,9 @@ void mdt_properties_free(struct mdt_properties *prop,
     g_free(prop[i].hb_iatta);
     g_free(prop[i].hbpot);
     g_free(prop[i].iatta);
-    g_free(prop[i].iatmacc);
     g_free(prop[i].fatmacc);
   }
   g_free(prop);
-}
-
-static void alliclsbin(int nvec, const float *x, int *ix,
-                       const struct mod_mdt_libfeature *feat)
-{
-  int i;
-  for (i = 0; i < nvec; i++) {
-    ix[i] = iclsbin(x[i], feat);
-  }
 }
 
 static int iatmcls(int irestyp, const char *atmnam,
@@ -314,20 +303,6 @@ float property_radius_gyration(const struct mod_alignment *aln, int is,
                                                    cx, cy, cz);
   }
   return prop[is].radius_gyration;
-}
-
-/** Get/calculate the array of atom accessibility bin indices */
-const int *property_iatmacc(const struct mod_alignment *aln, int is,
-                            struct mdt_properties *prop,
-                            const struct mod_mdt_libfeature *feat)
-{
-  if (!prop[is].iatmacc) {
-    struct mod_structure *struc = mod_alignment_structure_get(aln, is);
-    prop[is].iatmacc = g_malloc(sizeof(int) * struc->cd.natm);
-    alliclsbin(struc->cd.natm, mod_float1_pt(&struc->cd.atmacc),
-               prop[is].iatmacc, feat);
-  }
-  return prop[is].iatmacc;
 }
 
 /** Get/calculate the array of fractional atom accessibilities.

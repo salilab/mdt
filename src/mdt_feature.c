@@ -157,3 +157,28 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
   g_string_free(fullname, TRUE);
   return nfeat;
 }
+
+int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
+                         mod_mdt_calc precalc_type, gboolean pos2,
+                         mdt_cb_feature_atom getbin, void *data)
+{
+  GString *fullname;
+  struct mdt_feature *feat;
+  int nfeat;
+
+  feat = add_feature(mlib, &nfeat);
+  feat->type = MDT_FEATURE_ATOM;
+  feat->u.atom.pos2 = pos2;
+  feat->u.atom.getbin = getbin;
+  feat->data = data;
+  fullname = g_string_new(name);
+  if (pos2) {
+    g_string_append(fullname, " at pos2");
+  }
+  mod_mdt_libfeature_register(&mlib->base, nfeat, fullname->str, precalc_type,
+                              MOD_MDTP_A,
+                              pos2 ? MOD_MDTS_ATOM_PAIR : MOD_MDTS_ATOM,
+                              TRUE, 0);
+  g_string_free(fullname, TRUE);
+  return nfeat;
+}

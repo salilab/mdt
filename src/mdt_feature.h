@@ -29,6 +29,13 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
                             gboolean pos2, mdt_cb_feature_residue getbin,
                             void *data, GError **err);
 
+/** Add an atom feature.
+    \return the index of the new feature */
+MDTDLLEXPORT
+int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
+                         mod_mdt_calc precalc_type, gboolean pos2,
+                         mdt_cb_feature_atom getbin, void *data);
+
 /** Add a data file type needed for a given feature */
 MDTDLLEXPORT
 void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
@@ -59,6 +66,15 @@ int mdt_feature_radius_of_gyration(struct mdt_library *mlib, int protein,
 MDTDLLEXPORT
 int mdt_feature_residue_accessibility(struct mdt_library *mlib, int protein,
                                       int delta, gboolean pos2, GError **err);
+
+/** Add an atom accessibility feature. */
+MDTDLLEXPORT
+int mdt_feature_atom_accessibility(struct mdt_library *mlib, gboolean pos2);
+
+/** Add a fractional atom accessibility feature. */
+MDTDLLEXPORT
+int mdt_feature_fractional_atom_accessibility(struct mdt_library *mlib,
+                                              gboolean pos2);
 
 G_END_DECLS
 

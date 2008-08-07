@@ -10,7 +10,8 @@
 
 static int getbin(const struct mod_alignment *aln, int protein,
                   struct mdt_properties *prop, void *data,
-                  const struct mod_mdt_libfeature *feat)
+                  const struct mod_mdt_libfeature *feat,
+                  const struct mod_libraries *libs, GError **err)
 {
   float f = property_radius_gyration(aln, protein, prop);
   return iclsbin(f, feat);

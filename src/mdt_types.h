@@ -65,7 +65,8 @@ struct mdt {
 typedef enum {
   MDT_FEATURE_NONE = 0,
   MDT_FEATURE_PROTEIN,
-  MDT_FEATURE_RESIDUE
+  MDT_FEATURE_RESIDUE,
+  MDT_FEATURE_ATOM
 } mdt_feature_type;
 
 struct mdt_properties;
@@ -73,12 +74,24 @@ struct mdt_properties;
 typedef int (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
                                       int protein,
                                       struct mdt_properties *prop, void *data,
-                                      const struct mod_mdt_libfeature *feat);
+                                      const struct mod_mdt_libfeature *feat,
+                                      const struct mod_libraries *libs,
+                                      GError **err);
+
 
 typedef int (*mdt_cb_feature_residue)(const struct mod_alignment *aln,
                                       int protein, int residue,
                                       struct mdt_properties *prop, void *data,
-                                      const struct mod_mdt_libfeature *feat);
+                                      const struct mod_mdt_libfeature *feat,
+                                      const struct mod_libraries *libs,
+                                      GError **err);
+
+typedef int (*mdt_cb_feature_atom)(const struct mod_alignment *aln,
+                                   int protein, int atom,
+                                   struct mdt_properties *prop, void *data,
+                                   const struct mod_mdt_libfeature *feat,
+                                   const struct mod_libraries *libs,
+                                   GError **err);
 
 /** User-defined protein feature */
 struct mdt_feature_protein {
@@ -94,12 +107,19 @@ struct mdt_feature_residue {
   mdt_cb_feature_residue getbin;
 };
 
+/** User-defined atom feature */
+struct mdt_feature_atom {
+  gboolean pos2;
+  mdt_cb_feature_atom getbin;
+};
+
 /** User-defined feature */
 struct mdt_feature {
   mdt_feature_type type;
   union {
     struct mdt_feature_protein protein;
     struct mdt_feature_residue residue;
+    struct mdt_feature_atom atom;
   } u;
   void *data;
 };

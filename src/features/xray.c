@@ -9,7 +9,8 @@
 
 static int getbin(const struct mod_alignment *aln, int protein,
                   struct mdt_properties *prop, void *data,
-                  const struct mod_mdt_libfeature *feat)
+                  const struct mod_mdt_libfeature *feat,
+                  const struct mod_libraries *libs, GError **err)
 {
   struct mod_sequence *seq = mod_alignment_sequence_get(aln, protein);
   /* artificially change the resolution of the NMR structures

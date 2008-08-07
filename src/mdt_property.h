@@ -84,12 +84,6 @@ gboolean property_hbpot(const struct mod_alignment *aln, int is,
                         const struct mod_libraries *libs, float *hbpot,
                         GError **err);
 
-/** Get/calculate the array of atom accessibility bin indices */
-MDTDLLLOCAL
-const int *property_iatmacc(const struct mod_alignment *aln, int is,
-                            struct mdt_properties *prop,
-                            const struct mod_mdt_libfeature *feat);
-
 /** Get/calculate the array of fractional atom accessibilities.
     \return TRUE on success. */
 MDTDLLLOCAL

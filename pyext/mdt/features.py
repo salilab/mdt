@@ -24,6 +24,12 @@ class Residue(_Base):
         self._create_bins(mlib, bins)
 
 
+class Atom(_Base):
+    def __init__(self, mlib, bins, pos2=False):
+        self._ifeat = self._setup(mlib._modpt, pos2)
+        self._create_bins(mlib, bins)
+
+
 class XRayResolution(Protein):
     _setup = _mdt.mdt_feature_xray_resolution
 
@@ -32,3 +38,9 @@ class RadiusOfGyration(Protein):
 
 class ResidueAccessibility(Residue):
     _setup = _mdt.mdt_feature_residue_accessibility
+
+class AtomAccessibility(Atom):
+    _setup = _mdt.mdt_feature_atom_accessibility
+
+class FractionalAtomAccessibility(Atom):
+    _setup = _mdt.mdt_feature_fractional_atom_accessibility

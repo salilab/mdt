@@ -65,8 +65,6 @@ struct mdt_properties {
   float radius_gyration;
   /** Bin indices for atom type */
   int *iatta;
-  /** Bin indices for atom accessibility */
-  int *iatmacc;
   /** Fractional atom accessibility */
   float *fatmacc;
 };
@@ -88,6 +86,12 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
 /** Convert a raw number to the corresponding feature's MDT bin index */
 MDTDLLLOCAL
 int iclsbin(float x, const struct mod_mdt_libfeature *feat);
+
+/** Return the bin index for the raw feature ftab[ir], or the undefined bin
+    index if anything is out of range */
+MDTDLLLOCAL
+int ftable(const float *ftab, int nr, int ir,
+           const struct mod_mdt_libfeature *feat);
 
 G_END_DECLS
 

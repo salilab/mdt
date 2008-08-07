@@ -80,6 +80,23 @@ int mdt_feature_fractional_atom_accessibility(struct mdt_library *mlib,
 MDTDLLEXPORT
 int mdt_feature_atom_type(struct mdt_library *mlib, gboolean pos2);
 
+/** Add a hydrogen bond donor feature. */
+MDTDLLEXPORT
+int mdt_feature_hydrogen_bond_donor(struct mdt_library *mlib, gboolean pos2);
+
+/** Add a hydrogen bond acceptor feature. */
+MDTDLLEXPORT
+int mdt_feature_hydrogen_bond_acceptor(struct mdt_library *mlib, gboolean pos2);
+
+/** Add a total hydrogen bond charge around an atom feature. */
+MDTDLLEXPORT
+int mdt_feature_hydrogen_bond_charge(struct mdt_library *mlib, gboolean pos2);
+
+/** Add a protein hydrogen bond satisfaction feature. */
+MDTDLLEXPORT
+int mdt_feature_hydrogen_bond_satisfaction(struct mdt_library *mlib,
+                                           int protein, GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

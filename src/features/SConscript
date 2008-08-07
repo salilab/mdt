@@ -1,6 +1,6 @@
 files = ['xray.c', 'radius_gyration.c', 'residue_accessibility.c',
          'atom_accessibility.c', 'fractional_atom_accessibility.c',
-         'atom_type.c']
+         'atom_type.c', 'atom_hydrogen_bonds.c', 'hydrogen_bond_satisfaction.c']
 
 files = [File(x) for x in files]
 Return('files')

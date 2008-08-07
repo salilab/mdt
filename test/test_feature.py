@@ -60,10 +60,18 @@ class FeatureTests(MDTTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.hbond_classes.read('data/atmcls-hbda.lib')
-        m = mdt.Table(mlib, features=84)
-        m2 = mdt.Table(mlib, features=85)
-        m3 = mdt.Table(mlib, features=86)
-        m4 = mdt.Table(mlib, features=87)
+        donor = mdt.features.HydrogenBondDonor(mlib,
+                                               mdt.uniform_bins(7, 1., 1.))
+        accep = mdt.features.HydrogenBondAcceptor(mlib,
+                                                  mdt.uniform_bins(7, 1., 1.))
+        totchg = mdt.features.HydrogenBondCharge(mlib,
+                                                 mdt.uniform_bins(9, 1., 1.))
+        satisf = mdt.features.HydrogenBondSatisfaction(mlib,
+                                                 mdt.uniform_bins(100, 0., 10.))
+        m = mdt.Table(mlib, features=donor)
+        m2 = mdt.Table(mlib, features=accep)
+        m3 = mdt.Table(mlib, features=satisf)
+        m4 = mdt.Table(mlib, features=totchg)
         aln = modeller.alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         m2.add_alignment(aln)

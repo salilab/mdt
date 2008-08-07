@@ -52,3 +52,15 @@ class FractionalAtomAccessibility(Atom):
 
 class AtomType(AtomFixedBins):
     _setup = _mdt.mdt_feature_atom_type
+
+class HydrogenBondDonor(Atom):
+    _setup = _mdt.mdt_feature_hydrogen_bond_donor
+
+class HydrogenBondAcceptor(Atom):
+    _setup = _mdt.mdt_feature_hydrogen_bond_acceptor
+
+class HydrogenBondCharge(Atom):
+    _setup = _mdt.mdt_feature_hydrogen_bond_charge
+
+class HydrogenBondSatisfaction(Protein):
+    _setup = _mdt.mdt_feature_hydrogen_bond_satisfaction

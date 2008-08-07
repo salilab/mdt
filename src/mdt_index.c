@@ -251,19 +251,6 @@ void mdt_register_features(struct mod_mdt_library *mlib)
   mod_mdt_libfeature_register(mlib, 82, "ANY ATOM DISTANCE IN A (82)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM_PAIR,
                               FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 84, "H-BOND DONOR IN A (84)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 85, "H-BOND ACCEPTOR IN A (85)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 86,
-                              "HBOND SATISFACTION INDEX OF PROTEIN 1 (86)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_PROTEIN,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 87, "TOTAL CHARGE AROUND ATOM IN A (87)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 101, "ATOM TUPLE TYPE IN A (101)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE,
                               FALSE, MOD_MDTF_STRUCTURE, 0);
@@ -322,9 +309,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  struct mdt_properties *prop, GError **err)
 {
   int ret, ierr = 0;
-  const int *binprop;
   int ibin, ires, iseq, nres;
-  float fprop;
   struct mod_structure *struc1, *struc2;
   struct mod_sequence *seq1, *seq2;
   const struct mdt_bond *bond;
@@ -398,32 +383,6 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case 82:
   case 103:
     return idist0(ia1, ia1p, struc1, feat);
-  case 84:
-    binprop = property_hb_iatta(aln, is1, prop, mlib, libs, err);
-    if (!binprop) {
-      return 0;
-    }
-    return iclsbin(numb_hda(ia1, binprop, &struc1->cd, mlib->hbond,
-                            mlib->hbond_cutoff, 0), feat);
-  case 85:
-    binprop = property_hb_iatta(aln, is1, prop, mlib, libs, err);
-    if (!binprop) {
-      return 0;
-    }
-    return iclsbin(numb_hda(ia1, binprop, &struc1->cd, mlib->hbond,
-                            mlib->hbond_cutoff, 1), feat);
-  case 86:
-    if (!property_hbpot(aln, is1, prop, mlib, libs, &fprop, err)) {
-      return 0;
-    }
-    return iclsbin(fprop, feat);
-  case 87:
-    binprop = property_hb_iatta(aln, is1, prop, mlib, libs, err);
-    if (!binprop) {
-      return 0;
-    }
-    return iclsbin(numb_hda(ia1, binprop, &struc1->cd, mlib->hbond,
-                            mlib->hbond_cutoff, 2), feat);
   case 101:
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
     return index_inrange(tup->tupclass, feat);

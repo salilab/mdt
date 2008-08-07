@@ -90,6 +90,7 @@ static gboolean check_protein(int protein, const char *feattype, GError **err)
 /** Helper function to add a new feature structure, and return it. */
 static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat)
 {
+  mlib->feature_added = TRUE;
   *nfeat = mlib->base.nfeat + 1;
   mlib->features = g_array_set_size(mlib->features, *nfeat);
   return &g_array_index(mlib->features, struct mdt_feature, *nfeat - 1);

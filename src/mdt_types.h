@@ -144,6 +144,8 @@ struct mdt_library {
   struct mdt_atom_class_list *hbond;
   /** Tuple classes */
   struct mdt_atom_class_list *tupclass;
+  /** Set TRUE if at least one feature has been added. */
+  gboolean feature_added;
 };
 
 /** Make a new mdt structure */

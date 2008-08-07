@@ -258,6 +258,11 @@ static gboolean read_atom_class_file(const gchar *filename,
   gboolean retval;
   unsigned filelen;
 
+  if (mlib->feature_added) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                "You must read all atom classes BEFORE creating any features");
+    return FALSE;
+  }
   fh = mdt_open_file(filename, "r", err);
   if (!fh) {
     return FALSE;
@@ -282,11 +287,6 @@ gboolean mdt_atom_classes_read(const gchar *filename,
                                GError **err)
 {
   gboolean retval;
-  if (mlib->feature_added) {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
-                "You must read all atom classes BEFORE creating any features");
-    return FALSE;
-  }
   retval = read_atom_class_file(filename, mlib, mlib->atclass[natom - 1],
                                 FALSE, FALSE, err);
   if (retval) {

@@ -233,8 +233,8 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
 }
 
 /** Set the number of bins and the bin symbols for atom class features */
-static void update_mdt_feat_atclass(struct mod_mdt_libfeature *feat,
-                                    const struct mdt_atom_class_list *atclass)
+void update_mdt_feat_atclass(struct mod_mdt_libfeature *feat,
+                             const struct mdt_atom_class_list *atclass)
 {
   int i;
   mod_mdt_libfeature_nbins_set(feat, atclass->nclass + 1);
@@ -293,20 +293,16 @@ gboolean mdt_atom_classes_read(const gchar *filename,
     int ifeat;
     struct mod_mdt_libfeature *feat;
 
-    /* MDT features; 79 = atom, 109 = bond, 111 = angle, 113 = dihedral types */
+    /* MDT features; 109 = bond, 111 = angle, 113 = dihedral types */
     if (natom == 1) {
-      ifeat = 78;
+      ifeat = 0;
     } else {
       ifeat = 104 + natom * 2;
     }
 
     /* Set MDT symbols */
-    feat = &mlib->base.features[ifeat];
-    update_mdt_feat_atclass(feat, mlib->atclass[natom - 1]);
-
-    /* Feature 83 is also atom-type based */
-    if (natom == 1) {
-      feat = &mlib->base.features[82];
+    if (ifeat != 0) {
+      feat = &mlib->base.features[ifeat];
       update_mdt_feat_atclass(feat, mlib->atclass[natom - 1]);
     }
   }

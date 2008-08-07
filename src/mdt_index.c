@@ -48,18 +48,6 @@ static int irestab(const struct mod_int2_array *ialn, int naln, int iseq,
   }
 }
 
-/** Return the bin index itab[ir], or the undefined bin index if anything is
-    out of range */
-static int itable(const int *itab, int nr, int ir,
-                  const struct mod_mdt_libfeature *feat)
-{
-  if (ir >= 0 && ir < nr && itab[ir] >= 1 && itab[ir] <= feat->nbins) {
-    return itab[ir];
-  } else {
-    return feat->nbins;
-  }
-}
-
 /** Ensure that a given bin index is in range for the feature; return in
     the undefined bin if not. */
 static int index_inrange(int index, const struct mod_mdt_libfeature *feat)
@@ -260,13 +248,7 @@ void mdt_register_features(struct mod_mdt_library *mlib)
   mod_mdt_libfeature_register(mlib, 78, "RESIDUE TYPE AT DELTA J IN B (78)",
                               MOD_MDTC_NONE, MOD_MDTP_B, MOD_MDTS_RESIDUE,
                               FALSE, 0);
-  mod_mdt_libfeature_register(mlib, 79, "MODELLER ATOM TYPE OF A (79)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 82, "ANY ATOM DISTANCE IN A (82)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM_PAIR,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 83, "MODELLER ATOM TYPE AT POS2 OF A (83)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM_PAIR,
                               FALSE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 84, "H-BOND DONOR IN A (84)",
@@ -359,7 +341,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     break;
   case MDT_FEATURE_PROTEIN:
     ibin = mfeat->u.protein.getbin(aln, feat->iknown == MOD_MDTP_A ? is1 : is2,
-                                   prop, mfeat->data, feat, libs, err);
+                                   prop, mfeat->data, feat, mlib, libs, err);
     if (ibin < 0) {
       return -1;
     } else {
@@ -380,7 +362,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
       return feat->nbins;
     } else {
       ibin = mfeat->u.residue.getbin(aln, iseq, ires, prop, mfeat->data, feat,
-                                     libs, err);
+                                     mlib, libs, err);
       if (ibin < 0) {
         return -1;
       } else {
@@ -389,7 +371,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     }
   case MDT_FEATURE_ATOM:
     ibin = mfeat->u.atom.getbin(aln, is1, mfeat->u.atom.pos2 ? ia1p : ia1,
-                                prop, mfeat->data, feat, libs, err);
+                                prop, mfeat->data, feat, mlib, libs, err);
     if (ibin < 0) {
       return -1;
     } else {
@@ -413,21 +395,9 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     return irestab(&aln->ialn, aln->naln, is2, mod_int1_pt(&seq2->irestyp),
                    seq2->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
                    feat->nbins, libs->igaptyp);
-  case 79:
-    binprop = property_iatta(aln, is1, prop, mlib, libs, err);
-    if (!binprop) {
-      return 0.;
-    }
-    return itable(binprop, struc1->cd.natm, ia1, feat);
   case 82:
   case 103:
     return idist0(ia1, ia1p, struc1, feat);
-  case 83:
-    binprop = property_iatta(aln, is1, prop, mlib, libs, err);
-    if (!binprop) {
-      return 0;
-    }
-    return itable(binprop, struc1->cd.natm, ia1p, feat);
   case 84:
     binprop = property_hb_iatta(aln, is1, prop, mlib, libs, err);
     if (!binprop) {

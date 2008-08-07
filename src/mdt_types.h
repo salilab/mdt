@@ -70,11 +70,13 @@ typedef enum {
 } mdt_feature_type;
 
 struct mdt_properties;
+struct mdt_library;
 
 typedef int (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
                                       int protein,
                                       struct mdt_properties *prop, void *data,
                                       const struct mod_mdt_libfeature *feat,
+                                      const struct mdt_library *mlib,
                                       const struct mod_libraries *libs,
                                       GError **err);
 
@@ -83,6 +85,7 @@ typedef int (*mdt_cb_feature_residue)(const struct mod_alignment *aln,
                                       int protein, int residue,
                                       struct mdt_properties *prop, void *data,
                                       const struct mod_mdt_libfeature *feat,
+                                      const struct mdt_library *mlib,
                                       const struct mod_libraries *libs,
                                       GError **err);
 
@@ -90,6 +93,7 @@ typedef int (*mdt_cb_feature_atom)(const struct mod_alignment *aln,
                                    int protein, int atom,
                                    struct mdt_properties *prop, void *data,
                                    const struct mod_mdt_libfeature *feat,
+                                   const struct mdt_library *mlib,
                                    const struct mod_libraries *libs,
                                    GError **err);
 

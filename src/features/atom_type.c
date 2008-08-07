@@ -1,4 +1,4 @@
-/** \file atom_accessibility.c  Atom accessibility feature.
+/** \file atom_type.c  Modeller atom type feature.
  *
  *             Part of MDT, Copyright(c) 1989-2008 Andrej Sali
  */
@@ -6,6 +6,8 @@
 #include "modeller.h"
 #include "../mdt_index.h"
 #include "../mdt_feature.h"
+#include "../mdt_property.h"
+#include "../mdt_atom_classes.h"
 
 static int getbin(const struct mod_alignment *aln, int protein, int atom,
                   struct mdt_properties *prop, void *data,
@@ -13,17 +15,24 @@ static int getbin(const struct mod_alignment *aln, int protein, int atom,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {
-  struct mod_structure *s = mod_alignment_structure_get(aln, protein);
-  float f = mod_float1_get(&s->cd.atmacc, atom);
-  return iclsbin(f, feat);
+  const int *binprop;
+  binprop = property_iatta(aln, protein, prop, mlib, libs, err);
+  if (binprop) {
+    return binprop[atom];
+  } else {
+    return -1;
+  }
 }
 
-int mdt_feature_atom_accessibility(struct mdt_library *mlib, gboolean pos2)
+int mdt_feature_atom_type(struct mdt_library *mlib, gboolean pos2)
 {
   int ifeat;
-  ifeat = mdt_feature_atom_add(mlib, "Atom accessibility", MOD_MDTC_NONE,
+  struct mod_mdt_libfeature *feat;
+  ifeat = mdt_feature_atom_add(mlib, "Atom type", MOD_MDTC_NONE,
                                pos2, getbin, NULL);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
-  mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_PSA);
+  /* Set number of bins and their symbols */
+  feat = &mlib->base.features[ifeat - 1];
+  update_mdt_feat_atclass(feat, mlib->atclass[0]);
   return ifeat;
 }

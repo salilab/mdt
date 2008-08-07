@@ -118,7 +118,7 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
   g_string_append_printf(fullname, " of protein %d", protein);
   mod_mdt_libfeature_register(&mlib->base, nfeat, fullname->str, precalc_type,
                               protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,
-                              MOD_MDTS_PROTEIN, TRUE, 0);
+                              MOD_MDTS_PROTEIN, FALSE, 0);
   g_string_free(fullname, TRUE);
   return nfeat;
 }
@@ -154,7 +154,7 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
   mod_mdt_libfeature_register(&mlib->base, nfeat, fullname->str, precalc_type,
                               protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,
                               pos2 ? MOD_MDTS_RESIDUE_PAIR : MOD_MDTS_RESIDUE,
-                              TRUE, 0);
+                              FALSE, 0);
   g_string_free(fullname, TRUE);
   return nfeat;
 }
@@ -179,7 +179,7 @@ int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
   mod_mdt_libfeature_register(&mlib->base, nfeat, fullname->str, precalc_type,
                               MOD_MDTP_A,
                               pos2 ? MOD_MDTS_ATOM_PAIR : MOD_MDTS_ATOM,
-                              TRUE, 0);
+                              FALSE, 0);
   g_string_free(fullname, TRUE);
   return nfeat;
 }

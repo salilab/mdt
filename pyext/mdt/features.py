@@ -30,6 +30,11 @@ class Atom(_Base):
         self._create_bins(mlib, bins)
 
 
+class AtomFixedBins(Atom):
+    def __init__(self, mlib, pos2=False):
+        self._ifeat = self._setup(mlib._modpt, pos2)
+
+
 class XRayResolution(Protein):
     _setup = _mdt.mdt_feature_xray_resolution
 
@@ -44,3 +49,6 @@ class AtomAccessibility(Atom):
 
 class FractionalAtomAccessibility(Atom):
     _setup = _mdt.mdt_feature_fractional_atom_accessibility
+
+class AtomType(AtomFixedBins):
+    _setup = _mdt.mdt_feature_atom_type

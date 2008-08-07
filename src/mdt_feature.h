@@ -76,6 +76,10 @@ MDTDLLEXPORT
 int mdt_feature_fractional_atom_accessibility(struct mdt_library *mlib,
                                               gboolean pos2);
 
+/** Add a Modeller atom type feature. */
+MDTDLLEXPORT
+int mdt_feature_atom_type(struct mdt_library *mlib, gboolean pos2);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

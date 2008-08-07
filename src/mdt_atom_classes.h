@@ -36,6 +36,11 @@ MDTDLLEXPORT
 gboolean mdt_tuple_read(const gchar *filename, struct mdt_library *mlib, 
                         GError **err);
 
+/** Set the number of bins and the bin symbols for atom class features */
+MDTDLLLOCAL
+void update_mdt_feat_atclass(struct mod_mdt_libfeature *feat,
+                             const struct mdt_atom_class_list *atclass);
+
 G_END_DECLS
 
 #endif  /* __MDT_ATOMCLASS_H */

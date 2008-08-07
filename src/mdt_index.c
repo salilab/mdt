@@ -414,7 +414,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                    seq2->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
                    feat->nbins, libs->igaptyp);
   case 79:
-    binprop = property_iatta(aln, is1, prop, mlib, ifi, libs, err);
+    binprop = property_iatta(aln, is1, prop, mlib, libs, err);
     if (!binprop) {
       return 0.;
     }
@@ -423,32 +423,32 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case 103:
     return idist0(ia1, ia1p, struc1, feat);
   case 83:
-    binprop = property_iatta(aln, is1, prop, mlib, ifi, libs, err);
+    binprop = property_iatta(aln, is1, prop, mlib, libs, err);
     if (!binprop) {
       return 0;
     }
     return itable(binprop, struc1->cd.natm, ia1p, feat);
   case 84:
-    binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
+    binprop = property_hb_iatta(aln, is1, prop, mlib, libs, err);
     if (!binprop) {
       return 0;
     }
     return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     0, feat->nbins);
   case 85:
-    binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
+    binprop = property_hb_iatta(aln, is1, prop, mlib, libs, err);
     if (!binprop) {
       return 0;
     }
     return numb_hda(ia1, binprop, &struc1->cd, mlib->hbond, mlib->hbond_cutoff,
                     1, feat->nbins);
   case 86:
-    if (!property_hbpot(aln, is1, prop, mlib, ifi, libs, &fprop, err)) {
+    if (!property_hbpot(aln, is1, prop, mlib, libs, &fprop, err)) {
       return 0;
     }
     return iclsbin(fprop, feat);
   case 87:
-    binprop = property_hb_iatta(aln, is1, prop, mlib, ifi, libs, err);
+    binprop = property_hb_iatta(aln, is1, prop, mlib, libs, err);
     if (!binprop) {
       return 0;
     }

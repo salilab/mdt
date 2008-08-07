@@ -186,8 +186,7 @@ static gboolean atmcls_special(struct mod_structure *struc,
 static int *make_atom_type(const struct mod_alignment *aln, int is,
                            const struct mdt_library *mlib,
                            const struct mdt_atom_class_list *atclass,
-                           int ifi, const struct mod_libraries *libs,
-                           GError **err)
+                           const struct mod_libraries *libs, GError **err)
 {
   int *iatta;
   struct mod_structure *struc = mod_alignment_structure_get(aln, is);
@@ -204,12 +203,11 @@ static int *make_atom_type(const struct mod_alignment *aln, int is,
 /** Get/calculate the array of atom type bin indices */
 const int *property_iatta(const struct mod_alignment *aln, int is,
                           struct mdt_properties *prop,
-                          const struct mdt_library *mlib, int ifi,
+                          const struct mdt_library *mlib, 
                           const struct mod_libraries *libs, GError **err)
 {
   if (!prop[is].iatta) {
-    prop[is].iatta = make_atom_type(aln, is, mlib, mlib->atclass[0], ifi, libs,
-                                    err);
+    prop[is].iatta = make_atom_type(aln, is, mlib, mlib->atclass[0], libs, err);
   }
   return prop[is].iatta;
 }
@@ -217,12 +215,11 @@ const int *property_iatta(const struct mod_alignment *aln, int is,
 /** Get/calculate the array of hydrogen bond atom type bin indices */
 const int *property_hb_iatta(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
-                             const struct mdt_library *mlib, int ifi,
+                             const struct mdt_library *mlib,
                              const struct mod_libraries *libs, GError **err)
 {
   if (!prop[is].hb_iatta) {
-    prop[is].hb_iatta = make_atom_type(aln, is, mlib, mlib->hbond, ifi, libs,
-                                       err);
+    prop[is].hb_iatta = make_atom_type(aln, is, mlib, mlib->hbond, libs, err);
   }
   return prop[is].hb_iatta;
 }
@@ -230,12 +227,12 @@ const int *property_hb_iatta(const struct mod_alignment *aln, int is,
 /** Get/calculate the hydrogen bond satisfaction index */
 gboolean property_hbpot(const struct mod_alignment *aln, int is,
                         struct mdt_properties *prop,
-                        const struct mdt_library *mlib, int ifi,
+                        const struct mdt_library *mlib,
                         const struct mod_libraries *libs, float *hbpot,
                         GError **err)
 {
   struct mod_structure *struc = mod_alignment_structure_get(aln, is);
-  const int *iatta = property_hb_iatta(aln, is, prop, mlib, ifi, libs, err);
+  const int *iatta = property_hb_iatta(aln, is, prop, mlib, libs, err);
   if (!iatta) {
     return FALSE;
   }

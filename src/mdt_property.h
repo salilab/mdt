@@ -66,21 +66,21 @@ const struct mdt_tuple *property_one_tuple(const struct mod_alignment *aln,
 MDTDLLLOCAL
 const int *property_iatta(const struct mod_alignment *aln, int is,
                           struct mdt_properties *prop,
-                          const struct mdt_library *mlib, int ifi,
+                          const struct mdt_library *mlib,
                           const struct mod_libraries *libs, GError **err);
 
 /** Get/calculate the array of hydrogen bond atom type bin indices */
 MDTDLLLOCAL
 const int *property_hb_iatta(const struct mod_alignment *aln, int is,
                              struct mdt_properties *prop,
-                             const struct mdt_library *mlib, int ifi,
+                             const struct mdt_library *mlib,
                              const struct mod_libraries *libs, GError **err);
 
 /** Get/calculate the hydrogen bond satisfaction index */
 MDTDLLLOCAL
 gboolean property_hbpot(const struct mod_alignment *aln, int is,
                         struct mdt_properties *prop,
-                        const struct mdt_library *mlib, int ifi,
+                        const struct mdt_library *mlib,
                         const struct mod_libraries *libs, float *hbpot,
                         GError **err);
 

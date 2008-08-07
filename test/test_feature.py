@@ -63,10 +63,12 @@ class FeatureTests(MDTTest):
         m = mdt.Table(mlib, features=84)
         m2 = mdt.Table(mlib, features=85)
         m3 = mdt.Table(mlib, features=86)
+        m4 = mdt.Table(mlib, features=87)
         aln = modeller.alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         m2.add_alignment(aln)
         m3.add_alignment(aln)
+        m4.add_alignment(aln)
         self.assertInTolerance(m[0], 295.0, 0.0005)
         self.assertInTolerance(m[1], 139.0, 0.0005)
         self.assertEqual(m[-1], 349.0)
@@ -76,6 +78,9 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m3[0], 1.0, 0.0005)
         self.assertInTolerance(m3[1], 0.0, 0.0005)
         self.assertEqual(m3[-1], 0.0)
+        self.assertInTolerance(m4[0], 78.0, 0.0005)
+        self.assertInTolerance(m4[1], 24.0, 0.0005)
+        self.assertEqual(m4[-1], 739.0)
 
     def test_feature_radius_gyration(self):
         """Check radius of gyration feature"""

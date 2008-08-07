@@ -1,6 +1,9 @@
 import os.path
 
-Import('env')
+Import('env', 'bin', 'pyext', 'pyso')
+
+epydoc_bin = "/usr/bin/epydoc"
+epydoc_opts = "--inheritance grouped --no-private --no-frames --html"
 
 # Build DocBook documentation:
 def action_docbook(target, source, env):
@@ -22,17 +25,36 @@ def emit_docbook(target, source, env):
         source.append(os.path.join('..', xml))
     return target, source
 
+# Build epydoc documentation:
+def action_epydoc(target, source, env):
+    outdir = os.path.split(target[0].path)[0]
+    bin = source[0].path
+    app = "%s %s %s -o %s %s" % (bin, epydoc_bin, epydoc_opts, outdir,
+                                 ' '.join([x.path for x in source[1:]]))
+    return env.Execute(app)
+
+def emit_epydoc(target, source, env):
+    return target, source
+
+builder_epydoc = Builder(action=action_epydoc, emitter=emit_epydoc)
 builder_docbook = Builder(action=action_docbook, emitter=emit_docbook)
 
-env.Append(BUILDERS = {'Docbook': builder_docbook})
+env.Append(BUILDERS = {'Docbook': builder_docbook, 'Epydoc': builder_epydoc})
 
 docbook = env.Docbook("index.html", "../manual.xml")
+epydoc = env.Epydoc('epydoc/index.html', (bin, pyext, pyso))
 
 docdir = env['docdir']
 env.Install(docdir, docbook)
 env.Install(docdir, 'mdt.css')
 env.Alias('docinstall', docdir)
 
+docdir = os.path.join(docdir, 'epydoc')
+# Install all files from 'epydoc' directory into the 'docdir' directory (cannot
+# use env.InstallAs() right now, due to scons bug #1751)
+env.Command(Dir(env.subst(docdir)), Dir('epydoc'),
+            "install -d $TARGET && install $SOURCE/* $TARGET",
+            source_scanner=DirScanner)
+
 # Subdirectories:
-SConscript('epydoc/SConscript')
 SConscript('pdf/SConscript')

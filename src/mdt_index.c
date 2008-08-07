@@ -403,15 +403,15 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     if (!binprop) {
       return 0;
     }
-    return index_inrange(numb_hda(ia1, binprop, &struc1->cd, mlib->hbond,
-                                  mlib->hbond_cutoff, 0), feat);
+    return iclsbin(numb_hda(ia1, binprop, &struc1->cd, mlib->hbond,
+                            mlib->hbond_cutoff, 0), feat);
   case 85:
     binprop = property_hb_iatta(aln, is1, prop, mlib, libs, err);
     if (!binprop) {
       return 0;
     }
-    return index_inrange(numb_hda(ia1, binprop, &struc1->cd, mlib->hbond,
-                                  mlib->hbond_cutoff, 1), feat);
+    return iclsbin(numb_hda(ia1, binprop, &struc1->cd, mlib->hbond,
+                            mlib->hbond_cutoff, 1), feat);
   case 86:
     if (!property_hbpot(aln, is1, prop, mlib, libs, &fprop, err)) {
       return 0;
@@ -422,8 +422,8 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     if (!binprop) {
       return 0;
     }
-    return index_inrange(numb_hda(ia1, binprop, &struc1->cd, mlib->hbond,
-                                  mlib->hbond_cutoff, 2), feat);
+    return iclsbin(numb_hda(ia1, binprop, &struc1->cd, mlib->hbond,
+                            mlib->hbond_cutoff, 2), feat);
   case 101:
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
     return index_inrange(tup->tupclass, feat);

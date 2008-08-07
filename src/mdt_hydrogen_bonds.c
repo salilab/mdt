@@ -28,7 +28,7 @@ static float get_hbprop(const struct mdt_atom_class_list *atclass, int iat,
 /** Return the number of H-bonds with a given atom, ia. */
 int numb_hda(int ia, const int hb_iattyp[], const struct mod_coordinates *cd,
              const struct mdt_atom_class_list *atclass, float hbond_cutoff,
-             int hbprop_type, int nbins)
+             int hbprop_type)
 {
   float *x, *y, *z;
   int i, num = 0;
@@ -47,7 +47,7 @@ int numb_hda(int ia, const int hb_iattyp[], const struct mod_coordinates *cd,
     }
   }
 
-  return MIN(num, nbins);
+  return num;
 }
 
 /** Calculate H-bond protein satisfaction for the whole protein. */
@@ -66,7 +66,7 @@ float hb_satisfaction(const struct mod_coordinates *cd, const int hb_iattyp[],
       float hbprop;
       int nhda;
       hbprop = atclass->classes[iat].hb_property[iprop];
-      nhda = numb_hda(ia, hb_iattyp, cd, atclass, hbond_cutoff, iprop, 9999);
+      nhda = numb_hda(ia, hb_iattyp, cd, atclass, hbond_cutoff, iprop);
       satis += MAX(0., hbprop - nhda);
     }
   }

@@ -13,12 +13,11 @@
 
 G_BEGIN_DECLS
 
-/** Return the indices of the "top-left" corner of the MDT. This must be freed
-    by the user after use. */
+/** Return the number of H-bonds with a given atom, ia. */
 MDTDLLLOCAL
 int numb_hda(int ia, const int hb_iattyp[], const struct mod_coordinates *cd,
              const struct mdt_atom_class_list *atclass, float hbond_cutoff,
-             int hbprop_type, int nbins);
+             int hbprop_type);
 
 /** Calculate H-bond protein satisfaction for the whole protein. */
 MDTDLLLOCAL

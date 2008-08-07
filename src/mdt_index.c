@@ -83,6 +83,18 @@ int iclsbin(float x, const struct mod_mdt_libfeature *feat)
   return feat->nbins;
 }
 
+/** Return the bin index for the raw feature ftab[ir], or the undefined bin
+    index if anything is out of range */
+static int ftable(const float *ftab, int nr, int ir,
+                  const struct mod_mdt_libfeature *feat)
+{
+  if (ir >= 0 && ir < nr) {
+    return iclsbin(ftab[ir], feat);
+  } else {
+    return feat->nbins;
+  }
+}
+
 /** Return the distance between two coordinates */
 static float dist1(float x1, float y1, float z1, float x2, float y2, float z2)
 {
@@ -337,7 +349,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   int ret, ierr = 0;
   const int *binprop;
   int ibin, ires, iseq, nres;
-  float fprop;
+  float fprop, *table;
   struct mod_structure *struc1, *struc2;
   struct mod_sequence *seq1, *seq2;
   const struct mdt_bond *bond;
@@ -401,11 +413,11 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     return itable(property_iatmacc(aln, is1, prop, feat), struc1->cd.natm,
                   ia1, feat);
   case 81:
-    binprop = property_ifatmacc(aln, is1, prop, feat, libs, err);
-    if (!binprop) {
+    if (property_fatmacc(aln, is1, prop, feat, libs, &table, err)) {
+      return ftable(table, struc1->cd.natm, ia1, feat);
+    } else {
       return 0;
     }
-    return itable(binprop, struc1->cd.natm, ia1, feat);
   case 82:
   case 103:
     return idist0(ia1, ia1p, struc1, feat);

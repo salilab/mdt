@@ -30,7 +30,7 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
     prop[i].radius_gyration = -1;
     prop[i].iatta = NULL;
     prop[i].iatmacc = NULL;
-    prop[i].ifatmacc = NULL;
+    prop[i].fatmacc = NULL;
   }
   return prop;
 }
@@ -58,7 +58,7 @@ void mdt_properties_free(struct mdt_properties *prop,
     g_free(prop[i].hbpot);
     g_free(prop[i].iatta);
     g_free(prop[i].iatmacc);
-    g_free(prop[i].ifatmacc);
+    g_free(prop[i].fatmacc);
   }
   g_free(prop);
 }
@@ -330,39 +330,41 @@ const int *property_iatmacc(const struct mod_alignment *aln, int is,
   return prop[is].iatmacc;
 }
 
-/** Get/calculate the array of fractional atom accessibility bin indices */
-const int *property_ifatmacc(const struct mod_alignment *aln, int is,
-                             struct mdt_properties *prop,
-                             const struct mod_mdt_libfeature *feat,
-                             const struct mod_libraries *libs, GError **err)
+/** Get/calculate the array of fractional atom accessibilities.
+    \return TRUE on success. */
+gboolean property_fatmacc(const struct mod_alignment *aln, int is,
+                          struct mdt_properties *prop,
+                          const struct mod_mdt_libfeature *feat,
+                          const struct mod_libraries *libs, float **table,
+                          GError **err)
 {
-  if (!prop[is].ifatmacc) {
-    int i, *ifatmacc;
+  struct mod_structure *struc = mod_alignment_structure_get(aln, is);
+  if (!prop[is].fatmacc) {
+    float *fatmacc;
+    int i;
     struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
-    struct mod_structure *struc = mod_alignment_structure_get(aln, is);
 
-    ifatmacc = g_malloc(sizeof(int) * struc->cd.natm);
+    fatmacc = g_malloc(sizeof(float) * struc->cd.natm);
     for (i = 0; i < struc->cd.natm; i++) {
       int iattyp, ierr;
-      float r, fatmacc;
+      float r;
 
       /* Get integer atom type */
       iattyp = mod_coordinates_atom_type_get(&struc->cd, seq, i, libs, &ierr);
       if (ierr) {
         handle_modeller_error(err);
-        g_free(ifatmacc);
-        return NULL;
+        g_free(fatmacc);
+        return FALSE;
       }
       /* Get VDW atom radius */
       r = mod_float2_get(&libs->vdwcnt, iattyp - 1, libs->tpl.submodel - 1);
       /* Calculate fractional atom accessibility from raw values */
-      fatmacc = mod_float1_get(&struc->cd.atmacc, i) / (4. * G_PI * r * r);
-      /* Get the corresponding bin index */
-      ifatmacc[i] = iclsbin(fatmacc, feat);
+      fatmacc[i] = mod_float1_get(&struc->cd.atmacc, i) / (4. * G_PI * r * r);
     }
-    prop[is].ifatmacc = ifatmacc;
+    prop[is].fatmacc = fatmacc;
   }
-  return prop[is].ifatmacc;
+  *table = prop[is].fatmacc;
+  return TRUE;
 }
 
 /** Get/calculate the list of all bonds for a structure. */

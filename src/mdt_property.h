@@ -90,12 +90,14 @@ const int *property_iatmacc(const struct mod_alignment *aln, int is,
                             struct mdt_properties *prop,
                             const struct mod_mdt_libfeature *feat);
 
-/** Get/calculate the array of fractional atom accessibility bin indices */
+/** Get/calculate the array of fractional atom accessibilities.
+    \return TRUE on success. */
 MDTDLLLOCAL
-const int *property_ifatmacc(const struct mod_alignment *aln, int is,
-                             struct mdt_properties *prop,
-                             const struct mod_mdt_libfeature *feat,
-                             const struct mod_libraries *libs, GError **err);
+gboolean property_fatmacc(const struct mod_alignment *aln, int is,
+                          struct mdt_properties *prop,
+                          const struct mod_mdt_libfeature *feat,
+                          const struct mod_libraries *libs, float **table,
+                          GError **err);
 
 /** Get/calculate the radius of gyration */
 MDTDLLLOCAL

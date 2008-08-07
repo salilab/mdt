@@ -67,8 +67,8 @@ struct mdt_properties {
   int *iatta;
   /** Bin indices for atom accessibility */
   int *iatmacc;
-  /** Bin indices for fractional atom accessibility */
-  int *ifatmacc;
+  /** Fractional atom accessibility */
+  float *fatmacc;
 };
 
 /** Register our MDT feature types */

@@ -385,13 +385,13 @@ const struct mdt_tuple_list *property_tuples(const struct mod_alignment *aln,
 
 /** Require that the tuples have at least min_natom atoms each */
 gboolean tuple_require_natom(const struct mdt_library *mlib, int min_natom,
-                             int ifeat, GError **err)
+                             GError **err)
 {
   int have_natom = mlib->tupclass->natom;
   if (have_natom < min_natom) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
-                "This feature (%d) works only for tuples of %d or more "
-                "atoms; you have only %d", ifeat, min_natom, have_natom);
+                "This feature works only for tuples of %d or more "
+                "atoms; you have only %d", min_natom, have_natom);
     return FALSE;
   } else {
     return TRUE;

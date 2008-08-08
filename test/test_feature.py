@@ -222,14 +222,19 @@ class FeatureTests(MDTTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.tuple_classes.read('data/dblcls.lib')
-        m1 = mdt.Table(mlib, features=105)
-        m2 = mdt.Table(mlib, features=106)
+        tuple_angle2 = mdt.features.TupleAngle2(mlib,
+                                            bins=mdt.uniform_bins(6, 0, 30.0))
+        tuple_dihed1 = mdt.features.TupleDihedral1(mlib,
+                                          bins=mdt.uniform_bins(6, -180, 60.0))
+        # These features only work on atom triplets:
+        for f in (mdt.features.TupleDihedral2, mdt.features.TupleDihedral3):
+            self.assertRaises(mdt.MDTError, f, mlib,
+                              bins=mdt.uniform_bins(6, -180, 60.0))
+        m1 = mdt.Table(mlib, features=tuple_angle2)
+        m2 = mdt.Table(mlib, features=tuple_dihed1)
         aln = modeller.alignment(env, file='test/data/tiny.ali')
         for m in (m1, m2):
             m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))
-        for f in (107, 108):
-            m = mdt.Table(mlib, features=f)
-            self.assertRaises(mdt.MDTError, m.add_alignment, aln)
         self.assertEqual(m1.shape, (7,))
         self.assertEqual(m2.shape, (7,))
         self.assertInTolerance(m1[0], 311.0, 0.0005)
@@ -244,11 +249,15 @@ class FeatureTests(MDTTest):
         tuple_type2 = mdt.features.TupleType(mlib, pos2=True)
         tuple_dist = mdt.features.TupleDistance(mlib,
                                             bins=mdt.uniform_bins(9, 2.0, 0.2))
+        tuple_angle1 = mdt.features.TupleAngle1(mlib,
+                                            bins=mdt.uniform_bins(6, 0, 30.0))
+        tuple_dihed1 = mdt.features.TupleDihedral1(mlib,
+                                          bins=mdt.uniform_bins(6, -180, 60.0))
         m1 = mdt.Table(mlib, features=tuple_type)
         m2 = mdt.Table(mlib, features=tuple_type2)
         m3 = mdt.Table(mlib, features=tuple_dist)
-        m4 = mdt.Table(mlib, features=104)
-        m5 = mdt.Table(mlib, features=106)
+        m4 = mdt.Table(mlib, features=tuple_angle1)
+        m5 = mdt.Table(mlib, features=tuple_dihed1)
         aln = modeller.alignment(env, file='test/data/tiny.ali')
         for m in (m1, m2, m3, m4, m5):
             m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))

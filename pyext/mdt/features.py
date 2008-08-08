@@ -96,3 +96,18 @@ class TupleType(TupleFixedBins):
 
 class TupleDistance(TuplePair):
     _setup = _mdt.mdt_feature_tuple_distance
+
+class TupleAngle1(TuplePair):
+    _setup = _mdt.mdt_feature_tuple_angle1
+
+class TupleAngle2(TuplePair):
+    _setup = _mdt.mdt_feature_tuple_angle2
+
+class TupleDihedral1(TuplePair):
+    _setup = _mdt.mdt_feature_tuple_dihedral1
+
+class TupleDihedral2(TuplePair):
+    _setup = _mdt.mdt_feature_tuple_dihedral2
+
+class TupleDihedral3(TuplePair):
+    _setup = _mdt.mdt_feature_tuple_dihedral3

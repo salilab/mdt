@@ -19,6 +19,19 @@ MDTDLLLOCAL
 int idist0(int ia1, int ia1p, const struct mod_structure *struc,
            const struct mod_mdt_libfeature *feat);
 
+/** Return the bin index for the angle between three specified atoms in the
+    same protein. */
+MDTDLLLOCAL
+int iangle0(int ia1, int ia2, int ia3, const struct mod_structure *struc,
+            const struct mod_mdt_libfeature *feat);
+
+/** Return the bin index for the dihedral angle between four specified atoms
+    in the same protein. */
+MDTDLLLOCAL
+int idihedral0(int ia1, int ia2, int ia3, int ia4,
+               const struct mod_structure *struc,
+               const struct mod_mdt_libfeature *feat);
+
 G_END_DECLS
 
 #endif  /* __MDT_GEOMETRY_H */

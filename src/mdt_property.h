@@ -51,7 +51,7 @@ const struct mdt_tuple_list *property_tuples(const struct mod_alignment *aln,
 /** Require that the tuples have at least min_natom atoms each */
 MDTDLLLOCAL
 gboolean tuple_require_natom(const struct mdt_library *mlib, int min_natom,
-                             int ifeat, GError **err);
+                             GError **err);
 
 /** Get a single atom tuple from a structure */
 MDTDLLLOCAL

@@ -130,6 +130,26 @@ int mdt_feature_tuple_type(struct mdt_library *mlib, gboolean pos2);
 MDTDLLEXPORT
 int mdt_feature_tuple_distance(struct mdt_library *mlib);
 
+/** Add a tuple-tuple non-bonded angle1 feature. */
+MDTDLLEXPORT
+int mdt_feature_tuple_angle1(struct mdt_library *mlib, GError **err);
+
+/** Add a tuple-tuple non-bonded angle2 feature. */
+MDTDLLEXPORT
+int mdt_feature_tuple_angle2(struct mdt_library *mlib, GError **err);
+
+/** Add a tuple-tuple non-bonded dihedral1 feature. */
+MDTDLLEXPORT
+int mdt_feature_tuple_dihedral1(struct mdt_library *mlib, GError **err);
+
+/** Add a tuple-tuple non-bonded dihedral2 feature. */
+MDTDLLEXPORT
+int mdt_feature_tuple_dihedral2(struct mdt_library *mlib, GError **err);
+
+/** Add a tuple-tuple non-bonded dihedral3 feature. */
+MDTDLLEXPORT
+int mdt_feature_tuple_dihedral3(struct mdt_library *mlib, GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

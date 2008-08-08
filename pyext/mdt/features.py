@@ -35,6 +35,12 @@ class AtomFixedBins(Atom):
         self._ifeat = self._setup(mlib._modpt, pos2)
 
 
+class AtomPair(_Base):
+    def __init__(self, mlib, bins):
+        self._ifeat = self._setup(mlib._modpt)
+        self._create_bins(mlib, bins)
+
+
 class Tuple(_Base):
     def __init__(self, mlib, bins, pos2=False):
         self._ifeat = self._setup(mlib._modpt, pos2)
@@ -78,6 +84,9 @@ class HydrogenBondAcceptor(Atom):
 
 class HydrogenBondCharge(Atom):
     _setup = _mdt.mdt_feature_hydrogen_bond_charge
+
+class AtomDistance(AtomPair):
+    _setup = _mdt.mdt_feature_atom_distance
 
 class HydrogenBondSatisfaction(Protein):
     _setup = _mdt.mdt_feature_hydrogen_bond_satisfaction

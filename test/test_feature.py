@@ -290,7 +290,9 @@ class FeatureTests(MDTTest):
     def test_feature_distance(self):
         """Check atom-atom distance feature"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=82)
+        dist = mdt.features.AtomDistance(mlib,
+                                         bins=mdt.uniform_bins(60, 0, 0.5))
+        m = self.get_test_mdt(mlib, features=dist)
         self.assertEqual(m.shape, (61,))
         self.assertInTolerance(m[30], 10057.0, 0.0005)
         self.assertInTolerance(m[31], 10214.0, 0.0005)

@@ -184,6 +184,22 @@ int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
   return nfeat;
 }
 
+int mdt_feature_atom_pair_add(struct mdt_library *mlib, const char *name,
+                              mod_mdt_calc precalc_type, gboolean asymmetric,
+                              mdt_cb_feature_atom_pair getbin, void *data)
+{
+  struct mdt_feature *feat;
+  int nfeat;
+
+  feat = add_feature(mlib, &nfeat);
+  feat->type = MDT_FEATURE_ATOM_PAIR;
+  feat->u.atom_pair.getbin = getbin;
+  feat->data = data;
+  mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
+                              MOD_MDTP_A, MOD_MDTS_ATOM_PAIR, asymmetric, 0);
+  return nfeat;
+}
+
 int mdt_feature_tuple_add(struct mdt_library *mlib, const char *name,
                           mod_mdt_calc precalc_type, gboolean pos2,
                           mdt_cb_feature_tuple getbin, void *data)

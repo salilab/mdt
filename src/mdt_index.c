@@ -222,9 +222,6 @@ void mdt_register_features(struct mod_mdt_library *mlib)
   mod_mdt_libfeature_register(mlib, 78, "RESIDUE TYPE AT DELTA J IN B (78)",
                               MOD_MDTC_NONE, MOD_MDTP_B, MOD_MDTS_RESIDUE,
                               FALSE, 0);
-  mod_mdt_libfeature_register(mlib, 82, "ANY ATOM DISTANCE IN A (82)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM_PAIR,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 104, "NON-BONDED TUPLE ANGLE1 IN A (104)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
                               TRUE, MOD_MDTF_STRUCTURE, 0);
@@ -326,6 +323,14 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     } else {
       return index_inrange(ibin, feat);
     }
+  case MDT_FEATURE_ATOM_PAIR:
+    ibin = mfeat->u.atom_pair.getbin(aln, is1, ia1, ia1p, prop, mfeat->data,
+                                     feat, mlib, libs, err);
+    if (ibin < 0) {
+      return -1;
+    } else {
+      return index_inrange(ibin, feat);
+    }
   case MDT_FEATURE_TUPLE:
     if (mfeat->u.tuple.pos2) {
       iatom = ia1p;
@@ -370,8 +375,6 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     return irestab(&aln->ialn, aln->naln, is2, mod_int1_pt(&seq2->irestyp),
                    seq2->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
                    feat->nbins, libs->igaptyp);
-  case 82:
-    return idist0(ia1, ia1p, struc1, feat);
   case 104:
     if (!tuple_require_natom(mlib, 2, ifi, err)) {
       return 0;

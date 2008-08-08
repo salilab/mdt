@@ -36,6 +36,13 @@ int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
                          mod_mdt_calc precalc_type, gboolean pos2,
                          mdt_cb_feature_atom getbin, void *data);
 
+/** Add an atom pair feature.
+    \return the index of the new feature */
+MDTDLLEXPORT
+int mdt_feature_atom_pair_add(struct mdt_library *mlib, const char *name,
+                              mod_mdt_calc precalc_type, gboolean asymmetric,
+                              mdt_cb_feature_atom_pair getbin, void *data);
+
 /** Add a tuple feature.
     \return the index of the new feature */
 MDTDLLEXPORT
@@ -93,6 +100,10 @@ int mdt_feature_fractional_atom_accessibility(struct mdt_library *mlib,
 /** Add a Modeller atom type feature. */
 MDTDLLEXPORT
 int mdt_feature_atom_type(struct mdt_library *mlib, gboolean pos2);
+
+/** Add an atom-atom distance feature. */
+MDTDLLEXPORT
+int mdt_feature_atom_distance(struct mdt_library *mlib);
 
 /** Add a hydrogen bond donor feature. */
 MDTDLLEXPORT

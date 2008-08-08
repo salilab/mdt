@@ -185,8 +185,10 @@ class TableTests(MDTTest):
         """Make sure that alignments and models both work as sources"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m1 = mdt.Table(mlib, features=82)
-        m2 = mdt.Table(mlib, features=82)
+        dist = mdt.features.AtomDistance(mlib,
+                                         bins=mdt.uniform_bins(60, 0, 0.5))
+        m1 = mdt.Table(mlib, features=dist)
+        m2 = mdt.Table(mlib, features=dist)
         a1 = alignment(env, file='test/data/tiny.ali', align_codes='5fd1')
         m1.add_alignment(a1)
         mdl = model(env, file='test/data/5fd1.atm', model_segment=('1:', '6:'))
@@ -199,7 +201,10 @@ class TableTests(MDTTest):
     def test_feature_combination(self):
         """Check that invalid feature combinations are rejected"""
         mlib = self.get_mdt_library()
-        self.assertRaises(ValueError, self.get_test_mdt, mlib, features=(17,82))
+        dist = mdt.features.AtomDistance(mlib,
+                                         bins=mdt.uniform_bins(60, 0, 0.5))
+        self.assertRaises(ValueError, self.get_test_mdt, mlib,
+                          features=(17,dist))
 
     def test_integrate(self):
         """Make sure MDT integration works"""

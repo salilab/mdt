@@ -160,15 +160,17 @@ class TableTests(MDTTest):
         """Test residue_span_range argument"""
         env = self.get_environ()
         aln = alignment(env, file='test/data/tiny.ali')
-        mlib = mdt.Library(env, 'test/data/dist.bin')
+        mlib = self.get_mdt_library()
         mlib.tuple_classes.read('data/dblcls.lib')
+        tuple_dist = mdt.features.TupleDistance(mlib,
+                                          bins=mdt.uniform_bins(49, 2.0, 0.2))
         # All residue-residue pairs should be out of range, so this MDT should
         # end up empty:
-        m = mdt.Table(mlib, features=103)
+        m = mdt.Table(mlib, features=tuple_dist)
         m.add_alignment(aln, residue_span_range=(-999, -999, 999, 999))
         self.assertEqual(m.sum(), 0.0)
-        m1 = mdt.Table(mlib, features=103)
-        m2 = mdt.Table(mlib, features=103)
+        m1 = mdt.Table(mlib, features=tuple_dist)
+        m2 = mdt.Table(mlib, features=tuple_dist)
         # When excluding only intra-residue interactions, the short-range
         # bins should differ but the long-range behavior should be the same:
         m1.add_alignment(aln, residue_span_range=(-999, 0, 0, 999))

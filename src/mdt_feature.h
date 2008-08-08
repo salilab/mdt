@@ -43,6 +43,13 @@ int mdt_feature_tuple_add(struct mdt_library *mlib, const char *name,
                           mod_mdt_calc precalc_type, gboolean pos2,
                           mdt_cb_feature_tuple getbin, void *data);
 
+/** Add a tuple pair feature.
+    \return the index of the new feature */
+MDTDLLEXPORT
+int mdt_feature_tuple_pair_add(struct mdt_library *mlib, const char *name,
+                               mod_mdt_calc precalc_type,
+                               mdt_cb_feature_tuple_pair getbin, void *data);
+
 /** Add a data file type needed for a given feature */
 MDTDLLEXPORT
 void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
@@ -107,6 +114,10 @@ int mdt_feature_hydrogen_bond_satisfaction(struct mdt_library *mlib,
 /** Add a tuple type feature. */
 MDTDLLEXPORT
 int mdt_feature_tuple_type(struct mdt_library *mlib, gboolean pos2);
+
+/** Add a tuple-tuple non-bonded distance feature. */
+MDTDLLEXPORT
+int mdt_feature_tuple_distance(struct mdt_library *mlib);
 
 G_END_DECLS
 

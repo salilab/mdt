@@ -7,6 +7,7 @@
 #include <math.h>
 #include "modeller.h"
 #include "util.h"
+#include "geometry.h"
 #include "mdt_index.h"
 #include "mdt_property.h"
 #include "mdt_hydrogen_bonds.h"
@@ -81,16 +82,6 @@ int ftable(const float *ftab, int nr, int ir,
   } else {
     return feat->nbins;
   }
-}
-
-/** Return the distance between two coordinates */
-static float dist1(float x1, float y1, float z1, float x2, float y2, float z2)
-{
-  float xd, yd, zd;
-  xd = x1 - x2;
-  yd = y1 - y2;
-  zd = z1 - z2;
-  return sqrt(xd * xd + yd * yd + zd * zd);
 }
 
 /** Return the angle between three coordinates */
@@ -173,23 +164,6 @@ static float dihedral1(float x1, float y1, float z1, float x2, float y2,
 }
 
 
-/** Return the bin index for the distance between two specified atoms in the
-    same protein. */
-static int idist0(int ia1, int ia1p, const struct mod_structure *struc,
-                  const struct mod_mdt_libfeature *feat)
-{
-  if (ia1 >= 0 && ia1p >= 0) {
-    float d, *x, *y, *z;
-    x = mod_float1_pt(&struc->cd.x);
-    y = mod_float1_pt(&struc->cd.y);
-    z = mod_float1_pt(&struc->cd.z);
-    d = dist1(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p]);
-    return iclsbin(d, feat);
-  } else {
-    return feat->nbins;
-  }
-}
-
 /** Return the bin index for the angle between three specified atoms in the
     same protein. */
 static int iangle0(int ia1, int ia2, int ia3,
@@ -251,10 +225,6 @@ void mdt_register_features(struct mod_mdt_library *mlib)
   mod_mdt_libfeature_register(mlib, 82, "ANY ATOM DISTANCE IN A (82)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ATOM_PAIR,
                               FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 103,
-                              "TUPLE NON-BONDED DISTANCE IN A (103)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
-                              TRUE, MOD_MDTF_STRUCTURE, 0);
   mod_mdt_libfeature_register(mlib, 104, "NON-BONDED TUPLE ANGLE1 IN A (104)",
                               MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR,
                               TRUE, MOD_MDTF_STRUCTURE, 0);
@@ -372,6 +342,16 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     } else {
       return index_inrange(ibin, feat);
     }
+  case MDT_FEATURE_TUPLE_PAIR:
+    tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
+    tup2 = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
+    ibin = mfeat->u.tuple_pair.getbin(aln, is1, ia1, tup, ia1p, tup2, prop,
+                                      mfeat->data, feat, mlib, libs, err);
+    if (ibin < 0) {
+      return -1;
+    } else {
+      return index_inrange(ibin, feat);
+    }
   }
   switch (ifi) {
   case 66:
@@ -391,7 +371,6 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                    seq2->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
                    feat->nbins, libs->igaptyp);
   case 82:
-  case 103:
     return idist0(ia1, ia1p, struc1, feat);
   case 104:
     if (!tuple_require_natom(mlib, 2, ifi, err)) {

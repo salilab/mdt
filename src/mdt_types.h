@@ -67,7 +67,8 @@ typedef enum {
   MDT_FEATURE_PROTEIN,
   MDT_FEATURE_RESIDUE,
   MDT_FEATURE_ATOM,
-  MDT_FEATURE_TUPLE
+  MDT_FEATURE_TUPLE,
+  MDT_FEATURE_TUPLE_PAIR
 } mdt_feature_type;
 
 struct mdt_properties;
@@ -108,6 +109,18 @@ typedef int (*mdt_cb_feature_tuple)(const struct mod_alignment *aln,
                                     const struct mod_libraries *libs,
                                     GError **err);
 
+typedef int (*mdt_cb_feature_tuple_pair)(const struct mod_alignment *aln,
+                                         int protein, int atom1,
+                                         const struct mdt_tuple *tuple1,
+                                         int atom2,
+                                         const struct mdt_tuple *tuple2,
+                                         struct mdt_properties *prop,
+                                         void *data,
+                                         const struct mod_mdt_libfeature *feat,
+                                         const struct mdt_library *mlib,
+                                         const struct mod_libraries *libs,
+                                         GError **err);
+
 /** User-defined protein feature */
 struct mdt_feature_protein {
   int protein;
@@ -134,6 +147,11 @@ struct mdt_feature_tuple {
   mdt_cb_feature_tuple getbin;
 };
 
+/** User-defined tuple pair feature */
+struct mdt_feature_tuple_pair {
+  mdt_cb_feature_tuple_pair getbin;
+};
+
 /** User-defined feature */
 struct mdt_feature {
   mdt_feature_type type;
@@ -142,6 +160,7 @@ struct mdt_feature {
     struct mdt_feature_residue residue;
     struct mdt_feature_atom atom;
     struct mdt_feature_tuple tuple;
+    struct mdt_feature_tuple_pair tuple_pair;
   } u;
   void *data;
 };

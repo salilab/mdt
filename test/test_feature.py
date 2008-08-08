@@ -242,9 +242,11 @@ class FeatureTests(MDTTest):
         mlib.tuple_classes.read('data/trpcls.lib')
         tuple_type = mdt.features.TupleType(mlib)
         tuple_type2 = mdt.features.TupleType(mlib, pos2=True)
+        tuple_dist = mdt.features.TupleDistance(mlib,
+                                            bins=mdt.uniform_bins(9, 2.0, 0.2))
         m1 = mdt.Table(mlib, features=tuple_type)
         m2 = mdt.Table(mlib, features=tuple_type2)
-        m3 = mdt.Table(mlib, features=103)
+        m3 = mdt.Table(mlib, features=tuple_dist)
         m4 = mdt.Table(mlib, features=104)
         m5 = mdt.Table(mlib, features=106)
         aln = modeller.alignment(env, file='test/data/tiny.ali')

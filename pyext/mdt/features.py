@@ -46,6 +46,12 @@ class TupleFixedBins(Tuple):
         self._ifeat = self._setup(mlib._modpt, pos2)
 
 
+class TuplePair(_Base):
+    def __init__(self, mlib, bins):
+        self._ifeat = self._setup(mlib._modpt)
+        self._create_bins(mlib, bins)
+
+
 class XRayResolution(Protein):
     _setup = _mdt.mdt_feature_xray_resolution
 
@@ -78,3 +84,6 @@ class HydrogenBondSatisfaction(Protein):
 
 class TupleType(TupleFixedBins):
     _setup = _mdt.mdt_feature_tuple_type
+
+class TupleDistance(TuplePair):
+    _setup = _mdt.mdt_feature_tuple_distance

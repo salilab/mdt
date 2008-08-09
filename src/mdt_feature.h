@@ -57,6 +57,27 @@ int mdt_feature_tuple_pair_add(struct mdt_library *mlib, const char *name,
                                mod_mdt_calc precalc_type,
                                mdt_cb_feature_tuple_pair getbin, void *data);
 
+/** Add a bond feature.
+    \return the index of the new feature */
+MDTDLLEXPORT
+int mdt_feature_bond_add(struct mdt_library *mlib, const char *name,
+                         mod_mdt_calc precalc_type,
+                         mdt_cb_feature_bond getbin, void *data);
+
+/** Add an angle feature.
+    \return the index of the new feature */
+MDTDLLEXPORT
+int mdt_feature_angle_add(struct mdt_library *mlib, const char *name,
+                          mod_mdt_calc precalc_type,
+                          mdt_cb_feature_bond getbin, void *data);
+
+/** Add a dihedral feature.
+    \return the index of the new feature */
+MDTDLLEXPORT
+int mdt_feature_dihedral_add(struct mdt_library *mlib, const char *name,
+                             mod_mdt_calc precalc_type,
+                             mdt_cb_feature_bond getbin, void *data);
+
 /** Add a data file type needed for a given feature */
 MDTDLLEXPORT
 void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
@@ -149,6 +170,30 @@ int mdt_feature_tuple_dihedral2(struct mdt_library *mlib, GError **err);
 /** Add a tuple-tuple non-bonded dihedral3 feature. */
 MDTDLLEXPORT
 int mdt_feature_tuple_dihedral3(struct mdt_library *mlib, GError **err);
+
+/** Add a bond type feature. */
+MDTDLLEXPORT
+int mdt_feature_bond_type(struct mdt_library *mlib);
+
+/** Add an angle type feature. */
+MDTDLLEXPORT
+int mdt_feature_angle_type(struct mdt_library *mlib);
+
+/** Add a dihedral type feature. */
+MDTDLLEXPORT
+int mdt_feature_dihedral_type(struct mdt_library *mlib);
+
+/** Add a bond length feature. */
+MDTDLLEXPORT
+int mdt_feature_bond_length(struct mdt_library *mlib);
+
+/** Add an angle feature. */
+MDTDLLEXPORT
+int mdt_feature_angle(struct mdt_library *mlib);
+
+/** Add a dihedral feature. */
+MDTDLLEXPORT
+int mdt_feature_dihedral(struct mdt_library *mlib);
 
 G_END_DECLS
 

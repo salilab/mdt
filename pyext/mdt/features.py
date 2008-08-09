@@ -58,6 +58,17 @@ class TuplePair(_Base):
         self._create_bins(mlib, bins)
 
 
+class ChemicalBond(_Base):
+    def __init__(self, mlib, bins):
+        self._ifeat = self._setup(mlib._modpt)
+        self._create_bins(mlib, bins)
+
+
+class ChemicalBondFixedBins(_Base):
+    def __init__(self, mlib):
+        self._ifeat = self._setup(mlib._modpt)
+
+
 class XRayResolution(Protein):
     _setup = _mdt.mdt_feature_xray_resolution
 
@@ -111,3 +122,21 @@ class TupleDihedral2(TuplePair):
 
 class TupleDihedral3(TuplePair):
     _setup = _mdt.mdt_feature_tuple_dihedral3
+
+class BondType(ChemicalBondFixedBins):
+    _setup = _mdt.mdt_feature_bond_type
+
+class AngleType(ChemicalBondFixedBins):
+    _setup = _mdt.mdt_feature_angle_type
+
+class DihedralType(ChemicalBondFixedBins):
+    _setup = _mdt.mdt_feature_dihedral_type
+
+class BondLength(ChemicalBond):
+    _setup = _mdt.mdt_feature_bond_length
+
+class Angle(ChemicalBond):
+    _setup = _mdt.mdt_feature_angle
+
+class Dihedral(ChemicalBond):
+    _setup = _mdt.mdt_feature_dihedral

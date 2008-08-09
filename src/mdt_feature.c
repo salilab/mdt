@@ -7,6 +7,7 @@
 #include "modeller.h"
 #include "mdt.h"
 #include "mdt_feature.h"
+#include "mdt_index.h"
 
 /** Is the given feature type periodic? */
 gboolean mdt_feature_is_periodic(int ifeat)
@@ -238,5 +239,56 @@ int mdt_feature_tuple_pair_add(struct mdt_library *mlib, const char *name,
   feat->data = data;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR, TRUE, 0);
+  return nfeat;
+}
+
+int mdt_feature_bond_add(struct mdt_library *mlib, const char *name,
+                         mod_mdt_calc precalc_type,
+                         mdt_cb_feature_bond getbin, void *data)
+{
+  struct mdt_feature *feat;
+  int nfeat;
+
+  feat = add_feature(mlib, &nfeat);
+  feat->type = MDT_FEATURE_BOND;
+  feat->u.bond.type = MDT_BOND_TYPE_BOND;
+  feat->u.bond.getbin = getbin;
+  feat->data = data;
+  mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
+                              MOD_MDTP_A, MOD_MDTS_BOND, FALSE, 0);
+  return nfeat;
+}
+
+int mdt_feature_angle_add(struct mdt_library *mlib, const char *name,
+                          mod_mdt_calc precalc_type,
+                          mdt_cb_feature_bond getbin, void *data)
+{
+  struct mdt_feature *feat;
+  int nfeat;
+
+  feat = add_feature(mlib, &nfeat);
+  feat->type = MDT_FEATURE_BOND;
+  feat->u.bond.type = MDT_BOND_TYPE_ANGLE;
+  feat->u.bond.getbin = getbin;
+  feat->data = data;
+  mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
+                              MOD_MDTP_A, MOD_MDTS_ANGLE, FALSE, 0);
+  return nfeat;
+}
+
+int mdt_feature_dihedral_add(struct mdt_library *mlib, const char *name,
+                             mod_mdt_calc precalc_type,
+                             mdt_cb_feature_bond getbin, void *data)
+{
+  struct mdt_feature *feat;
+  int nfeat;
+
+  feat = add_feature(mlib, &nfeat);
+  feat->type = MDT_FEATURE_BOND;
+  feat->u.bond.type = MDT_BOND_TYPE_DIHEDRAL;
+  feat->u.bond.getbin = getbin;
+  feat->data = data;
+  mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
+                              MOD_MDTP_A, MOD_MDTS_DIHEDRAL, FALSE, 0);
   return nfeat;
 }

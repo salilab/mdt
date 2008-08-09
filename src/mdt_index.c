@@ -99,24 +99,6 @@ void mdt_register_features(struct mod_mdt_library *mlib)
   mod_mdt_libfeature_register(mlib, 78, "RESIDUE TYPE AT DELTA J IN B (78)",
                               MOD_MDTC_NONE, MOD_MDTP_B, MOD_MDTS_RESIDUE,
                               FALSE, 0);
-  mod_mdt_libfeature_register(mlib, 109, "BOND TYPE IN A (109)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_BOND,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 110, "BOND LENGTH IN A (110)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_BOND,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 111, "BOND ANGLE TYPE IN A (111)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ANGLE,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 112, "BOND ANGLE IN A (112)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_ANGLE,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 113, "BOND DIHEDRAL ANGLE TYPE IN A (113)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_DIHEDRAL,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
-  mod_mdt_libfeature_register(mlib, 114, "BOND DIHEDRAL ANGLE IN A (114)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_DIHEDRAL,
-                              FALSE, MOD_MDTF_STRUCTURE, 0);
 }
 
 /** Get the index into the MDT for the given alignment feature */
@@ -216,6 +198,16 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     } else {
       return index_inrange(ibin, feat);
     }
+  case MDT_FEATURE_BOND:
+    bond = property_one_bond(aln, is1, prop, mlib, mfeat->u.bond.type,
+                             ibnd1, libs);
+    ibin = mfeat->u.bond.getbin(aln, is1, bond, prop, mfeat->data, feat, mlib,
+                                libs, err);
+    if (ibin < 0) {
+      return -1;
+    } else {
+      return index_inrange(ibin, feat);
+    }
   }
   switch (ifi) {
   case 66:
@@ -234,31 +226,6 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     return irestab(&aln->ialn, aln->naln, is2, mod_int1_pt(&seq2->irestyp),
                    seq2->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
                    feat->nbins, libs->igaptyp);
-  case 109:
-    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
-                             libs);
-    return index_inrange(bond->bndgrp, feat);
-  case 110:
-    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_BOND, ibnd1,
-                             libs);
-    return idist0(bond->iata[0], bond->iata[1], struc1, feat);
-  case 111:
-    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_ANGLE, ibnd1,
-                             libs);
-    return index_inrange(bond->bndgrp, feat);
-  case 112:
-    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_ANGLE, ibnd1,
-                             libs);
-    return iangle0(bond->iata[0], bond->iata[1], bond->iata[2], struc1, feat);
-  case 113:
-    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_DIHEDRAL,
-                             ibnd1, libs);
-    return index_inrange(bond->bndgrp, feat);
-  case 114:
-    bond = property_one_bond(aln, is1, prop, mlib, MDT_BOND_TYPE_DIHEDRAL,
-                             ibnd1, libs);
-    return idihedral0(bond->iata[0], bond->iata[1], bond->iata[2],
-                      bond->iata[3], struc1, feat);
   default:
     /* If we don't implement this feature, maybe Modeller does */
     ret = mod_mdt_index(ifi, aln, is1 + 1, ip1 + 1, is2 + 1, ir1 + 1, ir2 + 1,

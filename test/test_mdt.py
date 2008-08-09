@@ -109,7 +109,8 @@ class TableTests(MDTTest):
         """Make sure that adding an empty alignment works OK"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.Table(mlib, features=(1,109))
+        bondtype = mdt.features.BondType(mlib)
+        m = mdt.Table(mlib, features=(1,bondtype))
         aln = alignment(env)
         self.assertRaises(mdt.MDTError, m.add_alignment, aln)
 

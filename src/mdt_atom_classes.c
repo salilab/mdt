@@ -286,27 +286,8 @@ gboolean mdt_atom_classes_read(const gchar *filename,
                                struct mdt_library *mlib, int natom,
                                GError **err)
 {
-  gboolean retval;
-  retval = read_atom_class_file(filename, mlib, mlib->atclass[natom - 1],
-                                FALSE, FALSE, err);
-  if (retval) {
-    int ifeat;
-    struct mod_mdt_libfeature *feat;
-
-    /* MDT features; 109 = bond, 111 = angle, 113 = dihedral types */
-    if (natom == 1) {
-      ifeat = 0;
-    } else {
-      ifeat = 104 + natom * 2;
-    }
-
-    /* Set MDT symbols */
-    if (ifeat != 0) {
-      feat = &mlib->base.features[ifeat];
-      update_mdt_feat_atclass(feat, mlib->atclass[natom - 1]);
-    }
-  }
-  return retval;
+  return read_atom_class_file(filename, mlib, mlib->atclass[natom - 1],
+                              FALSE, FALSE, err);
 }
 
 /** Read hydrogen bond class information from a file; return TRUE on success. */

@@ -101,6 +101,16 @@ class FeatureTests(MDTTest):
             if n != 7:
                 self.assertEqual(bin, 0.0)
 
+    def test_feature_seqlen(self):
+        """Check sequence length feature"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=70)
+        self.assertEqual(m.shape, (50,))
+        self.assertEqual(m[10], 1.0)
+        self.assertEqual(m[21], 1.0)
+        self.assertEqual(sum([b for b in m]), 2.0)
+
     def test_feature_iresol(self):
         """Check resolution features"""
         env = self.get_environ()

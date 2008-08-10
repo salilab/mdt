@@ -75,6 +75,9 @@ class XRayResolution(Protein):
 class RadiusOfGyration(Protein):
     _setup = _mdt.mdt_feature_radius_of_gyration
 
+class SequenceLength(Protein):
+    _setup = _mdt.mdt_feature_sequence_length
+
 class ResidueAccessibility(Residue):
     _setup = _mdt.mdt_feature_residue_accessibility
 

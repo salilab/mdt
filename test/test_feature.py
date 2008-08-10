@@ -105,7 +105,9 @@ class FeatureTests(MDTTest):
         """Check sequence length feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=70)
+        seqlen = mdt.features.SequenceLength(mlib,
+                                             bins=mdt.uniform_bins(49, 0, 5))
+        m = self.get_test_mdt(mlib, features=seqlen)
         self.assertEqual(m.shape, (50,))
         self.assertEqual(m[10], 1.0)
         self.assertEqual(m[21], 1.0)

@@ -104,6 +104,11 @@ MDTDLLEXPORT
 int mdt_feature_radius_of_gyration(struct mdt_library *mlib, int protein,
                                    GError **err);
 
+/** Add a protein sequence length feature. */
+MDTDLLEXPORT
+int mdt_feature_sequence_length(struct mdt_library *mlib, int protein,
+                                GError **err);
+
 /** Add a residue accessibility feature. */
 MDTDLLEXPORT
 int mdt_feature_residue_accessibility(struct mdt_library *mlib, int protein,

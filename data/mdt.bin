@@ -8,18 +8,6 @@ RESIDUE TYPE OF B (2)
 22    0
 
 
-FEATURE 5
-CHI2 OF A (5)
-37    3
--180  10
-
-
-FEATURE 6
-CHI2 OF B (6)
-37    3
--180  10
-
-
 FEATURE 7
 PHI OF A (7)
 37    3

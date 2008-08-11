@@ -84,6 +84,9 @@ class ResidueAccessibility(Residue):
 class Chi1Dihedral(Residue):
     _setup = _mdt.mdt_feature_chi1_dihedral
 
+class Chi2Dihedral(Residue):
+    _setup = _mdt.mdt_feature_chi2_dihedral
+
 class AtomAccessibility(Atom):
     _setup = _mdt.mdt_feature_atom_accessibility
 

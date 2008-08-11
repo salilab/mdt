@@ -26,9 +26,9 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
 MDTDLLEXPORT
 int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
                             mod_mdt_calc precalc_type, int protein, int delta,
-                            gboolean pos2, int bin_seq_outrange,
-                            mdt_cb_feature_residue getbin, void *data,
-                            GError **err);
+                            int align_delta, gboolean pos2,
+                            int bin_seq_outrange, mdt_cb_feature_residue getbin,
+                            void *data, GError **err);
 
 /** Add an atom feature.
     \return the index of the new feature */
@@ -113,7 +113,8 @@ int mdt_feature_sequence_length(struct mdt_library *mlib, int protein,
 /** Add a residue accessibility feature. */
 MDTDLLEXPORT
 int mdt_feature_residue_accessibility(struct mdt_library *mlib, int protein,
-                                      int delta, gboolean pos2, GError **err);
+                                      int delta, int align_delta, gboolean pos2,
+                                      GError **err);
 
 /** Add an atom accessibility feature. */
 MDTDLLEXPORT
@@ -204,95 +205,103 @@ int mdt_feature_dihedral(struct mdt_library *mlib);
 /** Add a chi1 dihedral feature. */
 MDTDLLEXPORT
 int mdt_feature_chi1_dihedral(struct mdt_library *mlib, int protein,
-                              int delta, gboolean pos2, GError **err);
+                              int delta, int align_delta, gboolean pos2,
+                              GError **err);
 
 /** Add a chi2 dihedral feature. */
 MDTDLLEXPORT
 int mdt_feature_chi2_dihedral(struct mdt_library *mlib, int protein,
-                              int delta, gboolean pos2, GError **err);
+                              int delta, int align_delta, gboolean pos2,
+                              GError **err);
 
 /** Add a chi3 dihedral feature. */
 MDTDLLEXPORT
 int mdt_feature_chi3_dihedral(struct mdt_library *mlib, int protein,
-                              int delta, gboolean pos2, GError **err);
+                              int delta, int align_delta, gboolean pos2,
+                              GError **err);
 
 /** Add a chi4 dihedral feature. */
 MDTDLLEXPORT
 int mdt_feature_chi4_dihedral(struct mdt_library *mlib, int protein,
-                              int delta, gboolean pos2, GError **err);
+                              int delta, int align_delta, gboolean pos2,
+                              GError **err);
 
 /** Add a phi dihedral feature. */
 MDTDLLEXPORT
 int mdt_feature_phi_dihedral(struct mdt_library *mlib, int protein,
-                             int delta, gboolean pos2, GError **err);
+                             int delta, int align_delta, gboolean pos2,
+                             GError **err);
 
 /** Add a psi dihedral feature. */
 MDTDLLEXPORT
 int mdt_feature_psi_dihedral(struct mdt_library *mlib, int protein,
-                             int delta, gboolean pos2, GError **err);
+                             int delta, int align_delta, gboolean pos2,
+                             GError **err);
 
 /** Add a omega dihedral feature. */
 MDTDLLEXPORT
 int mdt_feature_omega_dihedral(struct mdt_library *mlib, int protein,
-                               int delta, gboolean pos2, GError **err);
+                               int delta, int align_delta, gboolean pos2,
+                               GError **err);
 
 /** Add an alpha dihedral feature. */
 MDTDLLEXPORT
 int mdt_feature_alpha_dihedral(struct mdt_library *mlib, int protein,
-                               int delta, gboolean pos2, GError **err);
+                               int delta, int align_delta, gboolean pos2,
+                               GError **err);
 
 /** Add a chi1 dihedral class feature. */
 MDTDLLEXPORT
 int mdt_feature_chi1_class(struct mdt_library *mlib, int protein,
-                           int delta, gboolean pos2,
+                           int delta, int align_delta, gboolean pos2,
                            const struct mod_libraries *libs, GError **err);
 
 /** Add a chi2 dihedral class feature. */
 MDTDLLEXPORT
 int mdt_feature_chi2_class(struct mdt_library *mlib, int protein,
-                           int delta, gboolean pos2,
+                           int delta, int align_delta, gboolean pos2,
                            const struct mod_libraries *libs, GError **err);
 
 /** Add a chi3 dihedral class feature. */
 MDTDLLEXPORT
 int mdt_feature_chi3_class(struct mdt_library *mlib, int protein,
-                           int delta, gboolean pos2,
+                           int delta, int align_delta, gboolean pos2,
                            const struct mod_libraries *libs, GError **err);
 
 /** Add a chi4 dihedral class feature. */
 MDTDLLEXPORT
 int mdt_feature_chi4_class(struct mdt_library *mlib, int protein,
-                           int delta, gboolean pos2,
+                           int delta, int align_delta, gboolean pos2,
                            const struct mod_libraries *libs, GError **err);
 
 /** Add a chi5 dihedral class feature. */
 MDTDLLEXPORT
 int mdt_feature_chi5_class(struct mdt_library *mlib, int protein,
-                           int delta, gboolean pos2,
+                           int delta, int align_delta, gboolean pos2,
                            const struct mod_libraries *libs, GError **err);
 
 /** Add a phi dihedral class feature. */
 MDTDLLEXPORT
 int mdt_feature_phi_class(struct mdt_library *mlib, int protein,
-                          int delta, gboolean pos2,
+                          int delta, int align_delta, gboolean pos2,
                           const struct mod_libraries *libs, GError **err);
 
 /** Add a psi dihedral class feature. */
 MDTDLLEXPORT
 int mdt_feature_psi_class(struct mdt_library *mlib, int protein,
-                          int delta, gboolean pos2,
+                          int delta, int align_delta, gboolean pos2,
                           const struct mod_libraries *libs, GError **err);
 
 /** Add an omega dihedral class feature. */
 MDTDLLEXPORT
 int mdt_feature_omega_class(struct mdt_library *mlib, int protein,
-                            int delta, gboolean pos2,
+                            int delta, int align_delta, gboolean pos2,
                             const struct mod_libraries *libs, GError **err);
 
 /** Add a residue type feature. */
 MDTDLLEXPORT
 int mdt_feature_residue_type(struct mdt_library *mlib, int protein,
-                             int delta, gboolean pos2, int align_delta,
+                             int delta, int align_delta, gboolean pos2,
                              const struct mod_libraries *libs, GError **err);
 
 G_END_DECLS

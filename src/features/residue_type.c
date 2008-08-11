@@ -13,39 +13,28 @@ static int getbin(const struct mod_alignment *aln, int protein, int residue,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {
-  int align_delta = GPOINTER_TO_INT(data);
-  alnpos += align_delta;
-  if (alnpos < 0 || alnpos >= aln->naln) {
-    return libs->igaptyp;
+  struct mod_sequence *seq = mod_alignment_sequence_get(aln, protein);
+  int restyp = mod_int1_get(&seq->irestyp, residue);
+  if (restyp >= 21 || restyp <= 0) {
+    mod_logwarning("residue_type", "Non-standard residue type (%d) at "
+                   "position %d in protein %d - binning as undefined",
+                   restyp, residue, protein);
+    return feat->nbins;
   } else {
-    struct mod_sequence *seq = mod_alignment_sequence_get(aln, protein);
-    int ires = mod_int2_get(&aln->ialn, alnpos, protein) - 1;
-    if (ires < 0 || ires >= seq->nres) {
-      return libs->igaptyp;
-    } else {
-      int restyp = mod_int1_get(&seq->irestyp, ires);
-      if (restyp >= 21 || restyp <= 0) {
-        mod_logwarning("residue_type", "Non-standard residue type (%d) at "
-                       "position %d in protein %d - binning as undefined",
-                       restyp, ires, protein);
-        return feat->nbins;
-      } else {
-        return restyp;
-      }
-    }
+    return restyp;
   }
 }
 
 int mdt_feature_residue_type(struct mdt_library *mlib, int protein,
-                             int delta, gboolean pos2, int align_delta,
+                             int delta, int align_delta, gboolean pos2,
                              const struct mod_libraries *libs, GError **err)
 {
   int ifeat, i;
   struct mod_mdt_libfeature *feat;
   const static int nrestyp = 21;
   ifeat = mdt_feature_residue_add(mlib, "Residue type", MOD_MDTC_NONE,
-                                  protein, delta, pos2, libs->igaptyp, getbin,
-                                  GINT_TO_POINTER(align_delta), err);
+                                  protein, delta, align_delta, pos2,
+                                  libs->igaptyp, getbin, NULL, err);
 
   /* Set bins */
   feat = &mlib->base.features[ifeat - 1];

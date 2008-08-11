@@ -126,8 +126,8 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
 
 int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
                             mod_mdt_calc precalc_type, int protein, int delta,
-                            gboolean pos2, int bin_seq_outrange,
-                            mdt_cb_feature_residue getbin,
+                            int align_delta, gboolean pos2,
+                            int bin_seq_outrange, mdt_cb_feature_residue getbin,
                             void *data, GError **err)
 {
   GString *fullname;
@@ -142,6 +142,7 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
   feat->type = MDT_FEATURE_RESIDUE;
   feat->u.residue.protein = protein;
   feat->u.residue.delta = delta;
+  feat->u.residue.align_delta = align_delta;
   feat->u.residue.pos2 = pos2;
   feat->u.residue.bin_seq_outrange = bin_seq_outrange;
   feat->u.residue.getbin = getbin;
@@ -153,6 +154,9 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
   }
   if (delta != 0) {
     g_string_append_printf(fullname, ", at delta %d", delta);
+  }
+  if (align_delta != 0) {
+    g_string_append_printf(fullname, ", at alignment delta %d", align_delta);
   }
   mod_mdt_libfeature_register(&mlib->base, nfeat, fullname->str, precalc_type,
                               protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,

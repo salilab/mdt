@@ -19,8 +19,10 @@ class Protein(_Base):
 
 
 class Residue(_Base):
-    def __init__(self, mlib, bins, protein=0, delta=0, pos2=False):
-        self._ifeat = self._setup(mlib._modpt, protein, delta, pos2)
+    def __init__(self, mlib, bins, protein=0, delta=0, align_delta=0,
+                 pos2=False):
+        self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
+                                  pos2)
         self._create_bins(mlib, bins)
 
 
@@ -80,9 +82,9 @@ class SequenceLength(Protein):
 
 class ResidueType(Residue):
     _setup = _mdt.mdt_feature_residue_type
-    def __init__(self, mlib, protein=0, delta=0, pos2=False, align_delta=0):
-        self._ifeat = self._setup(mlib._modpt, protein, delta, pos2,
-                                  align_delta, mlib._env.libs.modpt)
+    def __init__(self, mlib, protein=0, delta=0, align_delta=0, pos2=False):
+        self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
+                                  pos2, mlib._env.libs.modpt)
 
 class ResidueAccessibility(Residue):
     _setup = _mdt.mdt_feature_residue_accessibility
@@ -112,9 +114,9 @@ class AlphaDihedral(Residue):
     _setup = _mdt.mdt_feature_alpha_dihedral
 
 class DihedralClass(Residue):
-    def __init__(self, mlib, protein=0, delta=0, pos2=False):
-        self._ifeat = self._setup(mlib._modpt, protein, delta, pos2,
-                                  mlib._env.libs.modpt)
+    def __init__(self, mlib, protein=0, delta=0, align_delta=0, pos2=False):
+        self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
+                                  pos2, mlib._env.libs.modpt)
 
 class Chi1Class(DihedralClass):
     _setup = _mdt.mdt_feature_chi1_class

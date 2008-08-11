@@ -19,11 +19,13 @@ static int getbin(const struct mod_alignment *aln, int protein, int residue,
 }
 
 int mdt_feature_residue_accessibility(struct mdt_library *mlib, int protein,
-                                      int delta, gboolean pos2, GError **err)
+                                      int delta, int align_delta, gboolean pos2,
+                                      GError **err)
 {
   int ifeat;
   ifeat = mdt_feature_residue_add(mlib, "Residue accessibility", MOD_MDTC_NONE,
-                                  protein, delta, pos2, -1, getbin, NULL, err);
+                                  protein, delta, align_delta, pos2, -1, getbin,
+                                  NULL, err);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_PSA);
   return ifeat;

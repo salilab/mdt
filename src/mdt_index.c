@@ -83,19 +83,27 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
       return index_inrange(ibin, feat);
     }
   case MDT_FEATURE_RESIDUE:
-    ires = mfeat->u.residue.delta;
     if (feat->iknown == MOD_MDTP_A) {
       iseq = is1;
       nres = seq1->nres;
-      ires += mfeat->u.residue.pos2 ? ir1p : ir1;
+      ires = mfeat->u.residue.pos2 ? ir1p : ir1;
     } else {
       iseq = is2;
       nres = seq2->nres;
-      ires += mfeat->u.residue.pos2 ? ir2p : ir2;
+      ires = mfeat->u.residue.pos2 ? ir2p : ir2;
     }
-    /* Don't trust the original value of ip1/ip2, since if delta != 0, it
-       won't be accurate any more anyway. */
+    ires += mfeat->u.residue.delta;
+    if (ires < 0 || ires >= nres) {
+      return index_inrange(mfeat->u.residue.bin_seq_outrange, feat);
+    }
+    /* Convert to alignment position, and apply align_delta */
     ialnpos = mod_int2_get(&aln->invaln, ires, iseq) - 1;
+    ialnpos += mfeat->u.residue.align_delta;
+    if (ialnpos < 0 || ialnpos >= aln->naln) {
+      return index_inrange(mfeat->u.residue.bin_seq_outrange, feat);
+    }
+    /* Convert back to residue position */
+    ires = mod_int2_get(&aln->ialn, ialnpos, iseq) - 1;
     if (ires < 0 || ires >= nres) {
       return index_inrange(mfeat->u.residue.bin_seq_outrange, feat);
     } else {

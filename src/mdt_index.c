@@ -111,7 +111,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  struct mdt_properties *prop, GError **err)
 {
   int ret, ierr = 0;
-  int ibin, ires, iseq, nres, iatom, ibnd;
+  int ibin, ires, iseq, nres, iatom, ibnd, ialnpos;
   struct mod_structure *struc1, *struc2;
   struct mod_sequence *seq1, *seq2;
   const struct mdt_bond *bond;
@@ -145,11 +145,12 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
       nres = seq2->nres;
       ires += mfeat->u.residue.pos2 ? ir2p : ir2;
     }
+    ialnpos = mfeat->u.residue.pos2 ? ip2 : ip1;
     if (ires < 0 || ires >= nres) {
       return feat->nbins;
     } else {
-      ibin = mfeat->u.residue.getbin(aln, iseq, ires, prop, mfeat->data, feat,
-                                     mlib, libs, err);
+      ibin = mfeat->u.residue.getbin(aln, iseq, ires, ialnpos, prop,
+                                     mfeat->data, feat, mlib, libs, err);
       if (ibin < 0) {
         return -1;
       } else {

@@ -8,7 +8,7 @@
 #include "../mdt_feature.h"
 
 static int getbin(const struct mod_alignment *aln, int protein, int residue,
-                  struct mdt_properties *prop, void *data,
+                  int alnpos, struct mdt_properties *prop, void *data,
                   const struct mod_mdt_libfeature *feat,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)

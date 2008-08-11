@@ -751,7 +751,9 @@ class Table(TableSection):
         if not isinstance(features, (list, tuple)):
             features = (features,)
         for feat in features:
-            if isinstance(feat, int):
+            if feat in (1, 2, 66, 67, 68, 69):
+                raise TypeError("Cannot use old residue type features")
+            elif isinstance(feat, int):
                 ifeat.append(feat)
             elif hasattr(feat, '_ifeat') and feat._ifeat is not None:
                 ifeat.append(feat._ifeat)

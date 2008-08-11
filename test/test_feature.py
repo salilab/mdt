@@ -6,33 +6,26 @@ import modeller
 
 class FeatureTests(MDTTest):
 
-    def test_deltaij(self):
-        """Test residue type at deltai,j features"""
+    def test_delta(self):
+        """Test residue type at delta features"""
         env = self.get_environ()
         aln = modeller.alignment(env)
         aln.append_sequence("AFVVTDNCIKXCKYTDCVEVCPVDCFYEG")
         aln.append_sequence("DNCIKXCCYCDCVEPCPVDCFGEGAFVVT")
-        # When deltai=j=0, features 66,67 (residue type in A,B at deltai)
-        # and 77,78 (residue type in A,B at deltaj) should match 1,2:
-        mlib = self.get_mdt_library(deltai=0, deltaj=0)
-        m1 = mdt.Table(mlib, features=(1,2))
+        mlib = self.get_mdt_library()
+        restyp0 = mdt.features.ResidueType(mlib, protein=0)
+        restyp1 = mdt.features.ResidueType(mlib, protein=1)
+        restyp0_del3 = mdt.features.ResidueType(mlib, protein=0, delta=3)
+        restyp1_del3 = mdt.features.ResidueType(mlib, protein=1, delta=3)
+
+        m1 = mdt.Table(mlib, features=(restyp0,restyp1))
         m1.add_alignment(aln)
-        m2 = mdt.Table(mlib, features=(66,67))
+
+        # When deltai=j != 0, offset MDTs should not match the original:
+        m2 = mdt.Table(mlib, features=(restyp0_del3,restyp1_del3))
         m2.add_alignment(aln)
-        m3 = mdt.Table(mlib, features=(77,78))
-        m3.add_alignment(aln)
-        self.assertMDTDataEqual(m1, m2)
-        self.assertMDTDataEqual(m1, m3)
-        # When deltai=j != 0, 66,67 should still match 77,78, but not the
-        # original MDT (m3)
-        mlib = self.get_mdt_library(deltai=3, deltaj=3)
-        m1 = mdt.Table(mlib, features=(66,67))
-        m1.add_alignment(aln)
-        m2 = mdt.Table(mlib, features=(77,78))
-        m2.add_alignment(aln)
-        self.assertMDTDataEqual(m1, m2)
+
         self.assertInTolerance(m2[0,2], 0.0, 0.0005)
-        self.assertInTolerance(m3[0,2], 1.0, 0.0005)
 
     def test_feature_iatta(self):
         """Check for atom type features"""

@@ -126,7 +126,8 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
 
 int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
                             mod_mdt_calc precalc_type, int protein, int delta,
-                            gboolean pos2, mdt_cb_feature_residue getbin,
+                            gboolean pos2, int bin_seq_outrange,
+                            mdt_cb_feature_residue getbin,
                             void *data, GError **err)
 {
   GString *fullname;
@@ -142,6 +143,7 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
   feat->u.residue.protein = protein;
   feat->u.residue.delta = delta;
   feat->u.residue.pos2 = pos2;
+  feat->u.residue.bin_seq_outrange = bin_seq_outrange;
   feat->u.residue.getbin = getbin;
   feat->data = data;
   fullname = g_string_new(name);

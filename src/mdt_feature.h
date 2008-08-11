@@ -26,8 +26,9 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
 MDTDLLEXPORT
 int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
                             mod_mdt_calc precalc_type, int protein, int delta,
-                            gboolean pos2, mdt_cb_feature_residue getbin,
-                            void *data, GError **err);
+                            gboolean pos2, int bin_seq_outrange,
+                            mdt_cb_feature_residue getbin, void *data,
+                            GError **err);
 
 /** Add an atom feature.
     \return the index of the new feature */

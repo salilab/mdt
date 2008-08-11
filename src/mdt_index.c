@@ -149,7 +149,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
        won't be accurate any more anyway. */
     ialnpos = mod_int2_get(&aln->invaln, ires, iseq) - 1;
     if (ires < 0 || ires >= nres) {
-      return feat->nbins;
+      return index_inrange(mfeat->u.residue.bin_seq_outrange, feat);
     } else {
       ibin = mfeat->u.residue.getbin(aln, iseq, ires, ialnpos, prop,
                                      mfeat->data, feat, mlib, libs, err);

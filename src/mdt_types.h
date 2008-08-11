@@ -164,6 +164,7 @@ struct mdt_feature_residue {
   int protein;
   int delta;
   gboolean pos2;
+  int bin_seq_outrange;
   mdt_cb_feature_residue getbin;
 };
 

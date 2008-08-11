@@ -8,10 +8,11 @@ class SectionTests(MDTTest):
         """Test access to sections of MDTs"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        restyp = mdt.features.ResidueType(mlib)
         chi1 = mdt.features.Chi1Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
         chi1class = mdt.features.Chi1Class(mlib)
-        m = mdt.Table(mlib, features=(1,chi1,chi1class))
+        m = mdt.Table(mlib, features=(restyp,chi1,chi1class))
         m[0,1,2] = 1.0
         self.assertEqual(m[0][1][2], 1.0)
         m[1][-2][3] = 4.0

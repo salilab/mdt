@@ -14,7 +14,9 @@ class SuperSmoothTests(MDTTest):
         """Super-smoothed empty 2D MDT should be the even distribution"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.Table(mlib, features=(1,2))
+        restyp0 = mdt.features.ResidueType(mlib, protein=0)
+        restyp1 = mdt.features.ResidueType(mlib, protein=1)
+        m = mdt.Table(mlib, features=(restyp0,restyp1))
         # A super-smoothed empty MDT should be the even distribution,
         # i.e. weight/nbin, for any value of the prior weight:
         for weight in (1.0, 2.0, 0.0):
@@ -27,9 +29,11 @@ class SuperSmoothTests(MDTTest):
         """Check acceptable values for dimensions for super_smooth"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        restyp0 = mdt.features.ResidueType(mlib, protein=0)
+        restyp1 = mdt.features.ResidueType(mlib, protein=1)
         chi1 = mdt.features.Chi1Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
-        m = mdt.Table(mlib, features=(1,2,chi1))
+        m = mdt.Table(mlib, features=(restyp0,restyp1,chi1))
         for dimensions in (1, 2):
             m2 = m.super_smooth(dimensions, 1.0, True)
         for dimensions in (-1, 0, 3, 4):
@@ -38,10 +42,11 @@ class SuperSmoothTests(MDTTest):
     def test_3d(self):
         """Super-smoothed 3D MDT should not crash"""
         mlib = self.get_mdt_library()
+        restyp = mdt.features.ResidueType(mlib)
         chi1 = mdt.features.Chi1Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
         chi1class = mdt.features.Chi1Class(mlib)
-        m = self.get_test_mdt(mlib, features=(1,chi1,chi1class))
+        m = self.get_test_mdt(mlib, features=(restyp,chi1,chi1class))
         m1 = m.super_smooth(1, 0.5, False)
         # Every 1D section should be normalized:
         for sec in m1:
@@ -56,7 +61,9 @@ class SuperSmoothTests(MDTTest):
         """Only data should be used if prior_weight=0"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.Table(mlib, features=(1,2))
+        restyp0 = mdt.features.ResidueType(mlib, protein=0)
+        restyp1 = mdt.features.ResidueType(mlib, protein=1)
+        m = mdt.Table(mlib, features=(restyp0,restyp1))
         m[0,0] = m[1,1] = 1.0
         m2 = m.super_smooth(dimensions=1, prior_weight=0.0,
                             entropy_weighing=False)
@@ -76,7 +83,9 @@ class SuperSmoothTests(MDTTest):
         """Test smoothing of a simple input distribution"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.Table(mlib, features=(1,2))
+        restyp0 = mdt.features.ResidueType(mlib, protein=0)
+        restyp1 = mdt.features.ResidueType(mlib, protein=1)
+        m = mdt.Table(mlib, features=(restyp0,restyp1))
         m[0,0] = m[1,1] = m[1,2] = 1.0
         m2 = m.super_smooth(dimensions=1, prior_weight=1.0,
                             entropy_weighing=False)

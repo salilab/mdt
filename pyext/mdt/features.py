@@ -78,6 +78,12 @@ class RadiusOfGyration(Protein):
 class SequenceLength(Protein):
     _setup = _mdt.mdt_feature_sequence_length
 
+class ResidueType(Residue):
+    _setup = _mdt.mdt_feature_residue_type
+    def __init__(self, mlib, protein=0, delta=0, pos2=False, align_delta=0):
+        self._ifeat = self._setup(mlib._modpt, protein, delta, pos2,
+                                  align_delta, mlib._env.libs.modpt)
+
 class ResidueAccessibility(Residue):
     _setup = _mdt.mdt_feature_residue_accessibility
 

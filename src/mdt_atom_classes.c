@@ -241,6 +241,8 @@ void update_mdt_feat_atclass(struct mod_mdt_libfeature *feat,
   for (i = 0; i < atclass->nclass; i++) {
     g_free(feat->bins[i].symbol);
     feat->bins[i].symbol = g_strdup(atclass->classes[i].name);
+    feat->bins[i].rang1 = i;
+    feat->bins[i].rang2 = i + 1;
   }
   g_free(feat->bins[atclass->nclass].symbol);
   feat->bins[atclass->nclass].symbol = g_strdup("U");

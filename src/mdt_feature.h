@@ -288,6 +288,12 @@ int mdt_feature_omega_class(struct mdt_library *mlib, int protein,
                             int delta, gboolean pos2,
                             const struct mod_libraries *libs, GError **err);
 
+/** Add a residue type feature. */
+MDTDLLEXPORT
+int mdt_feature_residue_type(struct mdt_library *mlib, int protein,
+                             int delta, gboolean pos2, int align_delta,
+                             const struct mod_libraries *libs, GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

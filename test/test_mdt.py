@@ -2,6 +2,7 @@ import unittest
 from modeller import *
 from mdt_test import MDTTest
 import mdt
+import mdt.features
 import math
 import os
 import sys
@@ -51,7 +52,9 @@ class TableTests(MDTTest):
         """Make sure we can read and write MDT files"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.Table(mlib, features=(1,2))
+        restyp0 = mdt.features.ResidueType(mlib, protein=0)
+        restyp1 = mdt.features.ResidueType(mlib, protein=1)
+        m = mdt.Table(mlib, features=(restyp0,restyp1))
         aln = alignment(env)
         aln.append_sequence('AFVVTDNCIKCKYTDCVEVXPVDCFYEG')
         aln.append_sequence('CVEVCPVDCFYEGAFVVTDNCIKCKYTX')
@@ -70,14 +73,15 @@ class TableTests(MDTTest):
         # Trying to read an HDF5 file in text format should fail gracefully:
         self.assertRaises(mdt.MDTError, m2.read, 'test.hdf5')
         # Same problem should occur starting with a non-empty MDT:
-        m2 = mdt.Table(mlib, features=(1,2))
+        m2 = mdt.Table(mlib, features=(restyp0,restyp1))
         self.assertRaises(mdt.MDTError, m2.read, 'test.hdf5')
         os.unlink('test.hdf5')
 
     def test_bin_info(self):
         """Test query of bin symbol and range"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=66)
+        restyp = mdt.features.ResidueType(mlib)
+        m = self.get_test_mdt(mlib, features=restyp)
         for (n, bin) in enumerate(m.features[0].bins):
             self.assertEqual(bin.range, (n, n+1))
         symbols = [bin.symbol for bin in m.features[0].bins]
@@ -85,7 +89,7 @@ class TableTests(MDTTest):
                                    'HIS', 'ILE', 'LYS', 'LEU', 'MET', 'ASN',
                                    'PRO', 'GLN', 'ARG', 'SER', 'THR', 'VAL',
                                    'TRP', 'TYR', 'GAP', 'u'])
-        m2 = m.reshape(features=66, offset=1, shape=20)
+        m2 = m.reshape(features=restyp, offset=1, shape=20)
         for (n, bin) in enumerate(m2.features[0].bins):
             self.assertEqual(bin.symbol, m.features[0].bins[n+1].symbol)
 
@@ -93,7 +97,9 @@ class TableTests(MDTTest):
         """Test set of MDT data"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.Table(mlib, features=(1,2))
+        restyp0 = mdt.features.ResidueType(mlib, protein=0)
+        restyp1 = mdt.features.ResidueType(mlib, protein=1)
+        m = mdt.Table(mlib, features=(restyp0,restyp1))
         # Make sure that index checks work:
         self.assertRaises(ValueError, m.__setitem__, [0,22,10], 0.0)
         self.assertRaises(IndexError, m.__setitem__, [0,22], 0.0)
@@ -133,7 +139,8 @@ class TableTests(MDTTest):
         """Make sure a 1D MDT matches known residue data"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.Table(mlib, features=1)
+        restyp = mdt.features.ResidueType(mlib)
+        m = mdt.Table(mlib, features=restyp)
         aln = alignment(env)
         seq = "AFVVTDNCIKXCKYTDCVEVCPVDCFYEG"
         aln.append_sequence(seq)

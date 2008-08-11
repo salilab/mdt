@@ -23,7 +23,7 @@ static int add_feature(struct mdt_library *mlib, int protein, int delta,
                        mod_mdt_calc precalc, mdt_dihedral_type dihtype,
                        const struct mod_libraries *libs, GError **err)
 {
-  int ifeat;
+  int ifeat, i;
   struct mod_mdt_libfeature *feat;
   ifeat = mdt_feature_residue_add(mlib, name, precalc, protein, delta,
                                   pos2, getbin, GINT_TO_POINTER(dihtype), err);
@@ -33,6 +33,16 @@ static int add_feature(struct mdt_library *mlib, int protein, int delta,
   /* Set number of bins to match number of dihedral classes (plus undef) */
   feat = &mlib->base.features[ifeat - 1];
   mod_mdt_libfeature_nbins_set(feat, libs->resdih.ndihc + 1);
+  for (i = 0; i < libs->resdih.ndihc; ++i) {
+    g_free(feat->bins[i].symbol);
+    feat->bins[i].symbol = g_strdup_printf("%d", i + 1);
+    feat->bins[i].rang1 = i;
+    feat->bins[i].rang2 = i + 1;
+  }
+  g_free(feat->bins[libs->resdih.ndihc].symbol);
+  feat->bins[libs->resdih.ndihc].symbol = g_strdup("U");
+  feat->bins[libs->resdih.ndihc].rang1 = 0;
+  feat->bins[libs->resdih.ndihc].rang2 = 0;
   return ifeat;
 }
 

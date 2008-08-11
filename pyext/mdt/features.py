@@ -81,6 +81,9 @@ class SequenceLength(Protein):
 class ResidueAccessibility(Residue):
     _setup = _mdt.mdt_feature_residue_accessibility
 
+class Chi1Dihedral(Residue):
+    _setup = _mdt.mdt_feature_chi1_dihedral
+
 class AtomAccessibility(Atom):
     _setup = _mdt.mdt_feature_atom_accessibility
 

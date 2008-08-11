@@ -27,7 +27,9 @@ class SuperSmoothTests(MDTTest):
         """Check acceptable values for dimensions for super_smooth"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = mdt.Table(mlib, features=(1,2,3))
+        chi1 = mdt.features.Chi1Dihedral(mlib,
+                                         mdt.uniform_bins(36, -180, 10))
+        m = mdt.Table(mlib, features=(1,2,chi1))
         for dimensions in (1, 2):
             m2 = m.super_smooth(dimensions, 1.0, True)
         for dimensions in (-1, 0, 3, 4):
@@ -36,7 +38,9 @@ class SuperSmoothTests(MDTTest):
     def test_3d(self):
         """Super-smoothed 3D MDT should not crash"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=(1,3,18))
+        chi1 = mdt.features.Chi1Dihedral(mlib,
+                                         mdt.uniform_bins(36, -180, 10))
+        m = self.get_test_mdt(mlib, features=(1,chi1,18))
         m1 = m.super_smooth(1, 0.5, False)
         # Every 1D section should be normalized:
         for sec in m1:

@@ -311,7 +311,9 @@ class FeatureTests(MDTTest):
     def test_feature_chi1_dihedral(self):
         """Check chi1 dihedral and dihedral class features"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=3)
+        chi1 = mdt.features.Chi1Dihedral(mlib,
+                                         mdt.uniform_bins(36, -180, 10))
+        m = self.get_test_mdt(mlib, features=chi1)
         self.assertEqual(m.shape, (37,))
         self.assertInTolerance(m[0], 8.0, 0.0005)
         self.assertInTolerance(m[1], 7.0, 0.0005)

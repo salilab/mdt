@@ -13,6 +13,19 @@
 
 G_BEGIN_DECLS
 
+/** Modeller dihedral angle types */
+typedef enum {
+  MDT_DIHEDRAL_ALPHA = 0,
+  MDT_DIHEDRAL_PHI,
+  MDT_DIHEDRAL_PSI,
+  MDT_DIHEDRAL_OMEGA,
+  MDT_DIHEDRAL_CHI1,
+  MDT_DIHEDRAL_CHI2,
+  MDT_DIHEDRAL_CHI3,
+  MDT_DIHEDRAL_CHI4,
+  MDT_DIHEDRAL_CHI5
+} mdt_dihedral_type;
+
 /** Atom type */
 struct mdt_atom_type {
   /** Atom names */

@@ -235,7 +235,9 @@ class TableTests(MDTTest):
     def test_entropy_hx(self):
         """Check for expected dependent entropy value"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=(1,3))
+        chi1 = mdt.features.Chi1Dihedral(mlib,
+                                         mdt.uniform_bins(36, -180, 10))
+        m = self.get_test_mdt(mlib, features=(1,chi1))
         # Check against ENTROPY_MDT_HX value for this system in MDT:
         self.assertAlmostEqual(m.entropy_hx(), 2.7048, places=3)
 
@@ -273,7 +275,9 @@ class TableTests(MDTTest):
     def test_linear_transform(self):
         """Check for correctness of linear transform"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=(1,3))
+        chi1 = mdt.features.Chi1Dihedral(mlib,
+                                         mdt.uniform_bins(36, -180, 10))
+        m = self.get_test_mdt(mlib, features=(1,chi1))
         offset = -1.3
         multiplier = 0.8
         m2 = m.linear_transform(offset, multiplier)

@@ -200,6 +200,11 @@ int mdt_feature_angle(struct mdt_library *mlib);
 MDTDLLEXPORT
 int mdt_feature_dihedral(struct mdt_library *mlib);
 
+/** Add a chi1 dihedral feature. */
+MDTDLLEXPORT
+int mdt_feature_chi1_dihedral(struct mdt_library *mlib, int protein,
+                              int delta, gboolean pos2, GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

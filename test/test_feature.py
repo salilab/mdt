@@ -308,6 +308,17 @@ class FeatureTests(MDTTest):
         self.assertEqual(m5.shape, (7,))
         self.assertInTolerance(m5[-1], 180.0, 0.0005)
 
+    def test_feature_chi1_dihedral(self):
+        """Check chi1 dihedral and dihedral class features"""
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=3)
+        self.assertEqual(m.shape, (37,))
+        self.assertInTolerance(m[0], 8.0, 0.0005)
+        self.assertInTolerance(m[1], 7.0, 0.0005)
+        self.assertInTolerance(m[2], 2.0, 0.0005)
+        m = self.get_test_mdt(mlib, features=18)
+        self.assertEqual([b for b in m], [50, 31, 15, 10])
+
     def test_feature_alpha_dihedral(self):
         """Check alpha dihedral feature"""
         mlib = self.get_mdt_library()

@@ -166,6 +166,30 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
   return nfeat;
 }
 
+int mdt_feature_residue_pair_add(struct mdt_library *mlib, const char *name,
+                                 mod_mdt_calc precalc_type, int protein,
+                                 gboolean asymmetric,
+                                 mdt_cb_feature_residue_pair getbin, void *data,
+                                 GError **err)
+{
+  struct mdt_feature *feat;
+  int nfeat;
+
+  if (!check_protein(protein, "Residue pair", err)) {
+    return -1;
+  }
+
+  feat = add_feature(mlib, &nfeat);
+  feat->type = MDT_FEATURE_RESIDUE_PAIR;
+  feat->u.residue_pair.protein = protein;
+  feat->u.residue_pair.getbin = getbin;
+  feat->data = data;
+  mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
+                              protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,
+                              MOD_MDTS_RESIDUE_PAIR, asymmetric, 0);
+  return nfeat;
+}
+
 int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
                          mod_mdt_calc precalc_type, gboolean pos2,
                          mdt_cb_feature_atom getbin, void *data)

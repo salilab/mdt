@@ -4,7 +4,8 @@ files = ['xray.c', 'radius_gyration.c', 'residue_accessibility.c',
          'tuple_type.c', 'tuple_distance.c', 'atom_distance.c', 'tuple_angle.c',
          'tuple_dihedral.c', 'bond_type.c', 'bond_length.c', 'angle.c',
          'dihedral.c', 'sequence_length.c', 'residue_dihedral.c',
-         'dihedral_class.c', 'residue_type.c']
+         'dihedral_class.c', 'residue_type.c', 'residue_distance.c',
+         'average_residue_accessibility.c', 'residue_index_difference.c']
 
 files = [File(x) for x in files]
 Return('files')

@@ -31,8 +31,10 @@ class FeatureTests(MDTTest):
         """Check residue-residue distance feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        dist = mdt.features.ResidueDistance(mlib,
+                                            bins=mdt.uniform_bins(7, 0, 2.0))
         aln = modeller.alignment(env, file='test/data/tiny.ali')
-        m = mdt.Table(mlib, features=16)
+        m = mdt.Table(mlib, features=dist)
         m.add_alignment(aln)
         self.assertEqual([b for b in m], [0, 0, 0, 8, 2, 4, 4, 2])
 
@@ -161,26 +163,37 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         bins = mdt.uniform_bins(30, 0.0, 5.0)
         resacc = mdt.features.ResidueAccessibility(mlib, bins)
+        avresacc = mdt.features.AverageResidueAccessibility(mlib,
+                                             bins=mdt.uniform_bins(29, 0, 5))
         m = self.get_test_mdt(mlib, features=resacc)
         self.assertEqual(m.shape, (31,))
         self.assertInTolerance(m[0], 24.0, 1.0005)
         self.assertInTolerance(m[1], 10.0, 2.0005)
         self.assertInTolerance(m[2], 4.0, 1.0005)
         self.assertEqual(m[-1], 0.0)
-        m = self.get_test_mdt(mlib, features=39)
+        m = self.get_test_mdt(mlib, features=avresacc)
         self.assertEqual(m.shape, (30,))
         self.assertInTolerance(m[0], 435.0, 0.0005)
         self.assertInTolerance(m[1], 303.0, 0.0005)
         self.assertInTolerance(m[2], 257.0, 0.0005)
 
-    def test_residue_index_diff(self):
-        """Check residue index difference features"""
+    def test_feature_resind_diff(self):
+        """Test the residue index difference feature"""
+        env = self.get_environ()
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=51)
-        self.assertEqual(m.shape, (22,))
-        self.assertEqual(m[0], 140)
-        self.assertEqual(m[1], 142)
-        self.assertEqual(m[2], 144)
+        diff = mdt.features.ResidueIndexDifference(mlib,
+                                              bins=mdt.uniform_bins(21, -10, 1))
+        aln = modeller.alignment(env, file='test/data/alignment.ali',
+                                 align_codes='5fd1')
+        m = mdt.Table(mlib, features=diff)
+        m.add_alignment(aln, residue_span_range=(-999, -2, 2, 999))
+        # span range should result in 0, +/- 1 bins being zero:
+        self.assertEqual(m[9], 0.)
+        self.assertEqual(m[10], 0.)
+        self.assertEqual(m[11], 0.)
+        # other bins should be symmetrically distributed:
+        for i in range(9):
+            self.assertEqual(m[i], m[-2 - i])
 
     def test_feature_bond_type(self):
         """Check bond type features"""
@@ -454,10 +467,16 @@ class FeatureTests(MDTTest):
 
     def test_symmetric(self):
         """Test symmetric/asymmetric residue pair features"""
-        sym_features = (24, 25, 39, 48)
-        asym_features = (16, 17, 40, 49, 51, 52)
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        dist = mdt.features.ResidueDistance(mlib,
+                                            bins=mdt.uniform_bins(7, 0, 2.0))
+        avresacc = mdt.features.AverageResidueAccessibility(mlib,
+                                             bins=mdt.uniform_bins(29, 0, 5))
+        diff = mdt.features.ResidueIndexDifference(mlib,
+                                              bins=mdt.uniform_bins(20, -10, 1))
+        sym_features = (24, 25, avresacc, 48)
+        asym_features = (dist, 40, diff)
         for a in sym_features:
             m = mdt.Table(mlib, features=a)
             self.assertEqual(m.symmetric, True)

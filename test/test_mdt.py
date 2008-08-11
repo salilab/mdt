@@ -121,21 +121,6 @@ class TableTests(MDTTest):
         aln = alignment(env)
         self.assertRaises(mdt.MDTError, m.add_alignment, aln)
 
-    def test_feature_resind_diff(self):
-        """Test the residue index difference feature"""
-        env = self.get_environ()
-        mlib = self.get_mdt_library()
-        aln = alignment(env, file='test/data/alignment.ali', align_codes='5fd1')
-        m = mdt.Table(mlib, features=51)
-        m.add_alignment(aln, residue_span_range=(-999, -2, 2, 999))
-        # span range should result in 0, +/- 1 bins being zero:
-        self.assertEqual(m[9], 0.)
-        self.assertEqual(m[10], 0.)
-        self.assertEqual(m[11], 0.)
-        # other bins should be symmetrically distributed:
-        for i in range(9):
-            self.assertEqual(m[i], m[-2 - i])
-
     def test_1d_mdt(self):
         """Make sure a 1D MDT matches known residue data"""
         env = self.get_environ()
@@ -210,10 +195,12 @@ class TableTests(MDTTest):
     def test_feature_combination(self):
         """Check that invalid feature combinations are rejected"""
         mlib = self.get_mdt_library()
-        dist = mdt.features.AtomDistance(mlib,
-                                         bins=mdt.uniform_bins(60, 0, 0.5))
+        atmdist = mdt.features.AtomDistance(mlib,
+                                            bins=mdt.uniform_bins(60, 0, 0.5))
+        resdist = mdt.features.ResidueDistance(mlib, protein=1,
+                                               bins=mdt.uniform_bins(7, 0, 2.0))
         self.assertRaises(ValueError, self.get_test_mdt, mlib,
-                          features=(17,dist))
+                          features=(resdist,atmdist))
 
     def test_integrate(self):
         """Make sure MDT integration works"""

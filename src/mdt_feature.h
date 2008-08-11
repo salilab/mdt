@@ -30,6 +30,15 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
                             int bin_seq_outrange, mdt_cb_feature_residue getbin,
                             void *data, GError **err);
 
+/** Add a residue pair feature.
+    \return the index of the new feature, or -1 on error. */
+MDTDLLEXPORT
+int mdt_feature_residue_pair_add(struct mdt_library *mlib, const char *name,
+                                 mod_mdt_calc precalc_type, int protein,
+                                 gboolean asymmetric,
+                                 mdt_cb_feature_residue_pair getbin, void *data,
+                                 GError **err);
+
 /** Add an atom feature.
     \return the index of the new feature */
 MDTDLLEXPORT
@@ -303,6 +312,21 @@ MDTDLLEXPORT
 int mdt_feature_residue_type(struct mdt_library *mlib, int protein,
                              int delta, int align_delta, gboolean pos2,
                              const struct mod_libraries *libs, GError **err);
+
+/** Add a residue-residue distance feature. */
+MDTDLLEXPORT
+int mdt_feature_residue_distance(struct mdt_library *mlib, int protein,
+                                 GError **err);
+
+/** Add an average accessibility of a residue pair feature. */
+MDTDLLEXPORT
+int mdt_feature_average_residue_accessibility(struct mdt_library *mlib,
+                                              int protein, GError **err);
+
+/** Add a residue index difference feature. */
+MDTDLLEXPORT
+int mdt_feature_residue_index_difference(struct mdt_library *mlib,
+                                         int protein, GError **err);
 
 G_END_DECLS
 

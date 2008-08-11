@@ -321,6 +321,17 @@ class FeatureTests(MDTTest):
         m = self.get_test_mdt(mlib, features=18)
         self.assertEqual([b for b in m], [50, 31, 15, 10])
 
+    def test_feature_chi2_dihedral(self):
+        """Check chi2 dihedral and dihedral class features"""
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=5)
+        self.assertEqual(m.shape, (37,))
+        self.assertInTolerance(m[0], 6.0, 0.0005)
+        self.assertInTolerance(m[1], 4.0, 0.0005)
+        self.assertInTolerance(m[2], 3.0, 0.0005)
+        m = self.get_test_mdt(mlib, features=20)
+        self.assertEqual([b for b in m], [47, 23, 4, 32])
+
     def test_feature_alpha_dihedral(self):
         """Check alpha dihedral feature"""
         mlib = self.get_mdt_library()

@@ -101,7 +101,7 @@ typedef int (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
 
 
 typedef int (*mdt_cb_feature_residue)(const struct mod_alignment *aln,
-                                      int protein, int residue, int alnpos,
+                                      int protein, int residue,
                                       struct mdt_properties *prop, void *data,
                                       const struct mod_mdt_libfeature *feat,
                                       const struct mdt_library *mlib,

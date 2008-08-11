@@ -96,24 +96,25 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     if (ires < 0 || ires >= nres) {
       return index_inrange(mfeat->u.residue.bin_seq_outrange, feat);
     }
-    /* Convert to alignment position, and apply align_delta */
-    ialnpos = mod_int2_get(&aln->invaln, ires, iseq) - 1;
-    ialnpos += mfeat->u.residue.align_delta;
-    if (ialnpos < 0 || ialnpos >= aln->naln) {
-      return index_inrange(mfeat->u.residue.bin_seq_outrange, feat);
-    }
-    /* Convert back to residue position */
-    ires = mod_int2_get(&aln->ialn, ialnpos, iseq) - 1;
-    if (ires < 0 || ires >= nres) {
-      return index_inrange(mfeat->u.residue.bin_seq_outrange, feat);
-    } else {
-      ibin = mfeat->u.residue.getbin(aln, iseq, ires, ialnpos, prop,
-                                     mfeat->data, feat, mlib, libs, err);
-      if (ibin < 0) {
-        return -1;
-      } else {
-        return index_inrange(ibin, feat);
+    if (mfeat->u.residue.align_delta != 0) {
+      /* Convert to alignment position, and apply align_delta */
+      ialnpos = mod_int2_get(&aln->invaln, ires, iseq) - 1;
+      ialnpos += mfeat->u.residue.align_delta;
+      if (ialnpos < 0 || ialnpos >= aln->naln) {
+        return index_inrange(mfeat->u.residue.bin_seq_outrange, feat);
       }
+      /* Convert back to residue position */
+      ires = mod_int2_get(&aln->ialn, ialnpos, iseq) - 1;
+      if (ires < 0 || ires >= nres) {
+        return index_inrange(mfeat->u.residue.bin_seq_outrange, feat);
+      }
+    }
+    ibin = mfeat->u.residue.getbin(aln, iseq, ires, prop,
+                                   mfeat->data, feat, mlib, libs, err);
+    if (ibin < 0) {
+      return -1;
+    } else {
+      return index_inrange(ibin, feat);
     }
   case MDT_FEATURE_ATOM:
     ibin = mfeat->u.atom.getbin(aln, is1, mfeat->u.atom.pos2 ? ia1p : ia1,

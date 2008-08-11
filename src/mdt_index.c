@@ -14,41 +14,6 @@
 #include "mdt_stereo.h"
 #include "mdt_tuples.h"
 
-static int ires_get(int ires, int nres, int igaptyp, const int *irestyp,
-                    int ndimen)
-{
-  if (ires < 1 || ires > nres) {
-    return igaptyp;
-  } else if (irestyp[ires - 1] >= 21 || irestyp[ires - 1] <= 0) {
-    mod_logwarning("irestab", "ires, irestp: %d %d", ires, irestyp[ires - 1]);
-    return ndimen;
-  } else {
-    return irestyp[ires - 1];
-  }
-}
-
-static int irestab(const struct mod_int2_array *ialn, int naln, int iseq,
-                   const int *irestyp, int nres, int ip, int delta,
-                   gboolean delta_ali, int ndimen, int igaptyp)
-{
-  if (delta_ali) {
-    int ipos = ip + delta;
-    if (ipos < 0 || ipos >= naln) {
-      return igaptyp;
-    } else {
-      int ires = mod_int2_get(ialn, ipos, iseq);
-      return ires_get(ires, nres, igaptyp, irestyp, ndimen);
-    }
-  } else {
-    int ires = mod_int2_get(ialn, ip, iseq);
-    if (ires < 1 || ires > nres) {
-      return igaptyp;
-    } else {
-      return ires_get(ires + delta, nres, igaptyp, irestyp, ndimen);
-    }
-  }
-}
-
 /** Ensure that a given bin index is in range for the feature; return in
     the undefined bin if not. */
 static int index_inrange(int index, const struct mod_mdt_libfeature *feat)
@@ -82,23 +47,6 @@ int ftable(const float *ftab, int nr, int ir,
   } else {
     return feat->nbins;
   }
-}
-
-/** Register our MDT feature types */
-void mdt_register_features(struct mod_mdt_library *mlib)
-{
-  mod_mdt_libfeature_register(mlib, 66, "RESIDUE TYPE AT DELTA I IN A (66)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_RESIDUE,
-                              FALSE, 0);
-  mod_mdt_libfeature_register(mlib, 67, "RESIDUE TYPE AT DELTA I IN B (67)",
-                              MOD_MDTC_NONE, MOD_MDTP_B, MOD_MDTS_RESIDUE,
-                              FALSE, 0);
-  mod_mdt_libfeature_register(mlib, 77, "RESIDUE TYPE AT DELTA J IN A (77)",
-                              MOD_MDTC_NONE, MOD_MDTP_A, MOD_MDTS_RESIDUE,
-                              FALSE, 0);
-  mod_mdt_libfeature_register(mlib, 78, "RESIDUE TYPE AT DELTA J IN B (78)",
-                              MOD_MDTC_NONE, MOD_MDTP_B, MOD_MDTS_RESIDUE,
-                              FALSE, 0);
 }
 
 /** Get the index into the MDT for the given alignment feature */
@@ -212,31 +160,12 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
       return index_inrange(ibin, feat);
     }
   }
-  switch (ifi) {
-  case 66:
-    return irestab(&aln->ialn, aln->naln, is1, mod_int1_pt(&seq1->irestyp),
-                   seq1->nres, ip1, mlib->deltai, mlib->deltai_ali,
-                   feat->nbins, libs->igaptyp);
-  case 67:
-    return irestab(&aln->ialn, aln->naln, is2, mod_int1_pt(&seq2->irestyp),
-                   seq2->nres, ip1, mlib->deltai, mlib->deltai_ali,
-                   feat->nbins, libs->igaptyp);
-  case 77:
-    return irestab(&aln->ialn, aln->naln, is1, mod_int1_pt(&seq1->irestyp),
-                   seq1->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
-                   feat->nbins, libs->igaptyp);
-  case 78:
-    return irestab(&aln->ialn, aln->naln, is2, mod_int1_pt(&seq2->irestyp),
-                   seq2->nres, ip1, mlib->deltaj, mlib->deltaj_ali,
-                   feat->nbins, libs->igaptyp);
-  default:
-    /* If we don't implement this feature, maybe Modeller does */
-    ret = mod_mdt_index(ifi, aln, is1 + 1, ip1 + 1, is2 + 1, ir1 + 1, ir2 + 1,
-                        ir1p + 1, ir2p + 1, &mlib->base, ip2 + 1, is3 + 1,
-                        ir3 + 1, ir3p + 1, libs, edat, &ierr);
-    if (ierr) {
-      handle_modeller_error(err);
-    }
-    return ret;
+  /* If we don't implement this feature, maybe Modeller does */
+  ret = mod_mdt_index(ifi, aln, is1 + 1, ip1 + 1, is2 + 1, ir1 + 1, ir2 + 1,
+                      ir1p + 1, ir2p + 1, &mlib->base, ip2 + 1, is3 + 1,
+                      ir3 + 1, ir3p + 1, libs, edat, &ierr);
+  if (ierr) {
+    handle_modeller_error(err);
   }
+  return ret;
 }

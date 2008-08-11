@@ -69,10 +69,6 @@ struct mdt_properties {
   float *fatmacc;
 };
 
-/** Register our MDT feature types */
-MDTDLLLOCAL
-void mdt_register_features(struct mod_mdt_library *mlib);
-
 /** Calculate a single MDT feature index */
 MDTDLLLOCAL
 int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,

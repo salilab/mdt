@@ -40,7 +40,8 @@ class SuperSmoothTests(MDTTest):
         mlib = self.get_mdt_library()
         chi1 = mdt.features.Chi1Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
-        m = self.get_test_mdt(mlib, features=(1,chi1,18))
+        chi1class = mdt.features.Chi1Class(mlib)
+        m = self.get_test_mdt(mlib, features=(1,chi1,chi1class))
         m1 = m.super_smooth(1, 0.5, False)
         # Every 1D section should be normalized:
         for sec in m1:

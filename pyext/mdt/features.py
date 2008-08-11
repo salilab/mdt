@@ -105,6 +105,35 @@ class OmegaDihedral(Residue):
 class AlphaDihedral(Residue):
     _setup = _mdt.mdt_feature_alpha_dihedral
 
+class DihedralClass(Residue):
+    def __init__(self, mlib, protein=0, delta=0, pos2=False):
+        self._ifeat = self._setup(mlib._modpt, protein, delta, pos2,
+                                  mlib._env.libs.modpt)
+
+class Chi1Class(DihedralClass):
+    _setup = _mdt.mdt_feature_chi1_class
+
+class Chi2Class(DihedralClass):
+    _setup = _mdt.mdt_feature_chi2_class
+
+class Chi3Class(DihedralClass):
+    _setup = _mdt.mdt_feature_chi3_class
+
+class Chi4Class(DihedralClass):
+    _setup = _mdt.mdt_feature_chi4_class
+
+class Chi5Class(DihedralClass):
+    _setup = _mdt.mdt_feature_chi5_class
+
+class PhiClass(DihedralClass):
+    _setup = _mdt.mdt_feature_phi_class
+
+class PsiClass(DihedralClass):
+    _setup = _mdt.mdt_feature_psi_class
+
+class OmegaClass(DihedralClass):
+    _setup = _mdt.mdt_feature_omega_class
+
 class AtomAccessibility(Atom):
     _setup = _mdt.mdt_feature_atom_accessibility
 

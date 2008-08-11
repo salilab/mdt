@@ -313,12 +313,13 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         chi1 = mdt.features.Chi1Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
+        chi1class = mdt.features.Chi1Class(mlib)
         m = self.get_test_mdt(mlib, features=chi1)
         self.assertEqual(m.shape, (37,))
         self.assertInTolerance(m[0], 8.0, 0.0005)
         self.assertInTolerance(m[1], 7.0, 0.0005)
         self.assertInTolerance(m[2], 2.0, 0.0005)
-        m = self.get_test_mdt(mlib, features=18)
+        m = self.get_test_mdt(mlib, features=chi1class)
         self.assertEqual([b for b in m], [50, 31, 15, 10])
 
     def test_feature_chi2_dihedral(self):
@@ -326,12 +327,13 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         chi2 = mdt.features.Chi2Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
+        chi2class = mdt.features.Chi2Class(mlib)
         m = self.get_test_mdt(mlib, features=chi2)
         self.assertEqual(m.shape, (37,))
         self.assertInTolerance(m[0], 6.0, 0.0005)
         self.assertInTolerance(m[1], 4.0, 0.0005)
         self.assertInTolerance(m[2], 3.0, 0.0005)
-        m = self.get_test_mdt(mlib, features=20)
+        m = self.get_test_mdt(mlib, features=chi2class)
         self.assertEqual([b for b in m], [47, 23, 4, 32])
 
     def test_feature_chi3_dihedral(self):
@@ -339,12 +341,13 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         chi3 = mdt.features.Chi3Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
+        chi3class = mdt.features.Chi3Class(mlib)
         m = self.get_test_mdt(mlib, features=chi3)
         self.assertEqual(m.shape, (37,))
         self.assertInTolerance(m[11], 6.0, 0.0005)
         self.assertInTolerance(m[12], 4.0, 0.0005)
         self.assertInTolerance(m[13], 4.0, 0.0005)
-        m = self.get_test_mdt(mlib, features=22)
+        m = self.get_test_mdt(mlib, features=chi3class)
         self.assertEqual([b for b in m], [30, 5, 0, 71])
 
     def test_feature_chi4_dihedral(self):
@@ -352,18 +355,20 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         chi4 = mdt.features.Chi4Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
+        chi4class = mdt.features.Chi4Class(mlib)
         m = self.get_test_mdt(mlib, features=chi4)
         self.assertEqual(m.shape, (37,))
         self.assertInTolerance(m[0], 1.0, 0.0005)
         self.assertInTolerance(m[1], 1.0, 0.0005)
         self.assertInTolerance(m[2], 0.0, 0.0005)
-        m = self.get_test_mdt(mlib, features=26)
+        m = self.get_test_mdt(mlib, features=chi4class)
         self.assertEqual([b for b in m], [5, 1, 1, 99])
 
     def test_feature_chi5_dihedral(self):
         """Check chi5 dihedral class feature"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=64)
+        chi5class = mdt.features.Chi5Class(mlib)
+        m = self.get_test_mdt(mlib, features=chi5class)
         self.assertEqual([b for b in m], [0, 0, 0, 106])
 
     def test_feature_phi_dihedral(self):
@@ -371,12 +376,13 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         phi = mdt.features.PhiDihedral(mlib,
                                         mdt.uniform_bins(36, -180, 10))
+        phiclass = mdt.features.PhiClass(mlib)
         m = self.get_test_mdt(mlib, features=phi)
         self.assertEqual(m.shape, (37,))
         self.assertInTolerance(m[5], 4.0, 0.0005)
         self.assertInTolerance(m[6], 10.0, 0.0005)
         self.assertInTolerance(m[7], 6.0, 0.0005)
-        m = self.get_test_mdt(mlib, features=58)
+        m = self.get_test_mdt(mlib, features=phiclass)
         self.assertEqual([b for b in m], [62, 9, 34, 1])
 
     def test_feature_psi_dihedral(self):
@@ -384,12 +390,13 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         psi = mdt.features.PsiDihedral(mlib,
                                         mdt.uniform_bins(36, -180, 10))
+        psiclass = mdt.features.PsiClass(mlib)
         m = self.get_test_mdt(mlib, features=psi)
         self.assertEqual(m.shape, (37,))
         self.assertInTolerance(m[14], 15.0, 0.0005)
         self.assertInTolerance(m[15], 13.0, 0.0005)
         self.assertInTolerance(m[16], 6.0, 0.0005)
-        m = self.get_test_mdt(mlib, features=60)
+        m = self.get_test_mdt(mlib, features=psiclass)
         self.assertEqual([b for b in m], [47, 23, 35, 1])
 
     def test_feature_omega_dihedral(self):
@@ -397,12 +404,13 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         omega = mdt.features.OmegaDihedral(mlib,
                                            mdt.uniform_bins(36, -180, 10))
+        omegaclass = mdt.features.OmegaClass(mlib)
         m = self.get_test_mdt(mlib, features=omega)
         self.assertEqual(m.shape, (37,))
         self.assertInTolerance(m[0], 44.0, 0.0005)
         self.assertInTolerance(m[1], 5.0, 0.0005)
         self.assertInTolerance(m[2], 0.0, 0.0005)
-        m = self.get_test_mdt(mlib, features=62)
+        m = self.get_test_mdt(mlib, features=omegaclass)
         self.assertEqual([b for b in m], [105, 0, 0, 1])
 
     def test_feature_alpha_dihedral(self):

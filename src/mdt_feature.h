@@ -240,6 +240,54 @@ MDTDLLEXPORT
 int mdt_feature_alpha_dihedral(struct mdt_library *mlib, int protein,
                                int delta, gboolean pos2, GError **err);
 
+/** Add a chi1 dihedral class feature. */
+MDTDLLEXPORT
+int mdt_feature_chi1_class(struct mdt_library *mlib, int protein,
+                           int delta, gboolean pos2,
+                           const struct mod_libraries *libs, GError **err);
+
+/** Add a chi2 dihedral class feature. */
+MDTDLLEXPORT
+int mdt_feature_chi2_class(struct mdt_library *mlib, int protein,
+                           int delta, gboolean pos2,
+                           const struct mod_libraries *libs, GError **err);
+
+/** Add a chi3 dihedral class feature. */
+MDTDLLEXPORT
+int mdt_feature_chi3_class(struct mdt_library *mlib, int protein,
+                           int delta, gboolean pos2,
+                           const struct mod_libraries *libs, GError **err);
+
+/** Add a chi4 dihedral class feature. */
+MDTDLLEXPORT
+int mdt_feature_chi4_class(struct mdt_library *mlib, int protein,
+                           int delta, gboolean pos2,
+                           const struct mod_libraries *libs, GError **err);
+
+/** Add a chi5 dihedral class feature. */
+MDTDLLEXPORT
+int mdt_feature_chi5_class(struct mdt_library *mlib, int protein,
+                           int delta, gboolean pos2,
+                           const struct mod_libraries *libs, GError **err);
+
+/** Add a phi dihedral class feature. */
+MDTDLLEXPORT
+int mdt_feature_phi_class(struct mdt_library *mlib, int protein,
+                          int delta, gboolean pos2,
+                          const struct mod_libraries *libs, GError **err);
+
+/** Add a psi dihedral class feature. */
+MDTDLLEXPORT
+int mdt_feature_psi_class(struct mdt_library *mlib, int protein,
+                          int delta, gboolean pos2,
+                          const struct mod_libraries *libs, GError **err);
+
+/** Add an omega dihedral class feature. */
+MDTDLLEXPORT
+int mdt_feature_omega_class(struct mdt_library *mlib, int protein,
+                            int delta, gboolean pos2,
+                            const struct mod_libraries *libs, GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

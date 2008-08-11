@@ -90,6 +90,21 @@ class Chi2Dihedral(Residue):
 class Chi3Dihedral(Residue):
     _setup = _mdt.mdt_feature_chi3_dihedral
 
+class Chi4Dihedral(Residue):
+    _setup = _mdt.mdt_feature_chi4_dihedral
+
+class PhiDihedral(Residue):
+    _setup = _mdt.mdt_feature_phi_dihedral
+
+class PsiDihedral(Residue):
+    _setup = _mdt.mdt_feature_psi_dihedral
+
+class OmegaDihedral(Residue):
+    _setup = _mdt.mdt_feature_omega_dihedral
+
+class AlphaDihedral(Residue):
+    _setup = _mdt.mdt_feature_alpha_dihedral
+
 class AtomAccessibility(Atom):
     _setup = _mdt.mdt_feature_atom_accessibility
 

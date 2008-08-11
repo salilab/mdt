@@ -215,6 +215,31 @@ MDTDLLEXPORT
 int mdt_feature_chi3_dihedral(struct mdt_library *mlib, int protein,
                               int delta, gboolean pos2, GError **err);
 
+/** Add a chi4 dihedral feature. */
+MDTDLLEXPORT
+int mdt_feature_chi4_dihedral(struct mdt_library *mlib, int protein,
+                              int delta, gboolean pos2, GError **err);
+
+/** Add a phi dihedral feature. */
+MDTDLLEXPORT
+int mdt_feature_phi_dihedral(struct mdt_library *mlib, int protein,
+                             int delta, gboolean pos2, GError **err);
+
+/** Add a psi dihedral feature. */
+MDTDLLEXPORT
+int mdt_feature_psi_dihedral(struct mdt_library *mlib, int protein,
+                             int delta, gboolean pos2, GError **err);
+
+/** Add a omega dihedral feature. */
+MDTDLLEXPORT
+int mdt_feature_omega_dihedral(struct mdt_library *mlib, int protein,
+                               int delta, gboolean pos2, GError **err);
+
+/** Add an alpha dihedral feature. */
+MDTDLLEXPORT
+int mdt_feature_alpha_dihedral(struct mdt_library *mlib, int protein,
+                               int delta, gboolean pos2, GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

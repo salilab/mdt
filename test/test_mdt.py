@@ -244,7 +244,9 @@ class TableTests(MDTTest):
     def test_exp_transform(self):
         """Check for correctness of exp transform"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=(1,7))
+        phi = mdt.features.PhiDihedral(mlib,
+                                       mdt.uniform_bins(36, -180, 10))
+        m = self.get_test_mdt(mlib, features=(1,phi))
         offset = 1.
         expoffset = 0.1
         multiplier = 0.8
@@ -258,7 +260,9 @@ class TableTests(MDTTest):
     def test_log_transform(self):
         """Check for correctness of log transform"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=(1,7))
+        phi = mdt.features.PhiDihedral(mlib,
+                                       mdt.uniform_bins(36, -180, 10))
+        m = self.get_test_mdt(mlib, features=(1,phi))
         offset = 0.0
         multiplier = 0.7
         undefined = 500.0
@@ -289,7 +293,9 @@ class TableTests(MDTTest):
     def test_inverse_transform(self):
         """Check for correctness of inverse transform"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=(1,7))
+        phi = mdt.features.PhiDihedral(mlib,
+                                       mdt.uniform_bins(36, -180, 10))
+        m = self.get_test_mdt(mlib, features=(1,phi))
         offset = 0.0
         multiplier = 0.8
         undefined = 300.0

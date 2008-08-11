@@ -51,3 +51,38 @@ int mdt_feature_chi3_dihedral(struct mdt_library *mlib, int protein,
   return add_feature(mlib, protein, delta, pos2, "Residue chi3 dihedral",
                      MDT_DIHEDRAL_CHI3, err);
 }
+
+int mdt_feature_chi4_dihedral(struct mdt_library *mlib, int protein,
+                              int delta, gboolean pos2, GError **err)
+{
+  return add_feature(mlib, protein, delta, pos2, "Residue chi4 dihedral",
+                     MDT_DIHEDRAL_CHI4, err);
+}
+
+int mdt_feature_phi_dihedral(struct mdt_library *mlib, int protein,
+                             int delta, gboolean pos2, GError **err)
+{
+  return add_feature(mlib, protein, delta, pos2, "Residue phi dihedral",
+                     MDT_DIHEDRAL_PHI, err);
+}
+
+int mdt_feature_psi_dihedral(struct mdt_library *mlib, int protein,
+                             int delta, gboolean pos2, GError **err)
+{
+  return add_feature(mlib, protein, delta, pos2, "Residue psi dihedral",
+                     MDT_DIHEDRAL_PSI, err);
+}
+
+int mdt_feature_omega_dihedral(struct mdt_library *mlib, int protein,
+                               int delta, gboolean pos2, GError **err)
+{
+  return add_feature(mlib, protein, delta, pos2, "Residue omega dihedral",
+                     MDT_DIHEDRAL_OMEGA, err);
+}
+
+int mdt_feature_alpha_dihedral(struct mdt_library *mlib, int protein,
+                               int delta, gboolean pos2, GError **err)
+{
+  return add_feature(mlib, protein, delta, pos2, "Residue alpha dihedral",
+                     MDT_DIHEDRAL_ALPHA, err);
+}

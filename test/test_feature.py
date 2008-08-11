@@ -27,6 +27,15 @@ class FeatureTests(MDTTest):
 
         self.assertInTolerance(m2[0,2], 0.0, 0.0005)
 
+    def test_feature_residue_distance(self):
+        """Check residue-residue distance feature"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        aln = modeller.alignment(env, file='test/data/tiny.ali')
+        m = mdt.Table(mlib, features=16)
+        m.add_alignment(aln)
+        self.assertEqual([b for b in m], [0, 0, 0, 8, 2, 4, 4, 2])
+
     def test_feature_iatta(self):
         """Check for atom type features"""
         env = self.get_environ()
@@ -158,6 +167,20 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[1], 10.0, 2.0005)
         self.assertInTolerance(m[2], 4.0, 1.0005)
         self.assertEqual(m[-1], 0.0)
+        m = self.get_test_mdt(mlib, features=39)
+        self.assertEqual(m.shape, (30,))
+        self.assertInTolerance(m[0], 435.0, 0.0005)
+        self.assertInTolerance(m[1], 303.0, 0.0005)
+        self.assertInTolerance(m[2], 257.0, 0.0005)
+
+    def test_residue_index_diff(self):
+        """Check residue index difference features"""
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=51)
+        self.assertEqual(m.shape, (22,))
+        self.assertEqual(m[0], 140)
+        self.assertEqual(m[1], 142)
+        self.assertEqual(m[2], 144)
 
     def test_feature_bond_type(self):
         """Check bond type features"""

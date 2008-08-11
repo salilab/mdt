@@ -337,7 +337,9 @@ class FeatureTests(MDTTest):
     def test_feature_chi3_dihedral(self):
         """Check chi3 dihedral and dihedral class features"""
         mlib = self.get_mdt_library()
-        m = self.get_test_mdt(mlib, features=53)
+        chi3 = mdt.features.Chi3Dihedral(mlib,
+                                         mdt.uniform_bins(36, -180, 10))
+        m = self.get_test_mdt(mlib, features=chi3)
         self.assertEqual(m.shape, (37,))
         self.assertInTolerance(m[11], 6.0, 0.0005)
         self.assertInTolerance(m[12], 4.0, 0.0005)

@@ -44,3 +44,10 @@ int mdt_feature_chi2_dihedral(struct mdt_library *mlib, int protein,
   return add_feature(mlib, protein, delta, pos2, "Residue chi2 dihedral",
                      MDT_DIHEDRAL_CHI2, err);
 }
+
+int mdt_feature_chi3_dihedral(struct mdt_library *mlib, int protein,
+                              int delta, gboolean pos2, GError **err)
+{
+  return add_feature(mlib, protein, delta, pos2, "Residue chi3 dihedral",
+                     MDT_DIHEDRAL_CHI3, err);
+}

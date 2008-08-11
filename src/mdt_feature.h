@@ -210,6 +210,11 @@ MDTDLLEXPORT
 int mdt_feature_chi2_dihedral(struct mdt_library *mlib, int protein,
                               int delta, gboolean pos2, GError **err);
 
+/** Add a chi3 dihedral feature. */
+MDTDLLEXPORT
+int mdt_feature_chi3_dihedral(struct mdt_library *mlib, int protein,
+                              int delta, gboolean pos2, GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

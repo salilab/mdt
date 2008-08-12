@@ -32,6 +32,12 @@ class ResiduePair(_Base):
         self._create_bins(mlib, bins)
 
 
+class AlignedResidue(_Base):
+    def __init__(self, mlib, bins, protein1=0, protein2=1):
+        self._ifeat = self._setup(mlib._modpt, protein1, protein2)
+        self._create_bins(mlib, bins)
+
+
 class Atom(_Base):
     def __init__(self, mlib, bins, pos2=False):
         self._ifeat = self._setup(mlib._modpt, pos2)
@@ -156,6 +162,15 @@ class AverageResidueAccessibility(ResiduePair):
 
 class ResidueIndexDifference(ResiduePair):
     _setup = _mdt.mdt_feature_residue_index_difference
+
+class PhiDihedralDifference(AlignedResidue):
+    _setup = _mdt.mdt_feature_phi_dihedral_difference
+
+class PsiDihedralDifference(AlignedResidue):
+    _setup = _mdt.mdt_feature_psi_dihedral_difference
+
+class OmegaDihedralDifference(AlignedResidue):
+    _setup = _mdt.mdt_feature_omega_dihedral_difference
 
 class AtomAccessibility(Atom):
     _setup = _mdt.mdt_feature_atom_accessibility

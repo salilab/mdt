@@ -88,6 +88,20 @@ static gboolean check_protein(int protein, const char *feattype, GError **err)
   }
 }
 
+/** \return TRUE iff the protein pair is valid. */
+static gboolean check_protein_pair(int protein1, int protein2,
+                                   const char *feattype, GError **err)
+{
+  if (protein1 != 0 || (protein2 != 1 && protein2 != 2)) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "%s features can act only on protein pairs (0,1) or (0,2);"
+                "(%d,%d) was given", feattype, protein1, protein2);
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}
+
 /** Helper function to add a new feature structure, and return it. */
 static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat)
 {
@@ -187,6 +201,31 @@ int mdt_feature_residue_pair_add(struct mdt_library *mlib, const char *name,
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,
                               MOD_MDTS_RESIDUE_PAIR, asymmetric, 0);
+  return nfeat;
+}
+
+int mdt_feature_aligned_residue_add(struct mdt_library *mlib, const char *name,
+                                    mod_mdt_calc precalc_type, int protein1,
+                                    int protein2,
+                                    mdt_cb_feature_aligned_residue getbin,
+                                    void *data, GError **err)
+{
+  struct mdt_feature *feat;
+  int nfeat;
+
+  if (!check_protein_pair(protein1, protein2, "Aligned residue", err)) {
+    return -1;
+  }
+
+  feat = add_feature(mlib, &nfeat);
+  feat->type = MDT_FEATURE_ALIGNED_RESIDUE;
+  feat->u.aligned_residue.protein1 = protein1;
+  feat->u.aligned_residue.protein2 = protein2;
+  feat->u.aligned_residue.getbin = getbin;
+  feat->data = data;
+  mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
+                              protein2 == 1 ? MOD_MDTP_AB : MOD_MDTP_AC,
+                              MOD_MDTS_RESIDUE, FALSE, 0);
   return nfeat;
 }
 

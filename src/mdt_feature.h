@@ -39,6 +39,15 @@ int mdt_feature_residue_pair_add(struct mdt_library *mlib, const char *name,
                                  mdt_cb_feature_residue_pair getbin, void *data,
                                  GError **err);
 
+/** Add an aligned residue feature.
+    \return the index of the new feature, or -1 on error. */
+MDTDLLEXPORT
+int mdt_feature_aligned_residue_add(struct mdt_library *mlib, const char *name,
+                                    mod_mdt_calc precalc_type, int protein1,
+                                    int protein2,
+                                    mdt_cb_feature_aligned_residue getbin,
+                                    void *data, GError **err);
+
 /** Add an atom feature.
     \note The system is automatically instructed to read in PDB files.
     \return the index of the new feature */
@@ -329,6 +338,24 @@ int mdt_feature_average_residue_accessibility(struct mdt_library *mlib,
 MDTDLLEXPORT
 int mdt_feature_residue_index_difference(struct mdt_library *mlib,
                                          int protein, GError **err);
+
+/** Add a psi dihedral difference feature. */
+MDTDLLEXPORT
+int mdt_feature_psi_dihedral_difference(struct mdt_library *mlib,
+                                        int protein1, int protein2,
+                                        GError **err);
+
+/** Add a phi dihedral difference feature. */
+MDTDLLEXPORT
+int mdt_feature_phi_dihedral_difference(struct mdt_library *mlib,
+                                        int protein1, int protein2,
+                                        GError **err);
+
+/** Add an omega dihedral difference feature. */
+MDTDLLEXPORT
+int mdt_feature_omega_dihedral_difference(struct mdt_library *mlib,
+                                          int protein1, int protein2,
+                                          GError **err);
 
 G_END_DECLS
 

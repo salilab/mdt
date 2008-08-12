@@ -405,7 +405,9 @@ class FeatureTests(MDTTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         phi = mdt.features.PhiDihedral(mlib,
-                                        mdt.uniform_bins(36, -180, 10))
+                                       mdt.uniform_bins(36, -180, 10))
+        phidiff = mdt.features.PhiDihedralDifference(mlib,
+                                       mdt.uniform_bins(36, -180, 10))
         phiclass = mdt.features.PhiClass(mlib)
         m = self.get_test_mdt(mlib, features=phi)
         self.assertEqual(m.shape, (37,))
@@ -414,7 +416,7 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[7], 6.0, 0.0005)
         m = self.get_test_mdt(mlib, features=phiclass)
         self.assertEqual([b for b in m], [62, 9, 34, 1])
-        m = mdt.Table(mlib, features=41)
+        m = mdt.Table(mlib, features=phidiff)
         a = modeller.alignment(env, file='test/data/struc-struc.ali')
         m.add_alignment(a)
         self.assertEqual(m[18], 2)
@@ -426,7 +428,9 @@ class FeatureTests(MDTTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         psi = mdt.features.PsiDihedral(mlib,
-                                        mdt.uniform_bins(36, -180, 10))
+                                       mdt.uniform_bins(36, -180, 10))
+        psidiff = mdt.features.PsiDihedralDifference(mlib,
+                                       mdt.uniform_bins(36, -180, 10))
         psiclass = mdt.features.PsiClass(mlib)
         m = self.get_test_mdt(mlib, features=psi)
         self.assertEqual(m.shape, (37,))
@@ -435,7 +439,7 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[16], 6.0, 0.0005)
         m = self.get_test_mdt(mlib, features=psiclass)
         self.assertEqual([b for b in m], [47, 23, 35, 1])
-        m = mdt.Table(mlib, features=42)
+        m = mdt.Table(mlib, features=psidiff)
         a = modeller.alignment(env, file='test/data/struc-struc.ali')
         m.add_alignment(a)
         self.assertEqual(m[19], 2)
@@ -448,6 +452,8 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         omega = mdt.features.OmegaDihedral(mlib,
                                            mdt.uniform_bins(36, -180, 10))
+        omegadiff = mdt.features.OmegaDihedralDifference(mlib,
+                                       mdt.uniform_bins(36, -180, 1))
         omegaclass = mdt.features.OmegaClass(mlib)
         m = self.get_test_mdt(mlib, features=omega)
         self.assertEqual(m.shape, (37,))
@@ -456,7 +462,7 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[2], 0.0, 0.0005)
         m = self.get_test_mdt(mlib, features=omegaclass)
         self.assertEqual([b for b in m], [105, 0, 0, 1])
-        m = mdt.Table(mlib, features=57)
+        m = mdt.Table(mlib, features=omegadiff)
         a = modeller.alignment(env, file='test/data/struc-struc.ali')
         m.add_alignment(a)
         self.assertEqual(m[36], 12)

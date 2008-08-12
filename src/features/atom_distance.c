@@ -20,9 +20,6 @@ static int getbin(const struct mod_alignment *aln, int protein,
 
 int mdt_feature_atom_distance(struct mdt_library *mlib)
 {
-  int ifeat;
-  ifeat = mdt_feature_atom_pair_add(mlib, "Atom-atom distance",
-                                    MOD_MDTC_NONE, FALSE, getbin, NULL);
-  mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
-  return ifeat;
+  return mdt_feature_atom_pair_add(mlib, "Atom-atom distance",
+                                   MOD_MDTC_NONE, FALSE, getbin, NULL);
 }

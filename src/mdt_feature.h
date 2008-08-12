@@ -40,6 +40,7 @@ int mdt_feature_residue_pair_add(struct mdt_library *mlib, const char *name,
                                  GError **err);
 
 /** Add an atom feature.
+    \note The system is automatically instructed to read in PDB files.
     \return the index of the new feature */
 MDTDLLEXPORT
 int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
@@ -47,6 +48,7 @@ int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
                          mdt_cb_feature_atom getbin, void *data);
 
 /** Add an atom pair feature.
+    \note The system is automatically instructed to read in PDB files.
     \return the index of the new feature */
 MDTDLLEXPORT
 int mdt_feature_atom_pair_add(struct mdt_library *mlib, const char *name,

@@ -29,7 +29,6 @@ int mdt_feature_fractional_atom_accessibility(struct mdt_library *mlib,
   int ifeat;
   ifeat = mdt_feature_atom_add(mlib, "Fractional atom accessibility",
                                MOD_MDTC_NONE, pos2, getbin, NULL);
-  mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_PSA);
   return ifeat;
 }

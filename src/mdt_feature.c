@@ -212,6 +212,7 @@ int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
                               pos2 ? MOD_MDTS_ATOM_PAIR : MOD_MDTS_ATOM,
                               FALSE, 0);
   g_string_free(fullname, TRUE);
+  mdt_feature_add_needed_file(mlib, nfeat, MOD_MDTF_STRUCTURE);
   return nfeat;
 }
 
@@ -228,6 +229,7 @@ int mdt_feature_atom_pair_add(struct mdt_library *mlib, const char *name,
   feat->data = data;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_ATOM_PAIR, asymmetric, 0);
+  mdt_feature_add_needed_file(mlib, nfeat, MOD_MDTF_STRUCTURE);
   return nfeat;
 }
 

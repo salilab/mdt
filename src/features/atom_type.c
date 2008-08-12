@@ -30,7 +30,6 @@ int mdt_feature_atom_type(struct mdt_library *mlib, gboolean pos2)
   struct mod_mdt_libfeature *feat;
   ifeat = mdt_feature_atom_add(mlib, "Atom type", MOD_MDTC_NONE,
                                pos2, getbin, NULL);
-  mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   /* Set number of bins and their symbols */
   feat = &mlib->base.features[ifeat - 1];
   update_mdt_feat_atclass(feat, mlib->atclass[0]);

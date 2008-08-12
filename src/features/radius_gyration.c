@@ -24,6 +24,8 @@ int mdt_feature_radius_of_gyration(struct mdt_library *mlib, int protein,
   int ifeat;
   ifeat = mdt_feature_protein_add(mlib, "Radius of gyration", MOD_MDTC_NONE,
                                   protein, getbin, NULL, err);
-  mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
+  if (ifeat >= 0) {
+    mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
+  }
   return ifeat;
 }

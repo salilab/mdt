@@ -23,6 +23,8 @@ int mdt_feature_bond_length(struct mdt_library *mlib)
   int ifeat;
   ifeat = mdt_feature_bond_add(mlib, "Bond length", MOD_MDTC_NONE, getbin,
                                NULL);
-  mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
+  if (ifeat >= 0) {
+    mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
+  }
   return ifeat;
 }

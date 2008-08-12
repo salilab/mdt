@@ -26,7 +26,9 @@ int mdt_feature_average_residue_accessibility(struct mdt_library *mlib,
   ifeat = mdt_feature_residue_pair_add(
               mlib, "Average accessibility of a residue pair", MOD_MDTC_NONE,
               protein, FALSE, getbin, NULL, err);
-  mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
-  mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_PSA);
+  if (ifeat >= 0) {
+    mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
+    mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_PSA);
+  }
   return ifeat;
 }

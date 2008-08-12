@@ -28,6 +28,9 @@ static int add_feature(struct mdt_library *mlib, int protein, int delta,
   ifeat = mdt_feature_residue_add(mlib, name, precalc, protein, delta,
                                   align_delta, pos2, -1, getbin,
                                   GINT_TO_POINTER(dihtype), err);
+  if (ifeat < 0) {
+    return ifeat;
+  }
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_DIHEDRALS);
 

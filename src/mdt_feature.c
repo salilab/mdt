@@ -210,6 +210,7 @@ int mdt_feature_aligned_residue_add(struct mdt_library *mlib, const char *name,
                                     mdt_cb_feature_aligned_residue getbin,
                                     void *data, GError **err)
 {
+  char *fullname;
   struct mdt_feature *feat;
   int nfeat;
 
@@ -223,9 +224,12 @@ int mdt_feature_aligned_residue_add(struct mdt_library *mlib, const char *name,
   feat->u.aligned_residue.protein2 = protein2;
   feat->u.aligned_residue.getbin = getbin;
   feat->data = data;
-  mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
+  fullname = g_strdup_printf("%s of proteins (%d,%d)", name, protein1,
+                             protein2);
+  mod_mdt_libfeature_register(&mlib->base, nfeat, fullname, precalc_type,
                               protein2 == 1 ? MOD_MDTP_AB : MOD_MDTP_AC,
                               MOD_MDTS_RESIDUE, FALSE, 0);
+  g_free(fullname);
   return nfeat;
 }
 

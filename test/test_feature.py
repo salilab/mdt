@@ -453,7 +453,7 @@ class FeatureTests(MDTTest):
         omega = mdt.features.OmegaDihedral(mlib,
                                            mdt.uniform_bins(36, -180, 10))
         omegadiff = mdt.features.OmegaDihedralDifference(mlib,
-                                       mdt.uniform_bins(36, -180, 1))
+                                       mdt.uniform_bins(36, -180, 10))
         omegaclass = mdt.features.OmegaClass(mlib)
         m = self.get_test_mdt(mlib, features=omega)
         self.assertEqual(m.shape, (37,))
@@ -465,7 +465,9 @@ class FeatureTests(MDTTest):
         m = mdt.Table(mlib, features=omegadiff)
         a = modeller.alignment(env, file='test/data/struc-struc.ali')
         m.add_alignment(a)
-        self.assertEqual(m[36], 12)
+        self.assertEqual(m[17], 5)
+        self.assertEqual(m[18], 5)
+        self.assertEqual(m[36], 2)
 
     def test_feature_alpha_dihedral(self):
         """Check alpha dihedral feature"""

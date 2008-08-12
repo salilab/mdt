@@ -246,10 +246,6 @@ struct mdt_feature {
 struct mdt_library {
   /** Base Modeller type */
   struct mod_mdt_library base;
-  /** Deltas for some feature types ('residue + delta i') */
-  int deltai, deltaj;
-  /** TRUE if deltas refer to align. positions, or FALSE if residue positions */
-  gboolean deltai_ali, deltaj_ali;
   /** Whether to treat disulfides and termini specially for atom types */
   gboolean special_atoms;
   /** Cutoff distance for hydrogen bonds */

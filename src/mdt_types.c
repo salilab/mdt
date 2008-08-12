@@ -39,8 +39,6 @@ struct mdt_library *mdt_library_new(void)
   struct mdt_library *mlib;
   mlib = g_malloc(sizeof(struct mdt_library));
   mod_mdt_library_init(&mlib->base);
-  mlib->deltai = mlib->deltaj = 1;
-  mlib->deltai_ali = mlib->deltaj_ali = FALSE;
   mlib->hbond_cutoff = 3.5;
   mlib->special_atoms = FALSE;
   mlib->feature_added = FALSE;

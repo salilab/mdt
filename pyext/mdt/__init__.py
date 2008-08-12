@@ -82,7 +82,6 @@ class Library(modobject):
         return obj
 
     def __init__(self, env, binfile, residue_grouping=1,
-                 deltai=1, deltaj=1, deltai_ali=False, deltaj_ali=False,
                  distance_atoms=('CA', 'CA'), special_atoms=False,
                  hbond_cutoff=3.5):
         """
@@ -94,10 +93,6 @@ class Library(modobject):
           - `residue_grouping`: type of residue grouping for residue class
             features, as defined in resgrp.lib (1=mainchain conformation,
             2=hydrophobicity)
-          - `deltai`: see `deltai`
-          - `deltaj`: see `deltaj`
-          - `deltai_ali`: see `deltai_ali`
-          - `deltaj_ali`: see `deltaj_ali`
           - `distance_atoms`: the atom types to use for "specified" distance
             features
           - `special_atoms`: whether to treat disulfide and termini atoms
@@ -105,10 +100,6 @@ class Library(modobject):
           - `hbond_cutoff`: maximum separation between two H-bonded atoms
         """
         self._env = env.copy()
-        _mdt.mdt_library_deltai_set(self._modpt, deltai)
-        _mdt.mdt_library_deltaj_set(self._modpt, deltaj)
-        _mdt.mdt_library_deltai_ali_set(self._modpt, deltai_ali)
-        _mdt.mdt_library_deltaj_ali_set(self._modpt, deltaj_ali)
         _mdt.mdt_library_hbond_cutoff_set(self._modpt, hbond_cutoff)
         _mdt.mdt_library_special_atoms_set(self._modpt, special_atoms)
         _modeller.mod_mdt_library_readbin(self._basept, self._env.libs.modpt,
@@ -120,14 +111,6 @@ class Library(modobject):
 
     def __get_basept(self):
         return _mdt.mdt_library_base_get(self._modpt)
-    def __get_deltai(self):
-        return _mdt.mdt_library_deltai_get(self._modpt)
-    def __get_deltaj(self):
-        return _mdt.mdt_library_deltaj_get(self._modpt)
-    def __get_deltai_ali(self):
-        return _mdt.mdt_library_deltai_ali_get(self._modpt)
-    def __get_deltaj_ali(self):
-        return _mdt.mdt_library_deltaj_ali_get(self._modpt)
     def __get_atom_classes(self):
         return BondClasses(self, 1)
     def __get_bond_classes(self):
@@ -155,14 +138,6 @@ class Library(modobject):
     hbond_classes = property(__get_hbond_classes,
                              doc="Hydrogen bond atom classes; " + \
                                  "see `HydrogenBondClasses`")
-    deltai = property(__get_deltai, doc="delta i for some feature types")
-    deltaj = property(__get_deltaj, doc="delta j for some feature types")
-    deltai_ali = property(__get_deltai_ali,
-                          doc="True if `deltai` refers to alignment " + \
-                              "positions, or False if residue positions")
-    deltaj_ali = property(__get_deltaj_ali,
-                          doc="True if `deltaj` refers to alignment " + \
-                              "positions, or False if residue positions")
 
 
 class BondClasses(object):

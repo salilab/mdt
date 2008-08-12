@@ -11,9 +11,8 @@ struct mdt_library {
 %immutable;
   struct mod_mdt_library base;
 %mutable;
-  int deltai, deltaj;
   float hbond_cutoff;
-  gboolean special_atoms, deltai_ali, deltaj_ali;
+  gboolean special_atoms;
 };
 
 struct mdt_library *mdt_library_new(void);

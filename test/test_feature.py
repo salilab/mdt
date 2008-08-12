@@ -402,6 +402,7 @@ class FeatureTests(MDTTest):
 
     def test_feature_phi_dihedral(self):
         """Check phi dihedral and dihedral class features"""
+        env = self.get_environ()
         mlib = self.get_mdt_library()
         phi = mdt.features.PhiDihedral(mlib,
                                         mdt.uniform_bins(36, -180, 10))
@@ -413,9 +414,16 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[7], 6.0, 0.0005)
         m = self.get_test_mdt(mlib, features=phiclass)
         self.assertEqual([b for b in m], [62, 9, 34, 1])
+        m = mdt.Table(mlib, features=41)
+        a = modeller.alignment(env, file='test/data/struc-struc.ali')
+        m.add_alignment(a)
+        self.assertEqual(m[18], 2)
+        self.assertEqual(m[19], 3)
+        self.assertEqual(m[20], 0)
 
     def test_feature_psi_dihedral(self):
         """Check psi dihedral and dihedral class features"""
+        env = self.get_environ()
         mlib = self.get_mdt_library()
         psi = mdt.features.PsiDihedral(mlib,
                                         mdt.uniform_bins(36, -180, 10))
@@ -427,9 +435,16 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[16], 6.0, 0.0005)
         m = self.get_test_mdt(mlib, features=psiclass)
         self.assertEqual([b for b in m], [47, 23, 35, 1])
+        m = mdt.Table(mlib, features=42)
+        a = modeller.alignment(env, file='test/data/struc-struc.ali')
+        m.add_alignment(a)
+        self.assertEqual(m[19], 2)
+        self.assertEqual(m[20], 1)
+        self.assertEqual(m[21], 0)
 
     def test_feature_omega_dihedral(self):
         """Check omega dihedral and dihedral class features"""
+        env = self.get_environ()
         mlib = self.get_mdt_library()
         omega = mdt.features.OmegaDihedral(mlib,
                                            mdt.uniform_bins(36, -180, 10))
@@ -441,6 +456,10 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[2], 0.0, 0.0005)
         m = self.get_test_mdt(mlib, features=omegaclass)
         self.assertEqual([b for b in m], [105, 0, 0, 1])
+        m = mdt.Table(mlib, features=57)
+        a = modeller.alignment(env, file='test/data/struc-struc.ali')
+        m.add_alignment(a)
+        self.assertEqual(m[36], 12)
 
     def test_feature_alpha_dihedral(self):
         """Check alpha dihedral feature"""

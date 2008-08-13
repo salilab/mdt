@@ -386,6 +386,17 @@ int mdt_feature_residue_group(struct mdt_library *mlib, int protein, int delta,
                               int residue_grouping,
                               const struct mod_libraries *libs, GError **err);
 
+/** Add a neighborhood difference feature. */
+MDTDLLEXPORT
+int mdt_feature_neighborhood_difference(struct mdt_library *mlib, int protein1,
+                                        int protein2, GError **err);
+
+/** Add an average neighborhood difference feature. */
+MDTDLLEXPORT
+int mdt_feature_average_neighborhood_difference(struct mdt_library *mlib,
+                                                int protein1, int protein2,
+                                                GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

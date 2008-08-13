@@ -186,8 +186,14 @@ class PsiDihedralDifference(AlignedResidue):
 class OmegaDihedralDifference(AlignedResidue):
     _setup = _mdt.mdt_feature_omega_dihedral_difference
 
+class NeighborhoodDifference(AlignedResidue):
+    _setup = _mdt.mdt_feature_neighborhood_difference
+
 class ResidueDistanceDifference(AlignedResiduePair):
     _setup = _mdt.mdt_feature_residue_distance_difference
+
+class AverageNeighborhoodDifference(AlignedResiduePair):
+    _setup = _mdt.mdt_feature_average_neighborhood_difference
 
 class AtomAccessibility(Atom):
     _setup = _mdt.mdt_feature_atom_accessibility

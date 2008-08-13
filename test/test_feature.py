@@ -51,15 +51,18 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[10], 20)
         self.assertEqual(sum([b for b in m]), 40)
 
-    def test_feature_residue_neighborhood(self):
-        """Check residue neighborhood difference feature"""
+    def test_feature_neighborhood_difference(self):
+        """Check residue neighborhood difference features"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        bins=mdt.uniform_bins(9, 0, 0.2)
+        ndif = mdt.features.NeighborhoodDifference(mlib, bins)
+        avndif = mdt.features.AverageNeighborhoodDifference(mlib, bins)
         aln = modeller.alignment(env, file='test/data/struc-struc.ali')
-        m = mdt.Table(mlib, features=14)
+        m = mdt.Table(mlib, features=ndif)
         m.add_alignment(aln)
         self.assertEqual([b for b in m], [4, 6, 2] + [0]*7)
-        m = mdt.Table(mlib, features=24)
+        m = mdt.Table(mlib, features=avndif)
         m.add_alignment(aln)
         self.assertEqual([b for b in m], [6, 12, 2] + [0]*7)
 
@@ -547,15 +550,13 @@ class FeatureTests(MDTTest):
         """Test symmetric/asymmetric residue pair features"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        dist = mdt.features.ResidueDistance(mlib,
-                                            bins=mdt.uniform_bins(7, 0, 2.0))
-        avresacc = mdt.features.AverageResidueAccessibility(mlib,
-                                            bins=mdt.uniform_bins(29, 0, 5))
-        diff = mdt.features.ResidueIndexDifference(mlib,
-                                            bins=mdt.uniform_bins(20, -10, 1))
-        ddist = mdt.features.ResidueDistanceDifference(mlib,
-                                            bins=mdt.uniform_bins(20, -10, 1))
-        sym_features = (24, 25, avresacc, 48)
+        bins = mdt.uniform_bins(10, 0, 1.0)
+        dist = mdt.features.ResidueDistance(mlib, bins)
+        avresacc = mdt.features.AverageResidueAccessibility(mlib, bins)
+        avndif = mdt.features.AverageNeighborhoodDifference(mlib, bins)
+        diff = mdt.features.ResidueIndexDifference(mlib, bins)
+        ddist = mdt.features.ResidueDistanceDifference(mlib, bins)
+        sym_features = (avndif, avresacc, 48)
         asym_features = (dist, ddist, diff)
         for a in sym_features:
             m = mdt.Table(mlib, features=a)

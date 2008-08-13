@@ -51,6 +51,18 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[10], 20)
         self.assertEqual(sum([b for b in m]), 40)
 
+    def test_feature_residue_neighborhood(self):
+        """Check residue neighborhood difference feature"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        aln = modeller.alignment(env, file='test/data/struc-struc.ali')
+        m = mdt.Table(mlib, features=14)
+        m.add_alignment(aln)
+        self.assertEqual([b for b in m], [4, 6, 2] + [0]*7)
+        m = mdt.Table(mlib, features=24)
+        m.add_alignment(aln)
+        self.assertEqual([b for b in m], [6, 12, 2] + [0]*7)
+
     def test_feature_rama(self):
         """Check Ramachandran mainchain conformation class feature"""
         env = self.get_environ()

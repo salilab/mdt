@@ -6,6 +6,22 @@ import modeller
 
 class FeatureTests(MDTTest):
 
+    def test_feature_sequence_identity(self):
+        """Check sequence identity feature"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        for (seq, id) in (('GGG', 0), ('AFV', 100), ('A--', 100),
+                          ('AV-', 50)):
+            aln = modeller.alignment(env)
+            aln.append_sequence('AFV')
+            aln.append_sequence(seq)
+            # Put into 25% bins
+            m = mdt.Table(mlib, features=15)
+            m.add_alignment(aln)
+            self.assertEqual(m.shape, (6,))
+            self.assertEqual(m.sum(), 2.0)
+            self.assertEqual(m[id / 25], 2.0)
+
     def test_delta(self):
         """Test residue type at delta features"""
         env = self.get_environ()

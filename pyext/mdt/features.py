@@ -161,6 +161,13 @@ class OmegaClass(ResidueFixedBins):
 class MainchainConformation(ResidueFixedBins):
     _setup = _mdt.mdt_feature_mainchain_conformation
 
+class ResidueGroup(ResidueFixedBins):
+    _setup = _mdt.mdt_feature_residue_group
+    def __init__(self, mlib, protein=0, delta=0, align_delta=0, pos2=False,
+                 residue_grouping=0):
+        self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
+                                  pos2, residue_grouping, mlib._env.libs.modpt)
+
 class ResidueDistance(ResiduePair):
     _setup = _mdt.mdt_feature_residue_distance
 

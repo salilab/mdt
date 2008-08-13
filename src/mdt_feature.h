@@ -379,6 +379,13 @@ int mdt_feature_mainchain_conformation(struct mdt_library *mlib, int protein,
                                        const struct mod_libraries *libs,
                                        GError **err);
 
+/** Add a residue group feature. */
+MDTDLLEXPORT
+int mdt_feature_residue_group(struct mdt_library *mlib, int protein, int delta,
+                              int align_delta, gboolean pos2,
+                              int residue_grouping,
+                              const struct mod_libraries *libs, GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

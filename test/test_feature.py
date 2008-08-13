@@ -66,11 +66,15 @@ class FeatureTests(MDTTest):
     def test_feature_resgrp(self):
         """Check residue group feature"""
         env = self.get_environ()
-        mlib = self.get_mdt_library(residue_grouping=1)
-        m = self.get_test_mdt(mlib, features=71)
+        mlib = self.get_mdt_library()
+        mnch = mdt.features.ResidueGroup(mlib, residue_grouping=0)
+        hydro = mdt.features.ResidueGroup(mlib, residue_grouping=1)
+        for out_of_range in (-1, 2):
+            self.assertRaises(ValueError, mdt.features.ResidueGroup,
+                              mlib, residue_grouping=out_of_range)
+        m = self.get_test_mdt(mlib, features=mnch)
         self.assertEqual([b for b in m], [139, 7, 14, 0])
-        mlib = self.get_mdt_library(residue_grouping=2)
-        m = self.get_test_mdt(mlib, features=71)
+        m = self.get_test_mdt(mlib, features=hydro)
         self.assertEqual([b for b in m], [97, 47, 16])
 
     def test_feature_iatta(self):

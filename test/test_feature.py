@@ -63,6 +63,16 @@ class FeatureTests(MDTTest):
                          ['A', 'P', 'B', 'L', 'E', 'U'])
         self.assertEqual([b for b in m], [0, 2, 2, 0, 0, 2])
 
+    def test_feature_resgrp(self):
+        """Check residue group feature"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library(residue_grouping=1)
+        m = self.get_test_mdt(mlib, features=71)
+        self.assertEqual([b for b in m], [139, 7, 14, 0])
+        mlib = self.get_mdt_library(residue_grouping=2)
+        m = self.get_test_mdt(mlib, features=71)
+        self.assertEqual([b for b in m], [97, 47, 16])
+
     def test_feature_iatta(self):
         """Check for atom type features"""
         env = self.get_environ()

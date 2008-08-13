@@ -38,8 +38,8 @@ class FeatureTests(MDTTest):
         m.add_alignment(aln)
         self.assertEqual([b for b in m], [0, 0, 0, 8, 2, 4, 4, 2])
 
-    def test_feature_average_residue_distance(self):
-        """Check average residue-residue distance feature"""
+    def test_feature_residue_distance_difference(self):
+        """Check residue-residue distance difference feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
         aln = modeller.alignment(env, file='test/data/struc-struc.ali')

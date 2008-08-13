@@ -81,6 +81,7 @@ typedef enum {
   MDT_FEATURE_RESIDUE,
   MDT_FEATURE_RESIDUE_PAIR,
   MDT_FEATURE_ALIGNED_RESIDUE,
+  MDT_FEATURE_ALIGNED_RESIDUE_PAIR,
   MDT_FEATURE_ATOM,
   MDT_FEATURE_ATOM_PAIR,
   MDT_FEATURE_TUPLE,
@@ -119,6 +120,12 @@ typedef int (*mdt_cb_feature_residue_pair)
 typedef int (*mdt_cb_feature_aligned_residue)
     (const struct mod_alignment *aln, int protein1, int protein2, int alnpos,
      struct mdt_properties *prop, void *data,
+     const struct mod_mdt_libfeature *feat, const struct mdt_library *mlib,
+     const struct mod_libraries *libs, GError **err);
+
+typedef int (*mdt_cb_feature_aligned_residue_pair)
+    (const struct mod_alignment *aln, int protein1, int protein2, int alnpos1,
+     int alnpos2, struct mdt_properties *prop, void *data,
      const struct mod_mdt_libfeature *feat, const struct mdt_library *mlib,
      const struct mod_libraries *libs, GError **err);
 
@@ -197,6 +204,13 @@ struct mdt_feature_aligned_residue {
   mdt_cb_feature_aligned_residue getbin;
 };
 
+/** User-defined aligned residue pair feature */
+struct mdt_feature_aligned_residue_pair {
+  int protein1;
+  int protein2;
+  mdt_cb_feature_aligned_residue_pair getbin;
+};
+
 /** User-defined atom feature */
 struct mdt_feature_atom {
   gboolean pos2;
@@ -232,6 +246,7 @@ struct mdt_feature {
     struct mdt_feature_protein protein;
     struct mdt_feature_residue residue;
     struct mdt_feature_residue_pair residue_pair;
+    struct mdt_feature_aligned_residue_pair aligned_residue_pair;
     struct mdt_feature_aligned_residue aligned_residue;
     struct mdt_feature_atom atom;
     struct mdt_feature_atom_pair atom_pair;

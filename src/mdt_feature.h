@@ -48,6 +48,14 @@ int mdt_feature_aligned_residue_add(struct mdt_library *mlib, const char *name,
                                     mdt_cb_feature_aligned_residue getbin,
                                     void *data, GError **err);
 
+/** Add an aligned residue pair feature.
+    \return the index of the new feature, or -1 on error. */
+MDTDLLEXPORT
+int mdt_feature_aligned_residue_pair_add(
+    struct mdt_library *mlib, const char *name, mod_mdt_calc precalc_type,
+    int protein1, int protein2, gboolean asymmetric,
+    mdt_cb_feature_aligned_residue_pair getbin, void *data, GError **err);
+
 /** Add an atom feature.
     \note The system is automatically instructed to read in PDB files.
     \return the index of the new feature */
@@ -356,6 +364,12 @@ MDTDLLEXPORT
 int mdt_feature_omega_dihedral_difference(struct mdt_library *mlib,
                                           int protein1, int protein2,
                                           GError **err);
+
+/** Add a residue-residue distance difference feature. */
+MDTDLLEXPORT
+int mdt_feature_residue_distance_difference(struct mdt_library *mlib,
+                                            int protein1, int protein2,
+                                            GError **err);
 
 G_END_DECLS
 

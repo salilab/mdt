@@ -146,6 +146,20 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     } else {
       return index_inrange(ibin, feat);
     }
+  case MDT_FEATURE_ALIGNED_RESIDUE_PAIR:
+    if (feat->iknown == MOD_MDTP_AB) {
+      iseq = is2;
+    } else {
+      iseq = is3;
+    }
+    ibin = mfeat->u.aligned_residue_pair.getbin(aln, is1, iseq, ip1, ip2, prop,
+                                                mfeat->data, feat, mlib, libs,
+                                                err);
+    if (ibin < 0) {
+      return -1;
+    } else {
+      return index_inrange(ibin, feat);
+    }
   case MDT_FEATURE_ATOM:
     ibin = mfeat->u.atom.getbin(aln, is1, mfeat->u.atom.pos2 ? ia1p : ia1,
                                 prop, mfeat->data, feat, mlib, libs, err);

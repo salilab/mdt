@@ -42,8 +42,10 @@ class FeatureTests(MDTTest):
         """Check residue-residue distance difference feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        ddist = mdt.features.ResidueDistanceDifference(mlib,
+                                          bins=mdt.uniform_bins(20, -10, 1))
         aln = modeller.alignment(env, file='test/data/struc-struc.ali')
-        m = mdt.Table(mlib, features=40)
+        m = mdt.Table(mlib, features=ddist)
         m.add_alignment(aln)
         self.assertEqual(m[9], 20)
         self.assertEqual(m[10], 20)
@@ -510,11 +512,13 @@ class FeatureTests(MDTTest):
         dist = mdt.features.ResidueDistance(mlib,
                                             bins=mdt.uniform_bins(7, 0, 2.0))
         avresacc = mdt.features.AverageResidueAccessibility(mlib,
-                                             bins=mdt.uniform_bins(29, 0, 5))
+                                            bins=mdt.uniform_bins(29, 0, 5))
         diff = mdt.features.ResidueIndexDifference(mlib,
-                                              bins=mdt.uniform_bins(20, -10, 1))
+                                            bins=mdt.uniform_bins(20, -10, 1))
+        ddist = mdt.features.ResidueDistanceDifference(mlib,
+                                            bins=mdt.uniform_bins(20, -10, 1))
         sym_features = (24, 25, avresacc, 48)
-        asym_features = (dist, 40, diff)
+        asym_features = (dist, ddist, diff)
         for a in sym_features:
             m = mdt.Table(mlib, features=a)
             self.assertEqual(m.symmetric, True)

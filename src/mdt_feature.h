@@ -371,6 +371,14 @@ int mdt_feature_residue_distance_difference(struct mdt_library *mlib,
                                             int protein1, int protein2,
                                             GError **err);
 
+/** Add a mainchain conformation (Ramachandran) feature. */
+MDTDLLEXPORT
+int mdt_feature_mainchain_conformation(struct mdt_library *mlib, int protein,
+                                       int delta, int align_delta,
+                                       gboolean pos2,
+                                       const struct mod_libraries *libs,
+                                       GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

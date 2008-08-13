@@ -55,8 +55,9 @@ class FeatureTests(MDTTest):
         """Check Ramachandran mainchain conformation class feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        conf = mdt.features.MainchainConformation(mlib)
         aln = modeller.alignment(env, file='test/data/tiny.ali')
-        m = mdt.Table(mlib, features=43)
+        m = mdt.Table(mlib, features=conf)
         m.add_alignment(aln)
         self.assertEqual([b.symbol for b in m.features[0].bins],
                          ['A', 'P', 'B', 'L', 'E', 'U'])

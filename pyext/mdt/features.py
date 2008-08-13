@@ -26,6 +26,12 @@ class Residue(_Base):
         self._create_bins(mlib, bins)
 
 
+class ResidueFixedBins(_Base):
+    def __init__(self, mlib, protein=0, delta=0, align_delta=0, pos2=False):
+        self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
+                                  pos2, mlib._env.libs.modpt)
+
+
 class ResiduePair(_Base):
     def __init__(self, mlib, bins, protein=0):
         self._ifeat = self._setup(mlib._modpt, protein)
@@ -98,11 +104,8 @@ class RadiusOfGyration(Protein):
 class SequenceLength(Protein):
     _setup = _mdt.mdt_feature_sequence_length
 
-class ResidueType(Residue):
+class ResidueType(ResidueFixedBins):
     _setup = _mdt.mdt_feature_residue_type
-    def __init__(self, mlib, protein=0, delta=0, align_delta=0, pos2=False):
-        self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
-                                  pos2, mlib._env.libs.modpt)
 
 class ResidueAccessibility(Residue):
     _setup = _mdt.mdt_feature_residue_accessibility
@@ -131,34 +134,32 @@ class OmegaDihedral(Residue):
 class AlphaDihedral(Residue):
     _setup = _mdt.mdt_feature_alpha_dihedral
 
-class DihedralClass(Residue):
-    def __init__(self, mlib, protein=0, delta=0, align_delta=0, pos2=False):
-        self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
-                                  pos2, mlib._env.libs.modpt)
-
-class Chi1Class(DihedralClass):
+class Chi1Class(ResidueFixedBins):
     _setup = _mdt.mdt_feature_chi1_class
 
-class Chi2Class(DihedralClass):
+class Chi2Class(ResidueFixedBins):
     _setup = _mdt.mdt_feature_chi2_class
 
-class Chi3Class(DihedralClass):
+class Chi3Class(ResidueFixedBins):
     _setup = _mdt.mdt_feature_chi3_class
 
-class Chi4Class(DihedralClass):
+class Chi4Class(ResidueFixedBins):
     _setup = _mdt.mdt_feature_chi4_class
 
-class Chi5Class(DihedralClass):
+class Chi5Class(ResidueFixedBins):
     _setup = _mdt.mdt_feature_chi5_class
 
-class PhiClass(DihedralClass):
+class PhiClass(ResidueFixedBins):
     _setup = _mdt.mdt_feature_phi_class
 
-class PsiClass(DihedralClass):
+class PsiClass(ResidueFixedBins):
     _setup = _mdt.mdt_feature_psi_class
 
-class OmegaClass(DihedralClass):
+class OmegaClass(ResidueFixedBins):
     _setup = _mdt.mdt_feature_omega_class
+
+class MainchainConformation(ResidueFixedBins):
+    _setup = _mdt.mdt_feature_mainchain_conformation
 
 class ResidueDistance(ResiduePair):
     _setup = _mdt.mdt_feature_residue_distance

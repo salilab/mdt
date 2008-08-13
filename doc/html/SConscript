@@ -1,6 +1,6 @@
 import os.path
 
-Import('env', 'bin', 'pyext', 'pyso')
+Import('env', 'bin', 'pyext')
 
 epydoc_bin = "/usr/bin/epydoc"
 epydoc_opts = "--inheritance grouped --no-private --no-frames --html"
@@ -42,7 +42,7 @@ builder_docbook = Builder(action=action_docbook, emitter=emit_docbook)
 env.Append(BUILDERS = {'Docbook': builder_docbook, 'Epydoc': builder_epydoc})
 
 docbook = env.Docbook("index.html", "../manual.xml")
-epydoc = env.Epydoc('epydoc/index.html', (bin, pyext, pyso))
+epydoc = env.Epydoc('epydoc/index.html', (bin, pyext))
 
 docdir = env['docdir']
 env.Install(docdir, docbook)

@@ -51,6 +51,17 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[10], 20)
         self.assertEqual(sum([b for b in m]), 40)
 
+    def test_feature_rama(self):
+        """Check Ramachandran mainchain conformation class feature"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        aln = modeller.alignment(env, file='test/data/tiny.ali')
+        m = mdt.Table(mlib, features=43)
+        m.add_alignment(aln)
+        self.assertEqual([b.symbol for b in m.features[0].bins],
+                         ['A', 'P', 'B', 'L', 'E', 'U'])
+        self.assertEqual([b for b in m], [0, 2, 2, 0, 0, 2])
+
     def test_feature_iatta(self):
         """Check for atom type features"""
         env = self.get_environ()

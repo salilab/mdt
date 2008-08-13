@@ -203,7 +203,7 @@ class FeatureTests(MDTTest):
         bins = mdt.uniform_bins(30, 0.0, 5.0)
         resacc = mdt.features.ResidueAccessibility(mlib, bins)
         avresacc = mdt.features.AverageResidueAccessibility(mlib,
-                                             bins=mdt.uniform_bins(29, 0, 5))
+                                             bins=mdt.uniform_bins(10, 0, 15))
         m = self.get_test_mdt(mlib, features=resacc)
         self.assertEqual(m.shape, (31,))
         self.assertInTolerance(m[0], 24.0, 1.0005)
@@ -211,10 +211,10 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[2], 4.0, 1.0005)
         self.assertEqual(m[-1], 0.0)
         m = self.get_test_mdt(mlib, features=avresacc)
-        self.assertEqual(m.shape, (30,))
-        self.assertInTolerance(m[0], 435.0, 0.0005)
-        self.assertInTolerance(m[1], 303.0, 0.0005)
-        self.assertInTolerance(m[2], 257.0, 0.0005)
+        self.assertEqual(m.shape, (11,))
+        self.assertInTolerance(m[0], 988.0, 10.0005)
+        self.assertInTolerance(m[1], 1379.0, 10.0005)
+        self.assertInTolerance(m[2], 1317.0, 10.0005)
 
     def test_feature_resind_diff(self):
         """Test the residue index difference feature"""

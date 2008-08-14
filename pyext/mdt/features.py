@@ -32,12 +32,31 @@ class Residue(_Base):
     """A feature defined on single residues in a protein."""
     def __init__(self, mlib, bins, protein=0, delta=0, align_delta=0,
                  pos2=False):
+        """
+        Create a new residue feature.
+
+        :Parameters:
+          - `mlib`: the `Library` to create the feature in.
+          - `bins`: list of bins (list of (start, end, symbol) triples, or
+            the result of `mdt.uniform_bins`).
+          - `protein`: the protein to use: 0 for the first in each protein pair,
+            1 for the second.
+          - `delta`: if non-zero, don't calculate the feature for the residue
+            position returned by the residue scan - instead, offset it by
+            `delta` residues in the sequence. Applied before `align_delta`.
+          - `align_delta`: if non-zero, don't calculate the feature for the
+            alignment position returned by the residue scan - instead, offset
+            it by `align_delta` alignment positions. Applied after `delta`.
+          - `pos2`: if True, force a residue pair scan, and evaluate the
+            feature on the second residue in each pair.
+        """
         self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
                                   pos2)
         self._create_bins(mlib, bins)
 
 
 class ResidueFixedBins(_Base):
+    """A residue feature for which bins cannot be specified."""
     def __init__(self, mlib, protein=0, delta=0, align_delta=0, pos2=False):
         self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
                                   pos2, mlib._env.libs.modpt)

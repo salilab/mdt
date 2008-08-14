@@ -17,7 +17,7 @@ static int getbin(const struct mod_alignment *aln, int protein, int residue,
   int dihtype = GPOINTER_TO_INT(data);
   struct mod_structure *s = mod_alignment_structure_get(aln, protein);
   float f = mod_float2_get(&s->dih, residue, dihtype);
-  return iclsbin(f, feat);
+  return feat_to_bin(f, feat);
 }
 
 static int add_feature(struct mdt_library *mlib, int protein, int delta,

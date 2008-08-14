@@ -36,7 +36,7 @@ static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
   if (diff > 180.0) {
     diff -= 360.0;
   }
-  return iclsbin(diff, feat);
+  return feat_to_bin(diff, feat);
 }
 
 static int add_feature(struct mdt_library *mlib, int protein1, int protein2,

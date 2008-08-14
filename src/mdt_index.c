@@ -23,7 +23,7 @@ static int index_inrange(int index, const struct mod_mdt_libfeature *feat)
 }
 
 /** Convert a raw number to the corresponding feature's MDT bin index */
-int iclsbin(float x, const struct mod_mdt_libfeature *feat)
+int feat_to_bin(float x, const struct mod_mdt_libfeature *feat)
 {
   int i;
   const struct mod_mdt_bin *bin = feat->bins;
@@ -33,7 +33,7 @@ int iclsbin(float x, const struct mod_mdt_libfeature *feat)
     }
   }
   bin = &feat->bins[0];
-  mod_logwarning("iclsbin", "Undefined value; X,x1,x2,n,bin: %f %f %f %d",
+  mod_logwarning("feat_to_bin", "Undefined value; X,x1,x2,n,bin: %f %f %f %d",
                  x, bin->rang1, bin->rang2, feat->nbins);
   return feat->nbins;
 }

@@ -15,7 +15,7 @@ static int getbin(const struct mod_alignment *aln, int protein,
                   const struct mod_libraries *libs, GError **err)
 {
   struct mod_sequence *seq = mod_alignment_sequence_get(aln, protein);
-  return iclsbin(seq->nres, feat);
+  return feat_to_bin(seq->nres, feat);
 }
 
 int mdt_feature_sequence_length(struct mdt_library *mlib, int protein,

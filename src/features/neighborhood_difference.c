@@ -53,7 +53,7 @@ static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
                   const struct mod_libraries *libs, GError **err)
 {
   float f = local_difference(aln, protein1, protein2, alnpos, libs);
-  return iclsbin(f, feat);
+  return feat_to_bin(f, feat);
 }
 
 static int avgetbin(const struct mod_alignment *aln, int protein1, int protein2,
@@ -64,7 +64,7 @@ static int avgetbin(const struct mod_alignment *aln, int protein1, int protein2,
 {
   float f1 = local_difference(aln, protein1, protein2, alnpos1, libs);
   float f2 = local_difference(aln, protein1, protein2, alnpos2, libs);
-  return iclsbin(0.5 * (f1 + f2), feat);
+  return feat_to_bin(0.5 * (f1 + f2), feat);
 }
 
 int mdt_feature_neighborhood_difference(struct mdt_library *mlib, int protein1,

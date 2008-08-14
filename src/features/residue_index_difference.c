@@ -14,7 +14,7 @@ static int getbin(const struct mod_alignment *aln, int protein, int residue1,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {
-  return iclsbin(residue2 - residue1, feat);
+  return feat_to_bin(residue2 - residue1, feat);
 }
 
 int mdt_feature_residue_index_difference(struct mdt_library *mlib,

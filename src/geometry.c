@@ -109,7 +109,7 @@ int idist0(int ia1, int ia1p, const struct mod_structure *struc,
     y = mod_float1_pt(&struc->cd.y);
     z = mod_float1_pt(&struc->cd.z);
     d = dist1(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p]);
-    return iclsbin(d, feat);
+    return feat_to_bin(d, feat);
   } else {
     return feat->nbins;
   }
@@ -127,7 +127,7 @@ int iangle0(int ia1, int ia2, int ia3, const struct mod_structure *struc,
     z = mod_float1_pt(&struc->cd.z);
     d = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
                y[ia3], z[ia3]);
-    return iclsbin(d, feat);
+    return feat_to_bin(d, feat);
   } else {
     return feat->nbins;
   }
@@ -150,7 +150,7 @@ int idihedral0(int ia1, int ia2, int ia3, int ia4,
     if (outrange) {
       return feat->nbins;
     } else {
-      return iclsbin(d, feat);
+      return feat_to_bin(d, feat);
     }
   } else {
     return feat->nbins;

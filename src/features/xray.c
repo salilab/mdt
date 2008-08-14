@@ -20,7 +20,7 @@ static int getbin(const struct mod_alignment *aln, int protein,
      bins required to hold all defined resolutions while still
      separating NMR from X-ray structures: */
   float f = (seq->resol == -1.00 ? 0.45 : seq->resol);
-  return iclsbin(f, feat);
+  return feat_to_bin(f, feat);
 }
 
 int mdt_feature_xray_resolution(struct mdt_library *mlib, int protein,

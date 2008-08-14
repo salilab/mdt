@@ -44,7 +44,7 @@ static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
   if (nres > 0) {
     f /= nres;
   }
-  return iclsbin(f, feat);
+  return feat_to_bin(f, feat);
 }
 
 int mdt_feature_sequence_identity(struct mdt_library *mlib, int protein1,

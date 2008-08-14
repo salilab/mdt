@@ -49,7 +49,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
 
 /** Convert a raw number to the corresponding feature's MDT bin index */
 MDTDLLLOCAL
-int iclsbin(float x, const struct mod_mdt_libfeature *feat);
+int feat_to_bin(float x, const struct mod_mdt_libfeature *feat);
 
 G_END_DECLS
 

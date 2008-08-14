@@ -33,7 +33,7 @@ static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
 {
   float d1 = get_distance(aln, protein1, alnpos1, alnpos2);
   float d2 = get_distance(aln, protein2, alnpos1, alnpos2);
-  return iclsbin(d2 - d1, feat);
+  return feat_to_bin(d2 - d1, feat);
 }
 
 int mdt_feature_residue_distance_difference(struct mdt_library *mlib,

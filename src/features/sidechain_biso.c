@@ -21,7 +21,7 @@ static int getbin(const struct mod_alignment *aln, int protein, int residue,
     /* Biso of zero counts as undefined */
     return feat->nbins;
   } else {
-    return iclsbin(table[residue], feat);
+    return feat_to_bin(table[residue], feat);
   }
 }
 

@@ -16,7 +16,7 @@ static int getbin(const struct mod_alignment *aln, int protein,
                   const struct mod_libraries *libs, GError **err)
 {
   float f = property_radius_gyration(aln, protein, prop);
-  return iclsbin(f, feat);
+  return feat_to_bin(f, feat);
 }
 
 int mdt_feature_radius_of_gyration(struct mdt_library *mlib, int protein,

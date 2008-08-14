@@ -21,8 +21,8 @@ static int getbin(const struct mod_alignment *aln, int protein, int atom,
   binprop = property_hb_iatta(aln, protein, prop, mlib, libs, err);
   if (binprop) {
     struct mod_structure *s = mod_alignment_structure_get(aln, protein);
-    return iclsbin(numb_hda(atom, binprop, &s->cd, mlib->hbond,
-                            mlib->hbond_cutoff, hbprop_type), feat);
+    return feat_to_bin(numb_hda(atom, binprop, &s->cd, mlib->hbond,
+                                mlib->hbond_cutoff, hbprop_type), feat);
   } else {
     return -1;
   }

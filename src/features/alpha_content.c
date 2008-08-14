@@ -29,7 +29,7 @@ static int getbin(const struct mod_alignment *aln, int protein,
   if (seq->nres > 0) {
     f /= seq->nres;
   }
-  return iclsbin(f, feat);
+  return feat_to_bin(f, feat);
 }
 
 int mdt_feature_alpha_content(struct mdt_library *mlib, int protein,

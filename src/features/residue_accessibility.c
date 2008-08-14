@@ -16,7 +16,7 @@ static int getbin(const struct mod_alignment *aln, int protein, int residue,
 {
   struct mod_structure *s = mod_alignment_structure_get(aln, protein);
   float f = mod_float1_get(&s->acc, residue);
-  return iclsbin(f, feat);
+  return feat_to_bin(f, feat);
 }
 
 int mdt_feature_residue_accessibility(struct mdt_library *mlib, int protein,

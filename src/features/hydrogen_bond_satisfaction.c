@@ -19,7 +19,7 @@ static int getbin(const struct mod_alignment *aln, int protein,
 {
   float fprop;
   if (property_hbpot(aln, protein, prop, mlib, libs, &fprop, err)) {
-    return iclsbin(fprop, feat);
+    return feat_to_bin(fprop, feat);
   } else {
     return -1;
   }

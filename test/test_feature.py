@@ -3,8 +3,22 @@ from mdt_test import MDTTest
 import mdt
 import mdt.features
 import modeller
+import os
 
 class FeatureTests(MDTTest):
+
+    def test_feature_alpha_content(self):
+        """Check alpha content feature"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        for (alnfile, bin) in (('tiny.ali', 0), ('alignment.ali', 5)):
+            m = mdt.Table(mlib, features=30)
+            a = modeller.alignment(env,
+                                   file=os.path.join('test', 'data', alnfile))
+            m.add_alignment(a)
+            self.assertEqual(m.shape, (11,))
+            self.assertEqual(m.sum(), 1)
+            self.assertEqual(m[bin], 1)
 
     def test_feature_sidechain_biso(self):
         """Check average sidechain Biso feature"""

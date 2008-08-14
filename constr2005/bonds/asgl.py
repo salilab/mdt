@@ -6,7 +6,7 @@ import mdt.features
 env = environ()
 mlib = mdt.Library(env)
 mlib.bond_classes.read('${LIB}/bndgrp.lib')
-xray = mdt.features.XRayResolution(mlib, bins=[(0.51, 2.001, '<=2.0')])
+xray = mdt.features.XRayResolution(mlib, bins=[(0.51, 2.001, 'High res(2.0A)')])
 bond_type = mdt.features.BondType(mlib)
 bond_length = mdt.features.BondLength(mlib,
                                       bins=mdt.uniform_bins(400, 1.0, 0.0025))

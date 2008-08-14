@@ -67,6 +67,8 @@ struct mdt_properties {
   int *iatta;
   /** Fractional atom accessibility */
   float *fatmacc;
+  /** Average sidechain Biso */
+  float *sidechain_biso;
 };
 
 /** Calculate a single MDT feature index */

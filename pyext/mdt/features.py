@@ -174,6 +174,9 @@ class ResidueGroup(ResidueFixedBins):
         self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
                                   pos2, residue_grouping, mlib._env.libs.modpt)
 
+class SidechainBiso(Residue):
+    _setup = _mdt.mdt_feature_sidechain_biso
+
 class ResidueDistance(ResiduePair):
     _setup = _mdt.mdt_feature_residue_distance
 

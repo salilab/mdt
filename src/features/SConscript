@@ -8,7 +8,7 @@ files = ['xray.c', 'radius_gyration.c', 'residue_accessibility.c',
          'average_residue_accessibility.c', 'residue_index_difference.c',
          'residue_dihedral_difference.c', 'residue_distance_difference.c',
          'mainchain_conformation.c', 'residue_group.c',
-         'neighborhood_difference.c', 'sequence_identity.c']
+         'neighborhood_difference.c', 'sequence_identity.c', 'sidechain_biso.c']
 
 files = [File(x) for x in files]
 Return('files')

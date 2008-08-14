@@ -98,6 +98,11 @@ MDTDLLLOCAL
 float property_radius_gyration(const struct mod_alignment *aln, int is,
                                struct mdt_properties *prop);
 
+/** Get/calculate the array of average sidechain Biso. */
+MDTDLLLOCAL
+const float *property_sidechain_biso(const struct mod_alignment *aln, int is,
+                                     struct mdt_properties *prop);
+
 G_END_DECLS
 
 #endif  /* __MDT_PROPERTY_H */

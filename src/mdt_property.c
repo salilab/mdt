@@ -30,6 +30,7 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
     prop[i].radius_gyration = -1;
     prop[i].iatta = NULL;
     prop[i].fatmacc = NULL;
+    prop[i].sidechain_biso = NULL;
   }
   return prop;
 }
@@ -57,6 +58,7 @@ void mdt_properties_free(struct mdt_properties *prop,
     g_free(prop[i].hbpot);
     g_free(prop[i].iatta);
     g_free(prop[i].fatmacc);
+    g_free(prop[i].sidechain_biso);
   }
   g_free(prop);
 }
@@ -337,6 +339,39 @@ gboolean property_fatmacc(const struct mod_alignment *aln, int is,
   }
   *table = prop[is].fatmacc;
   return TRUE;
+}
+
+/** Get/calculate the array of average sidechain Biso. */
+const float *property_sidechain_biso(const struct mod_alignment *aln, int is,
+                                     struct mdt_properties *prop)
+{
+  struct mod_structure *struc = mod_alignment_structure_get(aln, is);
+  if (!prop[is].sidechain_biso) {
+    struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
+    float *biso;
+    int i, natm, total_ok = 0;
+    float total_biso = 0.;
+
+    biso = g_malloc(sizeof(float) * seq->nres);
+    for (i = 0; i < seq->nres; ++i) {
+      mod_residue_sidechain_biso(&struc->cd, seq, i, &biso[i], &natm);
+      if (natm > 0) {
+        total_biso += biso[i];
+        total_ok++;
+      }
+    }
+    /* Heuristic: make sure the units are in the order of tens */
+    if (total_ok > 0) {
+      total_biso /= total_ok;
+      if (total_biso < 2.) {
+        for (i = 0; i < seq->nres; ++i) {
+          biso[i] *= 4.0 * G_PI * G_PI;
+        }
+      }
+    }
+    prop[is].sidechain_biso = biso;
+  }
+  return prop[is].sidechain_biso;
 }
 
 /** Get/calculate the list of all bonds for a structure. */

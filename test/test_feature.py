@@ -10,6 +10,8 @@ class FeatureTests(MDTTest):
         """Check average sidechain Biso feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        sidechain_biso = mdt.features.SidechainBiso(mlib,
+                                               bins=mdt.uniform_bins(5, 0, 10))
         mdl = modeller.model(env)
         mdl.build_sequence('A')
         aln = modeller.alignment(env)
@@ -22,7 +24,7 @@ class FeatureTests(MDTTest):
                             (0, -1), # Zero Biso should be "undefined"
                             (1, 3)): # Biso < 2 is multiplied by 4pi^2
             s.atoms['CB:1'].biso = biso
-            m = mdt.Table(mlib, features=33)
+            m = mdt.Table(mlib, features=sidechain_biso)
             m.add_alignment(aln)
             self.assertEqual(m.shape, (6,))
             self.assertEqual(m.sum(), 1)

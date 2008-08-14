@@ -422,6 +422,16 @@ MDTDLLEXPORT
 int mdt_feature_alpha_content(struct mdt_library *mlib, int protein,
                               GError **err);
 
+/** Add a distance from a gap feature. */
+MDTDLLEXPORT
+int mdt_feature_gap_distance(struct mdt_library *mlib, int protein1,
+                             int protein2, GError **err);
+
+/** Add an average distance from a gap feature. */
+MDTDLLEXPORT
+int mdt_feature_average_gap_distance(struct mdt_library *mlib, int protein1,
+                                     int protein2, GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

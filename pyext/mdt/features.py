@@ -198,11 +198,17 @@ class OmegaDihedralDifference(AlignedResidue):
 class NeighborhoodDifference(AlignedResidue):
     _setup = _mdt.mdt_feature_neighborhood_difference
 
+class GapDistance(AlignedResidue):
+    _setup = _mdt.mdt_feature_gap_distance
+
 class ResidueDistanceDifference(AlignedResiduePair):
     _setup = _mdt.mdt_feature_residue_distance_difference
 
 class AverageNeighborhoodDifference(AlignedResiduePair):
     _setup = _mdt.mdt_feature_average_neighborhood_difference
+
+class AverageGapDistance(AlignedResiduePair):
+    _setup = _mdt.mdt_feature_average_gap_distance
 
 class AtomAccessibility(Atom):
     _setup = _mdt.mdt_feature_atom_accessibility

@@ -149,8 +149,7 @@ The &MDT; table is constructed with the following &MDT; Python script:
 </example>
 
 <para>
-In this case, the bin file does not contain all of the necessary information,
-and we must read the file <filename>bndgrp.lib</filename> which defines all
+In this case, we read the file <filename>bndgrp.lib</filename> which defines all
 chemical bonds, using the
 <ulink url="&epydoc;BondClasses.read">BondClasses.read</ulink> method. The
 MDT we then construct is a 3D table of X-ray resolution, bond type, and bond
@@ -169,8 +168,9 @@ which can reshape a table by reordering the features, and/or reducing the bin
 ranges (offset or shape) of these features. In this case we don't change the
 feature order, or the offset (leaving it at the default 0,0,0) but we do
 change the shape. The first feature is restricted to only one bin - because
-our bin file for X-ray resolution contains only two bins (for "less than
-2 &Aring;" and "2 &Aring; or greater") this keeps only the good structures
+our X-ray resolution feature contains only two bins (for "less than
+2 &Aring;" and the undefined bin, which catches everything 2 &Aring; or
+greater) this keeps only the good structures
 for our plot. The other two features have their bin ranges reduced by 1
 (a negative value for shape means "reduce the size by this amount"),
 which effectively removes the final ("undefined") bin.</para>

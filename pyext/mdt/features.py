@@ -228,6 +228,9 @@ class AtomDistance(AtomPair):
 class HydrogenBondSatisfaction(Protein):
     _setup = _mdt.mdt_feature_hydrogen_bond_satisfaction
 
+class AlphaContent(Protein):
+    _setup = _mdt.mdt_feature_alpha_content
+
 class SequenceIdentity(ProteinPair):
     _setup = _mdt.mdt_feature_sequence_identity
 

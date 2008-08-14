@@ -417,6 +417,11 @@ int mdt_feature_sidechain_biso(struct mdt_library *mlib, int protein,
                                int delta, int align_delta, gboolean pos2,
                                GError **err);
 
+/** Add a protein alpha content feature. */
+MDTDLLEXPORT
+int mdt_feature_alpha_content(struct mdt_library *mlib, int protein,
+                              GError **err);
+
 G_END_DECLS
 
 #endif  /* __MDT_FEATURE_H */

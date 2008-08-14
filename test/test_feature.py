@@ -176,6 +176,8 @@ class FeatureTests(MDTTest):
         mlib.atom_classes.read('${LIB}/atmcls-melo.lib')
         attyp = mdt.features.AtomType(mlib)
         attyp2 = mdt.features.AtomType(mlib, pos2=True)
+        self.assertRaises(mdt.MDTError, mlib.atom_classes.read,
+                          '${LIB}/atmcls-melo.lib')
         aln = modeller.alignment(env, file='test/data/tiny.ali')
         m = mdt.Table(mlib, features=attyp)
         m.add_alignment(aln)
@@ -203,6 +205,8 @@ class FeatureTests(MDTTest):
                                                  mdt.uniform_bins(9, 1., 1.))
         satisf = mdt.features.HydrogenBondSatisfaction(mlib,
                                                  mdt.uniform_bins(100, 0., 10.))
+        self.assertRaises(mdt.MDTError, mlib.hbond_classes.read,
+                          'data/atmcls-hbda.lib')
         m = mdt.Table(mlib, features=donor)
         m2 = mdt.Table(mlib, features=accep)
         m3 = mdt.Table(mlib, features=satisf)
@@ -334,6 +338,8 @@ class FeatureTests(MDTTest):
         bondtype = mdt.features.BondType(mlib)
         bondlen = mdt.features.BondLength(mlib,
                                       bins=mdt.uniform_bins(200, 1.0, 0.005))
+        self.assertRaises(mdt.MDTError, mlib.bond_classes.read,
+                          'data/bndgrp.lib')
         m = mdt.Table(mlib, features=bondtype)
         m2 = mdt.Table(mlib, features=bondlen)
         aln = modeller.alignment(env, file='test/data/alignment.ali')
@@ -358,6 +364,8 @@ class FeatureTests(MDTTest):
         angletype = mdt.features.AngleType(mlib)
         angle = mdt.features.Angle(mlib,
                                    bins=mdt.uniform_bins(288, 0.0, 0.625))
+        self.assertRaises(mdt.MDTError, mlib.angle_classes.read,
+                          'data/anggrp.lib')
         m = mdt.Table(mlib, features=angletype)
         m2 = mdt.Table(mlib, features=angle)
         aln = modeller.alignment(env, file='test/data/alignment.ali')
@@ -382,6 +390,8 @@ class FeatureTests(MDTTest):
         dihedtype = mdt.features.DihedralType(mlib)
         dihedral = mdt.features.Dihedral(mlib,
                                          bins=mdt.uniform_bins(288, -180, 1.25))
+        self.assertRaises(mdt.MDTError, mlib.dihedral_classes.read,
+                          'data/impgrp.lib')
         m = mdt.Table(mlib, features=dihedtype)
         m2 = mdt.Table(mlib, features=dihedral)
         aln = modeller.alignment(env, file='test/data/alignment.ali')
@@ -407,6 +417,8 @@ class FeatureTests(MDTTest):
                                             bins=mdt.uniform_bins(6, 0, 30.0))
         tuple_dihed1 = mdt.features.TupleDihedral1(mlib,
                                           bins=mdt.uniform_bins(6, -180, 60.0))
+        self.assertRaises(mdt.MDTError, mlib.tuple_classes.read,
+                          'data/dblcls.lib')
         # These features only work on atom triplets:
         for f in (mdt.features.TupleDihedral2, mdt.features.TupleDihedral3):
             self.assertRaises(mdt.MDTError, f, mlib,
@@ -434,6 +446,8 @@ class FeatureTests(MDTTest):
                                             bins=mdt.uniform_bins(6, 0, 30.0))
         tuple_dihed1 = mdt.features.TupleDihedral1(mlib,
                                           bins=mdt.uniform_bins(6, -180, 60.0))
+        self.assertRaises(mdt.MDTError, mlib.tuple_classes.read,
+                          'data/trpcls.lib')
         m1 = mdt.Table(mlib, features=tuple_type)
         m2 = mdt.Table(mlib, features=tuple_type2)
         m3 = mdt.Table(mlib, features=tuple_dist)

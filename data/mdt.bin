@@ -1,12 +1,12 @@
 FEATURE 47
 DISTANCE FROM A GAP A-B (47)
-1     3             SYM1      SYM2
+10    3             SYM1      SYM2
   0   1
 
 
 FEATURE 48
 AVERAGE DISTANCE FROM A GAP A-B (48)
-1     3             SYM1      SYM2
+10    3             SYM1      SYM2
  0    1
 
 

@@ -7,6 +7,22 @@ import os
 
 class FeatureTests(MDTTest):
 
+    def test_feature_gap_distance(self):
+        """Check distance from a gap features"""
+        mlib = self.get_mdt_library()
+        m = self.get_test_mdt(mlib, features=47)
+        self.assertEqual(m.shape, (10,))
+        self.assertEqual(m.sum(), 212)
+        self.assertEqual(m[0], 104)
+        self.assertEqual(m[1], 12)
+        self.assertEqual(m[-1], 28)
+        m = self.get_test_mdt(mlib, features=48)
+        self.assertEqual(m.shape, (10,))
+        self.assertEqual(m.sum(), 10920)
+        self.assertEqual(m[0], 3168)
+        self.assertEqual(m[1], 1338)
+        self.assertEqual(m[-1], 406)
+
     def test_feature_alpha_content(self):
         """Check alpha content feature"""
         env = self.get_environ()

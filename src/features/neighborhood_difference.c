@@ -6,6 +6,7 @@
 #include "modeller.h"
 #include "../mdt_index.h"
 #include "../mdt_feature.h"
+#include "../mdt_all_features.h"
 
 /** Get the neighborhood difference for the given alignment position. This is
     simply the average of the residue distance scores for all neighbors. */

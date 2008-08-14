@@ -6,6 +6,7 @@
 #include "modeller.h"
 #include "../mdt_index.h"
 #include "../mdt_feature.h"
+#include "../mdt_all_features.h"
 
 /** Return the number of identical aligned residues in the two sequences */
 static int num_equiv(const struct mod_alignment *aln, int protein1,

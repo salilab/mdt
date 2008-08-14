@@ -7,6 +7,7 @@
 #include "../mdt_error.h"
 #include "../mdt_index.h"
 #include "../mdt_feature.h"
+#include "../mdt_all_features.h"
 
 static int getbin(const struct mod_alignment *aln, int protein, int residue,
                   struct mdt_properties *prop, void *data,

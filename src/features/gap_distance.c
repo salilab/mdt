@@ -6,6 +6,7 @@
 #include "modeller.h"
 #include "../mdt_index.h"
 #include "../mdt_feature.h"
+#include "../mdt_all_features.h"
 
 /** Get distance to a gap from the given alignment position,
     in the given direction. */

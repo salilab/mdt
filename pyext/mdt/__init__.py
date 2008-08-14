@@ -81,18 +81,13 @@ class Library(modobject):
         obj._modpt = _mdt.mdt_library_new()
         return obj
 
-    def __init__(self, env, binfile, residue_grouping=1,
-                 distance_atoms=('CA', 'CA'), special_atoms=False,
+    def __init__(self, env, distance_atoms=('CA', 'CA'), special_atoms=False,
                  hbond_cutoff=3.5):
         """
         Create a new MDT library.
 
         :Parameters:
           - `env`: the Modeller environment to use
-          - `binfile`: file defining bin ranges
-          - `residue_grouping`: type of residue grouping for residue class
-            features, as defined in resgrp.lib (1=mainchain conformation,
-            2=hydrophobicity)
           - `distance_atoms`: the atom types to use for "specified" distance
             features
           - `special_atoms`: whether to treat disulfide and termini atoms
@@ -102,9 +97,8 @@ class Library(modobject):
         self._env = env.copy()
         _mdt.mdt_library_hbond_cutoff_set(self._modpt, hbond_cutoff)
         _mdt.mdt_library_special_atoms_set(self._modpt, special_atoms)
-        _modeller.mod_mdt_library_readbin(self._basept, self._env.libs.modpt,
-                                          binfile, residue_grouping,
-                                          distance_atoms)
+        _modeller.mod_mdt_library_distance_atoms_set(self._basept,
+                                                     distance_atoms)
 
     def __del__(self):
         _mdt.mdt_library_free(self._modpt)
@@ -726,11 +720,7 @@ class Table(TableSection):
         if not isinstance(features, (list, tuple)):
             features = (features,)
         for feat in features:
-            if feat in (1, 2, 66, 67, 68, 69):
-                raise TypeError("Cannot use old residue type features")
-            elif isinstance(feat, int):
-                ifeat.append(feat)
-            elif hasattr(feat, '_ifeat') and feat._ifeat is not None:
+            if hasattr(feat, '_ifeat') and feat._ifeat is not None:
                 ifeat.append(feat._ifeat)
             else:
                 raise TypeError("features should be objects from mdt.features")
@@ -878,7 +868,7 @@ class Source(object):
                  residue_span_range, self._mlib._env.libs.modpt,
                  self._edat.modpt)
 
-    def index(self, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
+    def index(self, feat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
               ip2, ibnd1, ibnd1p, is3, ir3, ir3p):
         """
         Return the bin index (starting at 1) of a single MDT feature.
@@ -889,7 +879,7 @@ class Source(object):
            is performed on these parameters. Avoid this function if possible.
 
         :Parameters:
-          - `ifeat`: MDT feature type.
+          - `feat`: MDT feature object from `mdt.features` module.
           - `is1`: index of the sequence within the alignment.
           - `ip1`: position within the sequence (i.e. including gaps).
           - `ir1`: residue index (i.e. not including alignment gaps).
@@ -901,9 +891,10 @@ class Source(object):
             features.
         """
         f = _mdt.mdt_alignment_index
-        return f(self._modpt, ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
-                 ia1p, ip2, ibnd1, ibnd1p, is3, ir3, ir3p, self._mlib._modpt,
-                 self._mlib._env.libs.modpt, self._edat.modpt)
+        return f(self._modpt, feat._ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p,
+                 ia1, ia1p, ip2, ibnd1, ibnd1p, is3, ir3, ir3p,
+                 self._mlib._modpt, self._mlib._env.libs.modpt,
+                 self._edat.modpt)
 
 
 def _pass_cutoffs(mdt, num, bin, density_cutoff, entropy_cutoff):

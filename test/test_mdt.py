@@ -19,13 +19,6 @@ class TableTests(MDTTest):
             ind = 21
         return ind
 
-    def test_bad_bins(self):
-        """Check that bad bin files raise an error"""
-        env = self.get_environ()
-        mlib = mdt.Library(env, 'test/data/bad.bin')
-        self.assertRaises(mdt.MDTError, mdt.Table, mlib, features=3)
-        self.assertRaises(mdt.MDTError, mdt.Table, mlib, features=30)
-
     def test_add(self):
         """Check adding MDTs"""
         mlib = self.get_mdt_library()
@@ -141,7 +134,7 @@ class TableTests(MDTTest):
 
         # Now do the same test on individually-queried indices:
         source = m.open_alignment(aln)
-        bins = [ source.index(1, 0, n, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        bins = [ source.index(restyp, 0, n, 0, n, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0) - 1 for n in range(len(seq)) ]
         bin_dist = [bins.count(n) for n in range(22)]
         self.assertEqual(bin_dist, known_dist)

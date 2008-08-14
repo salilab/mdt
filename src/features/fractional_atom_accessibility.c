@@ -14,9 +14,9 @@ static int getbin(const struct mod_alignment *aln, int protein, int atom,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {
-  float *table;
+  const float *table;
   struct mod_structure *s = mod_alignment_structure_get(aln, protein);
-  if (property_fatmacc(aln, protein, prop, feat, libs, &table, err)) {
+  if ((table = property_fatmacc(aln, protein, prop, libs, err))) {
     return ftable(table, s->cd.natm, atom, feat);
   } else {
     return -1;

@@ -305,12 +305,10 @@ float property_radius_gyration(const struct mod_alignment *aln, int is,
 }
 
 /** Get/calculate the array of fractional atom accessibilities.
-    \return TRUE on success. */
-gboolean property_fatmacc(const struct mod_alignment *aln, int is,
-                          struct mdt_properties *prop,
-                          const struct mod_mdt_libfeature *feat,
-                          const struct mod_libraries *libs, float **table,
-                          GError **err)
+    \return NULL on failure. */
+const float *property_fatmacc(const struct mod_alignment *aln, int is,
+                              struct mdt_properties *prop,
+                              const struct mod_libraries *libs, GError **err)
 {
   struct mod_structure *struc = mod_alignment_structure_get(aln, is);
   if (!prop[is].fatmacc) {
@@ -328,7 +326,7 @@ gboolean property_fatmacc(const struct mod_alignment *aln, int is,
       if (ierr) {
         handle_modeller_error(err);
         g_free(fatmacc);
-        return FALSE;
+        return NULL;
       }
       /* Get VDW atom radius */
       r = mod_float2_get(&libs->vdwcnt, iattyp - 1, libs->tpl.submodel - 1);
@@ -337,8 +335,7 @@ gboolean property_fatmacc(const struct mod_alignment *aln, int is,
     }
     prop[is].fatmacc = fatmacc;
   }
-  *table = prop[is].fatmacc;
-  return TRUE;
+  return prop[is].fatmacc;
 }
 
 /** Get/calculate the array of average sidechain Biso. */

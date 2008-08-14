@@ -85,13 +85,11 @@ gboolean property_hbpot(const struct mod_alignment *aln, int is,
                         GError **err);
 
 /** Get/calculate the array of fractional atom accessibilities.
-    \return TRUE on success. */
+    \return NULL on failure. */
 MDTDLLLOCAL
-gboolean property_fatmacc(const struct mod_alignment *aln, int is,
-                          struct mdt_properties *prop,
-                          const struct mod_mdt_libfeature *feat,
-                          const struct mod_libraries *libs, float **table,
-                          GError **err);
+const float *property_fatmacc(const struct mod_alignment *aln, int is,
+                              struct mdt_properties *prop,
+                              const struct mod_libraries *libs, GError **err);
 
 /** Get/calculate the radius of gyration */
 MDTDLLLOCAL

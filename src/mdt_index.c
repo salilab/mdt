@@ -8,6 +8,7 @@
 #include "modeller.h"
 #include "util.h"
 #include "geometry.h"
+#include "mdt_feature.h"
 #include "mdt_index.h"
 #include "mdt_property.h"
 #include "mdt_hydrogen_bonds.h"

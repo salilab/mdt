@@ -27,12 +27,12 @@
 
 %include "../src/mdt.h"
 %include "../src/mdt_alignment.h"
-%include "../src/mdt_feature.h"
 %include "../src/mdt_all_features.h"
 
 # Wrap MDT types
 %include "mdt_type.i"
 %include "mdt_library.i"
+%include "mdt_feature.i"
 
 %init {
 #ifdef SWIGPYTHON

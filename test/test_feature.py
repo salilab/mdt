@@ -10,13 +10,15 @@ class FeatureTests(MDTTest):
         """Check sequence identity feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        # Put into 25% bins
+        sid = mdt.features.SequenceIdentity(mlib,
+                                            bins=mdt.uniform_bins(5, 0, 0.250))
         for (seq, id) in (('GGG', 0), ('AFV', 100), ('A--', 100),
                           ('AV-', 50)):
             aln = modeller.alignment(env)
             aln.append_sequence('AFV')
             aln.append_sequence(seq)
-            # Put into 25% bins
-            m = mdt.Table(mlib, features=15)
+            m = mdt.Table(mlib, features=sid)
             m.add_alignment(aln)
             self.assertEqual(m.shape, (6,))
             self.assertEqual(m.sum(), 2.0)

@@ -138,6 +138,35 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
   return nfeat;
 }
 
+int mdt_feature_protein_pair_add(struct mdt_library *mlib, const char *name,
+                                 mod_mdt_calc precalc_type, int protein1,
+                                 int protein2,
+                                 mdt_cb_feature_protein_pair getbin, void *data,
+                                 GError **err)
+{
+  char *fullname;
+  struct mdt_feature *feat;
+  int nfeat;
+
+  if (!check_protein_pair(protein1, protein2, "Protein pair", err)) {
+    return -1;
+  }
+
+  feat = add_feature(mlib, &nfeat);
+  feat->type = MDT_FEATURE_PROTEIN_PAIR;
+  feat->u.protein_pair.protein1 = protein1;
+  feat->u.protein_pair.protein2 = protein2;
+  feat->u.protein_pair.getbin = getbin;
+  feat->data = data;
+  fullname = g_strdup_printf("%s of proteins (%d,%d)", name, protein1,
+                             protein2);
+  mod_mdt_libfeature_register(&mlib->base, nfeat, fullname, precalc_type,
+                              protein2 == 1 ? MOD_MDTP_AB : MOD_MDTP_AC,
+                              MOD_MDTS_PROTEIN, FALSE, 0);
+  g_free(fullname);
+  return nfeat;
+}
+
 int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
                             mod_mdt_calc precalc_type, int protein, int delta,
                             int align_delta, gboolean pos2,

@@ -78,6 +78,7 @@ struct mdt {
 typedef enum {
   MDT_FEATURE_NONE = 0,
   MDT_FEATURE_PROTEIN,
+  MDT_FEATURE_PROTEIN_PAIR,
   MDT_FEATURE_RESIDUE,
   MDT_FEATURE_RESIDUE_PAIR,
   MDT_FEATURE_ALIGNED_RESIDUE,
@@ -102,6 +103,11 @@ typedef int (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
                                       const struct mod_libraries *libs,
                                       GError **err);
 
+typedef int (*mdt_cb_feature_protein_pair)
+    (const struct mod_alignment *aln, int protein1, int protein2,
+     struct mdt_properties *prop, void *data,
+     const struct mod_mdt_libfeature *feat, const struct mdt_library *mlib,
+     const struct mod_libraries *libs, GError **err);
 
 typedef int (*mdt_cb_feature_residue)(const struct mod_alignment *aln,
                                       int protein, int residue,
@@ -181,6 +187,13 @@ struct mdt_feature_protein {
   mdt_cb_feature_protein getbin;
 };
 
+/** User-defined protein pair feature */
+struct mdt_feature_protein_pair {
+  int protein1;
+  int protein2;
+  mdt_cb_feature_protein_pair getbin;
+};
+
 /** User-defined residue feature */
 struct mdt_feature_residue {
   int protein;
@@ -244,6 +257,7 @@ struct mdt_feature {
   mdt_feature_type type;
   union {
     struct mdt_feature_protein protein;
+    struct mdt_feature_protein_pair protein_pair;
     struct mdt_feature_residue residue;
     struct mdt_feature_residue_pair residue_pair;
     struct mdt_feature_aligned_residue_pair aligned_residue_pair;

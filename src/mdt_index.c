@@ -82,6 +82,16 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     } else {
       return index_inrange(ibin, feat);
     }
+  case MDT_FEATURE_PROTEIN_PAIR:
+    ibin = mfeat->u.protein_pair.getbin(aln, is1,
+                                        feat->iknown == MOD_MDTP_AB ? is2 : is3,
+                                        prop, mfeat->data, feat, mlib, libs,
+                                        err);
+    if (ibin < 0) {
+      return -1;
+    } else {
+      return index_inrange(ibin, feat);
+    }
   case MDT_FEATURE_RESIDUE:
     if (feat->iknown == MOD_MDTP_A) {
       iseq = is1;

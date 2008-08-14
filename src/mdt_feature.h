@@ -21,6 +21,15 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
                             mdt_cb_feature_protein getbin, void *data,
                             GError **err);
 
+/** Add a protein pair feature.
+    \return the index of the new feature, or -1 on error. */
+MDTDLLEXPORT
+int mdt_feature_protein_pair_add(struct mdt_library *mlib, const char *name,
+                                 mod_mdt_calc precalc_type, int protein1,
+                                 int protein2,
+                                 mdt_cb_feature_protein_pair getbin, void *data,
+                                 GError **err);
+
 /** Add a residue feature.
     \return the index of the new feature, or -1 on error. */
 MDTDLLEXPORT
@@ -396,6 +405,11 @@ MDTDLLEXPORT
 int mdt_feature_average_neighborhood_difference(struct mdt_library *mlib,
                                                 int protein1, int protein2,
                                                 GError **err);
+
+/** Add a sequence identity feature. */
+MDTDLLEXPORT
+int mdt_feature_sequence_identity(struct mdt_library *mlib, int protein1,
+                                  int protein2, GError **err);
 
 G_END_DECLS
 

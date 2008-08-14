@@ -18,6 +18,12 @@ class Protein(_Base):
         self._create_bins(mlib, bins)
 
 
+class ProteinPair(_Base):
+    def __init__(self, mlib, bins, protein1=0, protein2=1):
+        self._ifeat = self._setup(mlib._modpt, protein1, protein2)
+        self._create_bins(mlib, bins)
+
+
 class Residue(_Base):
     def __init__(self, mlib, bins, protein=0, delta=0, align_delta=0,
                  pos2=False):
@@ -218,6 +224,9 @@ class AtomDistance(AtomPair):
 
 class HydrogenBondSatisfaction(Protein):
     _setup = _mdt.mdt_feature_hydrogen_bond_satisfaction
+
+class SequenceIdentity(ProteinPair):
+    _setup = _mdt.mdt_feature_sequence_identity
 
 class TupleType(TupleFixedBins):
     _setup = _mdt.mdt_feature_tuple_type

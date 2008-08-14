@@ -6,6 +6,28 @@ import modeller
 
 class FeatureTests(MDTTest):
 
+    def test_feature_sidechain_biso(self):
+        """Check average sidechain Biso feature"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mdl = modeller.model(env)
+        mdl.build_sequence('A')
+        aln = modeller.alignment(env)
+        aln.append_model(mdl, align_codes='test')
+        s = aln[0]
+        # Mainchain atom Biso should be ignored:
+        for mainchain in ('N:1', 'C:1', 'O:1', 'OXT:1', 'CA:1'):
+            s.atoms[mainchain].biso = 1000
+        for (biso, bin) in ((22, 2), (32, 3), # Map regular values to bins
+                            (0, -1), # Zero Biso should be "undefined"
+                            (1, 3)): # Biso < 2 is multiplied by 4pi^2
+            s.atoms['CB:1'].biso = biso
+            m = mdt.Table(mlib, features=33)
+            m.add_alignment(aln)
+            self.assertEqual(m.shape, (6,))
+            self.assertEqual(m.sum(), 1)
+            self.assertEqual(m[bin], 1)
+
     def test_feature_sequence_identity(self):
         """Check sequence identity feature"""
         env = self.get_environ()

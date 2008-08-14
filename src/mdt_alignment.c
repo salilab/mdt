@@ -13,6 +13,7 @@
 #include "util.h"
 #include "mdt_index.h"
 #include "mdt_property.h"
+#include "mdt_tuples.h"
 
 /** A source of data for an MDT (generally an alignment) */
 struct mdt_source {

@@ -8,6 +8,7 @@
 #include "../mdt_feature.h"
 #include "../mdt_all_features.h"
 #include "../mdt_atom_classes.h"
+#include "../mdt_tuples.h"
 
 static int getbin(const struct mod_alignment *aln, int protein, int atom,
                   const struct mdt_tuple *tuple, struct mdt_properties *prop,

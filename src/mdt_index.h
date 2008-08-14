@@ -19,22 +19,6 @@ G_BEGIN_DECLS
 #define MDT_BOND_TYPE_DIHEDRAL 2
 #define N_MDT_BOND_TYPES       3
 
-/** Atom tuple (1 or 2 atoms stored for each leading atom) */
-struct mdt_tuple {
-  /** Atom indices */
-  int iata[2];
-  /** Tuple class */
-  int tupclass;
-};
-
-/** List of atom tuples */
-struct mdt_tuple_list {
-  /** Number of tuples */
-  int ntuples;
-  /** Tuple data */
-  struct mdt_tuple *tuples;
-};
-
 /** A single bond/angle/dihedral in a template structure */
 struct mdt_bond {
   /** Indices of all atoms in the bond */

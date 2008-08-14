@@ -9,6 +9,7 @@
 #include "../mdt_all_features.h"
 #include "../mdt_property.h"
 #include "../mdt_atom_classes.h"
+#include "../mdt_tuples.h"
 #include "../geometry.h"
 
 static int dihedral1(const struct mod_alignment *aln, int protein,

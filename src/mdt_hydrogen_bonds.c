@@ -6,6 +6,7 @@
 #include <math.h>
 #include <glib.h>
 #include "mdt_types.h"
+#include "mdt_atom_classes.h"
 #include "mdt_hydrogen_bonds.h"
 #include "modeller.h"
 

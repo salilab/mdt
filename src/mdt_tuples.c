@@ -10,6 +10,7 @@
 #include "mdt_index.h"
 #include "mdt_stereo.h"
 #include "mdt_tuples.h"
+#include "mdt_atom_classes.h"
 
 static void add_tuple(const struct mod_coordinates *cd,
                       const struct mod_sequence *seq,

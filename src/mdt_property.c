@@ -13,6 +13,7 @@
 #include "mdt_hydrogen_bonds.h"
 #include "mdt_stereo.h"
 #include "mdt_tuples.h"
+#include "mdt_atom_classes.h"
 
 /** Make a new mdt_properties structure */
 struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)

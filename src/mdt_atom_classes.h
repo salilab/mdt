@@ -12,6 +12,34 @@
 
 G_BEGIN_DECLS
 
+/** Atom type */
+struct mdt_atom_type {
+  /** Atom names */
+  char **names;
+};
+
+/** Atom class, which can contain multiple atom types */
+struct mdt_atom_class {
+  /** Number of atom types */
+  int ntypes;
+  /** Atom types */
+  struct mdt_atom_type *types;
+  /** Class name */
+  char *name;
+  /** Hydrogen bond properties (donor/acceptor valency, and charge) */
+  float hb_property[3];
+};
+
+/** List of atom classes */
+struct mdt_atom_class_list {
+  /** Number of atoms in each atom type (1=atom, 2=bond, 3=angle, 4=dihedral) */
+  int natom;
+  /** Number of classes */
+  int nclass;
+  /** Classes */
+  struct mdt_atom_class *classes;
+};
+
 /** Make a new atom class list. */
 MDTDLLEXPORT
 struct mdt_atom_class_list *mdt_atom_class_list_new(int natom);

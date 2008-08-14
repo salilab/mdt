@@ -26,34 +26,6 @@ typedef enum {
   MDT_DIHEDRAL_CHI5
 } mdt_dihedral_type;
 
-/** Atom type */
-struct mdt_atom_type {
-  /** Atom names */
-  char **names;
-};
-
-/** Atom class, which can contain multiple atom types */
-struct mdt_atom_class {
-  /** Number of atom types */
-  int ntypes;
-  /** Atom types */
-  struct mdt_atom_type *types;
-  /** Class name */
-  char *name;
-  /** Hydrogen bond properties (donor/acceptor valency, and charge) */
-  float hb_property[3];
-};
-
-/** List of atom classes */
-struct mdt_atom_class_list {
-  /** Number of atoms in each atom type (1=atom, 2=bond, 3=angle, 4=dihedral) */
-  int natom;
-  /** Number of classes */
-  int nclass;
-  /** Classes */
-  struct mdt_atom_class *classes;
-};
-
 /** A single MDT */
 struct mdt {
   /** Base Modeller type */
@@ -272,6 +244,8 @@ struct mdt_feature {
   /** TRUE if the feature range is periodic (e.g. for a dihedral) */
   gboolean periodic;
 };
+
+struct mdt_atom_class_list;
 
 /** Library of feature data used by MDTs */
 struct mdt_library {

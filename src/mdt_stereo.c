@@ -7,6 +7,7 @@
 #include <glib.h>
 #include <string.h>
 #include "modeller.h"
+#include "mdt_atom_classes.h"
 #include "mdt_index.h"
 #include "mdt_stereo.h"
 

@@ -475,11 +475,13 @@ class FeatureTests(MDTTest):
                                          mdt.uniform_bins(36, -180, 10))
         chi1class = mdt.features.Chi1Class(mlib)
         m = self.get_test_mdt(mlib, features=chi1)
+        self.assertEqual(m.features[0].periodic, True)
         self.assertEqual(m.shape, (37,))
         self.assertInTolerance(m[0], 8.0, 0.0005)
         self.assertInTolerance(m[1], 7.0, 0.0005)
         self.assertInTolerance(m[2], 2.0, 0.0005)
         m = self.get_test_mdt(mlib, features=chi1class)
+        self.assertEqual(m.features[0].periodic, False)
         self.assertEqual([b for b in m], [50, 31, 15, 10])
 
     def test_feature_chi2_dihedral(self):

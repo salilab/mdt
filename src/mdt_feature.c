@@ -9,37 +9,6 @@
 #include "mdt_feature.h"
 #include "mdt_index.h"
 
-/** Is the given feature type periodic? */
-gboolean mdt_feature_is_periodic(int ifeat)
-{
-  switch (ifeat) {
-  case 3:
-  case 4:
-  case 5:
-  case 6:
-  case 7:
-  case 8:
-  case 9:
-  case 10:
-  case 28:
-  case 29:
-  case 41:
-  case 42:
-  case 53:
-  case 54:
-  case 55:
-  case 56:
-  case 57:
-  case 106:
-  case 107:
-  case 108:
-  case 114:
-    return TRUE;
-  default:
-    return FALSE;
-  }
-}
-
 void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
                                  mod_mdt_file filetype)
 {
@@ -75,6 +44,21 @@ void mdt_feature_bin_set(struct mdt_library *mlib, int ifeat, int bin,
   libfeat->bins[bin].symbol = g_strdup(symbol ? symbol : "");
 }
 
+void mdt_feature_periodic_set(struct mdt_library *mlib, int ifeat,
+                              gboolean periodic)
+{
+  struct mdt_feature *feat;
+  feat = &g_array_index(mlib->features, struct mdt_feature, ifeat - 1);
+  feat->periodic = periodic;
+}
+
+gboolean mdt_feature_periodic_get(const struct mdt_library *mlib, int ifeat)
+{
+  struct mdt_feature *feat;
+  feat = &g_array_index(mlib->features, struct mdt_feature, ifeat - 1);
+  return feat->periodic;
+}
+
 /** \return TRUE iff 'protein' is in range. */
 static gboolean check_protein(int protein, const char *feattype, GError **err)
 {
@@ -105,10 +89,13 @@ static gboolean check_protein_pair(int protein1, int protein2,
 /** Helper function to add a new feature structure, and return it. */
 static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat)
 {
+  struct mdt_feature *newfeat;
   mlib->feature_added = TRUE;
   *nfeat = mlib->base.nfeat + 1;
   mlib->features = g_array_set_size(mlib->features, *nfeat);
-  return &g_array_index(mlib->features, struct mdt_feature, *nfeat - 1);
+  newfeat = &g_array_index(mlib->features, struct mdt_feature, *nfeat - 1);
+  newfeat->periodic = FALSE;
+  return newfeat;
 }
 
 int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,

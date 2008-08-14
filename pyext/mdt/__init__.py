@@ -778,7 +778,7 @@ class Feature(object):
     def __get_offset(self):
         return _mdt.mod_mdt_feature_istart_get(self._modpt) - 1
     def __get_periodic(self):
-        return _mdt.mdt_feature_is_periodic(self.ifeat)
+        return _mdt.mdt_feature_periodic_get(self._mdt._mlib._modpt, self.ifeat)
     def __get_modpt(self):
         return _mdt.mod_mdt_feature_get(self._mdt._basept, self._indx)
 

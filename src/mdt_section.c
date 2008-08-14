@@ -7,6 +7,7 @@
 #include <math.h>
 #include "modeller.h"
 #include "mdt.h"
+#include "mdt_feature.h"
 #include "util.h"
 
 /** Given the indices of an MDT section, return the start and end indices
@@ -244,7 +245,7 @@ void mdt_section_meanstdev(const struct mod_mdt *mdt,
   }
   ifeat = mdt->features[mdt->nfeat - 1].ifeat;
   feat = &mlib->base.features[ifeat - 1];
-  periodic = mdt_feature_is_periodic(ifeat);
+  periodic = mdt_feature_periodic_get(mlib, ifeat);
 
   /* histogram bin size in real units: */
   dx = feat->bins[0].rang2 - feat->bins[0].rang1;

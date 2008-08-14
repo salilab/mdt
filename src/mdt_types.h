@@ -269,6 +269,8 @@ struct mdt_feature {
     struct mdt_feature_bond bond;
   } u;
   void *data;
+  /** TRUE if the feature range is periodic (e.g. for a dihedral) */
+  gboolean periodic;
 };
 
 /** Library of feature data used by MDTs */

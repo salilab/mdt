@@ -159,10 +159,6 @@ void mdt_section_meanstdev(const struct mod_mdt *mdt,
                            int n_indices, double *mean, double *stdev,
                            GError **err);
 
-/** Is the given feature type periodic? */
-MDTDLLEXPORT
-gboolean mdt_feature_is_periodic(int ifeat);
-
 G_END_DECLS
 
 #endif  /* __MDT_MDT_H */

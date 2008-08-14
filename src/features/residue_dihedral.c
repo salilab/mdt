@@ -30,6 +30,7 @@ static int add_feature(struct mdt_library *mlib, int protein, int delta,
   if (ifeat >= 0) {
     mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
     mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_DIHEDRALS);
+    mdt_feature_periodic_set(mlib, ifeat, TRUE);
   }
   return ifeat;
 }

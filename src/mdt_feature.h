@@ -121,6 +121,15 @@ MDTDLLEXPORT
 void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
                                  mod_mdt_file filetype);
 
+/** Set whether a feature's range is periodic (FALSE by default) */
+MDTDLLEXPORT
+void mdt_feature_periodic_set(struct mdt_library *mlib, int ifeat,
+                              gboolean periodic);
+
+/** Get whether a feature's range is periodic */
+MDTDLLEXPORT
+gboolean mdt_feature_periodic_get(const struct mdt_library *mlib, int ifeat);
+
 /** Set the number of bins for a given feature.
     \note One extra bin is always created - the 'undefined' bin. */
 MDTDLLEXPORT

@@ -38,18 +38,6 @@ int iclsbin(float x, const struct mod_mdt_libfeature *feat)
   return feat->nbins;
 }
 
-/** Return the bin index for the raw feature ftab[ir], or the undefined bin
-    index if anything is out of range */
-int ftable(const float *ftab, int nr, int ir,
-           const struct mod_mdt_libfeature *feat)
-{
-  if (ir >= 0 && ir < nr) {
-    return iclsbin(ftab[ir], feat);
-  } else {
-    return feat->nbins;
-  }
-}
-
 /** Get the index into the MDT for the given alignment feature */
 int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,

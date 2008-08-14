@@ -51,25 +51,7 @@ struct mdt_bond_list {
   struct mdt_bond *bonds;
 };
 
-/** Precalculated per-sequence properties for calculating MDT indices */
-struct mdt_properties {
-  /** Lists of bonds */
-  struct mdt_bond_list *bonds[N_MDT_BOND_TYPES];
-  /** Lists of atom tuples for each atom */
-  struct mdt_tuple_list *tuples;
-  /** Bin indices for hydrogen bond atom type */
-  int *hb_iatta;
-  /** Hydrogen bond satisfaction index */
-  float *hbpot;
-  /** Radius of gyration, or -1 if not yet calculated */
-  float radius_gyration;
-  /** Bin indices for atom type */
-  int *iatta;
-  /** Fractional atom accessibility */
-  float *fatmacc;
-  /** Average sidechain Biso */
-  float *sidechain_biso;
-};
+struct mdt_properties;
 
 /** Calculate a single MDT feature index */
 MDTDLLLOCAL

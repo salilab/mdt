@@ -1,9 +1,11 @@
 from modeller import *
 import os
 import mdt
+import mdt.features
 
 env = environ()
-mlib = mdt.Library(env, 'mdt_test_xray.bin')
+mlib = mdt.Library(env)
+xray = mdt.features.XRayResolution(mlib, bins=mdt.uniform_bins(20, 0, 0.2))
 
 m = mdt.Table(mlib, file='mdt2.mdt')
 

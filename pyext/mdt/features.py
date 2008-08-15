@@ -55,7 +55,7 @@ class Residue(_Base):
         self._create_bins(mlib, bins)
 
 
-class ResidueFixedBins(_Base):
+class ResidueFixedBins(Residue):
     """A residue feature for which bins cannot be specified."""
     def __init__(self, mlib, protein=0, delta=0, align_delta=0, pos2=False):
         self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
@@ -133,7 +133,7 @@ class ChemicalBond(_Base):
         self._create_bins(mlib, bins)
 
 
-class ChemicalBondFixedBins(_Base):
+class ChemicalBondFixedBins(ChemicalBond):
     def __init__(self, mlib):
         self._ifeat = self._setup(mlib._modpt)
 

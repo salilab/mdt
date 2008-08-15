@@ -68,7 +68,7 @@ void mdt_library_free(struct mdt_library *mlib)
   mdt_atom_class_list_free(mlib->hbond);
   mdt_atom_class_list_free(mlib->tupclass);
   g_array_free(mlib->features, TRUE);
-  g_free(mlib);
   g_free(mlib->distance_atoms[0]);
   g_free(mlib->distance_atoms[1]);
+  g_free(mlib);
 }

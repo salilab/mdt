@@ -97,8 +97,7 @@ class Library(modobject):
         self._env = env.copy()
         _mdt.mdt_library_hbond_cutoff_set(self._modpt, hbond_cutoff)
         _mdt.mdt_library_special_atoms_set(self._modpt, special_atoms)
-        _mdt.mdt_library_distance_atoms_set(self._modpt, distance_atoms[0],
-                                            distance_atoms[1])
+        _mdt.mdt_library_distance_atoms_set(self._modpt, *distance_atoms)
 
     def __del__(self):
         _mdt.mdt_library_free(self._modpt)

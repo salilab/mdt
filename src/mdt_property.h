@@ -32,6 +32,8 @@ struct mdt_properties {
   float *fatmacc;
   /** Average sidechain Biso */
   float *sidechain_biso;
+  /** Atom indices for distance_atoms */
+  int *dstind1, *dstind2;
 };
 
 /** Make a new mdt_properties structure */
@@ -120,6 +122,13 @@ float property_radius_gyration(const struct mod_alignment *aln, int is,
 MDTDLLLOCAL
 const float *property_sidechain_biso(const struct mod_alignment *aln, int is,
                                      struct mdt_properties *prop);
+
+/** Get/calculate the array of per-residue distance atom indices */
+MDTDLLLOCAL
+void property_distance_atom_indices(const struct mod_alignment *aln, int is,
+                                    struct mdt_properties *prop,
+                                    const struct mdt_library *mlib,
+                                    const int **dstind1, const int **dstind2);
 
 G_END_DECLS
 

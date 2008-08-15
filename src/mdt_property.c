@@ -32,6 +32,8 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
     prop[i].iatta = NULL;
     prop[i].fatmacc = NULL;
     prop[i].sidechain_biso = NULL;
+    prop[i].dstind1 = NULL;
+    prop[i].dstind2 = NULL;
   }
   return prop;
 }
@@ -60,6 +62,8 @@ void mdt_properties_free(struct mdt_properties *prop,
     g_free(prop[i].iatta);
     g_free(prop[i].fatmacc);
     g_free(prop[i].sidechain_biso);
+    g_free(prop[i].dstind1);
+    g_free(prop[i].dstind2);
   }
   g_free(prop);
 }
@@ -370,6 +374,31 @@ const float *property_sidechain_biso(const struct mod_alignment *aln, int is,
     prop[is].sidechain_biso = biso;
   }
   return prop[is].sidechain_biso;
+}
+
+/** Get/calculate the array of per-residue distance atom indices */
+void property_distance_atom_indices(const struct mod_alignment *aln, int is,
+                                    struct mdt_properties *prop,
+                                    const struct mdt_library *mlib,
+                                    const int **dstind1, const int **dstind2)
+{
+  if (!prop[is].dstind1) {
+    struct mod_structure *struc = mod_alignment_structure_get(aln, is);
+    struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
+    int i, *d1, *d2;
+    d1 = g_malloc(sizeof(int) * seq->nres);
+    d2 = g_malloc(sizeof(int) * seq->nres);
+    for (i = 0; i < seq->nres; ++i) {
+      d1[i] = mod_residue_find_atom(&struc->cd, seq, i,
+                                    mlib->distance_atoms[0]) - 1;
+      d2[i] = mod_residue_find_atom(&struc->cd, seq, i,
+                                    mlib->distance_atoms[1]) - 1;
+    }
+    prop[is].dstind1 = d1;
+    prop[is].dstind2 = d2;
+  }
+  *dstind1 = prop[is].dstind1;
+  *dstind2 = prop[is].dstind2;
 }
 
 /** Get/calculate the list of all bonds for a structure. */

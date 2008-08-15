@@ -52,6 +52,8 @@ struct mdt_library *mdt_library_new(void)
   mlib->tupclass = mdt_atom_class_list_new(0);
   mlib->features = g_array_new(FALSE, TRUE, sizeof(struct mdt_feature));
   mlib->features = g_array_set_size(mlib->features, mlib->base.nfeat);
+  mlib->distance_atoms[0] = g_strdup("");
+  mlib->distance_atoms[1] = g_strdup("");
   return mlib;
 }
 
@@ -67,4 +69,6 @@ void mdt_library_free(struct mdt_library *mlib)
   mdt_atom_class_list_free(mlib->tupclass);
   g_array_free(mlib->features, TRUE);
   g_free(mlib);
+  g_free(mlib->distance_atoms[0]);
+  g_free(mlib->distance_atoms[1]);
 }

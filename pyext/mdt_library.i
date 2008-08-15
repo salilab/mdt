@@ -24,3 +24,14 @@ gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib,
                         GError **err);
 gboolean mdt_tuple_read(const gchar *filename, struct mdt_library *mlib, 
                         GError **err);
+
+%inline %{
+static void mdt_library_distance_atoms_set(struct mdt_library *mlib,
+                                           char *dstatm1, char *dstatm2)
+{
+  g_free(mlib->distance_atoms[0]);
+  g_free(mlib->distance_atoms[1]);
+  mlib->distance_atoms[0] = g_strdup(dstatm1);
+  mlib->distance_atoms[1] = g_strdup(dstatm2);
+}
+%}

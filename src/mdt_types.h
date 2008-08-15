@@ -66,6 +66,8 @@ struct mdt_library {
   struct mdt_atom_class_list *tupclass;
   /** Set TRUE if at least one feature has been added. */
   gboolean feature_added;
+  /** Atom names for distance calculation */
+  char *distance_atoms[2];
 };
 
 /** Make a new mdt structure */

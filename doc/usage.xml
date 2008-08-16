@@ -42,9 +42,16 @@ in turn. See
 
 <para>
 A 'feature' in &MDT; is simply some binnable property of your input alignment.
-Example features include the residue type, &chi; and &Phi; dihedral angles,
-sequence identity between two sequences, X-ray resolution, atom-atom distances,
-atom type, and bond length.
+Example features include the
+<ulink url="&epydoc;features.ResidueType">residue type</ulink>,
+<ulink url="&epydoc;features.Chi1Dihedral">&chi1;</ulink> and
+<ulink url="&epydoc;features.PhiDihedral">&phi;</ulink> dihedral angles,
+<ulink url="&epydoc;features.SequenceIdentity">sequence identity</ulink>
+between two sequences,
+<ulink url="&epydoc;features.XRayResolution">X-ray resolution</ulink>,
+<ulink url="&epydoc;features.AtomDistance">atom-atom distances</ulink>,
+<ulink url="&epydoc;features.AtomType">atom type</ulink>, and
+<ulink url="&epydoc;features.BondLength">bond length</ulink>.
 </para>
 
 <para>
@@ -55,31 +62,47 @@ collect necessary statistics (e.g. when you call
 For example, to collect statistics for the residue type feature, it is
 necessary to scan all residues in all proteins in the alignment. The
 X-ray resolution feature, on the other hand, only requires each protein
-in the alignment to be scanned.
+in the alignment to be scanned, not each residue.
 The atom-atom distance feature requires scanning over all pairs of atoms in
 all proteins in the alignment, while the sequence identity feature requires
 scanning all pairs of proteins in the alignment. If you construct a table of
 multiple features, the most fine-grained of the features determines the scan -
 for example, a table of X-ray resolution against &Phi; dihedral would require
-a scan of all residues. Most features require only one protein in the alignment
-('protein A') but some features will act on the second or third protein instead
-(protein B or C) while some features act on two or three proteins
-simultaneously. See <xref linkend="scantypes" /> for all of the scan types.
+a scan of all residues.
+See <xref linkend="scantypes" /> for all of the scan types.
 </para>
 
 <para>
-&MDT; also knows that some residue pair or atom pair features are symmetric,
+When choosing which proteins to scan, &MDT; also considers the features. It
+will scan each protein individually, all pairs of proteins, or all triples of
+proteins. The latter two scans only happen if you have features in your table
+that require multiple proteins (e.g.
+<ulink url="&epydoc;features.ProteinPair">ProteinPair</ulink> or
+<ulink url="&epydoc;features.AlignedResidue">AlignedResidue</ulink>
+features) or you have single-protein features such as
+<ulink url="&epydoc;features.Protein">Protein</ulink> or
+<ulink url="&epydoc;features.Residue">Residue</ulink>
+but you have asked to evaluate them on the second or third protein (by setting
+the <varname>protein</varname> argument to 1 or 2 rather than the default 0).
+</para>
+
+<para>
+&MDT; also knows that some
+<ulink url="&epydoc;features.ResiduePair">residue pair</ulink> or
+<ulink url="&epydoc;features.AtomPair">atom pair</ulink> features are symmetric,
 and will perform a non-redundant scan in this case. If, however, any feature
 in the table is asymmetric, a full scan is performed. If in doubt, you can query
 <ulink url="&epydoc;Table.symmetric">Table.symmetric</ulink> to see whether
 a symmetric scan will be performed for the current set of features.
-(Currently, any tuple pair feature in your table forces a full scan.)
+(Currently, any <ulink url="&epydoc;features.TuplePair">tuple pair</ulink>
+feature in your table forces a full scan.)
 </para>
 
 <para>
-The bin file determines how to convert a feature value into a frequency table.
+The feature bins determine how to convert a feature value into a frequency
+table.
 For most feature types, you can specify how many bins to use, and their value
-ranges - see <xref linkend="binfile" /> for more information. The last bin
+ranges - see <xref linkend="binspec" /> for more information. The last bin
 is always reserved as an 'undefined' bin, for values that don't fall into
 any other bin<footnote>
 <para>
@@ -88,15 +111,9 @@ You can, however, remove the 'undefined' bin using
 </para>
 </footnote>.
 (Some features are predetermined by the setup of the system - for
-example, the residue type feature always has 22 bins - 20 for the standard
-amino acids, 1 for gaps in the alignment, and 1 for undefined.)
-</para>
-
-<para>
-For a list of all defined feature types and suitable default bin ranges,
-see the file <filename>mdt.bin</filename>, which you can find in the
-<filename>data</filename> subdirectory of the &MDT; source distribution, or
-the <filename>modlib</filename> directory after installation.
+example, the <ulink url="&epydoc;features.ResidueType">residue type</ulink>
+feature always has 22 bins - 20 for the standard amino acids, 1 for gaps in
+the alignment, and 1 for undefined.)
 </para>
 
 <table id="scantypes">
@@ -109,21 +126,25 @@ the <filename>modlib</filename> directory after installation.
 
 <row>
 <entry>Protein</entry>
-<entry>Feature 35, X-ray resolution of protein A</entry>
+<entry><ulink url="&epydoc;features.XRayResolution">X-ray
+resolution</ulink></entry>
 </row>
 
 <row>
 <entry>Residue<footnote id="resatompair">
 <para>
 Residue and residue pair scans are also used for 'one atom per residue'
-features, such as feature 16, which is the distance between the 'special
+features, such as
+<ulink url="&epydoc;features.ResidueDistance">ResidueDistance</ulink>,
+which is the distance between the 'special
 atom' in two residues. This special atom is usually
 C<subscript>&alpha;</subscript>, but can be overridden by specifying the
 <varname>distance_atoms</varname> parameter when creating the
 <ulink url="&epydoc;Library">Library</ulink> object.
 </para>
 </footnote></entry>
-<entry>Feature 4, &chi;<subscript>1</subscript> of protein B</entry>
+<entry><ulink url="&epydoc;features.Chi1Dihedral">&chi;<subscript>1</subscript>
+dihedral</ulink></entry>
 </row>
 
 <row>
@@ -132,50 +153,57 @@ C<subscript>&alpha;</subscript>, but can be overridden by specifying the
 <para>
 When looking at pairs of atoms or residues, it is useful to extract information
 about the 'other' atom or residue in the pair. This other atom or residue is
-denoted 'POS2' in the &MDT; bin file. For example, when building a
-table of atom-atom distances (feature 82, distance between two atoms in
-protein A) it may be useful to tabulate it against the atom types of both the
-first atom (feature 79, &MODELLER; atom type in protein A) and the second atom
-(feature 83, &MODELLER; atom type at pos2 of A).
+termed 'pos2' in &MDT;, and can be asked for when creating the feature.
+For example, when building a table of atom-atom distances
+(<ulink url="&epydoc;features.AtomDistance">AtomDistance</ulink> feature)
+it may be useful to tabulate it against the atom types of both the
+first atom. This is done by also using two copies of the
+<ulink url="&epydoc;features.AtomType">AtomType</ulink>, the second with
+<varname>pos=True</varname>.
 </para>
 </footnote>
 </entry>
-<entry>Feature 51, residue index difference in protein A</entry>
+<entry><ulink url="&epydoc;features.ResidueIndexDifference">Residue index
+difference</ulink></entry>
 </row>
 
 <row>
 <entry>Atom</entry>
-<entry>Feature 79, &MODELLER; atom type in protein A</entry>
+<entry><ulink url="&epydoc;features.AtomType">&MODELLER;
+atom type</ulink></entry>
 </row>
 
 <row>
 <entry>Atom pair<footnoteref linkend="pos2feature" /></entry>
-<entry>Feature 82, distance between two atoms in protein A</entry>
+<entry><ulink url="&epydoc;features.AtomDistance">Distance between
+two atoms</ulink></entry>
 </row>
 
 <row>
 <entry>Atom tuple</entry>
-<entry>Feature 101, atom tuple type in protein A</entry>
+<entry><ulink url="&epydoc;features.TupleType">Atom tuple type</ulink></entry>
 </row>
 
 <row>
 <entry>Atom tuple pair</entry>
-<entry>Feature 103, atom tuple non-bonded distance in protein A</entry>
+<entry><ulink url="&epydoc;features.TupleDistance">Atom tuple non-bonded
+distance</ulink></entry>
 </row>
 
 <row>
 <entry>Chemical bond</entry>
-<entry>Feature 109, bond type in protein A</entry>
+<entry><ulink url="&epydoc;features.BondType">Bond type</ulink></entry>
 </row>
 
 <row>
 <entry>Chemical angle</entry>
-<entry>Feature 112, bond angle in protein A</entry>
+<entry><ulink url="&epydoc;features.Angle">Bond angle</ulink></entry>
 </row>
 
 <row>
 <entry>Chemical dihedral angle</entry>
-<entry>Feature 114, bond dihedral angle in protein A</entry>
+<entry><ulink url="&epydoc;features.Dihedral">Bond dihedral
+angle</ulink></entry>
 </row>
 
 </tbody>
@@ -203,79 +231,60 @@ using <ulink url="&epydoc;Table.integrate">Table.integrate</ulink>.
 </para>
 </sect2>
 
-<sect2 id="binfile">
-<title>Format of the bin file</title>
+<sect2 id="binspec">
+<title>Specification of bins</title>
 
 <para>
-The bin file is a text file with a simple format which defines the bins for
-one or more of the &MDT; features. A blank line separates feature entries.
-Each entry starts with a FEATURE line which identifies the feature number.
-Following this is a single comment line (it is usually the name and number
-of the feature, but has no special significance). The third line contains
-two integers - the number of bins and the type of the ranges. This type is
-usually 3, in which case the next line contains two numbers - the first
-defines the lower range of the first bin, and the second the width of the bin.
-All bins are of the same size and follow after the first bin. For example,
-the following bins feature 82 (atom-atom distance in protein A) into
-61 bins, each 0.5 &Aring; wide, with the first bin starting at 0 &Aring;. The
-first bin is thus 0-0.5 &Aring;, the second 0.5-1.0 &Aring;, and so on, up to
-bin 60 which is 29.5-30.0 &Aring; (recall that the last bin is reserved for
-undefined, which would be anything below 0 &Aring;, above 30.0 &Aring;, or which
-could not be calculated for some reason).
+Most features take a <varname>bins</varname> argument when they are created,
+which specifies the bin ranges. This is simply a list of (start, end, symbol)
+triples, which specify the feature range for each bin, and the symbol to refer
+to it by. For example, the following creates an
+<ulink url="&epydoc;features.XRayResolution">X-ray resolution</ulink> feature,
+with 4 bins, the first for 0.51-1.5 &Aring;,
+the second for 1.4-1.6 &Aring;, and so on. Anything below 0.51 &Aring; or 
+2.0 &Aring; or above (or an undefined value) will be placed into a fifth
+'undefined' bin.
 </para>
 
-<example id="binsequential">
-<title>Example bin file entry for sequential bins</title>
+<example id="binexplicit">
+<title>Example feature with explicit bins</title>
 <screen>
-FEATURE 82
-ANY ATOM DISTANCE IN A (82)
-61    3
-  0   0.5
+xray = mdt.features.XRayResolution(mlib, bins=[(0.51, 1.4, "&lt;1.4"),
+                                               (1.4,  1.6, "1.4-1.6"),
+                                               (1.6,  1.8, "1.6-1.8"),
+                                               (1.8,  2.0, "1.8-2.0")])
 </screen>
 </example>
 
 <note><para>
 Bin ranges in &MDT; are half-closed, i.e. a feature value must be greater than
 or equal to the lower value of the range, and less than the upper value, to be
-counted in the bin. For example, in the case above, 0 &Aring; would be placed
-into the first bin, and 0.5 &Aring; into the second. (If you define bins with
+counted in the bin. For example, in the case above, 1.0 &Aring; would be placed
+into the first bin, and 1.4 &Aring; into the second. (If you define bins with
 overlapping ranges, values will be placed into the first bin that matches.)
 </para></note>
 
 <para>
-The bin range type can also be 2, in which case each bin's range is specified
-explicitly on a separate line in the file. Each bin can also have a name
-specified in columns 21 and up. For example, the following bins feature 35
-(X-ray resolution of protein A) into 5 bins, the first for 0.51-1.5 &Aring;,
-the second for 1.4-1.6 &Aring;, and so on. Anything below 0.51 &Aring; or 
-2.0 &Aring; or above (or an undefined value) will be placed into the last
-(undefined) bin, so there is no need to specify a range for this bin.
+In most cases, a set of bins of equal width is desired, and it is
+tedious to specify these by hand. A utility function
+<ulink url="&epydoc;uniform_bins">uniform_bins</ulink> is provided, which takes
+three arguments - the number of bins, the lower range of the first bin,
+and the width of each bin - and creates a set of bins; all bins are of the
+same size and follow after the first bin. For example, the following bins the
+<ulink url="&epydoc;features.AtomDistance">atom-atom distance</ulink> feature
+into 60 bins, each 0.5 &Aring; wide, with the first bin starting at 0 &Aring;.
+The first bin is thus 0-0.5 &Aring;, the second 0.5-1.0 &Aring;, and so on,
+up to bin 60 which is 29.5-30.0 &Aring;. The additional 'undefined' bin thus
+counts anything below 0 &Aring;, greater than or equal to 30.0 &Aring;, or which
+could not be calculated for some reason).
 </para>
 
-<example id="binexplicit">
-<title>Example bin file entry for explicit bins</title>
+<example id="binsequential">
+<title>Example feature with sequential bins</title>
 <screen>
-FEATURE 35
-X-RAY RESOLUTION OF A (35)
- 5     2
- 0.51  1.4          &lt;1.4
- 1.4   1.6          1.4-1.6
- 1.6   1.8          1.6-1.8
- 1.8   2.0          1.8-2.0
- 0.0   0.0          NMR_&amp;_&gt;=2
+atdist = mdt.features.AtomDistance(mlib, bins=mdt.uniform_bins(60, 0, 0.5))
 </screen>
 </example>
-
-<para>
-You may also see files containing bin range types of 0. These are for features
-which always have a fixed number of bins, such as residue type, dihedral class,
-or atom/bond class. Anything you specify in the bin file for these bins will
-thus be ignored.
-</para>
-
-<para>
-The bin file is ended by the word END on a line by its own.
-</para>
 
 </sect2>
 
@@ -340,17 +349,15 @@ combination with other Python modules, such as &MODELLER;.
 </para>
 
 <para>
-Generally speaking, to use &MDT;, you should first create an
-<ulink url="&epydoc;Library">Library</ulink> object. This defines
-the bin ranges, and in most cases is the only prerequisite for creating
-MDT tables themselves<footnote>
-<para>
-Some library information needs to be read from additional files, such as
+Generally speaking, to use &MDT;, you should first create a
+<ulink url="&epydoc;Library">Library</ulink> object. You can then read in any
+necessary additional files, such as
 the definitions of chemical bonds (see <xref linkend="chembonds" /> for an
-example), or atom tuples.
-</para>
-</footnote>. You can then create one or more
-<ulink url="&epydoc;Table">Table</ulink> objects which hold the frequency tables
+example), or atom tuples. Next, you can define one or more features, which are
+classes in the <ulink url="&epydoc;features">features</ulink> module.
+Finally, you can create one or more
+<ulink url="&epydoc;Table">Table</ulink> objects, using a selection of the
+features you added to the Library, to hold the frequency tables
 themselves. See <xref linkend="chi1" /> for an example.
 </para>
 
@@ -368,12 +375,12 @@ To run a script <filename>foo.py</filename>, simply run
 <para>
 See the <ulink url="epydoc/index.html">&MDT; reference manual</ulink> for
 documentation on the &MDT; Python interface, generated automatically from
-the source code.
+the source code. This describes all of the classes and functions.
 </para>
 
 <para>
-For information on the low-level &MDT; code, see the
-<ulink url="doxygen/index.html">C API reference</ulink>.
+For information on the low-level &MDT; code, of interest primarily to
+developers, see the <ulink url="doxygen/index.html">C API reference</ulink>.
 </para>
 </sect1>
 

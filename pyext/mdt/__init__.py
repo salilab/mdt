@@ -90,7 +90,7 @@ class Library(modobject):
           - `distance_atoms`: the atom types to use for the
             `features.ResidueDistance` feature
           - `special_atoms`: whether to treat disulfide and termini atoms
-            specially for atom class features (see `features.AtomClass`)
+            specially for atom class features (see `features.AtomType`)
           - `hbond_cutoff`: maximum separation between two H-bonded atoms
             (see `features.HydrogenBondDonor`)
         """

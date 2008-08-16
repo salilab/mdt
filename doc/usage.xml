@@ -44,8 +44,8 @@ in turn. See
 A 'feature' in &MDT; is simply some binnable property of your input alignment.
 Example features include the
 <ulink url="&epydoc;features.ResidueType">residue type</ulink>,
-<ulink url="&epydoc;features.Chi1Dihedral">&chi1;</ulink> and
-<ulink url="&epydoc;features.PhiDihedral">&phi;</ulink> dihedral angles,
+<ulink url="&epydoc;features.Chi1Dihedral">&chi;<subscript>1</subscript></ulink>
+and <ulink url="&epydoc;features.PhiDihedral">&Phi;</ulink> dihedral angles,
 <ulink url="&epydoc;features.SequenceIdentity">sequence identity</ulink>
 between two sequences,
 <ulink url="&epydoc;features.XRayResolution">X-ray resolution</ulink>,
@@ -120,7 +120,7 @@ the alignment, and 1 for undefined.)
 <title>Scan types</title>
 <tgroup cols="2">
 <thead>
-  <row><entry>Type</entry><entry>Example</entry></row>
+  <row><entry>Type</entry><entry>Example feature</entry></row>
 </thead>
 <tbody>
 
@@ -240,7 +240,7 @@ which specifies the bin ranges. This is simply a list of (start, end, symbol)
 triples, which specify the feature range for each bin, and the symbol to refer
 to it by. For example, the following creates an
 <ulink url="&epydoc;features.XRayResolution">X-ray resolution</ulink> feature,
-with 4 bins, the first for 0.51-1.5 &Aring;,
+with 4 bins, the first for 0.51-1.4 &Aring;,
 the second for 1.4-1.6 &Aring;, and so on. Anything below 0.51 &Aring; or 
 2.0 &Aring; or above (or an undefined value) will be placed into a fifth
 'undefined' bin.

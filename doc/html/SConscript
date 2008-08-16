@@ -7,20 +7,12 @@ epydoc_opts = "--inheritance grouped --no-private --no-frames --html"
 
 # Build DocBook documentation:
 def action_docbook(target, source, env):
-    app = "cd doc && xmlto -o html -m html-style.xml xhtml manual.xml"
+    outdir = os.path.dirname(target[0].path)
+    app = "xmlto -o %s -m doc/html-style.xml xhtml %s" % (outdir,
+                                                          source[0].path)
     return env.Execute(app)
 
 def emit_docbook(target, source, env):
-    outdir = os.path.dirname(target[0].path)
-    # Temporary hacks: should parse XML directly:
-    for (nchap, nsect) in enumerate((3, 3)):
-        # Chapter:
-        target.append(os.path.join('#' + outdir, 'ch%02d.html' % (nchap + 1)))
-        for sec in range(nsect):
-            # Section:
-            secname = 'ch%02ds%02d.html' % (nchap + 1, sec + 2)
-            target.append(os.path.join('#' + outdir, secname))
-    target.append(os.path.join('#' + outdir, 'pr01.html'))
     for xml in ('acknowl.xml', 'html-style.xml', 'study.xml', 'usage.xml'):
         source.append(os.path.join('..', xml))
     return target, source
@@ -42,8 +34,9 @@ docbook = env.Docbook("index.html", "../manual.xml")
 epydoc = env.Epydoc('epydoc/index.html', (bin, pyext))
 
 docdir = env['docdir']
-env.Install(docdir, docbook)
-env.Install(docdir, 'mdt.css')
+env.Command(os.path.join(docdir, 'index.html'), docbook,
+            "install -d ${TARGET.dir} && " + \
+            "install ${SOURCE.dir}/*.html ${SOURCE.dir}/*.css ${TARGET.dir}")
 env.Alias('docinstall', docdir)
 
 docdir = os.path.join(docdir, 'epydoc')

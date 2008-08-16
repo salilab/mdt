@@ -17,8 +17,7 @@
    residues, chemical bonds, angles, dihedral angles, and pairs of tuples of
    atoms. Some features work with triple alignments, too. All the needed
    features *a, b, c, ..., d* are calculated automatically from the sequences,
-   alignments, and/or PDB files. The feature bins are defined in a bin file
-   which can be changed by the user.
+   alignments, and/or PDB files.
 
    MDT works by accumulating the table *N* by processing each sequence or
    alignment in turn. See `Table.add_alignment`.
@@ -54,9 +53,9 @@ FileFormatError = _mdt.FileFormatError
 class _BinType(object):
     def __init__(self, bin_type):
         self._bin_type = bin_type
-#: Single-precision floating-point bin storage (approx. range 0 to +/- 1e38)
+#: Single-precision floating-point bin storage (approximate range 0 to +/-1e38)
 Float = _BinType(_mdt.MOD_MDTB_FLOAT)
-#: Double-precision floating-point bin storage (approx. range 0 to +/- 1e308)
+#: Double-precision floating-point bin storage (approximate range 0 to +/-1e308)
 Double = _BinType(_mdt.MOD_MDTB_DOUBLE)
 #: 32-bit signed integer bin storage (range -1e31 to 1e31)
 Int32 = _BinType(_mdt.MOD_MDTB_INT32)
@@ -88,11 +87,12 @@ class Library(modobject):
 
         :Parameters:
           - `env`: the Modeller environment to use
-          - `distance_atoms`: the atom types to use for "specified" distance
-            features
+          - `distance_atoms`: the atom types to use for the
+            `features.ResidueDistance` feature
           - `special_atoms`: whether to treat disulfide and termini atoms
-            specially for atom class features
+            specially for atom class features (see `features.AtomClass`)
           - `hbond_cutoff`: maximum separation between two H-bonded atoms
+            (see `features.HydrogenBondDonor`)
         """
         self._env = env.copy()
         _mdt.mdt_library_hbond_cutoff_set(self._modpt, hbond_cutoff)
@@ -127,28 +127,37 @@ class Library(modobject):
     dihedral_classes = property(__get_dihedral_classes,
                                 doc="Dihedral classes; see `BondClasses`")
     tuple_classes = property(__get_tuple_classes,
-                             doc="Atom tuple classes; see `TupleClasses`")
+                             doc="Atom tuple classes; see `TupleClasses`" \
+                                 + " and `features.Tuple`")
     hbond_classes = property(__get_hbond_classes,
                              doc="Hydrogen bond atom classes; " + \
                                  "see `HydrogenBondClasses`")
 
 
 class BondClasses(object):
-    """Classifications of atoms/bonds/angles/dihedrals into classes"""
+    """Classifications of atoms/bonds/angles/dihedrals into classes.
+       These classes are used by features that derive from
+       `features.ChemicalBond`.
+       Usually accessed as `Library.atom_classes`, `Library.bond_classes`,
+       `Library.angle_classes`, or `Library.dihedral_classes`. (There is no
+       need to create your own BondClasses objects.)"""
 
     def __init__(self, mlib, n_atom):
         self._mlib = mlib
         self.__n_atom = n_atom
 
     def read(self, filename):
-        """Read bond class information from a file"""
+        """Read class information from `filename`"""
         return _mdt.mdt_atom_classes_read(filename, self._mlib._modpt,
                                           self.__n_atom)
 
 
 
 class TupleClasses(BondClasses):
-    """Classifications of tuples of atoms into classes"""
+    """Classifications of tuples of atoms into classes.
+       Usually accessed as `Library.tuple_classes`.
+       These classes are used by features that derive from
+       `features.Tuple` or `features.TuplePair`."""
 
     def __init__(self, mlib):
         BondClasses.__init__(self, mlib, 0)
@@ -159,8 +168,11 @@ class TupleClasses(BondClasses):
 
 
 class HydrogenBondClasses(BondClasses):
-    """Classifications of atoms into hydrogen bond classes"""
-
+    """Classifications of atoms into hydrogen bond classes.
+       Usually accessed as `Library.hbond_classes`.
+       These classes are used by the `features.HydrogenBondAcceptor`,
+       `features.HydrogenBondDonor` and `features.HydrogenBondSatisfaction`
+       features."""
     def __init__(self, mlib):
         BondClasses.__init__(self, mlib, 1)
 
@@ -174,12 +186,12 @@ class TableSection(modobject):
        TableSection objects directly, but rather by indexing a `Table` object,
        as a TableSection is just a 'view' into an existing table. For example,
 
-       >>> m = mdt.Table(mlib, features=(1,35))
+       >>> m = mdt.Table(mlib, features=(residue_type, xray_resolution))
        >>> print m[0].entropy()
 
        would create a section (using m[0]) which is a 1D table over the 2nd
-       feature (feature 35) for the first bin (0) of the first feature
-       (feature 1), and then get the entropy using the `TableSection.entropy`
+       feature (X-ray resolution) for the first bin (0) of the first feature
+       (residue type), and then get the entropy using the `TableSection.entropy`
        method."""
     _indices = ()
     __mdt = None
@@ -264,8 +276,11 @@ class Table(TableSection):
        >>> import mdt
        >>> import modeller
        >>> env = modeller.environ()
-       >>> mlib = mdt.Library(env, '${LIB}/mdt.bin')
-       >>> m = mdt.Table(mlib, features=(1,2,5))
+       >>> mlib = mdt.Library(env)
+       >>> restyp1 = mdt.features.ResidueType(mlib, protein=0)
+       >>> restyp2 = mdt.features.ResidueType(mlib, protein=1)
+       >>> gap = mdt.features.GapDistance(mlib, mdt.uniform_bins(10, 0, 1))
+       >>> m = mdt.Table(mlib, features=(restyp1,restyp2,gap))
        >>> print m[0,0,0]
 
        You can also access an element as m[0][0][0], a 1D section as m[0][0],
@@ -351,7 +366,8 @@ class Table(TableSection):
         return mdtout
 
     def make(self, features):
-        """Clear the table, and set the features"""
+        """Clear the table, and set the features. `features` must be a list of
+           previously created objects from the `mdt.features` module."""
         features = self._features_to_ifeat(features)
         _mdt.mdt_make(self._modpt, self._mlib._modpt, features)
 
@@ -670,13 +686,17 @@ class Table(TableSection):
         :Parameters:
           - `aln`: Modeller alignment.
           - `distngh`: distance below which residues are considered neighbors.
+            Used by `features.NeighborhoodDifference`.
           - `surftyp`: 1 for PSA contact area, 2 for surface area.
+            Used by `features.AtomAccessibility`.
           - `accessibility_type`: PSA accessibility type (1-10).
+            Used by `features.AtomAccessibility`.
           - `residue_span_range`: sequence separation (inclusive) for
-            residue-residue, tuple-tuple, and 'any atom' features. For
-            the two residue indices r1 and r2 in the tuple-tuple and any
-            atom cases, or two alignment position indices in the
-            residue-residue case, the following must be true:
+            `features.ResiduePair`, `features.AtomPair` and
+            `features.TuplePair` features. For the two residue indices r1 and
+            r2 in the tuple-tuple and atom- atom cases, or two alignment
+            position indices in the residue-residue case, the following
+            must be true:
 
             *residue_span_range[0] <= (r2 - r1) <= residue_span_range[1]*
 
@@ -713,7 +733,7 @@ class Table(TableSection):
                       accessibility_type, sympairs, symtriples, io, edat)
 
     def _features_to_ifeat(self, features):
-        """Utility function to map objects from mdt.features to
+        """Utility function to map objects from `mdt.features` to
            integer feature types"""
         ifeat = []
         if not isinstance(features, (list, tuple)):

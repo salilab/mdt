@@ -159,7 +159,7 @@ For example, when building a table of atom-atom distances
 it may be useful to tabulate it against the atom types of both the
 first atom. This is done by also using two copies of the
 <ulink url="&epydoc;features.AtomType">AtomType</ulink>, the second with
-<varname>pos=True</varname>.
+<varname>pos2=True</varname>.
 </para>
 </footnote>
 </entry>

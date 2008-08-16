@@ -2,9 +2,6 @@ import os.path
 
 Import('env', 'bin', 'pyext')
 
-epydoc_bin = "/usr/bin/epydoc"
-epydoc_opts = "--inheritance grouped --no-private --no-frames --html"
-
 # Build DocBook documentation:
 def action_docbook(target, source, env):
     outdir = os.path.dirname(target[0].path)
@@ -17,18 +14,9 @@ def emit_docbook(target, source, env):
         source.append(os.path.join('..', xml))
     return target, source
 
-# Build epydoc documentation:
-def action_epydoc(target, source, env):
-    outdir = os.path.dirname(target[0].path)
-    bin = source[0].path
-    app = "%s %s %s -o %s %s" % (bin, epydoc_bin, epydoc_opts, outdir,
-                                 ' '.join([x.path for x in source[1:]]))
-    return env.Execute(app)
-
-builder_epydoc = Builder(action=action_epydoc)
 builder_docbook = Builder(action=action_docbook, emitter=emit_docbook)
 
-env.Append(BUILDERS = {'Docbook': builder_docbook, 'Epydoc': builder_epydoc})
+env.Append(BUILDERS = {'Docbook': builder_docbook})
 
 docbook = env.Docbook("index.html", "../manual.xml")
 epydoc = env.Epydoc('epydoc/index.html', (bin, pyext))

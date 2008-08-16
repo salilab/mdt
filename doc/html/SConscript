@@ -27,16 +27,13 @@ def emit_docbook(target, source, env):
 
 # Build epydoc documentation:
 def action_epydoc(target, source, env):
-    outdir = os.path.split(target[0].path)[0]
+    outdir = os.path.dirname(target[0].path)
     bin = source[0].path
     app = "%s %s %s -o %s %s" % (bin, epydoc_bin, epydoc_opts, outdir,
                                  ' '.join([x.path for x in source[1:]]))
     return env.Execute(app)
 
-def emit_epydoc(target, source, env):
-    return target, source
-
-builder_epydoc = Builder(action=action_epydoc, emitter=emit_epydoc)
+builder_epydoc = Builder(action=action_epydoc)
 builder_docbook = Builder(action=action_docbook, emitter=emit_docbook)
 
 env.Append(BUILDERS = {'Docbook': builder_docbook, 'Epydoc': builder_epydoc})
@@ -52,9 +49,8 @@ env.Alias('docinstall', docdir)
 docdir = os.path.join(docdir, 'epydoc')
 # Install all files from 'epydoc' directory into the 'docdir' directory (cannot
 # use env.InstallAs() right now, due to scons bug #1751)
-env.Command(Dir(env.subst(docdir)), Dir('epydoc'),
-            "install -d $TARGET && install $SOURCE/* $TARGET",
-            source_scanner=DirScanner)
+env.Command(os.path.join(docdir, 'index.html'), epydoc,
+            "install -d ${TARGET.dir} && install ${SOURCE.dir}/* ${TARGET.dir}")
 
 # Subdirectories:
 SConscript('pdf/SConscript')

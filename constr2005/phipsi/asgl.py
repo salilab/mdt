@@ -1,12 +1,18 @@
 from modeller import *
 import os
 import mdt
+import mdt.features
 
 env = environ()
-mlib = mdt.Library(env, '../lib/mdt2.bin')
+mlib = mdt.Library(env)
+xray = mdt.features.XRayResolution(mlib, bins=[(0.51, 2.001, 'High res(2.0A)')])
+restyp = mdt.features.ResidueType(mlib)
+psi = mdt.features.PsiDihedral(mlib, bins=mdt.uniform_bins(72, -180, 5.0))
+phi = mdt.features.PhiDihedral(mlib, bins=mdt.uniform_bins(72, -180, 5.0))
 
 m = mdt.Table(mlib, file='mdt.mdt')
-m = m.reshape(features=(35,1,9,7), offset=(0,0,0,0), shape=(1,-2,-1,-1))
+m = m.reshape(features=(xray, restyp, psi, phi),
+              offset=(0,0,0,0), shape=(1,-2,-1,-1))
 
 text = """
 SET TICK_FONT = 5, CAPTION_FONT = 5

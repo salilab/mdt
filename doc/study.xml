@@ -508,9 +508,10 @@ the type of the residue whose dihedral angle is studied; that is, the &omega;
 of the residue preceding Pro, not the Pro &omega;, is impacted by the Pro
 residue. These dependencies are explored with &MDT; tables in directory
 <filename>constr2005/omega/run1/</filename>. The bottom line is that we need
-to use the &MDT; residue type feature 28, which refers to the type of the
-residue that is <varname>deltai</varname> away from the residue with the
-dihedral angle &omega;.
+to set <varname>delta</varname> to 1 when creating our
+<ulink url="&epydoc;features.ResidueType">residue type</ulink> feature (rather
+than the default value 0), which will make it refer to the type of the
+residue after the residue with the dihedral angle &omega;.
 </para>
 
 <para>

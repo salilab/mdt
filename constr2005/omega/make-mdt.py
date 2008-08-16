@@ -1,5 +1,6 @@
 from modeller import *
 import mdt
+import mdt.features
 
 # See ../bonds/make_mdt.py for additional comments
 
@@ -7,13 +8,17 @@ env = environ()
 log.minimal()
 env.io.atom_files_directory = ['/park2/database/pdb/divided/']
 
-mlib = mdt.Library(env, '../lib/mdt2.bin', deltai=1)
+mlib = mdt.Library(env)
+xray = mdt.features.XRayResolution(mlib, bins=[(0.51, 2.001, 'High res(2.0A)')])
+restyp_1 = mdt.features.ResidueType(mlib, delta=1)
+omega = mdt.features.OmegaDihedral(mlib, bins=mdt.uniform_bins(720, -180, 0.5))
 
-# feature 66 is the subsequent residue type, relative to the omega (feature 28)
-m = mdt.Table(mlib, features=(35,66,28))
+# This table uses the subsequent residue type, relative to the omega
+m = mdt.Table(mlib, features=(xray, restyp_1, omega))
 
 a = alignment(env)
-while (a.read_one(file='../cluster-PDB/pdb_60.pir')):
+f = modfile.File('../cluster-PDB/pdb_60.pir', 'r')
+while a.read_one(f):
     m.add_alignment(a)
 
 m.write('mdt.mdt')

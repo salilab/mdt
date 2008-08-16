@@ -12,7 +12,7 @@ m = mdt.Table(mlib, features=xray)
 
 a = alignment(env)
 f = modfile.File('../cluster-PDB/pdb_60.pir', 'r')
-while (a.read_one(f)):
+while a.read_one(f):
     m.add_alignment(a)
 
 m.write('mdt2.mdt')

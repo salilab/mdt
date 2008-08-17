@@ -314,8 +314,14 @@ class AverageResidueAccessibility(ResiduePair):
     _setup = _mdt.mdt_feature_average_residue_accessibility
 
 class ResidueIndexDifference(ResiduePair):
-    """Difference in sequence index between a pair of residues.
-       Note that this can be positive or negative."""
+    """Difference in sequence index between a pair of residues. This can
+       either be the simple difference, or the absolute value."""
+    def __init__(self, mlib, bins, protein=0, absolute=False):
+        """Create the feature. If `absolute` is True, the absolute value of
+           the index difference is used (and thus the feature is symmetric).
+           See `ResiduePair` for a description of the other arguments."""
+        self._ifeat = self._setup(mlib._modpt, protein, absolute)
+        self._create_bins(mlib, bins)
     _setup = _mdt.mdt_feature_residue_index_difference
 
 class PhiDihedralDifference(AlignedResidue):

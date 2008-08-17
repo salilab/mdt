@@ -235,7 +235,8 @@ int mdt_feature_average_residue_accessibility(struct mdt_library *mlib,
 /** Add a residue index difference feature. */
 MDTDLLEXPORT
 int mdt_feature_residue_index_difference(struct mdt_library *mlib,
-                                         int protein, GError **err);
+                                         int protein, gboolean absolute,
+                                         GError **err);
 
 /** Add a psi dihedral difference feature. */
 MDTDLLEXPORT

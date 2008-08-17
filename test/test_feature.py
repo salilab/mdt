@@ -318,17 +318,29 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         diff = mdt.features.ResidueIndexDifference(mlib,
                                               bins=mdt.uniform_bins(21, -10, 1))
+        absdiff = mdt.features.ResidueIndexDifference(mlib, absolute=True,
+                                              bins=mdt.uniform_bins(21, -10, 1))
         aln = modeller.alignment(env, file='test/data/alignment.ali',
                                  align_codes='5fd1')
-        m = mdt.Table(mlib, features=diff)
-        m.add_alignment(aln, residue_span_range=(-999, -2, 2, 999))
+        m1 = mdt.Table(mlib, features=diff)
+        m2 = mdt.Table(mlib, features=absdiff)
+        self.assertEqual(m1.symmetric, False)
+        self.assertEqual(m2.symmetric, True)
+        m1.add_alignment(aln, residue_span_range=(-999, -2, 2, 999))
+        m2.add_alignment(aln, residue_span_range=(-999, -2, 2, 999))
+        self.assertEqual(m1.sum(), 10920)
+        self.assertEqual(m2.sum(), 5460)
         # span range should result in 0, +/- 1 bins being zero:
-        self.assertEqual(m[9], 0.)
-        self.assertEqual(m[10], 0.)
-        self.assertEqual(m[11], 0.)
-        # other bins should be symmetrically distributed:
+        for m in (m1, m2):
+            self.assertEqual(m[9], 0.)
+            self.assertEqual(m[10], 0.)
+            self.assertEqual(m[11], 0.)
+        # Non-absolute feature should have other bins symmetrically distributed:
         for i in range(9):
-            self.assertEqual(m[i], m[-2 - i])
+            self.assertEqual(m1[i], m[-2 - i])
+        # Absolute feature should have no negative values:
+        for i in range(9):
+            self.assertEqual(m2[i], 0.)
 
     def test_feature_bond_type(self):
         """Check bond type features"""

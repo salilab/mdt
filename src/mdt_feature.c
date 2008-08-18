@@ -87,7 +87,8 @@ static gboolean check_protein_pair(int protein1, int protein2,
 }
 
 /** Helper function to add a new feature structure, and return it. */
-static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat)
+static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat,
+                                       mdt_feature_type type, void *data)
 {
   struct mdt_feature *newfeat;
   mlib->feature_added = TRUE;
@@ -95,6 +96,8 @@ static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat)
   mlib->features = g_array_set_size(mlib->features, *nfeat);
   newfeat = &g_array_index(mlib->features, struct mdt_feature, *nfeat - 1);
   newfeat->periodic = FALSE;
+  newfeat->type = type;
+  newfeat->data = data;
   return newfeat;
 }
 
@@ -104,18 +107,16 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
                             GError **err)
 {
   GString *fullname;
-  struct mdt_feature *feat;
+  struct mdt_feature_protein *feat;
   int nfeat;
 
   if (!check_protein(protein, "Protein", err)) {
     return -1;
   }
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_PROTEIN;
-  feat->u.protein.protein = protein;
-  feat->u.protein.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_PROTEIN, data)->u.protein);
+  feat->protein = protein;
+  feat->getbin = getbin;
   fullname = g_string_new(name);
   g_string_append_printf(fullname, " of protein %d", protein);
   mod_mdt_libfeature_register(&mlib->base, nfeat, fullname->str, precalc_type,
@@ -132,19 +133,18 @@ int mdt_feature_protein_pair_add(struct mdt_library *mlib, const char *name,
                                  GError **err)
 {
   char *fullname;
-  struct mdt_feature *feat;
+  struct mdt_feature_protein_pair *feat;
   int nfeat;
 
   if (!check_protein_pair(protein1, protein2, "Protein pair", err)) {
     return -1;
   }
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_PROTEIN_PAIR;
-  feat->u.protein_pair.protein1 = protein1;
-  feat->u.protein_pair.protein2 = protein2;
-  feat->u.protein_pair.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_PROTEIN_PAIR,
+                       data)->u.protein_pair);
+  feat->protein1 = protein1;
+  feat->protein2 = protein2;
+  feat->getbin = getbin;
   fullname = g_strdup_printf("%s of proteins (%d,%d)", name, protein1,
                              protein2);
   mod_mdt_libfeature_register(&mlib->base, nfeat, fullname, precalc_type,
@@ -161,22 +161,20 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
                             void *data, GError **err)
 {
   GString *fullname;
-  struct mdt_feature *feat;
+  struct mdt_feature_residue *feat;
   int nfeat;
 
   if (!check_protein(protein, "Residue", err)) {
     return -1;
   }
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_RESIDUE;
-  feat->u.residue.protein = protein;
-  feat->u.residue.delta = delta;
-  feat->u.residue.align_delta = align_delta;
-  feat->u.residue.pos2 = pos2;
-  feat->u.residue.bin_seq_outrange = bin_seq_outrange;
-  feat->u.residue.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_RESIDUE, data)->u.residue);
+  feat->protein = protein;
+  feat->delta = delta;
+  feat->align_delta = align_delta;
+  feat->pos2 = pos2;
+  feat->bin_seq_outrange = bin_seq_outrange;
+  feat->getbin = getbin;
   fullname = g_string_new(name);
   g_string_append_printf(fullname, " of protein %d", protein);
   if (pos2) {
@@ -202,18 +200,17 @@ int mdt_feature_residue_pair_add(struct mdt_library *mlib, const char *name,
                                  mdt_cb_feature_residue_pair getbin, void *data,
                                  GError **err)
 {
-  struct mdt_feature *feat;
+  struct mdt_feature_residue_pair *feat;
   int nfeat;
 
   if (!check_protein(protein, "Residue pair", err)) {
     return -1;
   }
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_RESIDUE_PAIR;
-  feat->u.residue_pair.protein = protein;
-  feat->u.residue_pair.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_RESIDUE_PAIR,
+                       data)->u.residue_pair);
+  feat->protein = protein;
+  feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,
                               MOD_MDTS_RESIDUE_PAIR, asymmetric, 0);
@@ -227,19 +224,18 @@ int mdt_feature_aligned_residue_add(struct mdt_library *mlib, const char *name,
                                     void *data, GError **err)
 {
   char *fullname;
-  struct mdt_feature *feat;
+  struct mdt_feature_aligned_residue *feat;
   int nfeat;
 
   if (!check_protein_pair(protein1, protein2, "Aligned residue", err)) {
     return -1;
   }
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_ALIGNED_RESIDUE;
-  feat->u.aligned_residue.protein1 = protein1;
-  feat->u.aligned_residue.protein2 = protein2;
-  feat->u.aligned_residue.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_ALIGNED_RESIDUE,
+                       data)->u.aligned_residue);
+  feat->protein1 = protein1;
+  feat->protein2 = protein2;
+  feat->getbin = getbin;
   fullname = g_strdup_printf("%s of proteins (%d,%d)", name, protein1,
                              protein2);
   mod_mdt_libfeature_register(&mlib->base, nfeat, fullname, precalc_type,
@@ -255,19 +251,18 @@ int mdt_feature_aligned_residue_pair_add(
     mdt_cb_feature_aligned_residue_pair getbin, void *data, GError **err)
 {
   char *fullname;
-  struct mdt_feature *feat;
+  struct mdt_feature_aligned_residue_pair *feat;
   int nfeat;
 
   if (!check_protein_pair(protein1, protein2, "Aligned residue pair", err)) {
     return -1;
   }
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_ALIGNED_RESIDUE_PAIR;
-  feat->u.aligned_residue_pair.protein1 = protein1;
-  feat->u.aligned_residue_pair.protein2 = protein2;
-  feat->u.aligned_residue_pair.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_ALIGNED_RESIDUE_PAIR,
+                       data)->u.aligned_residue_pair);
+  feat->protein1 = protein1;
+  feat->protein2 = protein2;
+  feat->getbin = getbin;
   fullname = g_strdup_printf("%s of proteins (%d,%d)", name, protein1,
                              protein2);
   mod_mdt_libfeature_register(&mlib->base, nfeat, fullname, precalc_type,
@@ -282,14 +277,12 @@ int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
                          mdt_cb_feature_atom getbin, void *data)
 {
   GString *fullname;
-  struct mdt_feature *feat;
+  struct mdt_feature_atom *feat;
   int nfeat;
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_ATOM;
-  feat->u.atom.pos2 = pos2;
-  feat->u.atom.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_ATOM, data)->u.atom);
+  feat->pos2 = pos2;
+  feat->getbin = getbin;
   fullname = g_string_new(name);
   if (pos2) {
     g_string_append(fullname, " at pos2");
@@ -307,13 +300,11 @@ int mdt_feature_atom_pair_add(struct mdt_library *mlib, const char *name,
                               mod_mdt_calc precalc_type, gboolean asymmetric,
                               mdt_cb_feature_atom_pair getbin, void *data)
 {
-  struct mdt_feature *feat;
+  struct mdt_feature_atom_pair *feat;
   int nfeat;
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_ATOM_PAIR;
-  feat->u.atom_pair.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_ATOM_PAIR, data)->u.atom_pair);
+  feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_ATOM_PAIR, asymmetric, 0);
   mdt_feature_add_needed_file(mlib, nfeat, MOD_MDTF_STRUCTURE);
@@ -325,14 +316,12 @@ int mdt_feature_tuple_add(struct mdt_library *mlib, const char *name,
                           mdt_cb_feature_tuple getbin, void *data)
 {
   GString *fullname;
-  struct mdt_feature *feat;
+  struct mdt_feature_tuple *feat;
   int nfeat;
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_TUPLE;
-  feat->u.tuple.pos2 = pos2;
-  feat->u.tuple.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_TUPLE, data)->u.tuple);
+  feat->pos2 = pos2;
+  feat->getbin = getbin;
   fullname = g_string_new(name);
   if (pos2) {
     g_string_append(fullname, " at pos2");
@@ -349,13 +338,12 @@ int mdt_feature_tuple_pair_add(struct mdt_library *mlib, const char *name,
                                mod_mdt_calc precalc_type,
                                mdt_cb_feature_tuple_pair getbin, void *data)
 {
-  struct mdt_feature *feat;
+  struct mdt_feature_tuple_pair *feat;
   int nfeat;
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_TUPLE_PAIR;
-  feat->u.tuple_pair.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_TUPLE_PAIR,
+                       data)->u.tuple_pair);
+  feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR, TRUE, 0);
   return nfeat;
@@ -365,14 +353,12 @@ int mdt_feature_bond_add(struct mdt_library *mlib, const char *name,
                          mod_mdt_calc precalc_type,
                          mdt_cb_feature_bond getbin, void *data)
 {
-  struct mdt_feature *feat;
+  struct mdt_feature_bond *feat;
   int nfeat;
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_BOND;
-  feat->u.bond.type = MDT_BOND_TYPE_BOND;
-  feat->u.bond.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data)->u.bond);
+  feat->type = MDT_BOND_TYPE_BOND;
+  feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_BOND, FALSE, 0);
   return nfeat;
@@ -382,14 +368,12 @@ int mdt_feature_angle_add(struct mdt_library *mlib, const char *name,
                           mod_mdt_calc precalc_type,
                           mdt_cb_feature_bond getbin, void *data)
 {
-  struct mdt_feature *feat;
+  struct mdt_feature_bond *feat;
   int nfeat;
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_BOND;
-  feat->u.bond.type = MDT_BOND_TYPE_ANGLE;
-  feat->u.bond.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data)->u.bond);
+  feat->type = MDT_BOND_TYPE_ANGLE;
+  feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_ANGLE, FALSE, 0);
   return nfeat;
@@ -399,14 +383,12 @@ int mdt_feature_dihedral_add(struct mdt_library *mlib, const char *name,
                              mod_mdt_calc precalc_type,
                              mdt_cb_feature_bond getbin, void *data)
 {
-  struct mdt_feature *feat;
+  struct mdt_feature_bond *feat;
   int nfeat;
 
-  feat = add_feature(mlib, &nfeat);
-  feat->type = MDT_FEATURE_BOND;
-  feat->u.bond.type = MDT_BOND_TYPE_DIHEDRAL;
-  feat->u.bond.getbin = getbin;
-  feat->data = data;
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data)->u.bond);
+  feat->type = MDT_BOND_TYPE_DIHEDRAL;
+  feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_DIHEDRAL, FALSE, 0);
   return nfeat;

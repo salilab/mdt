@@ -26,7 +26,7 @@ int mdt_feature_tuple_distance(struct mdt_library *mlib)
 {
   int ifeat;
   ifeat = mdt_feature_tuple_pair_add(mlib, "Tuple-tuple non-bonded distance",
-                                     MOD_MDTC_NONE, getbin, NULL);
+                                     MOD_MDTC_NONE, getbin, NULL, NULL);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   return ifeat;
 }

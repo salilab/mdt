@@ -27,5 +27,5 @@ int mdt_feature_xray_resolution(struct mdt_library *mlib, int protein,
                                 GError **err)
 {
   return mdt_feature_protein_add(mlib, "X-ray resolution", MOD_MDTC_NONE,
-                                 protein, getbin, NULL, err);
+                                 protein, getbin, NULL, NULL, err);
 }

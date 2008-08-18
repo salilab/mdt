@@ -34,6 +34,8 @@ struct mdt_library;
 struct mdt_tuple;
 struct mdt_bond;
 
+typedef void (*mdt_cb_free)(void *data);
+
 typedef int (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
                                       int protein,
                                       struct mdt_properties *prop, void *data,
@@ -208,6 +210,7 @@ struct mdt_feature {
     struct mdt_feature_bond bond;
   } u;
   void *data;
+  mdt_cb_free freefunc;
   /** TRUE if the feature range is periodic (e.g. for a dihedral) */
   gboolean periodic;
 };
@@ -218,7 +221,7 @@ MDTDLLEXPORT
 int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
                             mod_mdt_calc precalc_type, int protein,
                             mdt_cb_feature_protein getbin, void *data,
-                            GError **err);
+                            mdt_cb_free freefunc, GError **err);
 
 /** Add a protein pair feature.
     \return the index of the new feature, or -1 on error. */
@@ -227,7 +230,7 @@ int mdt_feature_protein_pair_add(struct mdt_library *mlib, const char *name,
                                  mod_mdt_calc precalc_type, int protein1,
                                  int protein2,
                                  mdt_cb_feature_protein_pair getbin, void *data,
-                                 GError **err);
+                                 mdt_cb_free freefunc, GError **err);
 
 /** Add a residue feature.
     \return the index of the new feature, or -1 on error. */
@@ -236,7 +239,7 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
                             mod_mdt_calc precalc_type, int protein, int delta,
                             int align_delta, gboolean pos2,
                             int bin_seq_outrange, mdt_cb_feature_residue getbin,
-                            void *data, GError **err);
+                            void *data, mdt_cb_free freefunc, GError **err);
 
 /** Add a residue pair feature.
     \return the index of the new feature, or -1 on error. */
@@ -245,7 +248,7 @@ int mdt_feature_residue_pair_add(struct mdt_library *mlib, const char *name,
                                  mod_mdt_calc precalc_type, int protein,
                                  gboolean asymmetric,
                                  mdt_cb_feature_residue_pair getbin, void *data,
-                                 GError **err);
+                                 mdt_cb_free freefunc, GError **err);
 
 /** Add an aligned residue feature.
     \return the index of the new feature, or -1 on error. */
@@ -254,7 +257,8 @@ int mdt_feature_aligned_residue_add(struct mdt_library *mlib, const char *name,
                                     mod_mdt_calc precalc_type, int protein1,
                                     int protein2,
                                     mdt_cb_feature_aligned_residue getbin,
-                                    void *data, GError **err);
+                                    void *data, mdt_cb_free freefunc,
+                                    GError **err);
 
 /** Add an aligned residue pair feature.
     \return the index of the new feature, or -1 on error. */
@@ -262,7 +266,8 @@ MDTDLLEXPORT
 int mdt_feature_aligned_residue_pair_add(
     struct mdt_library *mlib, const char *name, mod_mdt_calc precalc_type,
     int protein1, int protein2, gboolean asymmetric,
-    mdt_cb_feature_aligned_residue_pair getbin, void *data, GError **err);
+    mdt_cb_feature_aligned_residue_pair getbin, void *data,
+    mdt_cb_free freefunc, GError **err);
 
 /** Add an atom feature.
     \note The system is automatically instructed to read in PDB files.
@@ -270,7 +275,8 @@ int mdt_feature_aligned_residue_pair_add(
 MDTDLLEXPORT
 int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
                          mod_mdt_calc precalc_type, gboolean pos2,
-                         mdt_cb_feature_atom getbin, void *data);
+                         mdt_cb_feature_atom getbin, void *data,
+                         mdt_cb_free freefunc);
 
 /** Add an atom pair feature.
     \note The system is automatically instructed to read in PDB files.
@@ -278,42 +284,48 @@ int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
 MDTDLLEXPORT
 int mdt_feature_atom_pair_add(struct mdt_library *mlib, const char *name,
                               mod_mdt_calc precalc_type, gboolean asymmetric,
-                              mdt_cb_feature_atom_pair getbin, void *data);
+                              mdt_cb_feature_atom_pair getbin, void *data,
+                              mdt_cb_free freefunc);
 
 /** Add a tuple feature.
     \return the index of the new feature */
 MDTDLLEXPORT
 int mdt_feature_tuple_add(struct mdt_library *mlib, const char *name,
                           mod_mdt_calc precalc_type, gboolean pos2,
-                          mdt_cb_feature_tuple getbin, void *data);
+                          mdt_cb_feature_tuple getbin, void *data,
+                          mdt_cb_free freefunc);
 
 /** Add a tuple pair feature.
     \return the index of the new feature */
 MDTDLLEXPORT
 int mdt_feature_tuple_pair_add(struct mdt_library *mlib, const char *name,
                                mod_mdt_calc precalc_type,
-                               mdt_cb_feature_tuple_pair getbin, void *data);
+                               mdt_cb_feature_tuple_pair getbin, void *data,
+                               mdt_cb_free freefunc);
 
 /** Add a bond feature.
     \return the index of the new feature */
 MDTDLLEXPORT
 int mdt_feature_bond_add(struct mdt_library *mlib, const char *name,
                          mod_mdt_calc precalc_type,
-                         mdt_cb_feature_bond getbin, void *data);
+                         mdt_cb_feature_bond getbin, void *data,
+                         mdt_cb_free freefunc);
 
 /** Add an angle feature.
     \return the index of the new feature */
 MDTDLLEXPORT
 int mdt_feature_angle_add(struct mdt_library *mlib, const char *name,
                           mod_mdt_calc precalc_type,
-                          mdt_cb_feature_bond getbin, void *data);
+                          mdt_cb_feature_bond getbin, void *data,
+                          mdt_cb_free freefunc);
 
 /** Add a dihedral feature.
     \return the index of the new feature */
 MDTDLLEXPORT
 int mdt_feature_dihedral_add(struct mdt_library *mlib, const char *name,
                              mod_mdt_calc precalc_type,
-                             mdt_cb_feature_bond getbin, void *data);
+                             mdt_cb_feature_bond getbin, void *data,
+                             mdt_cb_free freefunc);
 
 /** Add a data file type needed for a given feature */
 MDTDLLEXPORT

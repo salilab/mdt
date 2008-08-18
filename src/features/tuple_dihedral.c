@@ -56,7 +56,8 @@ static int dihedral_feature(struct mdt_library *mlib, const char *name,
   if (!tuple_require_natom(mlib, need_natom, err)) {
     return -1;
   }
-  ifeat = mdt_feature_tuple_pair_add(mlib, name, MOD_MDTC_NONE, getbin, NULL);
+  ifeat = mdt_feature_tuple_pair_add(mlib, name, MOD_MDTC_NONE, getbin, NULL,
+                                     NULL);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   mdt_feature_periodic_set(mlib, ifeat, TRUE);
   return ifeat;

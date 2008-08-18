@@ -29,5 +29,6 @@ int mdt_feature_hydrogen_bond_satisfaction(struct mdt_library *mlib,
                                            int protein, GError **err)
 {
   return mdt_feature_protein_add(mlib, "Protein hydrogen bond satisfaction",
-                                 MOD_MDTC_NONE, protein, getbin, NULL, err);
+                                 MOD_MDTC_NONE, protein, getbin, NULL, NULL,
+                                 err);
 }

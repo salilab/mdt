@@ -32,7 +32,7 @@ int mdt_feature_sidechain_biso(struct mdt_library *mlib, int protein,
   int ifeat;
   ifeat = mdt_feature_residue_add(mlib, "Average sidechain Biso", MOD_MDTC_NONE,
                                   protein, delta, align_delta, pos2, -1, getbin,
-                                  NULL, err);
+                                  NULL, NULL, err);
   if (ifeat < 0) {
     return ifeat;
   }

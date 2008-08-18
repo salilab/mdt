@@ -32,7 +32,7 @@ static int make_feature(struct mdt_library *mlib, gboolean pos2,
                         const char *name, int hbprop_type)
 {
   return mdt_feature_atom_add(mlib, name, MOD_MDTC_NONE, pos2, getbin,
-                              GINT_TO_POINTER(hbprop_type));
+                              GINT_TO_POINTER(hbprop_type), NULL);
 }
 
 int mdt_feature_hydrogen_bond_donor(struct mdt_library *mlib, gboolean pos2)

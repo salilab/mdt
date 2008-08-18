@@ -74,7 +74,7 @@ int mdt_feature_neighborhood_difference(struct mdt_library *mlib, int protein1,
   ifeat = mdt_feature_aligned_residue_add(mlib,
                                           "Residue neighborhood difference",
                                           MOD_MDTC_NONE, protein1, protein2,
-                                          getbin, NULL, err);
+                                          getbin, NULL, NULL, err);
   if (ifeat >= 0) {
     mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
     mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_NEIGHBORS);
@@ -89,7 +89,7 @@ int mdt_feature_average_neighborhood_difference(struct mdt_library *mlib,
   int ifeat;
   ifeat = mdt_feature_aligned_residue_pair_add(
               mlib, "Average residue neighborhood difference", MOD_MDTC_NONE,
-              protein1, protein2, FALSE, avgetbin, NULL, err);
+              protein1, protein2, FALSE, avgetbin, NULL, NULL, err);
   if (ifeat >= 0) {
     mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
     mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_NEIGHBORS);

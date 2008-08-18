@@ -29,7 +29,7 @@ int mdt_feature_residue_distance(struct mdt_library *mlib, int protein,
   int ifeat;
   ifeat = mdt_feature_residue_pair_add(mlib, "Residue-residue distance",
                                        MOD_MDTC_NONE, protein, TRUE, getbin,
-                                       NULL, err);
+                                       NULL, NULL, err);
   if (ifeat >= 0) {
     mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   }

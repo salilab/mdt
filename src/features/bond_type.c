@@ -33,18 +33,21 @@ static int add_feature(struct mdt_library *mlib, int ifeat)
 int mdt_feature_bond_type(struct mdt_library *mlib)
 {
   return add_feature(mlib, mdt_feature_bond_add(mlib, "Bond type",
-                                                MOD_MDTC_NONE, getbin, NULL));
+                                                MOD_MDTC_NONE, getbin, NULL,
+                                                NULL));
 }
 
 int mdt_feature_angle_type(struct mdt_library *mlib)
 {
   return add_feature(mlib, mdt_feature_angle_add(mlib, "Angle type",
-                                                 MOD_MDTC_NONE, getbin, NULL));
+                                                 MOD_MDTC_NONE, getbin, NULL,
+                                                 NULL));
 }
 
 int mdt_feature_dihedral_type(struct mdt_library *mlib)
 {
   return add_feature(mlib,
                      mdt_feature_dihedral_add(mlib, "Dihedral type",
-                                              MOD_MDTC_NONE, getbin, NULL));
+                                              MOD_MDTC_NONE, getbin, NULL,
+                                              NULL));
 }

@@ -43,7 +43,8 @@ static int angle_feature(struct mdt_library *mlib, const char *name,
   if (!tuple_require_natom(mlib, 2,  err)) {
     return -1;
   }
-  ifeat = mdt_feature_tuple_pair_add(mlib, name, MOD_MDTC_NONE, getbin, NULL);
+  ifeat = mdt_feature_tuple_pair_add(mlib, name, MOD_MDTC_NONE, getbin, NULL,
+                                     NULL);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   return ifeat;
 }

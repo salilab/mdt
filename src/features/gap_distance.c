@@ -63,7 +63,7 @@ int mdt_feature_gap_distance(struct mdt_library *mlib, int protein1,
 {
   return mdt_feature_aligned_residue_add(mlib, "Distance from a gap",
                                          MOD_MDTC_NONE, protein1, protein2,
-                                         getbin, NULL, err);
+                                         getbin, NULL, NULL, err);
 }
 
 int mdt_feature_average_gap_distance(struct mdt_library *mlib, int protein1,
@@ -72,5 +72,5 @@ int mdt_feature_average_gap_distance(struct mdt_library *mlib, int protein1,
   return mdt_feature_aligned_residue_pair_add(mlib,
                                               "Average distance from a gap",
                                               MOD_MDTC_NONE, protein1, protein2,
-                                              FALSE, avgetbin, NULL, err);
+                                              FALSE, avgetbin, NULL, NULL, err);
 }

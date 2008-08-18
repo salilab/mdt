@@ -22,7 +22,8 @@ static int getbin(const struct mod_alignment *aln, int protein,
 int mdt_feature_angle(struct mdt_library *mlib)
 {
   int ifeat;
-  ifeat = mdt_feature_angle_add(mlib, "Angle", MOD_MDTC_NONE, getbin, NULL);
+  ifeat = mdt_feature_angle_add(mlib, "Angle", MOD_MDTC_NONE, getbin, NULL,
+                                NULL);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   return ifeat;
 }

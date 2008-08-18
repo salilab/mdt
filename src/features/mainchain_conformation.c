@@ -28,7 +28,7 @@ int mdt_feature_mainchain_conformation(struct mdt_library *mlib, int protein,
   struct mod_mdt_libfeature *feat;
   ifeat = mdt_feature_residue_add(mlib, "Mainchain conformation (Ramachandran)",
                                   MOD_MDTC_MNRAMA, protein, delta, align_delta,
-                                  pos2, -1, getbin, NULL, err);
+                                  pos2, -1, getbin, NULL, NULL, err);
   if (ifeat < 0) {
     return ifeat;
   }

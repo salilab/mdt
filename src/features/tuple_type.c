@@ -24,7 +24,7 @@ int mdt_feature_tuple_type(struct mdt_library *mlib, gboolean pos2)
   int ifeat;
   struct mod_mdt_libfeature *feat;
   ifeat = mdt_feature_tuple_add(mlib, "Tuple type", MOD_MDTC_NONE,
-                                pos2, getbin, NULL);
+                                pos2, getbin, NULL, NULL);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   /* Set number of bins and their symbols */
   feat = &mlib->base.features[ifeat - 1];

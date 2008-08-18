@@ -24,7 +24,7 @@ int mdt_feature_dihedral(struct mdt_library *mlib)
 {
   int ifeat;
   ifeat = mdt_feature_dihedral_add(mlib, "Dihedral", MOD_MDTC_NONE, getbin,
-                                   NULL);
+                                   NULL, NULL);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
   mdt_feature_periodic_set(mlib, ifeat, TRUE);
   return ifeat;

@@ -65,6 +65,13 @@ void mdt_library_free(struct mdt_library *mlib)
   for (i = 0; i < 4; i++) {
     mdt_atom_class_list_free(mlib->atclass[i]);
   }
+  for (i = 0; i < mlib->base.nfeat; i++) {
+    struct mdt_feature *feat;
+    feat = &g_array_index(mlib->features, struct mdt_feature, i);
+    if (feat->freefunc) {
+      feat->freefunc(feat->data);
+    }
+  }
   mdt_atom_class_list_free(mlib->hbond);
   mdt_atom_class_list_free(mlib->tupclass);
   g_array_free(mlib->features, TRUE);

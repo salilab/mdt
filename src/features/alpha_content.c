@@ -37,7 +37,8 @@ int mdt_feature_alpha_content(struct mdt_library *mlib, int protein,
 {
   int ifeat;
   ifeat = mdt_feature_protein_add(mlib, "Protein alpha content",
-                                  MOD_MDTC_MNRAMA, protein, getbin, NULL, err);
+                                  MOD_MDTC_MNRAMA, protein, getbin, NULL, NULL,
+                                  err);
   if (ifeat < 0) {
     return ifeat;
   }

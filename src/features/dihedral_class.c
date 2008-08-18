@@ -28,7 +28,7 @@ static int add_feature(struct mdt_library *mlib, int protein, int delta,
   struct mod_mdt_libfeature *feat;
   ifeat = mdt_feature_residue_add(mlib, name, precalc, protein, delta,
                                   align_delta, pos2, -1, getbin,
-                                  GINT_TO_POINTER(dihtype), err);
+                                  GINT_TO_POINTER(dihtype), NULL, err);
   if (ifeat < 0) {
     return ifeat;
   }

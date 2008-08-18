@@ -23,7 +23,7 @@ int mdt_feature_atom_accessibility(struct mdt_library *mlib, gboolean pos2)
 {
   int ifeat;
   ifeat = mdt_feature_atom_add(mlib, "Atom accessibility", MOD_MDTC_NONE,
-                               pos2, getbin, NULL);
+                               pos2, getbin, NULL, NULL);
   mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_PSA);
   return ifeat;
 }

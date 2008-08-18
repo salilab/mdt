@@ -41,7 +41,7 @@ int mdt_feature_residue_group(struct mdt_library *mlib, int protein, int delta,
                          residue_grouping);
   ifeat = mdt_feature_residue_add(mlib, name, MOD_MDTC_NONE, protein, delta,
                                   align_delta, pos2, -1, getbin,
-                                  GINT_TO_POINTER(residue_grouping), err);
+                                  GINT_TO_POINTER(residue_grouping), NULL, err);
   g_free(name);
   if (ifeat < 0) {
     return ifeat;

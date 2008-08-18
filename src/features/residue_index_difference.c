@@ -35,10 +35,10 @@ int mdt_feature_residue_index_difference(struct mdt_library *mlib,
     return mdt_feature_residue_pair_add(mlib,
                                         "Absolute Residue index difference",
                                         MOD_MDTC_NONE, protein, FALSE,
-                                        absgetbin, NULL, err);
+                                        absgetbin, NULL, NULL, err);
   } else {
     return mdt_feature_residue_pair_add(mlib, "Residue index difference",
                                         MOD_MDTC_NONE, protein, TRUE, getbin,
-                                        NULL, err);
+                                        NULL, NULL, err);
   }
 }

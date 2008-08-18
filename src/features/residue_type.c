@@ -35,7 +35,7 @@ int mdt_feature_residue_type(struct mdt_library *mlib, int protein,
   const static int nrestyp = 21;
   ifeat = mdt_feature_residue_add(mlib, "Residue type", MOD_MDTC_NONE,
                                   protein, delta, align_delta, pos2,
-                                  libs->igaptyp, getbin, NULL, err);
+                                  libs->igaptyp, getbin, NULL, NULL, err);
   if (ifeat < 0) {
     return ifeat;
   }

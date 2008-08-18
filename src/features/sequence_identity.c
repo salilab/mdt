@@ -53,5 +53,5 @@ int mdt_feature_sequence_identity(struct mdt_library *mlib, int protein1,
   return mdt_feature_protein_pair_add(mlib,
                                       "Overall fractional sequence identity",
                                       MOD_MDTC_NONE, protein1, protein2, getbin,
-                                      NULL, err);
+                                      NULL, NULL, err);
 }

@@ -22,5 +22,5 @@ int mdt_feature_sequence_length(struct mdt_library *mlib, int protein,
                                 GError **err)
 {
   return mdt_feature_protein_add(mlib, "Sequence length", MOD_MDTC_NONE,
-                                 protein, getbin, NULL, err);
+                                 protein, getbin, NULL, NULL, err);
 }

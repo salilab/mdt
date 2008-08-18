@@ -46,7 +46,7 @@ static int add_feature(struct mdt_library *mlib, int protein1, int protein2,
   int ifeat;
   ifeat = mdt_feature_aligned_residue_add(mlib, name, MOD_MDTC_NONE, protein1,
                                           protein2, getbin,
-                                          GINT_TO_POINTER(dihtype), err);
+                                          GINT_TO_POINTER(dihtype), NULL, err);
   if (ifeat >= 0) {
     mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_STRUCTURE);
     mdt_feature_add_needed_file(mlib, ifeat, MOD_MDTF_DIHEDRALS);

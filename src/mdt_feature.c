@@ -88,7 +88,8 @@ static gboolean check_protein_pair(int protein1, int protein2,
 
 /** Helper function to add a new feature structure, and return it. */
 static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat,
-                                       mdt_feature_type type, void *data)
+                                       mdt_feature_type type, void *data,
+                                       mdt_cb_free freefunc)
 {
   struct mdt_feature *newfeat;
   mlib->feature_added = TRUE;
@@ -98,13 +99,14 @@ static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat,
   newfeat->periodic = FALSE;
   newfeat->type = type;
   newfeat->data = data;
+  newfeat->freefunc = freefunc;
   return newfeat;
 }
 
 int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
                             mod_mdt_calc precalc_type, int protein,
                             mdt_cb_feature_protein getbin, void *data,
-                            GError **err)
+                            mdt_cb_free freefunc, GError **err)
 {
   GString *fullname;
   struct mdt_feature_protein *feat;
@@ -114,7 +116,8 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
     return -1;
   }
 
-  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_PROTEIN, data)->u.protein);
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_PROTEIN, data,
+                       freefunc)->u.protein);
   feat->protein = protein;
   feat->getbin = getbin;
   fullname = g_string_new(name);
@@ -130,7 +133,7 @@ int mdt_feature_protein_pair_add(struct mdt_library *mlib, const char *name,
                                  mod_mdt_calc precalc_type, int protein1,
                                  int protein2,
                                  mdt_cb_feature_protein_pair getbin, void *data,
-                                 GError **err)
+                                 mdt_cb_free freefunc, GError **err)
 {
   char *fullname;
   struct mdt_feature_protein_pair *feat;
@@ -141,7 +144,7 @@ int mdt_feature_protein_pair_add(struct mdt_library *mlib, const char *name,
   }
 
   feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_PROTEIN_PAIR,
-                       data)->u.protein_pair);
+                       data, freefunc)->u.protein_pair);
   feat->protein1 = protein1;
   feat->protein2 = protein2;
   feat->getbin = getbin;
@@ -158,7 +161,7 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
                             mod_mdt_calc precalc_type, int protein, int delta,
                             int align_delta, gboolean pos2,
                             int bin_seq_outrange, mdt_cb_feature_residue getbin,
-                            void *data, GError **err)
+                            void *data, mdt_cb_free freefunc, GError **err)
 {
   GString *fullname;
   struct mdt_feature_residue *feat;
@@ -168,7 +171,8 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
     return -1;
   }
 
-  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_RESIDUE, data)->u.residue);
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_RESIDUE, data,
+                       freefunc)->u.residue);
   feat->protein = protein;
   feat->delta = delta;
   feat->align_delta = align_delta;
@@ -198,7 +202,7 @@ int mdt_feature_residue_pair_add(struct mdt_library *mlib, const char *name,
                                  mod_mdt_calc precalc_type, int protein,
                                  gboolean asymmetric,
                                  mdt_cb_feature_residue_pair getbin, void *data,
-                                 GError **err)
+                                 mdt_cb_free freefunc, GError **err)
 {
   struct mdt_feature_residue_pair *feat;
   int nfeat;
@@ -208,7 +212,7 @@ int mdt_feature_residue_pair_add(struct mdt_library *mlib, const char *name,
   }
 
   feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_RESIDUE_PAIR,
-                       data)->u.residue_pair);
+                       data, freefunc)->u.residue_pair);
   feat->protein = protein;
   feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
@@ -221,7 +225,8 @@ int mdt_feature_aligned_residue_add(struct mdt_library *mlib, const char *name,
                                     mod_mdt_calc precalc_type, int protein1,
                                     int protein2,
                                     mdt_cb_feature_aligned_residue getbin,
-                                    void *data, GError **err)
+                                    void *data, mdt_cb_free freefunc,
+                                    GError **err)
 {
   char *fullname;
   struct mdt_feature_aligned_residue *feat;
@@ -232,7 +237,7 @@ int mdt_feature_aligned_residue_add(struct mdt_library *mlib, const char *name,
   }
 
   feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_ALIGNED_RESIDUE,
-                       data)->u.aligned_residue);
+                       data, freefunc)->u.aligned_residue);
   feat->protein1 = protein1;
   feat->protein2 = protein2;
   feat->getbin = getbin;
@@ -248,7 +253,8 @@ int mdt_feature_aligned_residue_add(struct mdt_library *mlib, const char *name,
 int mdt_feature_aligned_residue_pair_add(
     struct mdt_library *mlib, const char *name, mod_mdt_calc precalc_type,
     int protein1, int protein2, gboolean asymmetric,
-    mdt_cb_feature_aligned_residue_pair getbin, void *data, GError **err)
+    mdt_cb_feature_aligned_residue_pair getbin, void *data,
+    mdt_cb_free freefunc, GError **err)
 {
   char *fullname;
   struct mdt_feature_aligned_residue_pair *feat;
@@ -259,7 +265,7 @@ int mdt_feature_aligned_residue_pair_add(
   }
 
   feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_ALIGNED_RESIDUE_PAIR,
-                       data)->u.aligned_residue_pair);
+                       data, freefunc)->u.aligned_residue_pair);
   feat->protein1 = protein1;
   feat->protein2 = protein2;
   feat->getbin = getbin;
@@ -274,13 +280,14 @@ int mdt_feature_aligned_residue_pair_add(
 
 int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
                          mod_mdt_calc precalc_type, gboolean pos2,
-                         mdt_cb_feature_atom getbin, void *data)
+                         mdt_cb_feature_atom getbin, void *data,
+                         mdt_cb_free freefunc)
 {
   GString *fullname;
   struct mdt_feature_atom *feat;
   int nfeat;
 
-  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_ATOM, data)->u.atom);
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_ATOM, data, freefunc)->u.atom);
   feat->pos2 = pos2;
   feat->getbin = getbin;
   fullname = g_string_new(name);
@@ -298,12 +305,14 @@ int mdt_feature_atom_add(struct mdt_library *mlib, const char *name,
 
 int mdt_feature_atom_pair_add(struct mdt_library *mlib, const char *name,
                               mod_mdt_calc precalc_type, gboolean asymmetric,
-                              mdt_cb_feature_atom_pair getbin, void *data)
+                              mdt_cb_feature_atom_pair getbin, void *data,
+                              mdt_cb_free freefunc)
 {
   struct mdt_feature_atom_pair *feat;
   int nfeat;
 
-  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_ATOM_PAIR, data)->u.atom_pair);
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_ATOM_PAIR, data,
+                       freefunc)->u.atom_pair);
   feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_ATOM_PAIR, asymmetric, 0);
@@ -313,13 +322,15 @@ int mdt_feature_atom_pair_add(struct mdt_library *mlib, const char *name,
 
 int mdt_feature_tuple_add(struct mdt_library *mlib, const char *name,
                           mod_mdt_calc precalc_type, gboolean pos2,
-                          mdt_cb_feature_tuple getbin, void *data)
+                          mdt_cb_feature_tuple getbin, void *data,
+                          mdt_cb_free freefunc)
 {
   GString *fullname;
   struct mdt_feature_tuple *feat;
   int nfeat;
 
-  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_TUPLE, data)->u.tuple);
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_TUPLE, data,
+                       freefunc)->u.tuple);
   feat->pos2 = pos2;
   feat->getbin = getbin;
   fullname = g_string_new(name);
@@ -336,13 +347,14 @@ int mdt_feature_tuple_add(struct mdt_library *mlib, const char *name,
 
 int mdt_feature_tuple_pair_add(struct mdt_library *mlib, const char *name,
                                mod_mdt_calc precalc_type,
-                               mdt_cb_feature_tuple_pair getbin, void *data)
+                               mdt_cb_feature_tuple_pair getbin, void *data,
+                               mdt_cb_free freefunc)
 {
   struct mdt_feature_tuple_pair *feat;
   int nfeat;
 
   feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_TUPLE_PAIR,
-                       data)->u.tuple_pair);
+                       data, freefunc)->u.tuple_pair);
   feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR, TRUE, 0);
@@ -351,12 +363,13 @@ int mdt_feature_tuple_pair_add(struct mdt_library *mlib, const char *name,
 
 int mdt_feature_bond_add(struct mdt_library *mlib, const char *name,
                          mod_mdt_calc precalc_type,
-                         mdt_cb_feature_bond getbin, void *data)
+                         mdt_cb_feature_bond getbin, void *data,
+                         mdt_cb_free freefunc)
 {
   struct mdt_feature_bond *feat;
   int nfeat;
 
-  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data)->u.bond);
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data, freefunc)->u.bond);
   feat->type = MDT_BOND_TYPE_BOND;
   feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
@@ -366,12 +379,13 @@ int mdt_feature_bond_add(struct mdt_library *mlib, const char *name,
 
 int mdt_feature_angle_add(struct mdt_library *mlib, const char *name,
                           mod_mdt_calc precalc_type,
-                          mdt_cb_feature_bond getbin, void *data)
+                          mdt_cb_feature_bond getbin, void *data,
+                          mdt_cb_free freefunc)
 {
   struct mdt_feature_bond *feat;
   int nfeat;
 
-  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data)->u.bond);
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data, freefunc)->u.bond);
   feat->type = MDT_BOND_TYPE_ANGLE;
   feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
@@ -381,12 +395,13 @@ int mdt_feature_angle_add(struct mdt_library *mlib, const char *name,
 
 int mdt_feature_dihedral_add(struct mdt_library *mlib, const char *name,
                              mod_mdt_calc precalc_type,
-                             mdt_cb_feature_bond getbin, void *data)
+                             mdt_cb_feature_bond getbin, void *data,
+                             mdt_cb_free freefunc)
 {
   struct mdt_feature_bond *feat;
   int nfeat;
 
-  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data)->u.bond);
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data, freefunc)->u.bond);
   feat->type = MDT_BOND_TYPE_DIHEDRAL;
   feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,

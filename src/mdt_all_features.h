@@ -16,7 +16,7 @@ G_BEGIN_DECLS
 /** Add a protein X-ray resolution feature. */
 MDTDLLEXPORT
 int mdt_feature_xray_resolution(struct mdt_library *mlib, int protein,
-                                GError **err);
+                                float nmr, GError **err);
 
 /** Add a protein radius of gyration feature. */
 MDTDLLEXPORT

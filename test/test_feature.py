@@ -258,6 +258,7 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         bins = mdt.uniform_bins(3, -1.0, 1.5)
         xray0 = mdt.features.XRayResolution(mlib, bins, protein=0)
+        xray0_nmr = mdt.features.XRayResolution(mlib, bins, protein=0, nmr=1.0)
         xray1 = mdt.features.XRayResolution(mlib, bins, protein=1)
         m = self.get_test_mdt(mlib, features=xray0)
         m2 = self.get_test_mdt(mlib, features=xray1)
@@ -265,9 +266,10 @@ class FeatureTests(MDTTest):
         self.assertEqual([b for b in m], [0., 1., 1., 0.])
         self.assertMDTDataEqual(m, m2)
 
-        for (code, bin) in (('bin0', 0), ('bin1', 1), ('bin2', 2),
-                            ('undef1', 3), ('undef2', 3)):
-            m = mdt.Table(mlib, features=xray0)
+        for (code, feat, bin) in (('bin0', xray0, 0), ('bin0', xray0_nmr, 1),
+                                  ('bin1', xray0, 1), ('bin2', xray0, 2),
+                                  ('undef1', xray0, 3), ('undef2', xray0, 3)):
+            m = mdt.Table(mlib, features=feat)
             aln = modeller.alignment(env, file='test/data/resol.ali',
                                      align_codes=code)
             m.add_alignment(aln)

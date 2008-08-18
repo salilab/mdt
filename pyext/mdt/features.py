@@ -191,10 +191,17 @@ class XRayResolution(Protein):
     """
     Protein X-ray resolution in angstroms.
     Note that proteins with a resolution of -1.00 (generally NMR structures) are
-    actually treated as 0.45. This decreases the number of bins required to hold
-    all defined resolutions while still separating NMR from X-ray structures.
+    actually treated as 0.45 by default. This decreases the number of bins
+    required to hold all defined resolutions while still separating NMR from
+    X-ray structures.
     """
     _setup = _mdt.mdt_feature_xray_resolution
+    def __init__(self, mlib, bins, protein=0, nmr=0.45):
+        """Create the feature. `nmr` is the resolution to artificially map
+           proteins with resolution -1.00 to. See `Protein` for the other
+           arguments."""
+        self._ifeat = self._setup(mlib._modpt, protein, nmr)
+        self._create_bins(mlib, bins)
 
 class RadiusOfGyration(Protein):
     """Protein radius of gyration in angstroms. The calculation of the center

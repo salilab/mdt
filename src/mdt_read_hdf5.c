@@ -229,12 +229,14 @@ gboolean mdt_read_hdf5(struct mdt *mdt, const struct mdt_library *mlib,
 
   file_id = mdt_hdf_open(filename, H5F_ACC_RDONLY, H5P_DEFAULT, &file_info,
                          err);
-  if (file_id < 0 || !read_mdt_features(file_id, &mdt->base, err)
-      || !check_mdt_features(file_id, &mdt->base, mlib, err)
-      || !read_mdt_data(file_id, mdt, err)
-      || !mdt_hdf_close(file_id, &file_info, err)) {
+  if (file_id < 0) {
     return FALSE;
   } else {
-    return mdt_setup(mdt, mlib, err);
+    gboolean ret;
+    ret = read_mdt_features(file_id, &mdt->base, err)
+          && check_mdt_features(file_id, &mdt->base, mlib, err)
+          && read_mdt_data(file_id, mdt, err)
+          && mdt_setup(mdt, mlib, err);
+    return mdt_hdf_close(file_id, &file_info, err) && ret;
   }
 }

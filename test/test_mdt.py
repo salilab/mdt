@@ -70,6 +70,24 @@ class TableTests(MDTTest):
         self.assertRaises(mdt.MDTError, m2.read, 'test.hdf5')
         os.unlink('test.hdf5')
 
+    def test_feature_check(self):
+        """When rereading MDTs, features should be the same"""
+        mlib = self.get_mdt_library()
+        feat = mdt.features.AtomDistance(mlib, mdt.uniform_bins(10, 0, 1))
+        m = mdt.Table(mlib, features=feat)
+        m.write(file='test.mdt')
+        m.write_hdf5(file='test.hdf5')
+        # Different feature type, same bins should fail:
+        mlib = self.get_mdt_library()
+        feat = mdt.features.ResidueDistance(mlib, mdt.uniform_bins(10, 0, 1))
+        self.assertRaises(mdt.MDTError, mdt.Table, mlib, file='test.hdf5')
+        # Same feature type, different number of bins should fail:
+        mlib = self.get_mdt_library()
+        feat = mdt.features.AtomDistance(mlib, mdt.uniform_bins(20, 0, 1))
+        self.assertRaises(mdt.MDTError, mdt.Table, mlib, file='test.hdf5')
+        os.unlink('test.mdt')
+        os.unlink('test.hdf5')
+
     def test_bin_info(self):
         """Test query of bin symbol and range"""
         mlib = self.get_mdt_library()

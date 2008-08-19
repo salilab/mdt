@@ -80,11 +80,13 @@ class TableTests(MDTTest):
         # Different feature type, same bins should fail:
         mlib = self.get_mdt_library()
         feat = mdt.features.ResidueDistance(mlib, mdt.uniform_bins(10, 0, 1))
-        self.assertRaises(mdt.MDTError, mdt.Table, mlib, file='test.hdf5')
+        for f in ('test.mdt', 'test.hdf5'):
+            self.assertRaises(mdt.MDTError, mdt.Table, mlib, file=f)
         # Same feature type, different number of bins should fail:
         mlib = self.get_mdt_library()
         feat = mdt.features.AtomDistance(mlib, mdt.uniform_bins(20, 0, 1))
-        self.assertRaises(mdt.MDTError, mdt.Table, mlib, file='test.hdf5')
+        for f in ('test.mdt', 'test.hdf5'):
+            self.assertRaises(mdt.MDTError, mdt.Table, mlib, file=f)
         os.unlink('test.mdt')
         os.unlink('test.hdf5')
 

@@ -58,7 +58,8 @@ static gboolean read_double_line(const char *text, const char *starttext,
     on success. */
 static gboolean read_mdt_feature(struct mdt *mdt,
                                  const struct mdt_library *mlib, int nfeat,
-                                 int ifeat, int nbins, GError **err)
+                                 int ifeat, int nbins, const char *name,
+                                 GError **err)
 {
   struct mod_mdt_feature *feat;
 
@@ -77,6 +78,12 @@ static gboolean read_mdt_feature(struct mdt *mdt,
                   "MDT number of bins (%d) is different to that in the bin "
                   "file (%d) for feature number %d, feature type %d", nbins,
                   libfeat->nbins, nfeat - 1, feat->ifeat);
+      return FALSE;
+    } else if (strcmp(name, libfeat->name) != 0) {
+      g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
+                  "Feature name (%s) is different to that in the library "
+                  "(%s) for feature number %d, feature type %d", name,
+                  libfeat->name, nfeat - 1, feat->ifeat);
       return FALSE;
     }
   }
@@ -101,9 +108,13 @@ static gboolean read_mdt_features(struct mdt *mdt,
       retval = FALSE;
     } else if (eof != 0 || strlen(str->str) == 0) {
       break;
-    } else if (strlen(str->str) > 6
+    } else if (strlen(str->str) >= 19
                && sscanf(&str->str[6], "%6d%6d", &ifeat, &nbins) == 2) {
-      retval = read_mdt_feature(mdt, mlib, ++nfeat, ifeat, nbins, err);
+      const char *name = &str->str[18];
+      /* Get past the number of bins */
+      while (*name >= '0' && *name <= '9') name++;
+      while (*name == ' ') name++; /* Skip any whitespace */
+      retval = read_mdt_feature(mdt, mlib, ++nfeat, ifeat, nbins, name, err);
     } else {
       g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
                   "Was expecting to read feature information from "
@@ -275,7 +286,7 @@ gboolean mdt_read(struct mdt *mdt, const struct mdt_library *mlib,
     }
 
     g_string_free(str, TRUE);
-    retval &&= mdt_close_file(fh, err);
+    retval = mdt_close_file(fh, err) && retval;
 
     if (retval) {
       retval = mdt_setup(mdt, mlib, err);

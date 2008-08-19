@@ -275,7 +275,7 @@ gboolean mdt_read(struct mdt *mdt, const struct mdt_library *mlib,
     }
 
     g_string_free(str, TRUE);
-    retval &= mdt_close_file(fh, err);
+    retval &&= mdt_close_file(fh, err);
 
     if (retval) {
       retval = mdt_setup(mdt, mlib, err);

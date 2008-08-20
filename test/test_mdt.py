@@ -41,6 +41,18 @@ class TableTests(MDTTest):
         badmdt = m2.reshape(features=xray0, offset=0, shape=-1)
         self.assertRaises(ValueError, m1.__add__, badmdt)
 
+    def test_features_same_library(self):
+        """Features must all come from the same Library"""
+        mlib1 = self.get_mdt_library()
+        mlib2 = self.get_mdt_library()
+        restyp1 = mdt.features.ResidueType(mlib1, protein=0)
+        restyp2 = mdt.features.ResidueType(mlib2, protein=1)
+        m = mdt.Table(mlib1, features=restyp1)
+        m = mdt.Table(mlib2, features=restyp2)
+        for mlib in (mlib1, mlib2):
+            self.assertRaises(ValueError, mdt.Table, mlib,
+                              features=(restyp1,restyp2))
+
     def test_mdt_formats(self):
         """Make sure we can read and write MDT files"""
         env = self.get_environ()

@@ -6,6 +6,15 @@ import _mdt
 
 class _Base(object):
     """Base class for all features."""
+    def __init__(self, mlib):
+        self._mlib = mlib
+
+    def _get_ifeat(self, mlib):
+        if mlib == self._mlib:
+            return self._ifeat
+        else:
+            raise ValueError("Cannot use features from different libraries")
+
     def _create_bins(self, mlib, bins):
         """Set bins in the MDT library for this feature."""
         _mdt.mdt_feature_nbins_set(mlib._modpt, self._ifeat, len(bins))
@@ -33,6 +42,7 @@ class Protein(_Base):
             feature requests a triples scan while protein=1, this feature will
             be evaluated on the second protein in each triple.)
         """
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein)
         self._create_bins(mlib, bins)
 
@@ -51,6 +61,7 @@ class ProteinPair(_Base):
         of all protein triples is asked for, and the feature is evaluated on
         the first and third proteins in each triple.
         """
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein1, protein2)
         self._create_bins(mlib, bins)
 
@@ -74,6 +85,7 @@ class Residue(_Base):
           - `pos2`: if True, force a residue pair scan, and evaluate the
             feature on the second residue in each pair.
         """
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
                                   pos2)
         self._create_bins(mlib, bins)
@@ -83,6 +95,7 @@ class ResidueFixedBins(Residue):
     """A residue feature for which bins need not be specified."""
     def __init__(self, mlib, protein=0, delta=0, align_delta=0, pos2=False):
         """See `Residue` for a description of the arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
                                   pos2, mlib._env.libs.modpt)
 
@@ -91,6 +104,7 @@ class ResiduePair(_Base):
     """A feature defined on pairs of residues in a protein."""
     def __init__(self, mlib, bins, protein=0):
         """See `Protein` for a description of the arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein)
         self._create_bins(mlib, bins)
 
@@ -101,6 +115,7 @@ class AlignedResidue(_Base):
        feature is evaluated for each pair of aligned residues."""
     def __init__(self, mlib, bins, protein1=0, protein2=1):
         """See `ResiduePair` for a description of the arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein1, protein2)
         self._create_bins(mlib, bins)
 
@@ -112,6 +127,7 @@ class AlignedResiduePair(_Base):
        residues."""
     def __init__(self, mlib, bins, protein1=0, protein2=1):
         """See `ResiduePair` for a description of the arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein1, protein2)
         self._create_bins(mlib, bins)
 
@@ -122,6 +138,7 @@ class Atom(_Base):
        selected from the alignment."""
     def __init__(self, mlib, bins, pos2=False):
         """See `Residue` for a description of the arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, pos2)
         self._create_bins(mlib, bins)
 
@@ -130,6 +147,7 @@ class AtomFixedBins(Atom):
     """An atom feature for which bins need not be specified."""
     def __init__(self, mlib, pos2=False):
         """See `Residue` for a description of the arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, pos2)
 
 
@@ -139,6 +157,7 @@ class AtomPair(_Base):
        selected from the alignment."""
     def __init__(self, mlib, bins):
         """See `Protein` for a description of the arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt)
         self._create_bins(mlib, bins)
 
@@ -149,6 +168,7 @@ class Tuple(_Base):
        selected from the alignment."""
     def __init__(self, mlib, bins, pos2=False):
         """See `Residue` for a description of the arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, pos2)
         self._create_bins(mlib, bins)
 
@@ -157,6 +177,7 @@ class TupleFixedBins(Tuple):
     """A tuple feature for which bins need not be specified."""
     def __init__(self, mlib, pos2=False):
         """See `Residue` for a description of the arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, pos2)
 
 
@@ -166,6 +187,7 @@ class TuplePair(_Base):
        selected from the alignment."""
     def __init__(self, mlib, bins):
         """See `Protein` for a description of the arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt)
         self._create_bins(mlib, bins)
 
@@ -177,6 +199,7 @@ class ChemicalBond(_Base):
        first protein in each group of proteins selected from the alignment."""
     def __init__(self, mlib, bins):
         """See `Protein` for a description of the arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt)
         self._create_bins(mlib, bins)
 
@@ -184,6 +207,7 @@ class ChemicalBond(_Base):
 class ChemicalBondFixedBins(ChemicalBond):
     """A chemical bond feature for which bins need not be specified."""
     def __init__(self, mlib):
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt)
 
 
@@ -200,6 +224,7 @@ class XRayResolution(Protein):
         """Create the feature. `nmr` is the resolution to artificially map
            proteins with resolution -1.00 to. See `Protein` for the other
            arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein, nmr)
         self._create_bins(mlib, bins)
 
@@ -294,6 +319,7 @@ class ResidueGroup(ResidueFixedBins):
     _setup = _mdt.mdt_feature_residue_group
     def __init__(self, mlib, protein=0, delta=0, align_delta=0, pos2=False,
                  residue_grouping=0):
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
                                   pos2, residue_grouping, mlib._env.libs.modpt)
 
@@ -327,6 +353,7 @@ class ResidueIndexDifference(ResiduePair):
         """Create the feature. If `absolute` is True, the absolute value of
            the index difference is used (and thus the feature is symmetric).
            See `ResiduePair` for a description of the other arguments."""
+        _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein, absolute)
         self._create_bins(mlib, bins)
     _setup = _mdt.mdt_feature_residue_index_difference

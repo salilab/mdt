@@ -739,8 +739,8 @@ class Table(TableSection):
         if not isinstance(features, (list, tuple)):
             features = (features,)
         for feat in features:
-            if hasattr(feat, '_ifeat') and feat._ifeat is not None:
-                ifeat.append(feat._ifeat)
+            if hasattr(feat, '_get_ifeat'):
+                ifeat.append(feat._get_ifeat(self._mlib))
             else:
                 raise TypeError("features should be objects from mdt.features")
         return ifeat

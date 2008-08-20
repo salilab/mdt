@@ -60,16 +60,26 @@ gboolean mdt_feature_periodic_get(const struct mdt_library *mlib, int ifeat)
 }
 
 /** \return TRUE iff 'protein' is in range. */
-static gboolean check_protein(int protein, const char *feattype, GError **err)
+static gboolean check_protein(int protein, const char *feattype,
+                              mod_mdt_protein *mdt_protein, GError **err)
 {
-  if (protein < 0 || protein > 1) {
+  switch(protein) {
+  case 0:
+    *mdt_protein = MOD_MDTP_A;
+    break;
+  case 1:
+    *mdt_protein = MOD_MDTP_B;
+    break;
+  case 2:
+    *mdt_protein = MOD_MDTP_C;
+    break;
+  default:
     g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
-                "%s features can act only on protein 0 or protein 1; "
+                "%s features can act only on protein 0, 1, or 2; "
                 "%d was given", feattype, protein);
     return FALSE;
-  } else {
-    return TRUE;
   }
+  return TRUE;
 }
 
 /** \return TRUE iff the protein pair is valid. */
@@ -110,9 +120,10 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
 {
   GString *fullname;
   struct mdt_feature_protein *feat;
+  mod_mdt_protein mdt_protein;
   int nfeat;
 
-  if (!check_protein(protein, "Protein", err)) {
+  if (!check_protein(protein, "Protein", &mdt_protein, err)) {
     return -1;
   }
 
@@ -123,8 +134,7 @@ int mdt_feature_protein_add(struct mdt_library *mlib, const char *name,
   fullname = g_string_new(name);
   g_string_append_printf(fullname, " of protein %d", protein);
   mod_mdt_libfeature_register(&mlib->base, nfeat, fullname->str, precalc_type,
-                              protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,
-                              MOD_MDTS_PROTEIN, FALSE, 0);
+                              mdt_protein, MOD_MDTS_PROTEIN, FALSE, 0);
   g_string_free(fullname, TRUE);
   return nfeat;
 }
@@ -165,9 +175,10 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
 {
   GString *fullname;
   struct mdt_feature_residue *feat;
+  mod_mdt_protein mdt_protein;
   int nfeat;
 
-  if (!check_protein(protein, "Residue", err)) {
+  if (!check_protein(protein, "Residue", &mdt_protein, err)) {
     return -1;
   }
 
@@ -191,7 +202,7 @@ int mdt_feature_residue_add(struct mdt_library *mlib, const char *name,
     g_string_append_printf(fullname, ", at alignment delta %d", align_delta);
   }
   mod_mdt_libfeature_register(&mlib->base, nfeat, fullname->str, precalc_type,
-                              protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,
+                              mdt_protein,
                               pos2 ? MOD_MDTS_RESIDUE_PAIR : MOD_MDTS_RESIDUE,
                               FALSE, 0);
   g_string_free(fullname, TRUE);
@@ -205,9 +216,10 @@ int mdt_feature_residue_pair_add(struct mdt_library *mlib, const char *name,
                                  mdt_cb_free freefunc, GError **err)
 {
   struct mdt_feature_residue_pair *feat;
+  mod_mdt_protein mdt_protein;
   int nfeat;
 
-  if (!check_protein(protein, "Residue pair", err)) {
+  if (!check_protein(protein, "Residue pair", &mdt_protein, err)) {
     return -1;
   }
 
@@ -216,8 +228,8 @@ int mdt_feature_residue_pair_add(struct mdt_library *mlib, const char *name,
   feat->protein = protein;
   feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
-                              protein == 0 ? MOD_MDTP_A : MOD_MDTP_B,
-                              MOD_MDTS_RESIDUE_PAIR, asymmetric, 0);
+                              mdt_protein, MOD_MDTS_RESIDUE_PAIR, asymmetric,
+                              0);
   return nfeat;
 }
 

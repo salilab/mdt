@@ -260,6 +260,11 @@ class FeatureTests(MDTTest):
         xray0 = mdt.features.XRayResolution(mlib, bins, protein=0)
         xray0_nmr = mdt.features.XRayResolution(mlib, bins, protein=0, nmr=1.0)
         xray1 = mdt.features.XRayResolution(mlib, bins, protein=1)
+        xray2 = mdt.features.XRayResolution(mlib, bins, protein=2)
+        # Check valid range for protein argument
+        for p in (-1, 3):
+            self.assertRaises(ValueError, mdt.features.XRayResolution,
+                              mlib, bins, protein=p)
         m = self.get_test_mdt(mlib, features=xray0)
         m2 = self.get_test_mdt(mlib, features=xray1)
         self.assertEqual(m.shape, (4,))

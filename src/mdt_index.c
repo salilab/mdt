@@ -56,7 +56,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  struct mdt_properties *prop, GError **err)
 {
   int ibin, ires, iseq, nres, iatom, ibnd, ialnpos, ires1, ires2;
-  struct mod_sequence *seq1, *seq2;
+  struct mod_sequence *seq1, *seq2, *seq3;
   const struct mdt_bond *bond;
   const struct mdt_tuple *tup, *tup2;
   struct mod_mdt_libfeature *feat = &mlib->base.features[ifi - 1];
@@ -67,7 +67,8 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
     g_assert_not_reached();
     return -1;
   case MDT_FEATURE_PROTEIN:
-    ibin = mfeat->u.protein.getbin(aln, feat->iknown == MOD_MDTP_A ? is1 : is2,
+    ibin = mfeat->u.protein.getbin(aln, feat->iknown == MOD_MDTP_A ? is1 :
+                                        feat->iknown == MOD_MDTP_B ? is2 : is3,
                                    prop, mfeat->data, feat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_PROTEIN_PAIR:
@@ -79,14 +80,23 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case MDT_FEATURE_RESIDUE:
     seq1 = mod_alignment_sequence_get(aln, is1);
     seq2 = mod_alignment_sequence_get(aln, is2);
-    if (feat->iknown == MOD_MDTP_A) {
+    seq3 = mod_alignment_sequence_get(aln, is3);
+    switch(feat->iknown) {
+    case MOD_MDTP_A:
       iseq = is1;
       nres = seq1->nres;
       ires = mfeat->u.residue.pos2 ? ir1p : ir1;
-    } else {
+      break;
+    case MOD_MDTP_B:
       iseq = is2;
       nres = seq2->nres;
       ires = mfeat->u.residue.pos2 ? ir2p : ir2;
+      break;
+    default:
+      iseq = is3;
+      nres = seq3->nres;
+      ires = mfeat->u.residue.pos2 ? ir3p : ir3;
+      break;
     }
     ires += mfeat->u.residue.delta;
     if (ires < 0 || ires >= nres) {
@@ -118,14 +128,22 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                                            mfeat->data, feat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_RESIDUE_PAIR:
-    if (feat->iknown == MOD_MDTP_A) {
+    switch(feat->iknown) {
+    case MOD_MDTP_A:
       iseq = is1;
       ires1 = ir1;
       ires2 = ir1p;
-    } else {
+      break;
+    case MOD_MDTP_B:
       iseq = is2;
       ires1 = ir2;
       ires2 = ir2p;
+      break;
+    default:
+      iseq = is3;
+      ires1 = ir3;
+      ires2 = ir3p;
+      break;
     }
     ibin = mfeat->u.residue_pair.getbin(aln, iseq, ires1, ires2, prop,
                                         mfeat->data, feat, mlib, libs, err);

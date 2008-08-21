@@ -8,6 +8,7 @@ epydoc = env.Epydoc('epydoc/index.html', (bin, pyext))
 
 docdir = env['docdir']
 env.DocBookInstall(os.path.join(docdir, 'index.html'), docbook)
+env.Install(docdir, 'mdt.css')
 env.Alias('docinstall', docdir)
 
 docdir = os.path.join(docdir, 'epydoc')

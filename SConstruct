@@ -7,7 +7,8 @@ from tools import *
 opts = Options('config.py', ARGUMENTS)
 add_common_options(opts, 'mdt')
 env = MyEnvironment(options=opts, require_modeller=True,
-                    tools=["default", "doxygen"], toolpath=["../tools"])
+                    tools=["default", "doxygen", "docbook", "epydoc"],
+                    toolpath=["../tools"])
 Help(opts.GenerateHelpText(env))
 
 # Make these objects available to SConscript files:

@@ -1,24 +1,40 @@
 import os.path
+import re
 
 Import('env', 'bin', 'pyext')
+
+env['DOCBOOK_FRAGMENT'] = None
 
 # Build DocBook documentation:
 def action_docbook(target, source, env):
     outdir = os.path.dirname(target[0].path)
-    app = "xmlto -o %s -m doc/html-style.xml xhtml %s" % (outdir,
-                                                          source[0].path)
+    if env['DOCBOOK_FRAGMENT']:
+        frag = '-m ' + env['DOCBOOK_FRAGMENT'].path
+    else:
+        frag = ''
+    app = "xmlto -o %s %s xhtml %s" % (outdir, frag, source[0].path)
     return env.Execute(app)
 
 def emit_docbook(target, source, env):
-    for xml in ('acknowl.xml', 'html-style.xml', 'study.xml', 'usage.xml'):
-        source.append(os.path.join('..', xml))
+    # Pull out all files included by the first source (should really parse XML
+    # instead of this regex)
+    ent_re = re.compile('<!ENTITY\s+\S+\s+SYSTEM\s+\"(\S+)\">')
+    sourcedir = os.path.dirname(source[0].abspath)
+    for line in file(source[0].abspath, 'r'):
+        m = ent_re.search(line)
+        if m:
+            # Make sure included files are relative to the path of first source
+            source.append(File(os.path.join(sourcedir, m.group(1))))
+    if env['DOCBOOK_FRAGMENT']:
+        source.append(env['DOCBOOK_FRAGMENT'])
     return target, source
 
 builder_docbook = Builder(action=action_docbook, emitter=emit_docbook)
 
 env.Append(BUILDERS = {'Docbook': builder_docbook})
 
-docbook = env.Docbook("index.html", "../manual.xml")
+docbook = env.Docbook("index.html", "../manual.xml",
+                      DOCBOOK_FRAGMENT=File('../html-style.xml'))
 epydoc = env.Epydoc('epydoc/index.html', (bin, pyext))
 
 docdir = env['docdir']

@@ -35,7 +35,6 @@ a bin file which can be changed by the user.
 in turn. See
 <ulink url="&epydoc;Table.add_alignment">Table.add_alignment</ulink>.
 </para>
-</sect1>
 
 <sect2 id="features">
 <title>&MDT; features</title>
@@ -312,6 +311,7 @@ or perform normalization, smoothing, etc.
 </para>
 
 </sect2>
+</sect1>
 
 <sect1 id="compilation">
 <title>Compilation from source code</title>

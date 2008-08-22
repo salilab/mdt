@@ -47,5 +47,5 @@ SET Y_TICK = -999 -999 -999
 SET WORLD_WINDOW = -999 -999 -999 -999
 """
 m.write_asgl(asglroot='modlib-a', plot_type='PLOT2D', every_x_numbered=20,
-             text=text)
+             text=text, dimensions=1, plot_position=1, plots_per_page=8)
 os.system('asgl modlib-a')

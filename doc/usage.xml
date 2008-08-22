@@ -4,9 +4,6 @@
 <sect1 id="about">
 <title>About &MDT;</title>
 
-<sect2 id="overview">
-<title>Overview</title>
-
 <para>
 &MDT; prepares a raw frequency table, given information from &MODELLER;
 alignments and/or &PDB; files. It can also process the raw frequency table in
@@ -38,7 +35,6 @@ a bin file which can be changed by the user.
 in turn. See
 <ulink url="&epydoc;Table.add_alignment">Table.add_alignment</ulink>.
 </para>
-</sect2>
 
 <sect2 id="features">
 <title>&MDT; features</title>

@@ -19,6 +19,11 @@
    features *a, b, c, ..., d* are calculated automatically from the sequences,
    alignments, and/or PDB files.
 
+   To use MDT, first create a `Library` object. You can then read in any
+   needed library data, such as definitions of chemical bonds
+   (see `Library.bond_classes`). Then you can create one or more features in
+   the library, using objects from the `features` module. Finally, you can
+   create one or more `Table` objects to hold the table data *N*.
    MDT works by accumulating the table *N* by processing each sequence or
    alignment in turn. See `Table.add_alignment`.
 

@@ -56,12 +56,12 @@ gboolean mdt_atom_classes_read(const gchar *filename,
 
 /** Read hydrogen bond class information from a file; return TRUE on success. */
 MDTDLLEXPORT
-gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib, 
+gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib,
                         GError **err);
 
 /** Read tuple class information from a file; return TRUE on success. */
 MDTDLLEXPORT
-gboolean mdt_tuple_read(const gchar *filename, struct mdt_library *mlib, 
+gboolean mdt_tuple_read(const gchar *filename, struct mdt_library *mlib,
                         GError **err);
 
 /** Set the number of bins and the bin symbols for atom class features */

@@ -210,7 +210,7 @@ static int *make_atom_type(const struct mod_alignment *aln, int is,
 /** Get/calculate the array of atom type bin indices */
 const int *property_iatta(const struct mod_alignment *aln, int is,
                           struct mdt_properties *prop,
-                          const struct mdt_library *mlib, 
+                          const struct mdt_library *mlib,
                           const struct mod_libraries *libs, GError **err)
 {
   if (!prop[is].iatta) {

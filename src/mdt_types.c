@@ -38,7 +38,7 @@ struct mdt_library *mdt_library_new(void)
   int i;
   struct mdt_library *mlib;
   mlib = g_malloc(sizeof(struct mdt_library));
-  mod_mdt_library_init2(&mlib->base);
+  mod_mdt_library_init(&mlib->base);
   mlib->hbond_cutoff = 3.5;
   mlib->special_atoms = FALSE;
   mlib->feature_added = FALSE;

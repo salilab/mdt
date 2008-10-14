@@ -683,7 +683,8 @@ class Table(TableSection):
 
 
     def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
-                      residue_span_range=(-99999, -2, 2, 99999), sympairs=False,
+                      residue_span_range=(-99999, -2, 2, 99999),
+                      chain_span_range=(-99999, 0, 0, 99999), sympairs=False,
                       symtriples=False, io=None, edat=None):
         """
         Add data from a Modeller alignment to this MDT.
@@ -711,6 +712,17 @@ class Table(TableSection):
             must be met:
 
             *residue_span_range[2] <= abs(r2 - r1) <= residue_span_range[3]*
+
+            For example, the default value of (-99999, -2, 2, 99999) excludes
+            all pairs within the same residue (for which the sequence
+            separation is 0) or within adjacent residues (for which the
+            separation is 1 or -1).
+          - `chain_span_range`: works like `residue_span_range`, but for the
+            chain indices. It is used only by the `features.AtomPair` and
+            `features.TuplePair` features. The default value of
+            (-99999, 0, 0, 99999) allows all interactions. For example, using
+            (-99999, -1, 1, 99999) instead would exclude all interactions
+            within the same chain.
           - `sympairs`: if True, all features involving pairs of proteins
             are symmetric.
           - `symtriples`: if True, all features involving triples of proteins
@@ -722,8 +734,9 @@ class Table(TableSection):
             edat = self._mlib._env.edat
         _mdt.mdt_add_alignment(self._modpt, self._mlib._modpt, aln.modpt,
                                distngh, False, surftyp, accessibility_type,
-                               residue_span_range, sympairs, symtriples,
-                               io.modpt, edat.modpt, self._mlib._env.libs.modpt)
+                               residue_span_range, chain_span_range, sympairs,
+                               symtriples, io.modpt, edat.modpt,
+                               self._mlib._env.libs.modpt)
 
 
     def open_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
@@ -883,14 +896,15 @@ class Source(object):
         if hasattr(self, "_modpt"):
             _mdt.mdt_alignment_close(self._modpt)
 
-    def sum(self, residue_span_range=(-99999, -2, 2, 99999)):
+    def sum(self, residue_span_range=(-99999, -2, 2, 99999),
+            chain_span_range=(-99999, 0, 0, 99999)):
         """Scan all data points in the source, and return the sum.
            See `Table.add_alignment` for a description of the
-           `residue_span_range` argument."""
+           `residue_span_range` and `chain_span_range` arguments."""
         f = _mdt.mdt_source_sum
         return f(self._modpt, self._mdt._modpt, self._mlib._modpt,
-                 residue_span_range, self._mlib._env.libs.modpt,
-                 self._edat.modpt)
+                 residue_span_range, chain_span_range,
+                 self._mlib._env.libs.modpt, self._edat.modpt)
 
     def index(self, feat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
               ip2, ibnd1, ibnd1p, is3, ir3, ir3p):

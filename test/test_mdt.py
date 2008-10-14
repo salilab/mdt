@@ -200,6 +200,34 @@ class TableTests(MDTTest):
         for i in range(38, 49):
             self.assertEqual(m1[i], m2[i])
 
+    def test_chain_span_range(self):
+        """Test chain_span_range argument"""
+        env = self.get_environ()
+        mdl = model(env)
+        mdl.build_sequence('G/G')
+        aln = alignment(env)
+        aln.append_model(mdl, align_codes='test')
+        mlib = self.get_mdt_library()
+        mlib.tuple_classes.read('data/dblcls.lib')
+        tuple_dist = mdt.features.TupleDistance(mlib,
+                                          bins=mdt.uniform_bins(49, 2.0, 0.2))
+        # All chain differences should be out of range, so this MDT should
+        # end up empty:
+        m = mdt.Table(mlib, features=tuple_dist)
+        m.add_alignment(aln, chain_span_range=(-999, -999, 999, 999),
+                        residue_span_range=(-999, 0, 0, 999))
+        self.assertEqual(m.sum(), 0.0)
+        # Default chain separation should allow intra-chain interactions, so
+        # should yield more (56) than only allowing inter-chain
+        # interactions (32)
+        m = mdt.Table(mlib, features=tuple_dist)
+        m.add_alignment(aln, residue_span_range=(-999, 0, 0, 999))
+        self.assertEqual(m.sum(), 56.0)
+        m = mdt.Table(mlib, features=tuple_dist)
+        m.add_alignment(aln, chain_span_range=(-999, -1, 1, 999),
+                        residue_span_range=(-999, 0, 0, 999))
+        self.assertEqual(m.sum(), 32.0)
+
     def test_sources(self):
         """Make sure that alignments and models both work as sources"""
         env = self.get_environ()

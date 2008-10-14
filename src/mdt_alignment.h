@@ -37,6 +37,7 @@ MDTDLLEXPORT
 double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
                       const struct mdt_library *mlib,
                       const int residue_span_range[4],
+                      const int chain_span_range[4],
                       const struct mod_libraries *libs,
                       const struct mod_energy_data *edat, GError **err);
 
@@ -55,7 +56,8 @@ MDTDLLEXPORT
 gboolean mdt_add_alignment(struct mdt *mdt, const struct mdt_library *mlib,
                            struct mod_alignment *aln, float distngh,
                            gboolean sdchngh, int surftyp, int iacc1typ,
-                           const int residue_span_range[4], gboolean sympairs,
+                           const int residue_span_range[4],
+                           const int chain_span_range[4], gboolean sympairs,
                            gboolean symtriples, struct mod_io_data *io,
                            struct mod_energy_data *edat,
                            struct mod_libraries *libs, GError **err);

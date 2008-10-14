@@ -364,6 +364,13 @@ static gboolean check_sequence_separation(int ir1, int ir1p,
           || (nr >= rsrang[2] && nr <= rsrang[3]));
 }
 
+/** Return TRUE iff the two chains satisfy the chain_span_range check */
+static gboolean check_chain_separation(int chain, int chainp,
+                                       const int chain_span_range[4])
+{
+  return check_sequence_separation(chain, chainp, chain_span_range);
+}
+
 
 /** Scan all residue pairs in the alignment sequence(s). */
 static gboolean gen_residue_pairs(struct mdt *mdt,
@@ -435,15 +442,19 @@ static gboolean gen_atoms(struct mdt *mdt, const struct mdt_library *mlib,
 
 /** Add MDT data for a single atom pair. Return TRUE on success. */
 static gboolean gen_atompair(struct mdt *mdt, const struct mdt_library *mlib,
-                             const int rsrang[4], int is1, int ir1, int ia1,
-                             int ia1p, const int iresatm[],
+                             const int rsrang[4], const int chain_span_range[4],
+                             int is1, int ir1, int ia1,
+                             int ia1p, int chain, const int iresatm[],
                              const struct mod_libraries *libs,
                              const struct mod_energy_data *edat,
                              struct mdt_source *source, mdt_scan_cb scanfunc,
-                             void *scandata, GError **err)
+                             void *scandata, const struct mod_sequence *seq,
+                             GError **err)
 {
   int ir1p = iresatm[ia1p] - 1;
-  if (check_sequence_separation(ir1, ir1p, rsrang)) {
+  int chainp = mod_sequence_chain_for_res(seq, ir1p);
+  if (check_sequence_separation(ir1, ir1p, rsrang)
+      && check_chain_separation(chain, chainp, chain_span_range)) {
     if (!update_mdt(mdt, mlib, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
                     ia1p, 1, 1, 1, 1, 1, libs, edat, source, scanfunc,
                     scandata, err)) {
@@ -455,7 +466,8 @@ static gboolean gen_atompair(struct mdt *mdt, const struct mdt_library *mlib,
 
 /** Scan all atom pairs in the first alignment sequence. */
 static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
-                               const int rsrang[4], int is1,
+                               const int rsrang[4],
+                               const int chain_span_range[4], int is1,
                                const struct mod_libraries *libs,
                                const struct mod_energy_data *edat,
                                struct mdt_source *source,
@@ -464,8 +476,10 @@ static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
 {
   int ia1, ia1p, ir1, *iresatm;
   struct mod_structure *s1;
+  struct mod_sequence *seq;
 
   s1 = mod_alignment_structure_get(source->aln, is1);
+  seq = mod_alignment_sequence_get(source->aln, is1);
 
   if (!check_single_protein_features(mdt, mlib, err)) {
     return FALSE;
@@ -475,9 +489,11 @@ static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
   if (mdt->symmetric) {
     for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
       ir1 = iresatm[ia1] - 1;
+      int chain = mod_sequence_chain_for_res(seq, ir1);
       for (ia1p = ia1 + 1; ia1p < s1->cd.natm; ia1p++) {
-        if (!gen_atompair(mdt, mlib, rsrang, is1, ir1, ia1, ia1p, iresatm,
-                          libs, edat, source, scanfunc, scandata, err)) {
+        if (!gen_atompair(mdt, mlib, rsrang, chain_span_range, is1, ir1, ia1,
+                          ia1p, chain, iresatm, libs, edat, source, scanfunc,
+                          scandata, seq, err)) {
           return FALSE;
         }
       }
@@ -485,10 +501,12 @@ static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
   } else {
     for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
       ir1 = iresatm[ia1] - 1;
+      int chain = mod_sequence_chain_for_res(seq, ir1);
       for (ia1p = 0; ia1p < s1->cd.natm; ia1p++) {
         if (ia1 != ia1p) {
-          if (!gen_atompair(mdt, mlib, rsrang, is1, ir1, ia1, ia1p, iresatm,
-                            libs, edat, source, scanfunc, scandata, err)) {
+          if (!gen_atompair(mdt, mlib, rsrang, chain_span_range, is1, ir1, ia1,
+                            ia1p, chain, iresatm, libs, edat, source, scanfunc,
+                            scandata, seq, err)) {
             return FALSE;
           }
         }
@@ -567,7 +585,8 @@ static gboolean gen_atom_tuples(struct mdt *mdt,
 /** Scan all atom tuple pairs in the first alignment sequence. */
 static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
                                      const struct mdt_library *mlib,
-                                     const int rsrang[4], int is1,
+                                     const int rsrang[4],
+                                     const int chain_span_range[4], int is1,
                                      const struct mod_libraries *libs,
                                      const struct mod_energy_data *edat,
                                      struct mdt_source *source,
@@ -576,19 +595,24 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
 {
   int ia1, ir1, ibnd1, ibnd1p, ia1p, ir1p, *iresatm;
   struct mod_structure *s1;
+  struct mod_sequence *seq;
   const struct mdt_tuple_list *tup;
 
   s1 = mod_alignment_structure_get(source->aln, is1);
+  seq = mod_alignment_sequence_get(source->aln, is1);
   iresatm = mod_int1_pt(&s1->cd.iresatm);
   tup = property_tuples(source->aln, is1, source->prop, mlib, libs);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
     ir1 = iresatm[ia1] - 1;
+    int chain = mod_sequence_chain_for_res(seq, ir1);
     for (ibnd1 = 0; ibnd1 < tup[ia1].ntuples; ibnd1++) {
       for (ia1p = 0; ia1p < s1->cd.natm; ia1p++) {
         ir1p = iresatm[ia1p] - 1;
+        int chainp = mod_sequence_chain_for_res(seq, ir1p);
 
         /* the same conditions on sequence separation as for residue pairs */
-        if (ia1 != ia1p && check_sequence_separation(ir1, ir1p, rsrang)) {
+        if (ia1 != ia1p && check_sequence_separation(ir1, ir1p, rsrang)
+            && check_chain_separation(chain, chainp, chain_span_range)) {
           for (ibnd1p = 0; ibnd1p < tup[ia1p].ntuples; ibnd1p++) {
             if (!update_mdt(mdt, mlib, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
                             ia1p, ibnd1, ibnd1p, 1, 1, 1, libs, edat, source,
@@ -610,6 +634,7 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
 static gboolean mdt_source_scan(struct mdt *mdt,
                                 const struct mdt_library *mlib,
                                 struct mdt_source *source, const int rsrang[4],
+                                const int chain_span_range[4],
                                 const struct mod_libraries *libs,
                                 const struct mod_energy_data *edat,
                                 const gboolean acceptd[], int nseqacc,
@@ -668,8 +693,8 @@ static gboolean mdt_source_scan(struct mdt *mdt,
        an alignment! */
   case MOD_MDTS_ATOM_PAIR:
     if (acceptd[0]) {
-      if (!gen_atom_pairs(mdt, mlib, rsrang, 0, libs, edat, source, scanfunc,
-                          scandata, err)) {
+      if (!gen_atom_pairs(mdt, mlib, rsrang, chain_span_range, 0, libs, edat,
+                          source, scanfunc, scandata, err)) {
         return FALSE;
       }
     }
@@ -690,8 +715,8 @@ static gboolean mdt_source_scan(struct mdt *mdt,
        an alignment! */
   case MOD_MDTS_TUPLE_PAIR:
     if (acceptd[0]) {
-      if (!gen_atom_tuple_pairs(mdt, mlib, rsrang, 0, libs, edat, source,
-                                scanfunc, scandata, err)) {
+      if (!gen_atom_tuple_pairs(mdt, mlib, rsrang, chain_span_range, 0, libs,
+                                edat, source, scanfunc, scandata, err)) {
         return FALSE;
       }
     }
@@ -795,11 +820,12 @@ void mdt_alignment_close(struct mdt_source *source)
 double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
                       const struct mdt_library *mlib,
                       const int residue_span_range[4],
+                      const int chain_span_range[4],
                       const struct mod_libraries *libs,
                       const struct mod_energy_data *edat, GError **err)
 {
   double sum = 0.;
-  mdt_source_scan(mdt, mlib, source, residue_span_range, libs,
+  mdt_source_scan(mdt, mlib, source, residue_span_range, chain_span_range, libs,
                   edat, source->acceptd, source->nseqacc, scan_sum, &sum, err);
   return sum;
 }
@@ -826,7 +852,8 @@ int mdt_alignment_index(struct mdt_source *source, int ifeat, int is1, int ip1,
 gboolean mdt_add_alignment(struct mdt *mdt, const struct mdt_library *mlib,
                            struct mod_alignment *aln, float distngh,
                            gboolean sdchngh, int surftyp, int iacc1typ,
-                           const int residue_span_range[4], gboolean sympairs,
+                           const int residue_span_range[4],
+                           const int chain_span_range[4], gboolean sympairs,
                            gboolean symtriples, struct mod_io_data *io,
                            struct mod_energy_data *edat,
                            struct mod_libraries *libs, GError **err)
@@ -844,9 +871,9 @@ gboolean mdt_add_alignment(struct mdt *mdt, const struct mdt_library *mlib,
     mdt->n_proteins += source->nseqacc;
 
     mod_lognote("Updating the statistics array:");
-    ret = mdt_source_scan(mdt, mlib, source, residue_span_range, libs, edat,
-                          source->acceptd, source->nseqacc, scan_update,
-                          NULL, err);
+    ret = mdt_source_scan(mdt, mlib, source, residue_span_range,
+                          chain_span_range, libs, edat, source->acceptd,
+                          source->nseqacc, scan_update, NULL, err);
 
     mdt_alignment_close(source);
     return ret;

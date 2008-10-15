@@ -488,8 +488,9 @@ static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
 
   if (mdt->symmetric) {
     for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
+      int chain;
       ir1 = iresatm[ia1] - 1;
-      int chain = mod_sequence_chain_for_res(seq, ir1);
+      chain = mod_sequence_chain_for_res(seq, ir1);
       for (ia1p = ia1 + 1; ia1p < s1->cd.natm; ia1p++) {
         if (!gen_atompair(mdt, mlib, rsrang, chain_span_range, is1, ir1, ia1,
                           ia1p, chain, iresatm, libs, edat, source, scanfunc,
@@ -500,8 +501,9 @@ static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
     }
   } else {
     for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
+      int chain;
       ir1 = iresatm[ia1] - 1;
-      int chain = mod_sequence_chain_for_res(seq, ir1);
+      chain = mod_sequence_chain_for_res(seq, ir1);
       for (ia1p = 0; ia1p < s1->cd.natm; ia1p++) {
         if (ia1 != ia1p) {
           if (!gen_atompair(mdt, mlib, rsrang, chain_span_range, is1, ir1, ia1,
@@ -603,12 +605,14 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
   iresatm = mod_int1_pt(&s1->cd.iresatm);
   tup = property_tuples(source->aln, is1, source->prop, mlib, libs);
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
+    int chain;
     ir1 = iresatm[ia1] - 1;
-    int chain = mod_sequence_chain_for_res(seq, ir1);
+    chain = mod_sequence_chain_for_res(seq, ir1);
     for (ibnd1 = 0; ibnd1 < tup[ia1].ntuples; ibnd1++) {
       for (ia1p = 0; ia1p < s1->cd.natm; ia1p++) {
+        int chainp;
         ir1p = iresatm[ia1p] - 1;
-        int chainp = mod_sequence_chain_for_res(seq, ir1p);
+        chainp = mod_sequence_chain_for_res(seq, ir1p);
 
         /* the same conditions on sequence separation as for residue pairs */
         if (ia1 != ia1p && check_sequence_separation(ir1, ir1p, rsrang)

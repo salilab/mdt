@@ -913,8 +913,8 @@ class Source(object):
         (Arguments ending in 2 and 3 are used for features involving pairs
         or triples of proteins.)
 
-        .. warning:: This is a low-level interface, and no bounds checking
-           is performed on these parameters. Avoid this function if possible.
+        Warning: This is a low-level interface, and no bounds checking is
+        performed on these parameters. Avoid this function if possible.
 
         :Parameters:
           - `feat`: MDT feature object from `mdt.features` module.

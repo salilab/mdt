@@ -1,36 +1,5 @@
 """
    MDT, a module for protein structure analysis.
-
-   MDT prepares a raw frequency table, given information from MODELLER
-   alignments and/or PDB files. It can also process the raw frequency table in
-   several ways (e.g., normalization with `Table.normalize`,
-   smoothing with `Table.smooth`), perform entropy calculations with
-   `Table.entropy_full`, and write out the data in various formats, including
-   for plotting by ASGL (`Table.write_asgl`) and use as restraints by MODELLER.
-
-   More precisely, MDT uses a sample of sequences, structures, and/or
-   alignments to construct a table *N(a,b,c,...,d)* for features
-   *a, b, c, ..., d*. The sample for generating the frequencies *N* is
-   obtained depending on the type of features *a, b, c, ..., d*.
-   The sample can contain individual proteins, pairs of proteins, pairs of
-   residues in proteins, pairs of aligned residues, pairs of aligned pairs of
-   residues, chemical bonds, angles, dihedral angles, and pairs of tuples of
-   atoms. Some features work with triple alignments, too. All the needed
-   features *a, b, c, ..., d* are calculated automatically from the sequences,
-   alignments, and/or PDB files.
-
-   To use MDT, first create a `Library` object. You can then read in any
-   needed library data, such as definitions of chemical bonds
-   (see `Library.bond_classes`). Then you can create one or more features in
-   the library, using objects from the `features` module. Finally, you can
-   create one or more `Table` objects to hold the table data *N*.
-   MDT works by accumulating the table *N* by processing each sequence or
-   alignment in turn. See `Table.add_alignment`.
-
-   See the 'Sample studies with MDT' chapter in the `MDT manual <https://salilab.org/internal/manuals/mdt/>`__ for copious examples.
-
-   :author: Andrej Sali, Ben Webb
-   :copyright: 1989-2008 Andrej Sali
 """
 
 __docformat__ = "restructuredtext"

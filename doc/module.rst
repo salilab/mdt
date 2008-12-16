@@ -43,6 +43,8 @@ Utility functions
 
 .. autofunction:: uniform_bins
 
+.. autofunction:: write_bondlib
+
 .. autofunction:: write_anglelib
 
 .. autofunction:: write_improperlib

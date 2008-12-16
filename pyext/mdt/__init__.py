@@ -103,7 +103,7 @@ class Library(modobject):
                                doc="Dihedral classes; see :class:`BondClasses`")
     tuple_classes = property(__get_tuple_classes,
                            doc="Atom tuple classes; see :class:`TupleClasses`" \
-                               + " and :class:`features.Tuple`")
+                               + " and :ref:`tuple_features`")
     hbond_classes = property(__get_hbond_classes,
                              doc="Hydrogen bond atom classes; " + \
                                  "see :class:`HydrogenBondClasses`")
@@ -774,7 +774,7 @@ class _FeatureList(modlist.FixList):
 
 class Feature(object):
     """A single feature in an MDT. Generally accessed as
-       :attr:`Table.features`."""
+       :attr:`TableSection.features`."""
 
     def __init__(self, mdt, indx):
         self._mdt = mdt
@@ -793,7 +793,8 @@ class Feature(object):
 
     _modpt = property(__get_modpt)
     ifeat = property(__get_ifeat, doc="Integer type")
-    bins = property(__get_bins, doc="Feature bins; a list of `Bin` objects")
+    bins = property(__get_bins,
+                    doc="Feature bins; a list of :class:`Bin` objects")
     offset = property(__get_offset,
                       doc="Offset of first bin compared to the MDT library " + \
                           "feature (usually 0, but can be changed with " + \
@@ -885,8 +886,8 @@ class Source(object):
         (Arguments ending in 2 and 3 are used for features involving pairs
         or triples of proteins.)
 
-        Warning: This is a low-level interface, and no bounds checking is
-        performed on these parameters. Avoid this function if possible.
+        .. warning:: This is a low-level interface, and no bounds checking is
+           performed on these parameters. Avoid this function if possible.
 
         :Parameters:
           - `feat`: MDT feature object from :mod:`mdt.features` module.
@@ -958,9 +959,9 @@ def write_bondlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     """
     Write out a Modeller bond library file from an MDT. The input MDT should be
     a 2D table (usually of bond type and bond distance). For each bond type,
-    the 1D MDT section (see `TableSection`) of bond distance is examined, and
-    its mean and standard deviation used to generate a Modeller harmonic
-    restraint.
+    the 1D MDT section (see :class:`TableSection`) of bond distance is
+    examined, and its mean and standard deviation used to generate a
+    Modeller harmonic restraint.
 
     :Parameters:
       - `fh`: Python file to write to
@@ -1014,7 +1015,8 @@ def write_splinelib(fh, mdt, dihtype, density_cutoff=None, entropy_cutoff=None):
     Write out a Modeller 1D spline library file from an MDT.
     The MDT should be a 2D table, usually of residue type and a chi dihedral
     angle. `dihtype` should identify the dihedral type
-    (i.e. chi1/chi2/chi3/chi4). The operation is similar to `write_bondlib`,
+    (i.e. chi1/chi2/chi3/chi4). The operation is similar to
+    :func:`write_bondlib`,
     but each MDT section is treated as the spline values. No special processing
     is done, so it is expected that the user has first done any necessary
     transformations (e.g. normalization with :meth:`Table.normalize` to

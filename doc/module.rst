@@ -5,19 +5,41 @@ The :mod:`mdt` Python module
 
 .. automodule:: mdt
 
-.. autoclass:: mdt.Library
-   :members: atom_classes, bond_classes, angle_classes, dihedral_classes,
-             tuple_classes, hbond_classes
+Setup of the MDT system
+-----------------------
 
-.. autoclass:: mdt.Table
+.. autoclass:: Library
+   :members:
 
-.. autoclass:: mdt.TupleClasses
+.. autoclass:: TupleClasses
+   :members:
 
-.. autoclass:: mdt.BondClasses
+.. autoclass:: BondClasses
+   :members:
 
-.. autoclass:: mdt.HydrogenBondClasses
+.. autoclass:: HydrogenBondClasses
+   :members:
 
-.. autoclass:: mdt.TableSection
+Creation and manipulation of data tables
+----------------------------------------
+
+.. autoclass:: Table
+   :members:
+
+.. autoclass:: TableSection
+   :members:
+
+.. autoclass:: Feature
+   :members:
+
+.. autoclass:: Bin
+   :members:
+
+.. autoclass:: Source
+   :members:
+
+Utility functions
+-----------------
 
 .. autofunction:: uniform_bins
 
@@ -29,12 +51,27 @@ The :mod:`mdt` Python module
 
 .. autofunction:: write_2dsplinelib
 
-.. data:: Float
+Bin storage types
+-----------------
 
-.. exception:: mdt.MDTError
+.. data:: Float
+          Double
+          Int32
+          UnsignedInt32
+          Int16
+          UnsignedInt16
+          Int8
+          UnsignedInt8
+
+          See :ref:`binstorage`.
+
+Exceptions
+----------
+
+.. exception:: MDTError
 
    A generic MDT error.
 
-.. exception:: mdt.FileFormatError
+.. exception:: FileFormatError
 
-   File format error.
+   A file is of the wrong format.

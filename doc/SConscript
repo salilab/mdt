@@ -1,2 +1,13 @@
-SConscript('html/SConscript')
-SConscript('internal/SConscript')
+import os.path
+
+Import('env')
+
+bin = File('#/bin/mdtpy.sh')
+sphinx = env.Sphinx("html/index.html",
+                    (bin, Glob('*.rst'), Dir('#/python/mdt/')))
+
+docdir = env['docdir']
+env.SphinxInstall(os.path.join(docdir, 'index.html'), sphinx)
+env.Alias('docinstall', docdir)
+
+env.SConscript('html/pdf/SConscript')

@@ -7,7 +7,7 @@ from tools import *
 opts = Options('config.py', ARGUMENTS)
 add_common_options(opts, 'mdt')
 env = MyEnvironment(options=opts, require_modeller=True,
-                    tools=["default", "doxygen", "docbook", "epydoc"],
+                    tools=["default", "sphinx"],
                     toolpath=["../tools"])
 Help(opts.GenerateHelpText(env))
 

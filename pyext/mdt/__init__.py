@@ -1,3 +1,5 @@
+# -*- coding=utf-8 -*-
+
 """
    MDT, a module for protein structure analysis.
 """
@@ -45,7 +47,18 @@ Int8 = _BinType(_mdt.MOD_MDTB_INT8)
 UnsignedInt8 = _BinType(_mdt.MOD_MDTB_UINT8)
 
 class Library(modobject):
-    """Library data used in the construction and use of MDTs"""
+    """
+    Library data used in the construction and use of MDTs.
+
+    :Parameters:
+      - `env`: the Modeller environment to use
+      - `distance_atoms`: the atom types to use for the
+        :class:`features.ResidueDistance` feature
+      - `special_atoms`: whether to treat disulfide and termini atoms
+        specially for atom class features (see :class:`features.AtomType`)
+      - `hbond_cutoff`: maximum separation between two H-bonded atoms
+        (see :class:`features.HydrogenBondDonor`)
+    """
     _modpt = None
     _env = None
 
@@ -56,18 +69,6 @@ class Library(modobject):
 
     def __init__(self, env, distance_atoms=('CA', 'CA'), special_atoms=False,
                  hbond_cutoff=3.5):
-        """
-        Create a new MDT library.
-
-        :Parameters:
-          - `env`: the Modeller environment to use
-          - `distance_atoms`: the atom types to use for the
-            `features.ResidueDistance` feature
-          - `special_atoms`: whether to treat disulfide and termini atoms
-            specially for atom class features (see `features.AtomType`)
-          - `hbond_cutoff`: maximum separation between two H-bonded atoms
-            (see `features.HydrogenBondDonor`)
-        """
         self._env = env.copy()
         _mdt.mdt_library_hbond_cutoff_set(self._modpt, hbond_cutoff)
         _mdt.mdt_library_special_atoms_set(self._modpt, special_atoms)
@@ -93,27 +94,29 @@ class Library(modobject):
 
     _basept = property(__get_basept)
     atom_classes = property(__get_atom_classes,
-                            doc="Atom classes; see `BondClasses`")
+                            doc="Atom classes; see :class:`BondClasses`")
     bond_classes = property(__get_bond_classes,
-                            doc="Bond classes; see `BondClasses`")
+                            doc="Bond classes; see :class:`BondClasses`")
     angle_classes = property(__get_angle_classes,
-                             doc="Angle classes; see `BondClasses`")
+                             doc="Angle classes; see :class:`BondClasses`")
     dihedral_classes = property(__get_dihedral_classes,
-                                doc="Dihedral classes; see `BondClasses`")
+                               doc="Dihedral classes; see :class:`BondClasses`")
     tuple_classes = property(__get_tuple_classes,
-                             doc="Atom tuple classes; see `TupleClasses`" \
-                                 + " and `features.Tuple`")
+                           doc="Atom tuple classes; see :class:`TupleClasses`" \
+                               + " and :class:`features.Tuple`")
     hbond_classes = property(__get_hbond_classes,
                              doc="Hydrogen bond atom classes; " + \
-                                 "see `HydrogenBondClasses`")
+                                 "see :class:`HydrogenBondClasses`")
 
 
 class BondClasses(object):
     """Classifications of atoms/bonds/angles/dihedrals into classes.
-       These classes are used by features that derive from
-       `features.ChemicalBond`.
-       Usually accessed as `Library.atom_classes`, `Library.bond_classes`,
-       `Library.angle_classes`, or `Library.dihedral_classes`. (There is no
+       These classes are used by
+       :ref:`atom <atom_features>` and
+       :ref:`chemical bond <chemical_bond_features>` features.
+       Usually accessed as :attr:`Library.atom_classes`,
+       :attr:`Library.bond_classes`, :attr:`Library.angle_classes`, or
+       :attr:`Library.dihedral_classes`. (There is no
        need to create your own BondClasses objects.)"""
 
     def __init__(self, mlib, n_atom):
@@ -129,9 +132,9 @@ class BondClasses(object):
 
 class TupleClasses(BondClasses):
     """Classifications of tuples of atoms into classes.
-       Usually accessed as `Library.tuple_classes`.
-       These classes are used by features that derive from
-       `features.Tuple` or `features.TuplePair`."""
+       Usually accessed as :attr:`Library.tuple_classes`.
+       These classes are used by :ref:`tuple <tuple_features>` or
+       :ref:`tuple pair <tuple_pair_features>` features."""
 
     def __init__(self, mlib):
         BondClasses.__init__(self, mlib, 0)
@@ -143,10 +146,10 @@ class TupleClasses(BondClasses):
 
 class HydrogenBondClasses(BondClasses):
     """Classifications of atoms into hydrogen bond classes.
-       Usually accessed as `Library.hbond_classes`.
-       These classes are used by the `features.HydrogenBondAcceptor`,
-       `features.HydrogenBondDonor` and `features.HydrogenBondSatisfaction`
-       features."""
+       Usually accessed as :attr:`Library.hbond_classes`.
+       These classes are used by the :class:`features.HydrogenBondAcceptor`,
+       :class:`features.HydrogenBondDonor` and
+       :class:`features.HydrogenBondSatisfaction` features."""
     def __init__(self, mlib):
         BondClasses.__init__(self, mlib, 1)
 
@@ -157,16 +160,17 @@ class HydrogenBondClasses(BondClasses):
 
 class TableSection(modobject):
     """A section of a multi-dimensional table. You should not create
-       TableSection objects directly, but rather by indexing a `Table` object,
-       as a TableSection is just a 'view' into an existing table. For example,
+       TableSection objects directly, but rather by indexing a :class:`Table`
+       object, as a TableSection is just a 'view' into an existing table.
+       For example, ::
 
-       >>> m = mdt.Table(mlib, features=(residue_type, xray_resolution))
-       >>> print m[0].entropy()
+         >>> m = mdt.Table(mlib, features=(residue_type, xray_resolution))
+         >>> print m[0].entropy()
 
        would create a section (using m[0]) which is a 1D table over the 2nd
        feature (X-ray resolution) for the first bin (0) of the first feature
-       (residue type), and then get the entropy using the `TableSection.entropy`
-       method."""
+       (residue type), and then get the entropy using the
+       :meth:`TableSection.entropy` method."""
     _indices = ()
     __mdt = None
     _mlib = None
@@ -236,47 +240,47 @@ class TableSection(modobject):
     def __get_shape(self):
         return tuple([len(f.bins) for f in self.features])
     features = property(__get_features,
-                        doc="Features in this MDT; a list of `Feature` objects")
-    offset = property(__get_offset, doc="Array offsets; see `Feature.offset`")
+                        doc="Features in this MDT; a list of " + \
+                            ":class:`Feature` objects")
+    offset = property(__get_offset,
+                      doc="Array offsets; see :attr:`Feature.offset`")
     shape = property(__get_shape, doc="Array shape; the number of " + \
                                       "bins for each feature")
 
 
 class Table(TableSection):
     """A multi-dimensional table.
-       Individual elements from the table can be accessed in standard Python
-       fashion, e.g.
 
-       >>> import mdt
-       >>> import modeller
-       >>> env = modeller.environ()
-       >>> mlib = mdt.Library(env)
-       >>> restyp1 = mdt.features.ResidueType(mlib, protein=0)
-       >>> restyp2 = mdt.features.ResidueType(mlib, protein=1)
-       >>> gap = mdt.features.GapDistance(mlib, mdt.uniform_bins(10, 0, 1))
-       >>> m = mdt.Table(mlib, features=(restyp1,restyp2,gap))
-       >>> print m[0,0,0]
+       :Parameters:
+         - `mlib`: the MDT `Library` object to use
+         - `file`: if specified, the filename to read the initial table from
+           (if the name ends with '.hdf5', :meth:`Table.read_hdf5` is used,
+           otherwise :meth:`Table.read`)
+         - `features`: if specified (and `file` is not), a list of feature
+           types to initialize the table with (using :meth:`Table.make`)
+         - `bin_type`: type of storage for bin data (see :ref:`binstorage`).
+
+       Individual elements from the table can be accessed in standard Python
+       fashion, e.g. ::
+
+         >>> import mdt
+         >>> import modeller
+         >>> env = modeller.environ()
+         >>> mlib = mdt.Library(env)
+         >>> restyp1 = mdt.features.ResidueType(mlib, protein=0)
+         >>> restyp2 = mdt.features.ResidueType(mlib, protein=1)
+         >>> gap = mdt.features.GapDistance(mlib, mdt.uniform_bins(10, 0, 1))
+         >>> m = mdt.Table(mlib, features=(restyp1,restyp2,gap))
+         >>> print m[0,0,0]
 
        You can also access an element as m[0][0][0], a 1D section as m[0][0],
-       or a 2D section as m[0]. See `TableSection`.
+       or a 2D section as m[0]. See :class:`TableSection`.
     """
     _modpt = None
     _basept = None
     _mlib = None
 
     def __init__(self, mlib, file=None, features=None, bin_type=Double):
-        """
-        Create a new MDT.
-
-        :Parameters:
-          - `mlib`: the MDT `Library` object to use
-          - `file`: if specified, the filename to read the initial table from
-            (if the name ends with '.hdf5', `Table.read_hdf5` is used, otherwise
-            `Table.read`)
-          - `features`: if specified (and `file` is not), a list of feature
-            types to initialize the table with (using `Table.make`)
-          - `bin_type`: type of storage for bin data (e.g. `Float`, `Double`)
-        """
         if not isinstance(bin_type, _BinType):
             raise TypeError("bin_type must be a BinType object - " + \
                             "e.g. mdt.Float, mdt.Double")
@@ -322,11 +326,11 @@ class Table(TableSection):
 
     def copy(self, bin_type=None):
         """
-        :Parameters:
-          - `bin_type`: if specified, the storage type to convert the
-            bin data to
+        If `bin_type` is specified, it is the storage type to convert the
+        bin data to (see :ref:`binstorage`).
+
         :return: a copy of this MDT table.
-        :rtype: `Table`
+        :rtype: :class:`Table`
         """
         if bin_type is None:
             bin_type = _mdt.mod_mdt_bin_type_get(self._basept)
@@ -341,7 +345,7 @@ class Table(TableSection):
 
     def make(self, features):
         """Clear the table, and set the features. `features` must be a list of
-           previously created objects from the `mdt.features` module."""
+           previously created objects from the :mod:`mdt.features` module."""
         features = self._features_to_ifeat(features)
         _mdt.mdt_make(self._modpt, self._mlib._modpt, features)
 
@@ -376,7 +380,7 @@ class Table(TableSection):
             new value. Thus, a value of 0 would leave the shape unchanged, -1
             would remove the last (undefined) bin, etc.
         :return: the reshaped MDT.
-        :rtype: `Table`
+        :rtype: :class:`Table`
         """
         features = self._features_to_ifeat(features)
         mdtout = Table(self._mlib)
@@ -392,7 +396,7 @@ class Table(TableSection):
 
         p\ :sub:`i` = |w1| / n + |w2| |vi| / S
 
-        S = |sum|\ :sub:`i`\ :sup:`n` |vi|
+        S = Σ\ :sub:`i`\ :sup:`n` |vi|
 
         |w1| = 1 / ( 1 + S / (`weight` * n))
 
@@ -412,9 +416,8 @@ class Table(TableSection):
         1 if the bin widths are not 1.
 
         :return: the smoothed MDT.
-        :rtype: `Table`
+        :rtype: :class:`Table`
 
-        .. |sum| unicode:: U+03A3
         .. |w1| replace:: w\ :sub:`1`
         .. |w2| replace:: w\ :sub:`2`
         .. |vi| replace:: v\ :sub:`i`
@@ -443,19 +446,18 @@ class Table(TableSection):
             the bin values to zero, and False will yield a uniform
             distribution. It has no effect when the histogram is not empty.
           - `to_pdf`: if False, the output is obtained by scaling the input
-            such that for 1D histograms |sum| :sub:`i` p(x :sub:`i`) = 1,
-            and for 2D histograms |sum| :sub:`i,j` p(x :sub:`i,j`) = 1. Note
+            such that for 1D histograms Σ :sub:`i` p(x :sub:`i`) = 1,
+            and for 2D histograms Σ :sub:`i,j` p(x :sub:`i,j`) = 1. Note
             that `dx_dy` is **not** taken into account during this scaling.
 
             If it is True, the normalization takes into account `dx_dy` so
             that the normalized distribution is actually a PDF. That is,
-            |sum| :sub:`i` p(x :sub:`i`) dx = 1 for 1D and
-            |sum| :sub:`i,j` p(x :sub:`i,j`) dx dy = 1 for 2D, where dx and
+            Σ :sub:`i` p(x :sub:`i`) dx = 1 for 1D and
+            Σ :sub:`i,j` p(x :sub:`i,j`) dx dy = 1 for 2D, where dx and
             dy are the widths of the bins.
         :return: the normalized MDT.
-        :rtype: `Table`
+        :rtype: :class:`Table`
 
-        .. |sum| unicode:: U+03A3
         """
         mdtout = Table(self._mlib)
         _mdt.mdt_normalize(self._modpt, mdtout._modpt, self._mlib._modpt,
@@ -467,13 +469,13 @@ class Table(TableSection):
         Integrate the MDT, and reorder the features. This is useful for
         squeezing large MDT arrays into smaller ones, and also for
         eliminating unwanted features (such as X-ray resolution) in
-        preparation for `Table.write`.
+        preparation for :meth:`Table.write`.
 
         :Parameters:
           - `features`: the new features (all must be present in the
             original MDT).
         :return: the integrated MDT.
-        :rtype: `Table`
+        :rtype: :class:`Table`
         """
         features = self._features_to_ifeat(features)
         mdtout = Table(self._mlib)
@@ -487,7 +489,7 @@ class Table(TableSection):
         MDT element *a*, using the following relation:
         *b = offset + exp(expoffset + multiplier \* a ^ power)*.
 
-        :rtype: `Table`
+        :rtype: :class:`Table`
         """
         mdtout = self.copy()
         _mdt.mdt_exp_transform(mdtout._basept, offset, expoffset, multiplier,
@@ -503,7 +505,7 @@ class Table(TableSection):
         logarithm of a negative number, *b* is assigned to be `undefined`.
 
         :return: the transformed MDT.
-        :rtype: `Table`
+        :rtype: :class:`Table`
         """
         mdtout = self.copy()
         _mdt.mdt_log_transform(mdtout._basept, offset, multiplier, undefined)
@@ -517,7 +519,7 @@ class Table(TableSection):
         *b = offset + a \* multiplier*.
 
         :return: the transformed MDT.
-        :rtype: `Table`
+        :rtype: :class:`Table`
         """
         mdtout = self.copy()
         _mdt.mdt_linear_transform(mdtout._basept, offset, multiplier)
@@ -532,7 +534,7 @@ class Table(TableSection):
         assigned to be `undefined`.
 
         :return: the transformed MDT.
-        :rtype: `Table`
+        :rtype: :class:`Table`
         """
         mdtout = self.copy()
         _mdt.mdt_inverse_transform(mdtout._basept, offset, multiplier,
@@ -545,7 +547,7 @@ class Table(TableSection):
         (`dimensions` = 1) or in each 2D section (`dimensions` = 2).
 
         :return: the transformed MDT.
-        :rtype: `Table`
+        :rtype: :class:`Table`
         """
         mdtout = self.copy()
         _mdt.mdt_offset_min(mdtout._basept, dimensions)
@@ -561,7 +563,7 @@ class Table(TableSection):
         of edges and then again to all four corner points.
 
         :return: the closed MDT.
-        :rtype: `Table`
+        :rtype: :class:`Table`
         """
         mdtout = self.copy()
         _mdt.mdt_close(mdtout._basept, dimensions)
@@ -575,12 +577,10 @@ class Table(TableSection):
         """
         The MDT is integrated to get a 1D histogram, then normalized by
         the sum of the bin values. Finally, entropy is calculated as
-        |sum|\ :sub:`i` -p\ :sub:`i` ln p\ :sub:`i`
+        Σ\ :sub:`i` -p\ :sub:`i` ln p\ :sub:`i`
 
         :return: the entropy of the last dependent variable.
         :rtype: float
-
-        .. |sum| unicode:: U+03A3
         """
         return _mdt.mdt_entropy_hx(self._basept)
 
@@ -611,7 +611,7 @@ class Table(TableSection):
           - `entropy_weighing`: Whether to weight distributions by their
             entropies.
         :return: the smoothed MDT.
-        :rtype: `Table`
+        :rtype: :class:`Table`
         """
         mdtout = Table(self._mlib)
         _mdt.mdt_super_smooth(self._modpt, mdtout._modpt, dimensions,
@@ -661,17 +661,18 @@ class Table(TableSection):
         :Parameters:
           - `aln`: Modeller alignment.
           - `distngh`: distance below which residues are considered neighbors.
-            Used by `features.NeighborhoodDifference`.
+            Used by :class:`features.NeighborhoodDifference`.
           - `surftyp`: 1 for PSA contact area, 2 for surface area.
-            Used by `features.AtomAccessibility`.
+            Used by :class:`features.AtomAccessibility`.
           - `accessibility_type`: PSA accessibility type (1-10).
-            Used by `features.AtomAccessibility`.
+            Used by :class:`features.AtomAccessibility`.
           - `residue_span_range`: sequence separation (inclusive) for
-            `features.ResiduePair`, `features.AtomPair` and
-            `features.TuplePair` features. For the two residue indices r1 and
-            r2 in the tuple-tuple and atom- atom cases, or two alignment
-            position indices in the residue-residue case, the following
-            must be true:
+            :ref:`residue pair <residue_pair_features>`,
+            :ref:`atom pair <atom_pair_features>` and
+            :ref:`tuple pair <tuple_pair_features>` features. For the two
+            residue indices r1 and r2 in the tuple-tuple and atom- atom cases,
+            or two alignment position indices in the residue-residue case,
+            the following must be true:
 
             *residue_span_range[0] <= (r2 - r1) <= residue_span_range[1]*
 
@@ -687,9 +688,10 @@ class Table(TableSection):
             separation is 0) or within adjacent residues (for which the
             separation is 1 or -1).
           - `chain_span_range`: works like `residue_span_range`, but for the
-            chain indices. It is used only by the `features.AtomPair` and
-            `features.TuplePair` features. The default value of
-            (-99999, 0, 0, 99999) allows all interactions. For example, using
+            chain indices. It is used only by the
+            :ref:`atom pair <atom_pair_features>` and
+            :ref:`tuple pair <tuple_pair_features>` features. The default value
+            of (-99999, 0, 0, 99999) allows all interactions. For example, using
             (-99999, -1, 1, 99999) instead would exclude all interactions
             within the same chain.
           - `sympairs`: if True, all features involving pairs of proteins
@@ -712,9 +714,9 @@ class Table(TableSection):
                        sympairs=False, symtriples=False, io=None, edat=None):
         """
         Open a Modeller alignment to allow MDT indices to be queried
-        (see `Source`). Arguments are as for `add_alignment`.
+        (see :class:`Source`). Arguments are as for :meth:`Table.add_alignment`.
 
-        :rtype: `Source`
+        :rtype: :class:`Source`
         """
         return Source(self, self._mlib, aln, distngh, surftyp,
                       accessibility_type, sympairs, symtriples, io, edat)
@@ -771,7 +773,8 @@ class _FeatureList(modlist.FixList):
 
 
 class Feature(object):
-    """A single feature in an MDT. Generally accessed as `Table.features`."""
+    """A single feature in an MDT. Generally accessed as
+       :attr:`Table.features`."""
 
     def __init__(self, mdt, indx):
         self._mdt = mdt
@@ -794,7 +797,7 @@ class Feature(object):
     offset = property(__get_offset,
                       doc="Offset of first bin compared to the MDT library " + \
                           "feature (usually 0, but can be changed with " + \
-                          "`Table.reshape`)")
+                          ":meth:`Table.reshape`)")
     periodic = property(__get_periodic, doc="Whether feature is periodic")
 
 
@@ -814,7 +817,7 @@ class _BinList(modlist.FixList):
 
 
 class Bin(object):
-    """A single bin in a feature. Generally accessed as `Feature.bins`."""
+    """A single bin in a feature. Generally accessed as :attr:`Feature.bins`."""
 
     def __init__(self, feature, indx):
         self.__feature = feature
@@ -843,7 +846,7 @@ class Bin(object):
 
 class Source(object):
     """A source of data for an MDT (generally a Modeller alignment, opened
-       with `Table.open_alignment()`)."""
+       with :meth:`Table.open_alignment`)."""
 
     def __init__(self, mdt, mlib, aln, distngh, surftyp, accessibility_type,
                  sympairs, symtriples, io, edat):
@@ -868,7 +871,7 @@ class Source(object):
     def sum(self, residue_span_range=(-99999, -2, 2, 99999),
             chain_span_range=(-99999, 0, 0, 99999)):
         """Scan all data points in the source, and return the sum.
-           See `Table.add_alignment` for a description of the
+           See :meth:`Table.add_alignment` for a description of the
            `residue_span_range` and `chain_span_range` arguments."""
         f = _mdt.mdt_source_sum
         return f(self._modpt, self._mdt._modpt, self._mlib._modpt,
@@ -886,7 +889,7 @@ class Source(object):
         performed on these parameters. Avoid this function if possible.
 
         :Parameters:
-          - `feat`: MDT feature object from `mdt.features` module.
+          - `feat`: MDT feature object from :mod:`mdt.features` module.
           - `is1`: index of the sequence within the alignment.
           - `ip1`: position within the sequence (i.e. including gaps).
           - `ir1`: residue index (i.e. not including alignment gaps).
@@ -961,7 +964,7 @@ def write_bondlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
 
     :Parameters:
       - `fh`: Python file to write to
-      - `mdt`: input MDT `Table` object
+      - `mdt`: input MDT :class:`Table` object
       - `density_cutoff`: if specified, MDT bond distance sections with sums
         below this value are not used
       - `entropy_cutoff`: if specified, MDT bond distance sections with
@@ -972,9 +975,9 @@ def write_bondlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
 
 def write_anglelib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     """
-    Write out a Modeller angle library file from an MDT. See `write_bondlib` for
-    more details. The MDT should be a 2D table, usually of angle type and bond
-    angle.
+    Write out a Modeller angle library file from an MDT. See
+    :func:`write_bondlib` for more details. The MDT should be a 2D table,
+    usually of angle type and bond angle.
     """
     _write_meanstdevlib(fh, mdt, 3, "physical.angle", "features.angle",
                         _degrees_to_radians, density_cutoff, entropy_cutoff)
@@ -982,8 +985,8 @@ def write_anglelib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
 def write_improperlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     """
     Write out a Modeller dihedral angle library file from an MDT. See
-    `write_bondlib` for more details. The MDT should be a 2D table, usually of
-    dihedral type and bond dihedral angle.
+    :func:`write_bondlib` for more details. The MDT should be a 2D table,
+    usually of dihedral type and bond dihedral angle.
     """
     _write_meanstdevlib(fh, mdt, 4, "physical.improper", "features.dihedral",
                         _degrees_to_radians, density_cutoff, entropy_cutoff)
@@ -1014,9 +1017,10 @@ def write_splinelib(fh, mdt, dihtype, density_cutoff=None, entropy_cutoff=None):
     (i.e. chi1/chi2/chi3/chi4). The operation is similar to `write_bondlib`,
     but each MDT section is treated as the spline values. No special processing
     is done, so it is expected that the user has first done any necessary
-    transformations (e.g. normalization with `Table.normalize` to convert raw
-    counts into a PDF, negative log transform with `Table.log_transform` and
-    `Table.linear_transform` to convert a PDF into a statistical potential).
+    transformations (e.g. normalization with :meth:`Table.normalize` to
+    convert raw counts into a PDF, negative log transform with
+    :meth:`Table.log_transform` and :meth:`Table.linear_transform` to
+    convert a PDF into a statistical potential).
     """
     (periodic, dx, x1, x2) = _get_splinerange(mdt.features[1])
 
@@ -1046,8 +1050,8 @@ def make_restraints(atmsel, restraints, num_selected):
 def write_2dsplinelib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     """
     Write out a Modeller 2D spline library file from an MDT.
-    See `write_splinelib` for more details. The input MDT should be a 3D table,
-    e.g. of residue type, phi angle, and psi angle.
+    See :func:`write_splinelib` for more details. The input MDT should be
+    a 3D table, e.g. of residue type, phi angle, and psi angle.
     """
     (yperiodic, dy, y1, y2) = _get_splinerange(mdt.features[1])
     (zperiodic, dz, z1, z2) = _get_splinerange(mdt.features[2])
@@ -1086,7 +1090,7 @@ def make_restraints(atmsel, restraints, num_selected):
 def uniform_bins(num, start, width):
     """Make a list of `num` equally-sized bins, each of which has the given
        `width`, and starting at `start`. This is suitable for input to any of
-       the classes in `mdt.features` which need a list of bins."""
+       the classes in :mod:`mdt.features` which need a list of bins."""
     bins = []
     for i in range(num):
         st = start + width * i

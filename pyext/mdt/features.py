@@ -214,16 +214,13 @@ class ChemicalBondFixedBins(ChemicalBond):
 class XRayResolution(Protein):
     """
     Protein X-ray resolution in angstroms.
-    Note that proteins with a resolution of -1.00 (generally NMR structures) are
-    actually treated as 0.45 by default. This decreases the number of bins
-    required to hold all defined resolutions while still separating NMR from
-    X-ray structures.
+    Proteins with a resolution of -1.00 (generally NMR structures) are
+    actually reported as having a resolution of *nmr*.
+    This decreases the number of bins required to hold all defined
+    resolutions while still separating NMR from X-ray structures.
     """
     _setup = _mdt.mdt_feature_xray_resolution
     def __init__(self, mlib, bins, protein=0, nmr=0.45):
-        """Create the feature. `nmr` is the resolution to artificially map
-           proteins with resolution -1.00 to. See `Protein` for the other
-           arguments."""
         _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein, nmr)
         self._create_bins(mlib, bins)
@@ -243,7 +240,7 @@ class ResidueType(ResidueFixedBins):
 
 class ResidueAccessibility(Residue):
     """Residue solvent accessibility. This is derived from the atomic solvent
-       accessibility; see `AtomAccessibility`."""
+       accessibility; see :class:`AtomAccessibility`."""
     _setup = _mdt.mdt_feature_residue_accessibility
 
 class Chi1Dihedral(Residue):
@@ -338,21 +335,20 @@ class ResidueDistance(ResiduePair):
     """Distance between a pair of residues. This is defined as the distance
        between the 'special' atoms in each residue. The type of this special
        atom can be specified by the distance_atoms argument when creating a
-       `Library` object."""
+       :class:`mdt.Library` object."""
     _setup = _mdt.mdt_feature_residue_distance
 
 class AverageResidueAccessibility(ResiduePair):
     """Average solvent accessibility of a pair of residues.
-       See `ResidueAccessibility`."""
+       See :class:`ResidueAccessibility`."""
     _setup = _mdt.mdt_feature_average_residue_accessibility
 
 class ResidueIndexDifference(ResiduePair):
     """Difference in sequence index between a pair of residues. This can
-       either be the simple difference, or the absolute value."""
+       either be the simple difference (if *absolute* is False) in which case
+       the feature is asymmetric, or the absolute value (if *absolute* is True)
+       which gives a symmetric feature."""
     def __init__(self, mlib, bins, protein=0, absolute=False):
-        """Create the feature. If `absolute` is True, the absolute value of
-           the index difference is used (and thus the feature is symmetric).
-           See `ResiduePair` for a description of the other arguments."""
         _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein, absolute)
         self._create_bins(mlib, bins)
@@ -375,7 +371,7 @@ class NeighborhoodDifference(AlignedResidue):
        scores (from a residue-residue scoring matrix) of all aligned residues
        where the residue in the first sequence is within a cutoff distance
        of the scanned residue. (This cutoff is set by the distngh argument to
-       `Table.add_alignment`.)"""
+       :class:`mdt.Table.add_alignment`.)"""
     _setup = _mdt.mdt_feature_neighborhood_difference
 
 class GapDistance(AlignedResidue):
@@ -387,54 +383,55 @@ class GapDistance(AlignedResidue):
 class ResidueDistanceDifference(AlignedResiduePair):
     """Distance between two residues in the second protein, minus the distance
        between the equivalent residues in the first protein.
-       See `ResidueDistance`."""
+       See :class:`ResidueDistance`."""
     _setup = _mdt.mdt_feature_residue_distance_difference
 
 class AverageNeighborhoodDifference(AlignedResiduePair):
     """Average residue neighborhood difference for a pair of alignment
-       positions. See `NeighborhoodDifference`."""
+       positions. See :class:`NeighborhoodDifference`."""
     _setup = _mdt.mdt_feature_average_neighborhood_difference
 
 class AverageGapDistance(AlignedResiduePair):
     """Average distance to a gap from a pair of alignment positions.
-       See `GapDistance`."""
+       See :class:`GapDistance`."""
     _setup = _mdt.mdt_feature_average_gap_distance
 
 class AtomAccessibility(Atom):
     """Atom solvent accessibility. This is calculated by the PSA algorithm,
        and controlled by the surftyp and accessibility_type arguments to
-       `Table.add_alignment`."""
+       :meth:`mdt.Table.add_alignment`."""
     _setup = _mdt.mdt_feature_atom_accessibility
 
 class FractionalAtomAccessibility(Atom):
     """Fractional atom solvent accessibility, from 0 to 1. This is the atom
-       solvent accessibility (see `AtomAccessibility`) divided by the volume
-       of the atom, derived from its van der Waals radius."""
+       solvent accessibility (see :class:`AtomAccessibility`) divided by
+       the volume of the atom, derived from its van der Waals radius."""
     _setup = _mdt.mdt_feature_fractional_atom_accessibility
 
 class AtomType(AtomFixedBins):
     """Type of an atom, as classified by the atom class file.
-       See `Library.atom_classes`."""
+       See :attr:`mdt.Library.atom_classes`."""
     _setup = _mdt.mdt_feature_atom_type
 
 class HydrogenBondDonor(Atom):
     """Number of hydrogen bond donors. It is defined as the sum, over all atoms
-       within hbond_cutoff (see `Library`) of the atom, of their donor
-       valencies as defined in the hydrogen bond file
-       (see `Library.hbond_classes`)."""
+       within hbond_cutoff (see :class:`mdt.Library`) of the atom, of their
+       donor valencies as defined in the hydrogen bond file
+       (see :attr:`mdt.Library.hbond_classes`)."""
     _setup = _mdt.mdt_feature_hydrogen_bond_donor
 
 class HydrogenBondAcceptor(Atom):
     """Number of hydrogen bond acceptors. It is defined as the sum, over all
-       atoms within hbond_cutoff (see `Library`) of the atom, of their acceptor
-       valencies as defined in the hydrogen bond file
-       (see `Library.hbond_classes`)."""
+       atoms within hbond_cutoff (see :class:`mdt.Library`) of the atom,
+       of their acceptor valencies as defined in the hydrogen bond file
+       (see :attr:`mdt.Library.hbond_classes`)."""
     _setup = _mdt.mdt_feature_hydrogen_bond_acceptor
 
 class HydrogenBondCharge(Atom):
     """Hydrogen bond charge. It is defined as the sum, over all
-       atoms within hbond_cutoff (see `Library`) of the atom, of their charges
-       as defined in the hydrogen bond file (see `Library.hbond_classes`)."""
+       atoms within hbond_cutoff (see :class:`mdt.Library`) of the atom,
+       of their charges as defined in the hydrogen bond file (see
+       :attr:`mdt.Library.hbond_classes`)."""
     _setup = _mdt.mdt_feature_hydrogen_bond_charge
 
 class AtomDistance(AtomPair):
@@ -445,13 +442,14 @@ class HydrogenBondSatisfaction(Protein):
     """Hydrogen bond satisfaction index for a protein. This is the average
        difference, over all atoms in the protein, between the HydrogenBondDonor
        value and the atom's donor valency plus the same for the acceptor,
-       as defined in the hydrogen bond file (see `Library.hbond_classes`)."""
+       as defined in the hydrogen bond file (see
+       :attr:`mdt.Library.hbond_classes`)."""
     _setup = _mdt.mdt_feature_hydrogen_bond_satisfaction
 
 class AlphaContent(Protein):
     """Alpha content of the protein. This is simply the fraction, between 0
        and 1, of residues in the first mainchain conformation class
-       (see `MainchainConformation`)."""
+       (see :class:`MainchainConformation`)."""
     _setup = _mdt.mdt_feature_alpha_content
 
 class SequenceIdentity(ProteinPair):
@@ -462,7 +460,7 @@ class SequenceIdentity(ProteinPair):
 
 class TupleType(TupleFixedBins):
     """Type of an atom tuple, as classified by the tuple class file.
-       See `Library.tuple_classes`."""
+       See :attr:`mdt.Library.tuple_classes`."""
     _setup = _mdt.mdt_feature_tuple_type
 
 class TupleDistance(TuplePair):
@@ -499,27 +497,27 @@ class TupleDihedral3(TuplePair):
 
 class BondType(ChemicalBondFixedBins):
     """Type of a bond, as classified by the bond class file.
-       See `Library.bond_classes`."""
+       See :attr:`mdt.Library.bond_classes`."""
     _setup = _mdt.mdt_feature_bond_type
 
 class AngleType(ChemicalBondFixedBins):
     """Type of an angle, as classified by the angle class file.
-       See `Library.angle_classes`."""
+       See :attr:`mdt.Library.angle_classes`."""
     _setup = _mdt.mdt_feature_angle_type
 
 class DihedralType(ChemicalBondFixedBins):
     """Type of a dihedral, as classified by the dihedral class file.
-       See `Library.dihedral_classes`."""
+       See :attr:`mdt.Library.dihedral_classes`."""
     _setup = _mdt.mdt_feature_dihedral_type
 
 class BondLength(ChemicalBond):
-    """Length of a bond in angstroms. See `Library.bond_classes`."""
+    """Length of a bond in angstroms. See :attr:`mdt.Library.bond_classes`."""
     _setup = _mdt.mdt_feature_bond_length
 
 class Angle(ChemicalBond):
-    """Angle (0-180). See `Library.angle_classes`."""
+    """Angle (0-180). See :attr:`mdt.Library.angle_classes`."""
     _setup = _mdt.mdt_feature_angle
 
 class Dihedral(ChemicalBond):
-    """Dihedral angle (-180-180). See `Library.dihedral_classes`."""
+    """Dihedral angle (-180-180). See :attr:`mdt.Library.dihedral_classes`."""
     _setup = _mdt.mdt_feature_dihedral

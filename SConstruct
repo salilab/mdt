@@ -3,6 +3,9 @@ import sys
 sys.path.append('../')
 from tools import *
 
+# We need scons 0.98 or later
+EnsureSConsVersion(0, 98)
+
 # Set up build environment:
 opts = Options('config.py', ARGUMENTS)
 add_common_options(opts, 'mdt')

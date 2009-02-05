@@ -7,12 +7,12 @@ from tools import *
 EnsureSConsVersion(0, 98)
 
 # Set up build environment:
-opts = Options('config.py', ARGUMENTS)
-add_common_options(opts, 'mdt')
-env = MyEnvironment(options=opts, require_modeller=True,
+vars = Variables('config.py', ARGUMENTS)
+add_common_variables(vars, 'mdt')
+env = MyEnvironment(variables=vars, require_modeller=True,
                     tools=["default", "sphinx"],
                     toolpath=["../tools"])
-Help(opts.GenerateHelpText(env))
+Help(vars.GenerateHelpText(env))
 
 # Make these objects available to SConscript files:
 Export('env', 'get_pyext_environment', 'get_sharedlib_environment')

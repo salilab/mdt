@@ -6,7 +6,7 @@ import mdt.features
 
 env = environ()
 log.minimal()
-env.io.atom_files_directory = ['/park2/database/pdb/divided/']
+env.io.atom_files_directory = ['/salilab/park2/database/pdb/divided/']
 
 mlib = mdt.Library(env)
 mlib.dihedral_classes.read('${LIB}/impgrp.lib')

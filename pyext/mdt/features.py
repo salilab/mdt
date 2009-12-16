@@ -308,7 +308,13 @@ class OmegaClass(ResidueFixedBins):
     _setup = _mdt.mdt_feature_omega_class
 
 class MainchainConformation(ResidueFixedBins):
-    """Residue mainchain conformation (Ramachandran) class."""
+    """Residue mainchain conformation (Ramachandran) class.
+       This is a classification of the residue's phi/psi angles into classes
+       as defined in Modeller's modlib/af_mnchdef.lib file and described in
+       Sali and Blundell, JMB (1993) 234, p785. The default classes are
+       A (right-handed alpha-helix), P (poly-proline conformation),
+       B (idealized beta-strand), L (left-handed alpha-helix), and
+       E (extended conformation)."""
     _setup = _mdt.mdt_feature_mainchain_conformation
 
 class ResidueGroup(ResidueFixedBins):

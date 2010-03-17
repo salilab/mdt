@@ -6,14 +6,17 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <glib.h>
+#include <math.h>
 
 #include "modeller.h"
 #include "mod_error.h"
 #include "mdt.h"
 #include "util.h"
+#include "geometry.h"
 #include "mdt_index.h"
 #include "mdt_property.h"
 #include "mdt_tuples.h"
+#include "mdt_feature.h"
 
 /** A source of data for an MDT (generally an alignment) */
 struct mdt_source {
@@ -23,6 +26,271 @@ struct mdt_source {
   gboolean *acceptd;
   gboolean sympairs, symtriples;
 };
+
+/** Function to update mdt by taking errors into consideration */
+static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
+                                   int is2, int ir1, int ir2, int ir1p,
+                                   int ir2p, int ia1, int ia1p,
+                                   const struct mdt_library *mlib, int ip2,
+                                   struct mdt *mdt, int ibnd1, int ibnd1p,
+                                   int is3, int ir3, int ir3p,
+                                   const struct mod_libraries *libs,
+                                   const struct mod_energy_data *edat,
+                                   struct mdt_source *source, GError **err,
+                                   int errorscale)
+{
+  int i,j,*witherr,*periodic,*numofbins, **pos, **cpos,ifi;
+  float *mean,*std,**bincounts;
+  GError *tmperr = NULL;
+  *outrange = FALSE;
+  witherr = g_malloc0(sizeof(int) * mdt->base.nfeat);
+  periodic = g_malloc0(sizeof(int) * mdt->base.nfeat);
+  mean = g_malloc0(sizeof(float)* mdt->base.nfeat);
+  std = g_malloc0(sizeof(float)* mdt->base.nfeat);
+  pos= g_malloc(sizeof(int*)* mdt->base.nfeat);
+  cpos= g_malloc(sizeof(int*)* mdt->base.nfeat);
+  numofbins = g_malloc0(sizeof(int) * mdt->base.nfeat);
+  bincounts= g_malloc(sizeof(float*)* mdt->base.nfeat);
+  int numofstd=5;
+  float lb=0;
+  float hb=0;
+  float lc,hc,m1=0;
+  int quitloop;
+  double binval;
+  int totalbinnum=1;
+  int indx,rn;
+  double totalcount=1;
+  int indf[mdt->base.nfeat];
+
+  const struct mdt_tuple *tuple1, *tuple2;
+  struct mod_structure *s = mod_alignment_structure_get(source->aln, 0);
+
+  /** Calculate the mean and error for each feature */
+  for (i = 0; i < mdt->base.nfeat && !tmperr && *outrange == FALSE; i++) {
+    const struct mod_mdt_feature *feat = &mdt->base.features[i];
+    ifi = feat->ifeat;
+    struct mod_mdt_libfeature *libfeat = &mlib->base.features[ifi - 1];
+    struct mdt_feature *mfeat = &g_array_index(mlib->features,
+                                               struct mdt_feature, ifi - 1);
+
+    switch (mfeat->type) {
+    case MDT_FEATURE_ATOM_PAIR:
+      mean[i] = dist0witherr(ia1, ia1p, s, &std[i], errorscale);
+      witherr[i]=1;
+      periodic[i]=0;
+      break;
+    case MDT_FEATURE_TUPLE_PAIR:
+      switch (libfeat->name[28]) {
+      case 'n':
+        mean[i] = dist0witherr(ia1, ia1p, s, &std[i], errorscale);
+        periodic[i]=0;
+        break;
+      case '1':
+        tuple2 = property_one_tuple(source->aln, is1, source->prop, mlib,
+                                    ibnd1p, ia1p, libs);
+        mean[i] = angle0witherr(ia1, ia1p, tuple2->iata[0], s, &std[i],
+                                errorscale);
+        periodic[i]=180;
+        break;
+      case '2':
+        tuple1 = property_one_tuple(source->aln, is1, source->prop, mlib,
+                                    ibnd1, ia1, libs);
+        mean[i] = angle0witherr(tuple1->iata[0], ia1, ia1p, s, &std[i],
+                                errorscale);
+        periodic[i]=180;
+        break;
+      case 'r':
+        tuple1 = property_one_tuple(source->aln, is1, source->prop, mlib,
+                                    ibnd1, ia1, libs);
+        tuple2 = property_one_tuple(source->aln, is1, source->prop, mlib,
+                                    ibnd1p, ia1p, libs);
+        mean[i] = dihedral0witherr(tuple1->iata[0], ia1, ia1p, tuple2->iata[0],
+                                   s, &std[i], errorscale);
+        periodic[i]=360;
+        break;
+      }
+      witherr[i]=1;
+      break;
+    default:
+      numofbins[i]=1;
+      *(cpos+i)=g_malloc0(sizeof(int));
+      *(pos+i)=g_malloc0(sizeof(int));
+      *(bincounts+i)=g_malloc0(sizeof(float));
+      *(*(pos+i)+0) = my_mdt_index(ifi, source->aln, is1, ip1, is2, ir1,
+                                   ir2, ir1p, ir2p, ia1, ia1p, mlib, ip2,
+                                   ibnd1, ibnd1p, is3, ir3, ir3p, libs,
+                                   edat, source->prop, &tmperr);
+      *(*(bincounts+i)+0)=1;
+      witherr[i]=0;
+      periodic[i]=0;
+      break;
+    }
+  }
+
+  /* Based on the mean and standard deviation calculated, the bins need to
+     be updated and the corresponding bin values are calculated */
+  for (i = 0; i < mdt->base.nfeat && !tmperr && *outrange == FALSE; i++) {
+    if (witherr[i]==0) continue;
+    const struct mod_mdt_feature *feat = &mdt->base.features[i];
+    ifi = feat->ifeat;
+    struct mod_mdt_libfeature *libfeat = &mlib->base.features[ifi - 1];
+    const struct mod_mdt_bin *bin = libfeat->bins;
+    numofbins[i]=0;
+    *(pos+i)=g_malloc0(sizeof(int)* libfeat->nbins);
+    *(cpos+i)=g_malloc0(sizeof(int)* libfeat->nbins);
+    *(bincounts+i)=g_malloc0(sizeof(float)* libfeat->nbins);
+
+    lc=mean[i]-numofstd*std[i];
+    hc=mean[i]+numofstd*std[i];
+    quitloop=0;
+    for (j = 1; j < libfeat->nbins; j++, bin++) {
+      if (lc > bin->rang2) {
+        continue;
+      } else if (lc < bin->rang1) {
+        lb=bin->rang1;
+      } else if (lc >= bin->rang1 && lc< bin->rang2) {
+        lb=lc;
+      }
+      if (hc > bin->rang2) {
+        hb=bin->rang2;
+      } else if (hc >= bin->rang1 && hc < bin->rang2) {
+        hb=hc;
+        quitloop=1;
+      }
+      *(*(cpos+i)+j-1)=numofbins[i];
+      *(*(pos+i)+numofbins[i])=j;
+      *(*(bincounts+i)+numofbins[i]) = 0.5*erf((hb-mean[i])/(sqrt(2)*std[i]))
+                                       -0.5*erf((lb-mean[i])/(sqrt(2)*std[i]));
+      numofbins[i]=numofbins[i]+1;
+      if (quitloop>0) break;
+    }
+
+    bin = libfeat->bins;
+    if (periodic[i]>0 && (mean[i]-numofstd*std[i])<bin[0].rang1) {
+      if (periodic[i]==180) {
+        m1=-mean[i];
+      } else if (periodic[i]==360) {
+        m1= mean[i]+360;
+      }
+      lc=m1-numofstd*std[i];
+      hc=m1+numofstd*std[i];
+      quitloop=0;
+      for (j = 1; j < libfeat->nbins; j++, bin++) {
+        if (lc > bin->rang2) {
+          continue;
+        } else if (lc < bin->rang1) {
+          lb=bin->rang1;
+        } else if (lc >= bin->rang1 && lc< bin->rang2) {
+          lb=lc;
+        }
+        if (hc > bin->rang2) {
+          hb=bin->rang2;
+        } else if (hc >= bin->rang1 && hc < bin->rang2) {
+          hb=hc;
+          quitloop=1;
+        }
+        if (*(*(cpos+i)+j-1) >0)  {
+          *(*(bincounts+i)+*(*(cpos+i)+j-1)) +=
+                     0.5*erf((hb-m1)/(sqrt(2)*std[i]))
+                    -0.5*erf((lb-m1)/(sqrt(2)*std[i]));
+        } else {
+          *(*(cpos+i)+j-1)=numofbins[i];
+          *(*(pos+i)+numofbins[i])=j;
+          *(*(bincounts+i)+numofbins[i]) =
+                     0.5*erf((hb-m1)/(sqrt(2)*std[i]))
+                    -0.5*erf((lb-m1)/(sqrt(2)*std[i]));
+          numofbins[i]=numofbins[i]+1;
+        }
+        if (quitloop>0) break;
+      }
+    }
+
+    bin = libfeat->bins;
+    if (periodic[i]>0
+        && (mean[i]+numofstd*std[i])>bin[libfeat->nbins-2].rang2) {
+      if (periodic[i]==180) {
+        m1=360-mean[i];
+      } else if (periodic[i]==360) {
+        m1= mean[i]-360;
+      }
+      lc=m1-numofstd*std[i];
+      hc=m1+numofstd*std[i];
+      quitloop=0;
+      for (j = 1; j < libfeat->nbins; j++, bin++) {
+        if (lc > bin->rang2) {
+          continue;
+        } else if (lc < bin->rang1) {
+          lb=bin->rang1;
+        } else if (lc >= bin->rang1 && lc< bin->rang2) {
+          lb=lc;
+        }
+        if (hc > bin->rang2) {
+          hb=bin->rang2;
+        } else if (hc >= bin->rang1 && hc < bin->rang2) {
+          hb=hc;
+          quitloop=1;
+        }
+        if (*(*(cpos+i)+j-1) >0)  {
+          *(*(bincounts+i)+*(*(cpos+i)+j-1)) +=
+                     0.5*erf((hb-m1)/(sqrt(2)*std[i]))
+                    -0.5*erf((lb-m1)/(sqrt(2)*std[i]));
+        } else {
+          *(*(cpos+i)+j-1)=numofbins[i];
+          *(*(pos+i)+numofbins[i])=j;
+          *(*(bincounts+i)+numofbins[i]) =
+                     0.5*erf((hb-m1)/(sqrt(2)*std[i]))
+                    -0.5*erf((lb-m1)/(sqrt(2)*std[i]));
+          numofbins[i]=numofbins[i]+1;
+        }
+        if (quitloop>0) break;
+      }
+    }
+  }
+
+  /* Calculate the total number of bins needed to be updated */
+  m1=0;
+  for (i = 0; i < mdt->base.nfeat && !tmperr && *outrange == FALSE; i++) {
+    totalbinnum=totalbinnum*numofbins[i];
+  }
+
+  /* Update individual bins using the bin values calculated above */
+  for (i=0; i<totalbinnum; i++) {
+    rn=i;
+    totalcount=1;
+    for (j = 0; j < mdt->base.nfeat; j++) {
+      indf[j]=*(*(pos+j)+rn%numofbins[j]);
+      totalcount=totalcount*(*(*(bincounts+j)+rn%numofbins[j]));
+      rn=rn/numofbins[j];
+    }
+    indx = indmdt(indf, &mdt->base);
+    binval = mod_mdt_bin_get(&mdt->base, indx);
+    binval += totalcount;
+    m1+=totalcount;
+    mod_mdt_bin_set(&mdt->base, indx, binval);
+  }
+
+  mdt->sample_size += 1.0;
+  for (i=0;i < mdt->base.nfeat; i++) {
+    g_free(*(bincounts+i));
+    g_free(*(pos+i));
+    g_free(*(cpos+i));
+  }
+  g_free(witherr);
+  g_free(periodic);
+  g_free(mean);
+  g_free(std);
+  g_free(pos);
+  g_free(cpos);
+  g_free(numofbins);
+  g_free(bincounts);
+
+  if (tmperr) {
+    g_propagate_error(err, tmperr);
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}
 
 /** Get all MDT indices */
 static int *mdt_indices(gboolean *outrange, int is1, int ip1, int is2,
@@ -74,6 +342,13 @@ static gboolean scan_update(void *data, struct mdt *mdt, int indx,
   return TRUE;
 }
 
+/** Dummy scan function; used to signal update with errors */
+static gboolean scan_update_witherr(void *data, struct mdt *mdt, int indx,
+                                    GError **err)
+{
+  return TRUE;
+}
+
 /** Scan function which sums the MDT values. */
 static gboolean scan_sum(void *data, struct mdt *mdt, int indx, GError **err)
 {
@@ -95,6 +370,16 @@ static gboolean update_mdt(struct mdt *mdt, const struct mdt_library *mlib,
   static const char *routine = "update_mdt";
   gboolean outrange;
   int imda, *indf;
+
+  /* Special-casing for updating with errors */
+  if (scanfunc == scan_update_witherr) {
+    int *errdata = (int*)scandata;
+    if (errdata > 0) {
+      return update_mdt_witherr(&outrange, is1, ip1, is2, ir1, ir2, ir1p, ir2p,
+                                ia1, ia1p, mlib, ip2, mdt, ibnd1, ibnd1p, is3,
+                                ir3, ir3p, libs, edat, source, err, *errdata);
+    }
+  }
 
   /* obtain the indices for the feature values in this routine call: */
   indf = mdt_indices(&outrange, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1,
@@ -878,6 +1163,43 @@ gboolean mdt_add_alignment(struct mdt *mdt, const struct mdt_library *mlib,
     ret = mdt_source_scan(mdt, mlib, source, residue_span_range,
                           chain_span_range, libs, edat, source->acceptd,
                           source->nseqacc, scan_update, NULL, err);
+
+    mdt_alignment_close(source);
+    return ret;
+  } else {
+    return FALSE;
+  }
+}
+
+/** Add data from an alignment to an MDT, with error. Return TRUE on success. */
+gboolean mdt_add_alignment_witherr(struct mdt *mdt,
+                                   const struct mdt_library *mlib,
+                                   struct mod_alignment *aln, float distngh,
+                                   gboolean sdchngh, int surftyp, int iacc1typ,
+                                   const int residue_span_range[4],
+                                   const int chain_span_range[4],
+                                   gboolean sympairs, gboolean symtriples,
+                                   struct mod_io_data *io,
+                                   struct mod_energy_data *edat,
+                                   struct mod_libraries *libs, GError **err,
+                                   int errdata)
+{
+  struct mdt_source *source;
+
+  mod_lognote("Calculating and checking other data: %d", aln->nseq);
+
+  source = mdt_alignment_open(mdt, mlib, aln, distngh, sdchngh, surftyp,
+                              iacc1typ, sympairs, symtriples, io, libs, err);
+  if (source) {
+    gboolean ret;
+
+    mdt->nalns++;
+    mdt->n_proteins += source->nseqacc;
+
+    mod_lognote("Updating the statistics array:");
+    ret = mdt_source_scan(mdt, mlib, source, residue_span_range,
+                          chain_span_range, libs, edat, source->acceptd,
+                          source->nseqacc, scan_update_witherr, &errdata, err);
 
     mdt_alignment_close(source);
     return ret;

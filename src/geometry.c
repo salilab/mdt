@@ -115,6 +115,132 @@ int idist0(int ia1, int ia1p, const struct mod_structure *struc,
   }
 }
 
+/** Return the distance and the error on distance between two specified atoms
+    in the same protein. */
+float dist0witherr(int ia1, int ia1p, const struct mod_structure *struc,
+                   float *std, int errorscale)
+{
+  float *x,*y,*z,*biso;
+  float  xd,yd,zd,e1,e1p;
+  x = mod_float1_pt(&struc->cd.x);
+  y = mod_float1_pt(&struc->cd.y);
+  z = mod_float1_pt(&struc->cd.z);
+  biso = mod_float1_pt(&struc->cd.biso);
+  e1=(biso[ia1])/79;
+  e1p=(biso[ia1p])/79;
+  xd = x[ia1]-x[ia1p];
+  yd = y[ia1] - y[ia1p];
+  zd = z[ia1]- z[ia1p];
+  *std=sqrt(e1+e1p)/errorscale;
+  return sqrt(xd * xd + yd * yd + zd * zd);
+}
+
+/** Return the angle and the error on angle between three specified atoms
+    in the same protein */
+float angle0witherr(int ia1, int ia2, int ia3,
+                    const struct mod_structure *struc,
+                    float *std, int errorscale)
+{
+  float *x, *y, *z, *biso;
+  float d,d1x,d1y,d1z,d2x,d2y,d2z,d3x,d3y,d3z,e1,e2,e3;
+  x = mod_float1_pt(&struc->cd.x);
+  y = mod_float1_pt(&struc->cd.y);
+  z = mod_float1_pt(&struc->cd.z);
+  d = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
+             y[ia3], z[ia3]);
+  biso = mod_float1_pt(&struc->cd.biso);
+  e1=sqrt((biso[ia1])/79);
+  e2=sqrt((biso[ia2])/79);
+  e3=sqrt((biso[ia3])/79);
+  d1x = angle1(x[ia1]-0.1*e1, y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
+               x[ia3], y[ia3], z[ia3]);
+  d1y = angle1(x[ia1], y[ia1]-0.1*e1, z[ia1], x[ia2], y[ia2], z[ia2],
+               x[ia3], y[ia3], z[ia3]);
+  d1z = angle1(x[ia1], y[ia1], z[ia1]-0.1*e1, x[ia2], y[ia2], z[ia2],
+               x[ia3], y[ia3], z[ia3]);
+  d2x = angle1(x[ia1], y[ia1], z[ia1], x[ia2]-0.1*e2, y[ia2], z[ia2],
+               x[ia3], y[ia3], z[ia3]);
+  d2y = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2]-0.1*e2, z[ia2],
+               x[ia3], y[ia3], z[ia3]);
+  d2z = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2]-0.1*e2,
+               x[ia3], y[ia3], z[ia3]);
+  d3x = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
+               x[ia3]-0.1*e3, y[ia3], z[ia3]);
+  d3y = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
+               x[ia3], y[ia3]-0.1*e3, z[ia3]);
+  d3z = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
+               x[ia3], y[ia3], z[ia3]-0.1*e3);
+  *std=10*sqrt((d-d1x)*(d-d1x)+(d-d1y)*(d-d1y)+(d-d1z)*(d-d1z)
+               +(d-d2x)*(d-d2x)+(d-d2y)*(d-d2y)+(d-d2z)*(d-d2z)
+               +(d-d3x)*(d-d3x)+(d-d3y)*(d-d3y)+(d-d3z)*(d-d3z))/errorscale;
+  return d;
+}
+
+/** Return the dihedral and the error on dihedral between four specified atoms
+    in the same protein */
+float dihedral0witherr(int ia1, int ia2, int ia3, int ia4,
+                       const struct mod_structure *struc,
+                       float *std, int errorscale)
+{
+  gboolean outrange;
+  int i;
+  float  *x, *y, *z, *biso, dv[12],dvs,d,e1,e2,e3,e4;
+  x = mod_float1_pt(&struc->cd.x);
+  y = mod_float1_pt(&struc->cd.y);
+  z = mod_float1_pt(&struc->cd.z);
+  d = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
+                y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
+
+  biso = mod_float1_pt(&struc->cd.biso);
+  e1=sqrt((biso[ia1])/79);
+  e2=sqrt((biso[ia2])/79);
+  e3=sqrt((biso[ia3])/79);
+  e4=sqrt((biso[ia4])/79);
+  dv[1] = dihedral1(x[ia1]-0.1*e1, y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
+                    x[ia3], y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
+  dv[2] = dihedral1(x[ia1], y[ia1]-0.1*e1, z[ia1], x[ia2], y[ia2], z[ia2],
+                    x[ia3], y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
+  dv[3] = dihedral1(x[ia1], y[ia1], z[ia1]-0.1*e1, x[ia2], y[ia2], z[ia2],
+                    x[ia3], y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
+  dv[4] = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2]-0.1*e2, y[ia2], z[ia2],
+                    x[ia3], y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
+  dv[5] = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2]-0.1*e2, z[ia2],
+                    x[ia3], y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
+  dv[6] = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2]-0.1*e2,
+                    x[ia3], y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
+  dv[7] = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
+                    x[ia3]-0.1*e3, y[ia3], z[ia3], x[ia4], y[ia4], z[ia4],
+                    &outrange);
+  dv[8] = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
+                    x[ia3], y[ia3]-0.1*e3, z[ia3], x[ia4], y[ia4], z[ia4],
+                    &outrange);
+  dv[9] = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
+                    x[ia3], y[ia3], z[ia3]-0.1*e3, x[ia4], y[ia4], z[ia4],
+                    &outrange);
+  dv[10] = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
+                     x[ia3], y[ia3], z[ia3], x[ia4]-0.1*e4, y[ia4], z[ia4],
+                     &outrange);
+  dv[11] = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
+                     x[ia3], y[ia3], z[ia3], x[ia4], y[ia4]-0.1*e4, z[ia4],
+                     &outrange);
+  dv[0] = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
+                    x[ia3], y[ia3], z[ia3], x[ia4], y[ia4], z[ia4]-0.1*e4,
+                    &outrange);
+
+  dvs=0;
+  for (i=0;i<12;i++) {
+    if ((dv[i]-d)<180 && (dv[i]-d)>-180) {
+      dvs+=(dv[i]-d)*(dv[i]-d);
+    } else if ( (dv[i]-d)>180) {
+      dvs+=(360-(dv[i]-d))*(360-(dv[i]-d));
+    } else if ((dv[i]-d)<-180) {
+      dvs+=(360+(dv[i]-d))*(360+(dv[i]-d));
+    }
+  }
+  *std=10*sqrt(dvs)/errorscale;
+  return d;
+}
+
 /** Return the bin index for the angle between three specified atoms in the
     same protein. */
 int iangle0(int ia1, int ia2, int ia3, const struct mod_structure *struc,

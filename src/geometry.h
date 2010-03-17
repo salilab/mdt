@@ -36,6 +36,26 @@ int idihedral0(int ia1, int ia2, int ia3, int ia4,
                const struct mod_structure *struc,
                const struct mod_mdt_libfeature *feat);
 
+/** Return the distance and the error on distance between two specified atoms
+    in the same protein */
+MDTDLLLOCAL
+float dist0witherr(int ia1, int ia1p, const struct mod_structure *struc,
+                   float *std, int errorscale);
+
+/** Return the angle and the error on angle between three specified atoms
+    in the same protein */
+MDTDLLLOCAL
+float angle0witherr(int ia1, int ia2, int ia3,
+                    const struct mod_structure *struc, float *std,
+                    int errorscale);
+
+/** Return the dihedral and the error on dihedral between four specified atoms
+    in the same protein */
+MDTDLLLOCAL
+float dihedral0witherr(int ia1, int ia2, int ia3, int ia4,
+                       const struct mod_structure *struc, float *std,
+                       int errorscale);
+
 G_END_DECLS
 
 #endif  /* __MDT_GEOMETRY_H */

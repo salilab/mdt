@@ -709,6 +709,36 @@ class Table(TableSection):
                                symtriples, io.modpt, edat.modpt,
                                self._mlib._env.libs.modpt)
 
+    def add_alignment_witherr(self, aln, distngh=6.0, surftyp=1,
+                              accessibility_type=8,
+                              residue_span_range=(-99999, -2, 2, 99999),
+                              chain_span_range=(-99999, 0, 0, 99999),
+                              sympairs=False, symtriples=False, io=None,
+                              edat=None, errorscale=1):
+        """
+        Add data from a Modeller alignment to this MDT. Same as add_alignment
+        except the errors in data are taken into account.
+        The parameter errorscale controls how the error is used:
+          - `0`: the errors are ignored; this function is the same as
+                 add_alignment.
+          - `1` : the errors are taken into account by propogating the errors
+                  in each axis of each atom into the calculated distances
+                  or angles.
+          - `2,3,...` : the errors are calculated in the same way as described
+                        above, but the final errors are divided by this
+                        errorscale value.
+        """
+        if io is None:
+            io = self._mlib._env.io
+        if edat is None:
+            edat = self._mlib._env.edat
+        _mdt.mdt_add_alignment_witherr(self._modpt, self._mlib._modpt,
+                                       aln.modpt, distngh, False, surftyp,
+                                       accessibility_type, residue_span_range,
+                                       chain_span_range, sympairs,
+                                       symtriples, io.modpt, edat.modpt,
+                                       self._mlib._env.libs.modpt,
+                                       errorscale)
 
     def open_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
                        sympairs=False, symtriples=False, io=None, edat=None):

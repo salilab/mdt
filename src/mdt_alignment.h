@@ -62,6 +62,20 @@ gboolean mdt_add_alignment(struct mdt *mdt, const struct mdt_library *mlib,
                            struct mod_energy_data *edat,
                            struct mod_libraries *libs, GError **err);
 
+/** Add data from an alignment to an MDT, with error. Return TRUE on success. */
+MDTDLLEXPORT
+gboolean mdt_add_alignment_witherr(struct mdt *mdt,
+                                   const struct mdt_library *mlib,
+                                   struct mod_alignment *aln, float distngh,
+                                   gboolean sdchngh, int surftyp, int iacc1typ,
+                                   const int residue_span_range[4],
+                                   const int chain_span_range[4],
+                                   gboolean sympairs, gboolean symtriples,
+                                   struct mod_io_data *io,
+                                   struct mod_energy_data *edat,
+                                   struct mod_libraries *libs, GError **err,
+                                   int errdata);
+
 G_END_DECLS
 
 #endif  /* __MDT_ALIGNMENT_H */

@@ -115,7 +115,7 @@ static void smthfrq(const double apriori[], double frq[], int i_val_fix[],
                     double prior_weight, int nbinx, double bin2[], int nelems)
 {
   int i, is1;
-  float sumfrq, w1, w2, sumbin;
+  float sumfrq, w1, w2;
 
   /* sum(apriori(1:nbinx)) can be zero when no smoothing is done
      (ie, prior_weight = 0). w1 will not be zero, and that is
@@ -141,7 +141,7 @@ static void smthfrq(const double apriori[], double frq[], int i_val_fix[],
   }
 
   /* make sure bin2 is nicely normalized: */
-  sumbin = normalize_freq(&bin2[is1], nbinx);
+  normalize_freq(&bin2[is1], nbinx);
 }
 
 

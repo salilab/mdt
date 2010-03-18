@@ -42,15 +42,6 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
   int i,j,*witherr,*periodic,*numofbins, **pos, **cpos,ifi;
   float *mean,*std,**bincounts;
   GError *tmperr = NULL;
-  *outrange = FALSE;
-  witherr = g_malloc0(sizeof(int) * mdt->base.nfeat);
-  periodic = g_malloc0(sizeof(int) * mdt->base.nfeat);
-  mean = g_malloc0(sizeof(float)* mdt->base.nfeat);
-  std = g_malloc0(sizeof(float)* mdt->base.nfeat);
-  pos= g_malloc(sizeof(int*)* mdt->base.nfeat);
-  cpos= g_malloc(sizeof(int*)* mdt->base.nfeat);
-  numofbins = g_malloc0(sizeof(int) * mdt->base.nfeat);
-  bincounts= g_malloc(sizeof(float*)* mdt->base.nfeat);
   int numofstd=5;
   float lb=0;
   float hb=0;
@@ -60,10 +51,19 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
   int totalbinnum=1;
   int indx,rn;
   double totalcount=1;
-  int indf[mdt->base.nfeat];
-
   const struct mdt_tuple *tuple1, *tuple2;
   struct mod_structure *s = mod_alignment_structure_get(source->aln, 0);
+  int *indf = g_malloc(sizeof(int) * mdt->base.nfeat);
+
+  *outrange = FALSE;
+  witherr = g_malloc0(sizeof(int) * mdt->base.nfeat);
+  periodic = g_malloc0(sizeof(int) * mdt->base.nfeat);
+  mean = g_malloc0(sizeof(float)* mdt->base.nfeat);
+  std = g_malloc0(sizeof(float)* mdt->base.nfeat);
+  pos= g_malloc(sizeof(int*)* mdt->base.nfeat);
+  cpos= g_malloc(sizeof(int*)* mdt->base.nfeat);
+  numofbins = g_malloc0(sizeof(int) * mdt->base.nfeat);
+  bincounts= g_malloc(sizeof(float*)* mdt->base.nfeat);
 
   /** Calculate the mean and error for each feature */
   for (i = 0; i < mdt->base.nfeat && !tmperr && *outrange == FALSE; i++) {
@@ -131,10 +131,14 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
      be updated and the corresponding bin values are calculated */
   for (i = 0; i < mdt->base.nfeat && !tmperr && *outrange == FALSE; i++) {
     if (witherr[i]==0) continue;
-    const struct mod_mdt_feature *feat = &mdt->base.features[i];
+    const struct mod_mdt_feature *feat;
+    struct mod_mdt_libfeature *libfeat;
+    const struct mod_mdt_bin *bin;
+
+    feat = &mdt->base.features[i];
     ifi = feat->ifeat;
-    struct mod_mdt_libfeature *libfeat = &mlib->base.features[ifi - 1];
-    const struct mod_mdt_bin *bin = libfeat->bins;
+    libfeat = &mlib->base.features[ifi - 1];
+    bin = libfeat->bins;
     numofbins[i]=0;
     *(pos+i)=g_malloc0(sizeof(int)* libfeat->nbins);
     *(cpos+i)=g_malloc0(sizeof(int)* libfeat->nbins);
@@ -275,6 +279,7 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
     g_free(*(pos+i));
     g_free(*(cpos+i));
   }
+  g_free(indf);
   g_free(witherr);
   g_free(periodic);
   g_free(mean);

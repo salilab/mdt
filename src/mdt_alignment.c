@@ -817,13 +817,11 @@ static gboolean gen_bonds(struct mdt *mdt, const struct mdt_library *mlib,
                           void *scandata, GError **err)
 {
   const struct mdt_bond_list *bonds;
-  struct mod_structure *struc;
   int ibnd1, is2;
 
   if (!check_single_protein_features(mdt, mlib, err)) {
     return FALSE;
   }
-  struc = mod_alignment_structure_get(source->aln, is1);
   is2 = is1;
   bonds = property_bonds(source->aln, is1, source->prop, mlib, npnt, libs);
   for (ibnd1 = 0; ibnd1 < bonds->nbonds; ibnd1++) {

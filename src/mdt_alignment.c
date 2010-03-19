@@ -67,11 +67,14 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
 
   /** Calculate the mean and error for each feature */
   for (i = 0; i < mdt->base.nfeat && !tmperr && *outrange == FALSE; i++) {
-    const struct mod_mdt_feature *feat = &mdt->base.features[i];
+    const struct mod_mdt_feature *feat;
+    struct mod_mdt_libfeature *libfeat;
+    struct mdt_feature *mfeat;
+
+    feat = &mdt->base.features[i];
     ifi = feat->ifeat;
-    struct mod_mdt_libfeature *libfeat = &mlib->base.features[ifi - 1];
-    struct mdt_feature *mfeat = &g_array_index(mlib->features,
-                                               struct mdt_feature, ifi - 1);
+    libfeat = &mlib->base.features[ifi - 1];
+    mfeat = &g_array_index(mlib->features, struct mdt_feature, ifi - 1);
 
     switch (mfeat->type) {
     case MDT_FEATURE_ATOM_PAIR:
@@ -130,10 +133,10 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
   /* Based on the mean and standard deviation calculated, the bins need to
      be updated and the corresponding bin values are calculated */
   for (i = 0; i < mdt->base.nfeat && !tmperr && *outrange == FALSE; i++) {
-    if (witherr[i]==0) continue;
     const struct mod_mdt_feature *feat;
     struct mod_mdt_libfeature *libfeat;
     const struct mod_mdt_bin *bin;
+    if (witherr[i]==0) continue;
 
     feat = &mdt->base.features[i];
     ifi = feat->ifeat;

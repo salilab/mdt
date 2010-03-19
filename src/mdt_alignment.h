@@ -74,7 +74,7 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
                                    struct mod_io_data *io,
                                    struct mod_energy_data *edat,
                                    struct mod_libraries *libs, GError **err,
-                                   int errdata);
+                                   float errorscale);
 
 G_END_DECLS
 

@@ -40,21 +40,21 @@ int idihedral0(int ia1, int ia2, int ia3, int ia4,
     in the same protein */
 MDTDLLLOCAL
 float dist0witherr(int ia1, int ia1p, const struct mod_structure *struc,
-                   float *std, int errorscale);
+                   float *std, float errorscale);
 
 /** Return the angle and the error on angle between three specified atoms
     in the same protein */
 MDTDLLLOCAL
 float angle0witherr(int ia1, int ia2, int ia3,
                     const struct mod_structure *struc, float *std,
-                    int errorscale);
+                    float errorscale);
 
 /** Return the dihedral and the error on dihedral between four specified atoms
     in the same protein */
 MDTDLLLOCAL
 float dihedral0witherr(int ia1, int ia2, int ia3, int ia4,
                        const struct mod_structure *struc, float *std,
-                       int errorscale);
+                       float errorscale);
 
 G_END_DECLS
 

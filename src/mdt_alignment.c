@@ -17,6 +17,7 @@
 #include "mdt_property.h"
 #include "mdt_tuples.h"
 #include "mdt_feature.h"
+#include "luzzatiplot.h"
 
 /** A source of data for an MDT (generally an alignment) */
 struct mdt_source {
@@ -26,6 +27,48 @@ struct mdt_source {
   gboolean *acceptd;
   gboolean sympairs, symtriples;
 };
+
+/** For update MDT with error only. Identify the bins needed to be updated,
+    and calculate the bincounts for each bin. */
+static void gaussian_weight_calc(struct mod_mdt_libfeature *libfeat,
+                                 const struct mod_mdt_bin *bin, float numofstd,
+                                 int **cpos, float std, float **bincounts,
+                                 int **pos, float m1, int *numofbins, int i)
+{
+  int j, quitloop=0;
+  float lb=0, hb=0,hc,lc;
+
+  lc=m1-numofstd*std;
+  hc=m1+numofstd*std;
+  for (j = 1; j < libfeat->nbins; j++, bin++) {
+    if (lc > bin->rang2) {
+      continue;
+    } else if (lc < bin->rang1) {
+      lb=bin->rang1;
+    } else if (lc >= bin->rang1 && lc< bin->rang2) {
+      lb=lc;
+    }
+    if (hc > bin->rang2) {
+      hb=bin->rang2;
+    } else if (hc >= bin->rang1 && hc < bin->rang2) {
+      hb=hc;
+      quitloop=1;
+    }
+    if (*(*(cpos+i)+j-1) >0)  {
+      *(*(bincounts+i)+*(*(cpos+i)+j-1)) +=
+                    0.5*erf((hb-m1)/(1.41421356*std))
+                    -0.5*erf((lb-m1)/(1.41421356*std));
+    } else {
+      *(*(cpos+i)+j-1)=numofbins[i];
+      *(*(pos+i)+numofbins[i])=j;
+      *(*(bincounts+i)+numofbins[i]) =
+                     0.5*erf((hb-m1)/(1.41421356*std))
+                    -0.5*erf((lb-m1)/(1.41421356*std));
+      numofbins[i]=numofbins[i]+1;
+    }
+    if (quitloop>0) break;
+  }
+}
 
 /** Function to update mdt by taking errors into consideration */
 static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
@@ -37,16 +80,13 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
                                    const struct mod_libraries *libs,
                                    const struct mod_energy_data *edat,
                                    struct mdt_source *source, GError **err,
-                                   int errorscale)
+                                   float errorscale)
 {
   int i,j,*witherr,*periodic,*numofbins, **pos, **cpos,ifi;
   float *mean,*std,**bincounts;
   GError *tmperr = NULL;
   int numofstd=5;
-  float lb=0;
-  float hb=0;
-  float lc,hc,m1=0;
-  int quitloop;
+  float m1=0;
   double binval;
   int totalbinnum=1;
   int indx,rn;
@@ -57,6 +97,8 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
 
   *outrange = FALSE;
   witherr = g_malloc0(sizeof(int) * mdt->base.nfeat);
+  /* The periodic value is the period of the feature if the feature is
+     periodic, or 0 if the feature is not periodic. */
   periodic = g_malloc0(sizeof(int) * mdt->base.nfeat);
   mean = g_malloc0(sizeof(float)* mdt->base.nfeat);
   std = g_malloc0(sizeof(float)* mdt->base.nfeat);
@@ -131,7 +173,7 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
   }
 
   /* Based on the mean and standard deviation calculated, the bins need to
-     be updated and the corresponding bin values are calculated */
+     be updated and the corresponding bin counts are calculated */
   for (i = 0; i < mdt->base.nfeat && !tmperr && *outrange == FALSE; i++) {
     const struct mod_mdt_feature *feat;
     struct mod_mdt_libfeature *libfeat;
@@ -146,73 +188,20 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
     *(pos+i)=g_malloc0(sizeof(int)* libfeat->nbins);
     *(cpos+i)=g_malloc0(sizeof(int)* libfeat->nbins);
     *(bincounts+i)=g_malloc0(sizeof(float)* libfeat->nbins);
-
-    lc=mean[i]-numofstd*std[i];
-    hc=mean[i]+numofstd*std[i];
-    quitloop=0;
-    for (j = 1; j < libfeat->nbins; j++, bin++) {
-      if (lc > bin->rang2) {
-        continue;
-      } else if (lc < bin->rang1) {
-        lb=bin->rang1;
-      } else if (lc >= bin->rang1 && lc< bin->rang2) {
-        lb=lc;
-      }
-      if (hc > bin->rang2) {
-        hb=bin->rang2;
-      } else if (hc >= bin->rang1 && hc < bin->rang2) {
-        hb=hc;
-        quitloop=1;
-      }
-      *(*(cpos+i)+j-1)=numofbins[i];
-      *(*(pos+i)+numofbins[i])=j;
-      *(*(bincounts+i)+numofbins[i]) = 0.5*erf((hb-mean[i])/(sqrt(2)*std[i]))
-                                       -0.5*erf((lb-mean[i])/(sqrt(2)*std[i]));
-      numofbins[i]=numofbins[i]+1;
-      if (quitloop>0) break;
-    }
-
-    bin = libfeat->bins;
+    m1=mean[i];
+    gaussian_weight_calc(libfeat, bin, numofstd, cpos, std[i], bincounts,
+                         pos, m1, numofbins, i);
+    /* update bin counts again if the feature is periodic*/
     if (periodic[i]>0 && (mean[i]-numofstd*std[i])<bin[0].rang1) {
       if (periodic[i]==180) {
         m1=-mean[i];
       } else if (periodic[i]==360) {
         m1= mean[i]+360;
       }
-      lc=m1-numofstd*std[i];
-      hc=m1+numofstd*std[i];
-      quitloop=0;
-      for (j = 1; j < libfeat->nbins; j++, bin++) {
-        if (lc > bin->rang2) {
-          continue;
-        } else if (lc < bin->rang1) {
-          lb=bin->rang1;
-        } else if (lc >= bin->rang1 && lc< bin->rang2) {
-          lb=lc;
-        }
-        if (hc > bin->rang2) {
-          hb=bin->rang2;
-        } else if (hc >= bin->rang1 && hc < bin->rang2) {
-          hb=hc;
-          quitloop=1;
-        }
-        if (*(*(cpos+i)+j-1) >0)  {
-          *(*(bincounts+i)+*(*(cpos+i)+j-1)) +=
-                     0.5*erf((hb-m1)/(sqrt(2)*std[i]))
-                    -0.5*erf((lb-m1)/(sqrt(2)*std[i]));
-        } else {
-          *(*(cpos+i)+j-1)=numofbins[i];
-          *(*(pos+i)+numofbins[i])=j;
-          *(*(bincounts+i)+numofbins[i]) =
-                     0.5*erf((hb-m1)/(sqrt(2)*std[i]))
-                    -0.5*erf((lb-m1)/(sqrt(2)*std[i]));
-          numofbins[i]=numofbins[i]+1;
-        }
-        if (quitloop>0) break;
-      }
+      gaussian_weight_calc(libfeat, libfeat->bins, numofstd, cpos, std[i],
+                           bincounts, pos, m1, numofbins, i);
     }
-
-    bin = libfeat->bins;
+    /* update bin counts the third time if the feature is periodic*/
     if (periodic[i]>0
         && (mean[i]+numofstd*std[i])>bin[libfeat->nbins-2].rang2) {
       if (periodic[i]==180) {
@@ -220,37 +209,8 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
       } else if (periodic[i]==360) {
         m1= mean[i]-360;
       }
-      lc=m1-numofstd*std[i];
-      hc=m1+numofstd*std[i];
-      quitloop=0;
-      for (j = 1; j < libfeat->nbins; j++, bin++) {
-        if (lc > bin->rang2) {
-          continue;
-        } else if (lc < bin->rang1) {
-          lb=bin->rang1;
-        } else if (lc >= bin->rang1 && lc< bin->rang2) {
-          lb=lc;
-        }
-        if (hc > bin->rang2) {
-          hb=bin->rang2;
-        } else if (hc >= bin->rang1 && hc < bin->rang2) {
-          hb=hc;
-          quitloop=1;
-        }
-        if (*(*(cpos+i)+j-1) >0)  {
-          *(*(bincounts+i)+*(*(cpos+i)+j-1)) +=
-                     0.5*erf((hb-m1)/(sqrt(2)*std[i]))
-                    -0.5*erf((lb-m1)/(sqrt(2)*std[i]));
-        } else {
-          *(*(cpos+i)+j-1)=numofbins[i];
-          *(*(pos+i)+numofbins[i])=j;
-          *(*(bincounts+i)+numofbins[i]) =
-                     0.5*erf((hb-m1)/(sqrt(2)*std[i]))
-                    -0.5*erf((lb-m1)/(sqrt(2)*std[i]));
-          numofbins[i]=numofbins[i]+1;
-        }
-        if (quitloop>0) break;
-      }
+      gaussian_weight_calc(libfeat, libfeat->bins, numofstd, cpos, std[i],
+                           bincounts, pos, m1, numofbins, i);
     }
   }
 
@@ -381,11 +341,14 @@ static gboolean update_mdt(struct mdt *mdt, const struct mdt_library *mlib,
 
   /* Special-casing for updating with errors */
   if (scanfunc == scan_update_witherr) {
-    int *errdata = (int*)scandata;
-    if (errdata > 0) {
+    float *errdata = (float*)scandata;
+    if (*errdata > 0) {
       return update_mdt_witherr(&outrange, is1, ip1, is2, ir1, ir2, ir1p, ir2p,
                                 ia1, ia1p, mlib, ip2, mdt, ibnd1, ibnd1p, is3,
                                 ir3, ir3p, libs, edat, source, err, *errdata);
+    } else {
+      /* Fall back to regular function */
+      scanfunc = scan_update;
     }
   }
 
@@ -1188,9 +1151,11 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
                                    struct mod_io_data *io,
                                    struct mod_energy_data *edat,
                                    struct mod_libraries *libs, GError **err,
-                                   int errdata)
+                                   float errorscale)
 {
   struct mdt_source *source;
+  float *biso, bisomax=0, bisomaxerror;
+  int i, ind;
 
   mod_lognote("Calculating and checking other data: %d", aln->nseq);
 
@@ -1199,14 +1164,29 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
   if (source) {
     gboolean ret;
 
+    /* The errorscale, used to scale errors, is calculated by assuming the
+       atom with the largest Biso has the error defined by R-factor,
+       X-ray resolution and the Luzzati plot. */
+    struct mod_sequence *seq = mod_alignment_sequence_get(source->aln, 0);
+    struct mod_structure *struc = mod_alignment_structure_get(source->aln, 0);
+    biso = mod_float1_pt(&struc->cd.biso);
+    for(i=0; i< struc->cd.natm; i++){
+      if (biso[i]>bisomax) {
+        bisomax=biso[i];
+      }
+    }
+    bisomaxerror=sqrt(bisomax/79);
+    ind=(int)floor((seq->rfactr)*1000+0.5);
+    errorscale=errorscale*bisomaxerror/(luzzatiplot(ind)*(seq->resol));
+
     mdt->nalns++;
     mdt->n_proteins += source->nseqacc;
 
     mod_lognote("Updating the statistics array:");
     ret = mdt_source_scan(mdt, mlib, source, residue_span_range,
                           chain_span_range, libs, edat, source->acceptd,
-                          source->nseqacc, scan_update_witherr, &errdata, err);
-
+                          source->nseqacc, scan_update_witherr, &errorscale,
+                          err);
     mdt_alignment_close(source);
     return ret;
   } else {

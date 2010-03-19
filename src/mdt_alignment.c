@@ -35,6 +35,7 @@ static void gaussian_weight_calc(struct mod_mdt_libfeature *libfeat,
                                  int **cpos, float std, float **bincounts,
                                  int **pos, float m1, int *numofbins, int i)
 {
+  const static float sqrt2 = 1.41421356;
   int j, quitloop=0;
   float lb=0, hb=0,hc,lc;
 
@@ -56,14 +57,14 @@ static void gaussian_weight_calc(struct mod_mdt_libfeature *libfeat,
     }
     if (*(*(cpos+i)+j-1) >0)  {
       *(*(bincounts+i)+*(*(cpos+i)+j-1)) +=
-                    0.5*erf((hb-m1)/(1.41421356*std))
-                    -0.5*erf((lb-m1)/(1.41421356*std));
+                    0.5*erf((hb-m1)/(sqrt2*std))
+                    -0.5*erf((lb-m1)/(sqrt2*std));
     } else {
       *(*(cpos+i)+j-1)=numofbins[i];
       *(*(pos+i)+numofbins[i])=j;
       *(*(bincounts+i)+numofbins[i]) =
-                     0.5*erf((hb-m1)/(1.41421356*std))
-                    -0.5*erf((lb-m1)/(1.41421356*std));
+                     0.5*erf((hb-m1)/(sqrt2*std))
+                    -0.5*erf((lb-m1)/(sqrt2*std));
       numofbins[i]=numofbins[i]+1;
     }
     if (quitloop>0) break;

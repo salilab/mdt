@@ -150,6 +150,16 @@ gboolean mdt_setup(struct mdt *mdt, const struct mdt_library *mlib,
 MDTDLLLOCAL
 hid_t mdt_get_hdf5_type(const struct mod_mdt *mdt);
 
+#ifdef WIN32
+/** Our local implementation of the error function */
+MDTDLLLOCAL
+double erf(double x);
+
+/** Our local implementation of the complementary error function */
+MDTDLLLOCAL
+double erfc(double x);
+#endif
+
 G_END_DECLS
 
 #endif  /* __MDT_UTIL_H */

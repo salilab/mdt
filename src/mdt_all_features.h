@@ -38,6 +38,10 @@ int mdt_feature_residue_accessibility(struct mdt_library *mlib, int protein,
 MDTDLLEXPORT
 int mdt_feature_atom_accessibility(struct mdt_library *mlib, gboolean pos2);
 
+/** Add an atom Z-coordinate feature. */
+MDTDLLEXPORT
+int mdt_feature_z_coordinate(struct mdt_library *mlib, gboolean pos2);
+
 /** Add a fractional atom accessibility feature. */
 MDTDLLEXPORT
 int mdt_feature_fractional_atom_accessibility(struct mdt_library *mlib,

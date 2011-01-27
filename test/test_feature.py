@@ -300,6 +300,20 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[2], 35.0, 2.0005)
         self.assertEqual(m[-1], 0.0)
 
+    def test_feature_z_coordinate(self):
+        """Check atom Z-coordinate feature"""
+        mlib = self.get_mdt_library()
+        bins = mdt.uniform_bins(40, 0.0, 1.0)
+        z = mdt.features.AtomZCoordinate(mlib, bins)
+        m = self.get_test_mdt(mlib, features=z)
+        self.assertEqual(m.shape, (41,))
+        self.assertEqual(m[0], 0.0)
+        self.assertEqual(m[1], 1.0)
+        self.assertEqual(m[2], 3.0)
+        self.assertEqual(m[3], 6.0)
+        self.assertEqual(m[4], 10.0)
+        self.assertEqual(m[5], 31.0)
+
     def test_feature_resacc(self):
         """Check residue accessibility features"""
         mlib = self.get_mdt_library()

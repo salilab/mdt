@@ -408,6 +408,10 @@ class AtomAccessibility(Atom):
        :meth:`mdt.Table.add_alignment`."""
     _setup = _mdt.mdt_feature_atom_accessibility
 
+class AtomZCoordinate(Atom):
+    """Atom Z-coordinate. No orientation of the structure is performed."""
+    _setup = _mdt.mdt_feature_z_coordinate
+
 class FractionalAtomAccessibility(Atom):
     """Fractional atom solvent accessibility, from 0 to 1. This is the atom
        solvent accessibility (see :class:`AtomAccessibility`) divided by

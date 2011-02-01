@@ -483,13 +483,13 @@ gboolean property_exclusions(const struct mod_alignment *aln,
 {
   if (exclude_bonds || exclude_angles || exclude_dihedrals) {
     if (!prop[is].exclusions) {
+      GHashTable *h;
       struct mod_structure *struc = mod_alignment_structure_get(aln, is);
       if (!check_exclusion_hash_key_size(struc, err)) {
         return FALSE;
       }
 
-      GHashTable *h = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-                                            NULL, NULL);
+      h = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, NULL);
       if (exclude_bonds) {
         add_exclusions(h, aln, is, prop, mlib, MDT_BOND_TYPE_BOND, 0, 1, libs);
       }

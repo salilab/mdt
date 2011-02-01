@@ -653,7 +653,9 @@ class Table(TableSection):
 
     def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
                       residue_span_range=(-99999, -2, 2, 99999),
-                      chain_span_range=(-99999, 0, 0, 99999), sympairs=False,
+                      chain_span_range=(-99999, 0, 0, 99999),
+                      exclude_bonds=False, exclude_angles=False,
+                      exclude_dihedrals=False, sympairs=False,
                       symtriples=False, io=None, edat=None):
         """
         Add data from a Modeller alignment to this MDT.
@@ -694,6 +696,14 @@ class Table(TableSection):
             of (-99999, 0, 0, 99999) allows all interactions. For example, using
             (-99999, -1, 1, 99999) instead would exclude all interactions
             within the same chain.
+          - `exclude_bonds`: if True, then all pairs of atoms involved in a
+            chemical bond (see :attr:`Library.bond_classes`) are excluded from
+            :ref:`atom pair <atom_pair_features>` and
+            :ref:`tuple pair <tuple_pair_features>` features.
+          - `exclude_angles`: if True, then the 1-3 pair of atoms from each
+            angle are excluded (see `exclude_bonds`).
+          - `exclude_dihedrals`: if True, then the 1-4 pair of atoms from each
+            dihedral are excluded (see `exclude_bonds`).
           - `sympairs`: if True, all features involving pairs of proteins
             are symmetric.
           - `symtriples`: if True, all features involving triples of proteins
@@ -705,14 +715,17 @@ class Table(TableSection):
             edat = self._mlib._env.edat
         _mdt.mdt_add_alignment(self._modpt, self._mlib._modpt, aln.modpt,
                                distngh, False, surftyp, accessibility_type,
-                               residue_span_range, chain_span_range, sympairs,
-                               symtriples, io.modpt, edat.modpt,
+                               residue_span_range, chain_span_range,
+                               exclude_bonds, exclude_angles, exclude_dihedrals,
+                               sympairs, symtriples, io.modpt, edat.modpt,
                                self._mlib._env.libs.modpt)
 
     def add_alignment_witherr(self, aln, distngh=6.0, surftyp=1,
                               accessibility_type=8,
                               residue_span_range=(-99999, -2, 2, 99999),
                               chain_span_range=(-99999, 0, 0, 99999),
+                              exclude_bonds=False, exclude_angles=False,
+                              exclude_dihedrals=False,
                               sympairs=False, symtriples=False, io=None,
                               edat=None, errorscale=1):
         """
@@ -734,9 +747,10 @@ class Table(TableSection):
         _mdt.mdt_add_alignment_witherr(self._modpt, self._mlib._modpt,
                                        aln.modpt, distngh, False, surftyp,
                                        accessibility_type, residue_span_range,
-                                       chain_span_range, sympairs,
-                                       symtriples, io.modpt, edat.modpt,
-                                       self._mlib._env.libs.modpt,
+                                       chain_span_range, exclude_bonds,
+                                       exclude_angles, exclude_dihedrals,
+                                       sympairs, symtriples, io.modpt,
+                                       edat.modpt, self._mlib._env.libs.modpt,
                                        errorscale)
 
     def open_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
@@ -899,13 +913,16 @@ class Source(object):
             _mdt.mdt_alignment_close(self._modpt)
 
     def sum(self, residue_span_range=(-99999, -2, 2, 99999),
-            chain_span_range=(-99999, 0, 0, 99999)):
+            chain_span_range=(-99999, 0, 0, 99999),
+            exclude_bonds=False, exclude_angles=False, exclude_dihedrals=False):
         """Scan all data points in the source, and return the sum.
            See :meth:`Table.add_alignment` for a description of the
-           `residue_span_range` and `chain_span_range` arguments."""
+           `residue_span_range`, `chain_span_range` and `exclude_*`
+           arguments."""
         f = _mdt.mdt_source_sum
         return f(self._modpt, self._mdt._modpt, self._mlib._modpt,
                  residue_span_range, chain_span_range,
+                 exclude_bonds, exclude_angles, exclude_dihedrals,
                  self._mlib._env.libs.modpt, self._edat.modpt)
 
     def index(self, feat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,

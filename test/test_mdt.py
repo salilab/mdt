@@ -200,6 +200,77 @@ class TableTests(MDTTest):
         for i in range(38, 49):
             self.assertEqual(m1[i], m2[i])
 
+    def test_atom_pair_exclusions(self):
+        """Test exclusion of atom pairs from atom pair features"""
+        env = self.get_environ()
+        mdl = model(env)
+        mdl.build_sequence('G')
+        aln = alignment(env)
+        aln.append_model(mdl, align_codes='test')
+        mlib = self.get_mdt_library()
+        mlib.bond_classes.read('data/bndgrp.lib')
+        mlib.angle_classes.read('data/anggrp.lib')
+        mlib.dihedral_classes.read('data/impgrp.lib')
+        dist = mdt.features.AtomDistance(mlib,
+                                         bins=mdt.uniform_bins(49, 0.0, 0.2))
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+                        exclude_bonds=False)
+        self.assertEqual(m.sample_size, 10)
+        # 3 bonds (N-CA, O-C, C-CA) should be excluded in Gly
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+                        exclude_bonds=True)
+        self.assertEqual(m.sample_size, 7)
+        # A further 2 angles (CA-C-O, N-CA-C) should be excluded in Gly
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+                        exclude_bonds=True, exclude_angles=True)
+        self.assertEqual(m.sample_size, 5)
+        # No improper dihedrals
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+                        exclude_bonds=True, exclude_angles=True,
+                        exclude_dihedrals=True)
+        self.assertEqual(m.sample_size, 5)
+
+        mdl = model(env)
+        mdl.build_sequence('GG')
+        aln = alignment(env)
+        aln.append_model(mdl, align_codes='test')
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999))
+        self.assertEqual(m.sample_size, 36)
+        # One dihedral (C:CA:+N:O) in Gly-Gly should be excluded
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+                        exclude_dihedrals=True)
+        self.assertEqual(m.sample_size, 35)
+
+    def test_atom_tuple_pair_exclusions(self):
+        """Test exclusion of atom pairs from atom tuple pair features"""
+        env = self.get_environ()
+        mdl = model(env)
+        mdl.build_sequence('GG')
+        aln = alignment(env)
+        aln.append_model(mdl, align_codes='test')
+        mlib = self.get_mdt_library()
+        mlib.tuple_classes.read('data/trpcls.lib')
+        mlib.bond_classes.read('data/bndgrp.lib')
+        mlib.angle_classes.read('data/anggrp.lib')
+        mlib.dihedral_classes.read('data/impgrp.lib')
+        dist = mdt.features.TupleDistance(mlib,
+                                         bins=mdt.uniform_bins(49, 0.0, 0.2))
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+                        exclude_bonds=False)
+        self.assertEqual(m.sample_size, 38)
+        # Exclusions should cut number of sample points
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+                        exclude_bonds=True, exclude_angles=True)
+        self.assertEqual(m.sample_size, 20)
+
     def test_chain_span_range(self):
         """Test chain_span_range argument"""
         env = self.get_environ()

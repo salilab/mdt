@@ -25,6 +25,7 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
     for (j = 0; j < N_MDT_BOND_TYPES; j++) {
       prop[i].bonds[j] = NULL;
     }
+    prop[i].exclusions = NULL;
     prop[i].tuples = NULL;
     prop[i].hb_iatta = NULL;
     prop[i].hbpot = NULL;
@@ -50,6 +51,9 @@ void mdt_properties_free(struct mdt_properties *prop,
         g_free(prop[i].bonds[j]->bonds);
       }
       g_free(prop[i].bonds[j]);
+    }
+    if (prop[i].exclusions) {
+      g_hash_table_destroy(prop[i].exclusions);
     }
     if (prop[i].tuples) {
       for (j = 0; j < struc->cd.natm; j++) {
@@ -429,6 +433,81 @@ const struct mdt_bond *property_one_bond(const struct mod_alignment *aln,
   return &property_bonds(aln, is, prop, mlib, bondtype, libs)->bonds[ibnd1];
 }
 
+static void add_exclusions(GHashTable *h, const struct mod_alignment *aln,
+                           int is, struct mdt_properties *prop,
+                           const struct mdt_library *mlib,
+                           int bondtype, int atind0, int atind1,
+                           const struct mod_libraries *libs)
+{
+  int i;
+  const struct mdt_bond_list *b = property_bonds(aln, is, prop, mlib,
+                                                 bondtype, libs);
+  for (i = 0; i < b->nbonds; ++i) {
+    const struct mdt_bond *bond = &b->bonds[i];
+    g_hash_table_insert(h, MAKE_HASH_KEY(bond->iata[atind0],
+                                         bond->iata[atind1]),
+                        GINT_TO_POINTER(1));
+  }
+}
+
+/* Make sure that the hash key is large enough to store all possible
+   atom indices */
+static gboolean check_exclusion_hash_key_size(const struct mod_structure *s1,
+                                              GError **err)
+{
+#if MDT_SIZEOF_POINTER == 8
+  guint64 max_atoms = G_MAXUINT32;
+#elif MDT_SIZEOF_POINTER == 4
+  guint64 max_atoms = G_MAXUINT64;
+#endif
+  if ((guint64)s1->cd.natm > max_atoms) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "Too many atoms in protein (%d): cannot exclude atom pairs",
+                s1->cd.natm);
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}
+
+/** Get/calculate all excluded atom pairs for a structure.
+    NULL is returned if no pairs are excluded. */
+gboolean property_exclusions(const struct mod_alignment *aln,
+                             int is, struct mdt_properties *prop,
+                             const struct mdt_library *mlib,
+                             gboolean exclude_bonds,
+                             gboolean exclude_angles,
+                             gboolean exclude_dihedrals,
+                             const struct mod_libraries *libs,
+                             GHashTable **exclusions, GError **err)
+{
+  if (exclude_bonds || exclude_angles || exclude_dihedrals) {
+    if (!prop[is].exclusions) {
+      struct mod_structure *struc = mod_alignment_structure_get(aln, is);
+      if (!check_exclusion_hash_key_size(struc, err)) {
+        return FALSE;
+      }
+
+      GHashTable *h = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+                                            NULL, NULL);
+      if (exclude_bonds) {
+        add_exclusions(h, aln, is, prop, mlib, MDT_BOND_TYPE_BOND, 0, 1, libs);
+      }
+      if (exclude_angles) {
+        add_exclusions(h, aln, is, prop, mlib, MDT_BOND_TYPE_ANGLE, 0, 2, libs);
+      }
+      if (exclude_dihedrals) {
+        add_exclusions(h, aln, is, prop, mlib, MDT_BOND_TYPE_DIHEDRAL, 0, 3,
+                       libs);
+      }
+      prop[is].exclusions = h;
+    }
+    *exclusions = prop[is].exclusions;
+  } else {
+    *exclusions = NULL;
+  }
+  return TRUE;
+}
 
 /** Get/calculate the list of all tuples for a structure. */
 const struct mdt_tuple_list *property_tuples(const struct mod_alignment *aln,

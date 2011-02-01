@@ -5,6 +5,8 @@ Import('env', 'get_sharedlib_environment')
 # Get an environment suitable for building a shared library:
 e = get_sharedlib_environment(env, 'MDT_EXPORTS')
 
+e.Append(CPPDEFINES=[('MDT_SIZEOF_POINTER', e['SIZEOF_POINTER'])])
+
 e.Append(CPPPATH=e['MODELLER_CPPPATH'])
 e.Append(LIBPATH=e['MODELLER_LIBPATH'])
 e.Append(LIBS=e['MODELLER_LIBS'])

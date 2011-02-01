@@ -18,6 +18,8 @@ G_BEGIN_DECLS
 struct mdt_properties {
   /** Lists of bonds */
   struct mdt_bond_list *bonds[N_MDT_BOND_TYPES];
+  /** Hash of excluded atom pairs */
+  GHashTable *exclusions;
   /** Lists of atom tuples for each atom */
   struct mdt_tuple_list *tuples;
   /** Bin indices for hydrogen bond atom type */
@@ -61,6 +63,18 @@ const struct mdt_bond *property_one_bond(const struct mod_alignment *aln,
                                          const struct mdt_library *mlib,
                                          int bondtype, int ibnd1,
                                          const struct mod_libraries *libs);
+
+/** Get/calculate all excluded atom pairs for a structure.
+    NULL is returned if no pairs are excluded. */
+MDTDLLLOCAL
+gboolean property_exclusions(const struct mod_alignment *aln,
+                             int is, struct mdt_properties *prop,
+                             const struct mdt_library *mlib,
+                             gboolean exclude_bonds,
+                             gboolean exclude_angles,
+                             gboolean exclude_dihedrals,
+                             const struct mod_libraries *libs,
+                             GHashTable **exclusions, GError **err);
 
 /** Get/calculate the list of all tuples for a structure. */
 MDTDLLLOCAL
@@ -129,6 +143,24 @@ void property_distance_atom_indices(const struct mod_alignment *aln, int is,
                                     struct mdt_properties *prop,
                                     const struct mdt_library *mlib,
                                     const int **dstind1, const int **dstind2);
+
+
+/* Pack two atom indices into a pointer.
+   Note  - no implementation for platforms where pointer is not 32 or 64 bits.
+         - atom indices are first made unsigned, then padded out to the size
+           of the pointer (two casts).
+         - on 32-bit platforms, atom indices bigger than 2^16 cannot be stored;
+           a runtime error is emitted on such a system.
+ */
+#if MDT_SIZEOF_POINTER == 8
+#define MAKE_HASH_KEY(a, b) \
+        (a < b ? (gpointer)((guint64)(guint32)a << 32 | (guint64)(guint32)b) \
+               : (gpointer)((guint64)(guint32)b << 32 | (guint64)(guint32)a))
+#elif MDT_SIZEOF_POINTER == 4
+#define MAKE_HASH_KEY(a, b) \
+        (a < b ? (gpointer)((guint32)(guint16)a << 16 | (guint32)(guint16)b) \
+               : (gpointer)((guint32)(guint16)b << 16 | (guint32)(guint16)a))
+#endif
 
 G_END_DECLS
 

@@ -2,6 +2,7 @@
 import sys
 sys.path.append('../')
 from tools import *
+from tools import sizeof_check
 
 # We need scons 0.98 or later
 EnsureSConsVersion(0, 98)
@@ -13,6 +14,8 @@ env = MyEnvironment(variables=vars, require_modeller=True,
                     tools=["default", "sphinx"],
                     toolpath=["../tools"])
 Help(vars.GenerateHelpText(env))
+
+sizeof_check.configure_check(env)
 
 # Make these objects available to SConscript files:
 Export('env', 'get_pyext_environment', 'get_sharedlib_environment')

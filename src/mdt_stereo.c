@@ -1,7 +1,7 @@
 /** \file mdt_stereo.c     Functions to determine stereochemistry for
  *                         template structures.
  *
- *             Part of MDT, Copyright(c) 1989-2008 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2011 Andrej Sali
  */
 
 #include <glib.h>

@@ -1,6 +1,6 @@
 /** \file bond_length.c  Bond length feature.
  *
- *             Part of MDT, Copyright(c) 1989-2008 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2011 Andrej Sali
  */
 
 #include "modeller.h"

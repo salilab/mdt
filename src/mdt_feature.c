@@ -1,6 +1,6 @@
 /** \file mdt_feature.c    Functions to act on MDT features.
  *
- *             Part of MDT, Copyright(c) 1989-2008 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2011 Andrej Sali
  */
 
 #include <stdlib.h>

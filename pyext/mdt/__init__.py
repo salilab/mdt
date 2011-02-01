@@ -732,6 +732,7 @@ class Table(TableSection):
         Add data from a Modeller alignment to this MDT. Same as add_alignment
         except the errors in data are taken into account.
         The parameter errorscale controls how the error is used:
+
           - `0`: the errors are ignored; this function is the same as
                  add_alignment.
           - `>0` : the errors are taken into account by propogating the errors

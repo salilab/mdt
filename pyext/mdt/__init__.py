@@ -735,10 +735,10 @@ class Table(TableSection):
 
           - `0`: the errors are ignored; this function is the same as
                  add_alignment.
-          - `>0` : the errors are taken into account by propogating the errors
+          - `>0` : the errors are taken into account by propagating the errors
                   in each axis of each atom into the calculated distances
-                  or angles. While the errors in the position of indivisual
-                  atoms are first calculated use B-iso, X-ray resolution,
+                  or angles. The errors in the position of individual
+                  atoms are first calculated using B-iso, X-ray resolution,
                   and R-factor, and then divided by this errorscale value.
         """
         if io is None:

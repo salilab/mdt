@@ -35,7 +35,7 @@ void handle_modeller_hdf5_error(GError **err)
 {
   GError *moderr = mod_error_get();
   if (moderr) {
-    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, moderr->message);
+    g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, "%s", moderr->message);
     g_error_free(moderr);
     mod_error_clear();
   } else {

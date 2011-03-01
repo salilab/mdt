@@ -537,7 +537,7 @@ struct mod_file *mdt_open_file(const char *path, const char *mode, GError **err)
   if (!fh) {
     GError *moderr = mod_error_get();
     if (moderr) {
-      g_set_error(err, MDT_ERROR, MDT_ERROR_IO, moderr->message);
+      g_set_error(err, MDT_ERROR, MDT_ERROR_IO, "%s", moderr->message);
       g_error_free(moderr);
     }
   }
@@ -559,7 +559,7 @@ gboolean mdt_close_file(struct mod_file *fh, GError **err)
   if (ierr) {
     GError *moderr = mod_error_get();
     if (moderr) {
-      g_set_error(err, MDT_ERROR, MDT_ERROR_IO, moderr->message);
+      g_set_error(err, MDT_ERROR, MDT_ERROR_IO, "%s", moderr->message);
       g_error_free(moderr);
     }
     return FALSE;
@@ -572,7 +572,7 @@ gboolean mdt_close_file(struct mod_file *fh, GError **err)
 void handle_modeller_error(GError **err)
 {
   GError *moderr = mod_error_get();
-  g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, moderr->message);
+  g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, "%s", moderr->message);
   g_error_free(moderr);
 }
 

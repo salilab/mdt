@@ -58,7 +58,7 @@ static void my_handler(GScanner *scanner, gchar *message, gboolean error)
   puts(mymsg);
   if (error) {
     g_set_error((GError **)scanner->user_data, MDT_ERROR, MDT_ERROR_FAILED,
-                mymsg);
+                "%s", mymsg);
   }
   g_free(mymsg);
 }

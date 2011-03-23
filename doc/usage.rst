@@ -66,7 +66,7 @@ Generally speaking, to use MDT, you should
  #. Collect statistics into the table using methods such as
     :meth:`Table.add_alignment`.
  #. Post process (e.g. :meth:`smoothing <Table.smooth>`,
-    :meth:`normalizing<Table.normalize`),
+    :meth:`normalizing<Table.normalize>`),
     :meth:`plot the data <Table.write_asgl>`, or
     :meth:`write the table to a file <Table.write_hdf5>`.
 

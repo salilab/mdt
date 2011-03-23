@@ -8,6 +8,7 @@ sphinx = env.Sphinx("html/index.html",
 
 docdir = env['docdir']
 env.SphinxInstall(os.path.join(docdir, 'index.html'), sphinx)
+env.Install(docdir, source='../COPYING')
 env.Alias('docinstall', docdir)
 
 env.SConscript('html/pdf/SConscript')

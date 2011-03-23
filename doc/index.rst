@@ -15,6 +15,7 @@ Contents
    study
    module
    features
+   copying
 
 
 Indices and tables

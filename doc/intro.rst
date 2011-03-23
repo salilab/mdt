@@ -162,7 +162,7 @@ each 0.5 |Angstrom| wide, with the first bin starting at 0 |Angstrom|.
 The first bin is thus 0-0.5 |Angstrom|, the second 0.5-1.0 |Angstrom|, and so
 on, up to bin 60 which is 29.5-30.0 |Angstrom|. The additional 'undefined'
 bin thus counts anything below 0 |Angstrom|, greater than or equal to
-30.0 |Angstrom|, or which could not be calculated for some reason).
+30.0 |Angstrom|, or which could not be calculated for some reason.
 
 .. code-block:: python
 

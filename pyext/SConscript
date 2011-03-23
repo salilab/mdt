@@ -20,7 +20,7 @@ Export('e')
 pyext = SConscript('mdt/SConscript')
 
 # Install the Python extension:
-libinst = e.Install(e['pyextdir'], pyso)
+libinst = e.Install(e['destdir'] + e['pyextdir'], pyso)
 e.Alias('install', libinst)
 
 Return('pyso', 'pyext')

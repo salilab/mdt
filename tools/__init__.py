@@ -379,6 +379,11 @@ def add_common_variables(vars, package):
     """Add common variables to an SCons Variables object."""
     vars.Add(PathVariable('prefix', 'Top-level installation directory', '/usr',
                           PathVariable.PathAccept))
+    # Note that destdir should not affect any compiled-in paths; see
+    # http://www.gnu.org/prep/standards/html_node/DESTDIR.html
+    vars.Add(PathVariable('destdir',
+                          'String to prepend to every installed filename',
+                          '', PathVariable.PathAccept))
     vars.Add(PathVariable('datadir', 'Data file installation directory',
                           '${prefix}/share/%s' % package,
                           PathVariable.PathAccept))

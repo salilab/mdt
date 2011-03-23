@@ -6,7 +6,7 @@ files = ('__init__.py', 'features.py')
 
 pyext = [File(x) for x in files]
 
-pyinst = e.Install(os.path.join(e['pythondir'], 'mdt'), pyext)
+pyinst = e.Install(os.path.join(e['destdir'] + e['pythondir'], 'mdt'), pyext)
 e.Alias('install', pyinst)
 
 Return('pyext')

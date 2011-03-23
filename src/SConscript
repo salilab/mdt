@@ -46,5 +46,5 @@ files = ['mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c', 'erf.c',
 lib = e.SharedLibrary('mdt', files)
 
 # Install the shared library
-libinst = e.Install(e['libdir'], lib)
+libinst = e.Install(e['destdir'] + e['libdir'], lib)
 e.Alias('install', libinst)

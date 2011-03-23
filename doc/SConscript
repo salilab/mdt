@@ -6,7 +6,7 @@ bin = File('#/bin/mdtpy.sh')
 sphinx = env.Sphinx("html/index.html",
                     (bin, Glob('*.rst'), Dir('#/python/mdt/')))
 
-docdir = env['docdir']
+docdir = env['destdir'] + env['docdir']
 env.SphinxInstall(os.path.join(docdir, 'index.html'), sphinx)
 env.Install(docdir, source='../COPYING')
 env.Alias('docinstall', docdir)

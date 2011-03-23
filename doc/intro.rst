@@ -210,8 +210,8 @@ or perform normalization, smoothing, etc.
    other atom or residue is termed 'pos2' in MDT, and can be asked for when
    creating the feature. For example, when building a table of atom-atom
    distances (:class:`features.AtomDistance`) it may be useful to tabulate
-   it against the atom types of both the first atom. This is done by also
-   using two copies of the :class:`~features.AtomType`, the second with
-   *pos2=True*.
+   it against the atom types of both the first and second atom. This is
+   done by also using two copies of the :class:`~features.AtomType`,
+   the second with *pos2=True*.
 
 .. |Angstrom| unicode:: U+212B

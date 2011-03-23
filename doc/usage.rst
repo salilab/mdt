@@ -12,29 +12,33 @@ standard library.
 Running pre-built binaries
 --------------------------
 
-In the Sali lab, MDT is built as part of the nightly build system, and is
-installed with MODELLER in `/diva1/home/modeller`. Thus, you can run an MDT
-script :file:`foo.py` just like any regular Python script with a command
-similar to::
+The easiest way to use MDT is to install the pre-built binary RPM for your
+variety of Linux (this will first require you to install the Modeller RPM).
+Then you should simply be able to run an MDT script :file:`foo.py` just like
+any regular Python script with a command similar to::
 
-   /diva1/home/modeller/modpy.sh python foo.py
+   python foo.py
+
+In the Sali lab, MDT is built as part of the nightly build system, and is
+installed with MODELLER in `/salilab/diva1/home/modeller`. Thus, you can
+run an MDT script :file:`foo.py` just like any regular Python script with
+a command similar to::
+
+   /salilab/diva1/home/modeller/modpy.sh python foo.py
 
 .. _compilation:
 
 Compilation from source code
 ----------------------------
 
-You can get the current MDT code by running the following::
+The MDT source code can be downloaded from the MDT website. In the Sali lab,
+you can get the current MDT code by running the following::
 
-   svn co https://svn.salilab.org/impmod/trunk impmod
+   svn co https://svn.salilab.org/impmod/trunk/mdt mdt
 
-If you already have a copy of MDT, you can update it to the current code
-by running::
+Unpack the source code and change into the :file:`mdt` directory.
 
-   svn update
-
-To compile, create a file called :file:`config.py` in the
-:file:`impmod/mdt` directory, and in it set the
+To compile, create a file called :file:`config.py`, and in it set the
 *modeller* Python variable to the directory where you have
 MODELLER installed. Then run `scons` in the same directory
 (and optionally `scons test`) to build MDT. This will produce a script

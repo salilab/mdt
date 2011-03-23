@@ -36,7 +36,8 @@ you can get the current MDT code by running the following::
 
    svn co https://svn.salilab.org/impmod/trunk/mdt mdt
 
-Unpack the source code and change into the :file:`mdt` directory.
+Unpack the source code and change into the :file:`mdt` directory. Install
+the glib and Modeller packages, which are needed to compile MDT.
 
 To compile, create a file called :file:`config.py`, and in it set the
 *modeller* Python variable to the directory where you have

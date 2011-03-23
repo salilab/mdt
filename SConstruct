@@ -1,6 +1,4 @@
-# Include IMP build utility functions:
-import sys
-sys.path.append('../')
+# Include build utility functions:
 from tools import *
 from tools import sizeof_check
 
@@ -12,7 +10,7 @@ vars = Variables('config.py', ARGUMENTS)
 add_common_variables(vars, 'mdt')
 env = MyEnvironment(variables=vars, require_modeller=True,
                     tools=["default", "sphinx"],
-                    toolpath=["../tools"])
+                    toolpath=["tools"])
 Help(vars.GenerateHelpText(env))
 
 sizeof_check.configure_check(env)

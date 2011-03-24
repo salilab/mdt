@@ -134,6 +134,21 @@ def check_pkgconfig(context, pkgconfig_name, human_name, env_key):
     context.Result("found, headers in %s" % flags['CPPPATH'][0])
     return True
 
+def CheckGlib2(context):
+    # On Windows, assume glib-2.0 library is in the path, since pkg-config
+    # is not usually present
+    if context.env['PLATFORM'] == 'win32':
+        context.env['GLIB'] = {'SHLINKFLAGS':['glib-2.0.lib']}
+        return True
+    elif check_pkgconfig(context, pkgconfig_name='glib-2.0',
+                         human_name='GLib2', env_key='GLIB'):
+        return True
+    else:
+        print "GLib2 is required to install this package."
+        print "Install the glib2-devel (or similar) package,"
+        print "or download the sourcecode from www.gtk.org"
+        Exit(1)
+
 def CheckModeller(context):
     """Find Modeller include and library directories"""
     modeller = context.env['modeller']
@@ -268,11 +283,13 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     if not env.GetOption('clean') and not env.GetOption('help'):
         custom_tests = {'CheckGNUHash': CheckGNUHash,
                         'CheckGCCVisibility': CheckGCCVisibility,
-                        'CheckModeller': CheckModeller}
+                        'CheckModeller': CheckModeller,
+                        'CheckGlib2': CheckGlib2}
         conf = env.Configure(custom_tests = custom_tests)
         if sys == 'Linux':
             conf.CheckGNUHash()
         conf.CheckGCCVisibility()
+        conf.CheckGlib2()
         # Check explicitly for False, since all checks will return Null if
         # configure has been disabled
         if conf.CheckModeller() is False:

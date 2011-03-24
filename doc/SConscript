@@ -2,6 +2,8 @@ import os.path
 
 Import('env')
 
+env.SubstFile("conf.py", "conf.py.in")
+
 bin = File('#/bin/mdtpy.sh')
 sphinx = env.Sphinx("html/index.html",
                     (bin, Glob('*.rst'), Dir('#/python/mdt/')))

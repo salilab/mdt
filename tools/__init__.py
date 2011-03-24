@@ -3,6 +3,7 @@
 import os.path
 import re
 import sys
+import subst
 from SCons.Script import *
 
 __all__ = ["add_common_variables", "MyEnvironment", "get_pyext_environment",
@@ -30,25 +31,6 @@ except ImportError:
                 = os.popen3(cmd, 't', -1)
         def wait(self):
             return 0
-
-def VersionFile(env, filename):
-    return env._VersionFile(filename, env.Value(env['MDT_VERSION']))
-
-def version_file_builder(target, source, env):
-    outfile = open(target[0].path, 'w')
-    version = source[0].get_contents()
-    print >> outfile, """
-#include "mdt.h"
-
-const char *mdt_version_get(void)
-{
-  static char *version = "%s";
-  return version;
-}
-""" % version
-
-def version_file_print(target, source, env):
-    print "Generating", target[0]
 
 class WineEnvironment(Environment):
     """Environment to build Windows binaries under Linux, by running the
@@ -280,10 +262,8 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     except ValueError:
         pass
     env.Prepend(SCANNERS = _SWIGScanner)
-    env.AddMethod(VersionFile)
-    env.Append(BUILDERS={'_VersionFile':
-                         Builder(action=Action(version_file_builder,
-                                               version_file_print))})
+    subst.TOOL_SUBST(env)
+
     if env['CC'] == 'gcc':
         env.Append(CCFLAGS="-Wall -Werror -g -O3")
     _add_release_flags(env)

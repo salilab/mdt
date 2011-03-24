@@ -1,5 +1,5 @@
 Name:          mdt
-Version:       SVN
+Version:       @MDT_VERSION@
 Release:       1
 License:       GPLv2
 Summary:       Protein structure analysis

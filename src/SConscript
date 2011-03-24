@@ -22,7 +22,7 @@ if e['PLATFORM'] == 'win32':
     e.Append(CPPDEFINES=['_HDF5USEDLL_', 'WIN32'])
 
 # Generate version file
-e.VersionFile('mdt_version.c')
+e.SubstFile('mdt_version.c', 'mdt_version.c.in')
 
 # Subdirectories:
 features_files = SConscript('features/SConscript')

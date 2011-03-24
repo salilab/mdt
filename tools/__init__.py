@@ -277,9 +277,10 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     # Make Modeller exetype variable available:
     if os.environ.has_key('EXECUTABLE_TYPESVN'):
         env['ENV']['EXECUTABLE_TYPESVN'] = os.environ['EXECUTABLE_TYPESVN']
-    # Set empty variables in case the Modeller check fails:
+    # Set empty variables in case checks fail or are not run (e.g. clean)
     env['MODELLER_MODPY'] = ''
     env['MODELLER'] = {}
+    env['GLIB'] = {}
     if not env.GetOption('clean') and not env.GetOption('help'):
         custom_tests = {'CheckGNUHash': CheckGNUHash,
                         'CheckGCCVisibility': CheckGCCVisibility,

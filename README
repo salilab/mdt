@@ -1,0 +1,20 @@
+To build MDT, simply type 'scons' in this directory. To run it, use
+'scons install' to install it (you may need to set command line options to
+install files in the correct locations - see 'scons -h') and then run MDT
+scripts just like any other Python script. Alternatively, you can use the
+bin/mdtpy.sh script to run MDT directly from the build directory. Simply
+run it before your regular Python invocation (e.g. "bin/mdtpy.sh python foo.py")
+
+MDT is Copyright 1989-2011 Andrej Sali
+
+   MDT is free software: you can redistribute it and/or modify
+   it under the terms of version 2 of the GNU General Public License
+   as published by the Free Software Foundation.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with MDT.  If not, see <http://www.gnu.org/licenses/>.

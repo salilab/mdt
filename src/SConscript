@@ -7,9 +7,7 @@ e = get_sharedlib_environment(env, 'MDT_EXPORTS')
 
 e.Append(CPPDEFINES=[('MDT_SIZEOF_POINTER', e['SIZEOF_POINTER'])])
 
-e.Append(CPPPATH=e['MODELLER_CPPPATH'])
-e.Append(LIBPATH=e['MODELLER_LIBPATH'])
-e.Append(LIBS=e['MODELLER_LIBS'])
+e.MergeFlags(e['MODELLER'])
 if e['PLATFORM'] == 'win32':
     e.Append(SHLINKFLAGS=' glib-2.0.lib')
 else:

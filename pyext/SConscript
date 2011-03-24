@@ -2,9 +2,10 @@ Import('env', 'get_pyext_environment')
 
 # Get a modified build environment suitable for building Python extensions:
 e = get_pyext_environment(env, 'mdt')
-e.Append(CPPPATH=e['MODELLER_CPPPATH'])
-e.Append(LIBPATH=['../src'] + e['MODELLER_LIBPATH'])
-e.Append(LIBS=e['MODELLER_LIBS'] + ['mdt'])
+e.MergeFlags(e['MODELLER'])
+
+e.Append(LIBPATH=['../src'])
+e.Append(LIBS=['mdt'])
 if e['PLATFORM'] == 'win32':
     e.Append(SHLINKFLAGS=' glib-2.0.lib')
 else:

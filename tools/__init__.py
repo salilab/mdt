@@ -122,10 +122,28 @@ int main(void)
         context.Result("yes")
     return res
 
+def check_pkgconfig(context, pkgconfig_name, human_name, env_key):
+    context.Message('Checking for %s using pkg-config...' % human_name)
+    try:
+        flags = context.env.ParseFlags('!pkg-config --cflags --libs ' \
+                                       + pkgconfig_name)
+    except OSError, detail:
+        context.Result("failed: %s" % str(detail))
+        return False
+    context.env[env_key] = flags
+    context.Result("found, headers in %s" % flags['CPPPATH'][0])
+    return True
+
 def CheckModeller(context):
     """Find Modeller include and library directories"""
-    context.Message('Checking for MODELLER...')
     modeller = context.env['modeller']
+    if (modeller is False or modeller is 0) \
+       and check_pkgconfig(context, pkgconfig_name='modeller',
+                           human_name='MODELLER', env_key='MODELLER'):
+        # Assume that modpy.sh script is not necessary
+        context.env['MODELLER_MODPY'] = ''
+        return True
+    context.Message("Checking for MODELLER using 'modeller' scons option...")
     if modeller is False or modeller is 0:
         context.Result("not found")
         return False
@@ -191,10 +209,8 @@ def CheckModeller(context):
     if not os.path.exists(modpy):
         modpy = ''
     context.env['MODELLER_MODPY'] = modpy
-    context.env['MODELLER_EXETYPE'] = exetype
-    context.env['MODELLER_CPPPATH'] = include
-    context.env['MODELLER_LIBPATH'] = libpath
-    context.env['MODELLER_LIBS'] = libs
+    context.env['MODELLER'] = {'CPPPATH':include, 'LIBPATH':libpath,
+                               'LIBS':libs}
     context.Result(modeller)
     return True
 
@@ -247,10 +263,8 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     if os.environ.has_key('EXECUTABLE_TYPESVN'):
         env['ENV']['EXECUTABLE_TYPESVN'] = os.environ['EXECUTABLE_TYPESVN']
     # Set empty variables in case the Modeller check fails:
-    for mod in ('MODPY', 'EXETYPE'):
-        env['MODELLER_' + mod] = ''
-    for mod in ('CPPPATH', 'LIBPATH', 'LIBS'):
-        env['MODELLER_' + mod] = []
+    env['MODELLER_MODPY'] = ''
+    env['MODELLER'] = {}
     if not env.GetOption('clean') and not env.GetOption('help'):
         custom_tests = {'CheckGNUHash': CheckGNUHash,
                         'CheckGCCVisibility': CheckGCCVisibility,

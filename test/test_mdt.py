@@ -19,6 +19,11 @@ class TableTests(MDTTest):
             ind = 21
         return ind
 
+    def test_version(self):
+        """Check version number"""
+        self.assert_(len(mdt.version) > 0)
+        self.assert_(len(mdt.version_info) > 0)
+
     def test_add(self):
         """Check adding MDTs"""
         mlib = self.get_mdt_library()

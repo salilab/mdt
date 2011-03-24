@@ -40,6 +40,13 @@ MDTError = _mdt.MDTError
 #: File format error
 FileFormatError = _mdt.FileFormatError
 
+# Get version info
+version = _mdt.mdt_version_get()
+try:
+    version_info = tuple([int(x) for x in version.split('.')])
+except ValueError:
+    version_info = version
+
 class _BinType(object):
     def __init__(self, bin_type):
         self._bin_type = bin_type

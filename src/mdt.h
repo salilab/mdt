@@ -159,6 +159,10 @@ void mdt_section_meanstdev(const struct mod_mdt *mdt,
                            int n_indices, double *mean, double *stdev,
                            GError **err);
 
+/** Get the version string (static; do not free). */
+MDTDLLEXPORT
+const char *mdt_version_get(void);
+
 G_END_DECLS
 
 #endif  /* __MDT_MDT_H */

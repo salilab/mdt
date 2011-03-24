@@ -38,6 +38,18 @@ Creation and manipulation of data tables
 .. autoclass:: Source
    :members:
 
+Library information
+-------------------
+
+.. data:: version
+
+   The full MDT version number, as a string, e.g. '5.0' or 'SVN'.
+
+.. data:: version_info
+
+   For release builds, the major and minor version numbers as a tuple of
+   integers - e.g. (5, 0). For SVN builds, this is the same as 'version'.
+
 Utility functions
 -----------------
 

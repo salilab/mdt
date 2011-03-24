@@ -11,6 +11,10 @@ add_common_variables(vars, 'mdt')
 env = MyEnvironment(variables=vars, require_modeller=True,
                     tools=["default", "sphinx"],
                     toolpath=["tools"])
+
+# Version number
+env['MDT_VERSION'] = 'SVN'
+
 Help(vars.GenerateHelpText(env))
 
 sizeof_check.configure_check(env)

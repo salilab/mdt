@@ -39,14 +39,18 @@ you can get the current MDT code by running the following::
 Unpack the source code and change into the :file:`mdt` directory. Install
 the glib and Modeller packages, which are needed to compile MDT.
 
-To compile, create a file called :file:`config.py`, and in it set the
-*modeller* Python variable to the directory where you have
-MODELLER installed. Then run `scons` in the same directory
-(and optionally `scons test`) to build MDT. This will produce a script
-:file:`bin/mdtpy.sh` which can be used to run an MDT Python script
-:file:`foo.py`::
+To compile, run `scons` in the same directory (and optionally `scons test`)
+to build (and test) MDT. This will produce a script :file:`bin/mdtpy.sh`
+which can be used to run an MDT Python script :file:`foo.py`::
 
    bin/mdtpy.sh python foo.py
+
+.. note::
+   If you didn't use the RPM to install Modeller (version 9.9 or later) then you
+   will need to tell MDT where it can find Modeller. To do this, create a file
+   called :file:`config.py`, and in it set the *modeller* Python variable to
+   the directory where you have MODELLER installed (on a Mac, this would look
+   like `modeller="/Library/modeller-XXX"` where `XXX` is the Modeller version).
 
 If you want to install MDT, run `scons install`. You can additionally specify
 a `prefix` option to install in a different directory. For example,

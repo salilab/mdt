@@ -422,6 +422,12 @@ def invalidate_environment(env, fail_builder):
 
 def add_common_variables(vars, package):
     """Add common variables to an SCons Variables object."""
+    libdir = '${prefix}/lib'
+    if hasattr(os, 'uname') and sys.platform == 'linux2' \
+       and os.uname()[-1] == 'x86_64':
+        # Install in /usr/lib64 rather than /usr/lib on x86_64 Linux boxes
+        libdir += '64'
+
     vars.Add(PathVariable('prefix', 'Top-level installation directory', '/usr',
                           PathVariable.PathAccept))
     # Note that destdir should not affect any compiled-in paths; see
@@ -433,11 +439,11 @@ def add_common_variables(vars, package):
                           '${prefix}/share/%s' % package,
                           PathVariable.PathAccept))
     vars.Add(PathVariable('libdir', 'Shared library installation directory',
-                          '${prefix}/lib', PathVariable.PathAccept))
+                          libdir, PathVariable.PathAccept))
     vars.Add(PathVariable('includedir', 'Include file installation directory',
                           '${prefix}/include', PathVariable.PathAccept))
     vars.Add(PathVariable('pythondir', 'Python module installation directory',
-                          '${prefix}/lib/python%d.%d/site-packages' \
+                          '${libdir}/python%d.%d/site-packages' \
                           % sys.version_info[0:2], PathVariable.PathAccept))
     vars.Add(PathVariable('pyextdir',
                           'Python extension module installation directory',

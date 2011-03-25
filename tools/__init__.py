@@ -4,6 +4,7 @@ import os.path
 import re
 import sys
 import subst
+import sizeof_check
 from SCons.Script import *
 
 __all__ = ["add_common_variables", "MyEnvironment", "get_pyext_environment",
@@ -85,23 +86,6 @@ def _add_release_flags(env):
     """Add compiler flags for release builds, if requested"""
     if env.get('release', False):
         env.Append(CPPDEFINES='NDEBUG')
-
-def CheckGNUHash(context):
-    """Disable GNU_HASH-style linking (if found) for backwards compatibility"""
-    context.Message('Checking whether GNU_HASH linking should be disabled...')
-    lastLINKFLAGS = context.env['LINKFLAGS']
-    context.env.Append(LINKFLAGS="-Wl,--hash-style=sysv")
-    text = """
-int main(void)
-{ return 0; }
-"""
-    res = context.TryLink(text, '.c')
-    if not res:
-        context.Result("no")
-        context.env.Replace(LINKFLAGS=lastLINKFLAGS)
-    else:
-        context.Result("yes")
-    return res
 
 def CheckGCCVisibility(context):
     """Check if the compiler supports setting visibility of symbols"""
@@ -285,13 +269,12 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     env['MODELLER'] = {}
     env['GLIB'] = {}
     if not env.GetOption('clean') and not env.GetOption('help'):
-        custom_tests = {'CheckGNUHash': CheckGNUHash,
-                        'CheckGCCVisibility': CheckGCCVisibility,
+        custom_tests = {'CheckGCCVisibility': CheckGCCVisibility,
                         'CheckModeller': CheckModeller,
-                        'CheckGlib2': CheckGlib2}
+                        'CheckGlib2': CheckGlib2,
+                        'CheckSizeof': sizeof_check._check}
         conf = env.Configure(custom_tests = custom_tests)
-        if sys == 'Linux':
-            conf.CheckGNUHash()
+        env['SIZEOF_POINTER'] = conf.CheckSizeof()
         conf.CheckGCCVisibility()
         conf.CheckGlib2()
         # Check explicitly for False, since all checks will return Null if

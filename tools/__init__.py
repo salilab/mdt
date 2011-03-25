@@ -123,6 +123,7 @@ def CheckGlib2(context):
     # On Windows, assume glib-2.0 library is in the path, since pkg-config
     # is not usually present
     if context.env['PLATFORM'] == 'win32':
+        context.Result("Assuming glib2 can be linked by adding glib-2.0.lib")
         context.env['GLIB'] = {'SHLINKFLAGS':['glib-2.0.lib']}
         return True
     elif check_pkgconfig(context, pkgconfig_name='glib-2.0',

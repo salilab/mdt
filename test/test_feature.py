@@ -7,6 +7,22 @@ import os
 
 class FeatureTests(MDTTest):
 
+    def build_mdt_from_model(self, mlib, features, mdl):
+        """Build a simple test MDT for a given model"""
+        env = self.get_environ()
+        m = mdt.Table(mlib, features=features)
+        a = modeller.alignment(env)
+        a.append_model(mdl, atom_files='test', align_codes='test')
+        m.add_alignment(a)
+        return m
+
+    def build_test_model(self):
+        """Build a simple test model"""
+        env = self.get_environ()
+        m = modeller.model(env)
+        m.build_sequence('C')
+        return m
+
     def test_feature_gap_distance(self):
         """Check distance from a gap features"""
         mlib = self.get_mdt_library()
@@ -313,6 +329,26 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[3], 6.0)
         self.assertEqual(m[4], 10.0)
         self.assertEqual(m[5], 31.0)
+        self.assertEqual(m[40], 0.0)
+
+    def test_feature_z_coordinate_undefined(self):
+        """Check atom Z-coordinate feature undefined bin"""
+        mdl = self.build_test_model()
+        mlib = self.get_mdt_library()
+        bins = mdt.uniform_bins(1, -20000, 40000)
+        z = mdt.features.AtomZCoordinate(mlib, bins)
+        m = self.build_mdt_from_model(mlib, z, mdl)
+        self.assertEqual(m.shape, (2,))
+        self.assertEqual(m[0], 7.0)
+        self.assertEqual(m[1], 0.0)
+        # Make one z-coordinate undefined
+        modeller.selection(mdl.atoms[0]).unbuild()
+        m = self.build_mdt_from_model(mlib, z, mdl)
+        self.assertEqual(m.shape, (2,))
+        self.assertEqual(m[0], 6.0)
+        # undefined bin should contain one count even though actual value
+        # should fall within first bin
+        self.assertEqual(m[1], 1.0)
 
     def test_feature_resacc(self):
         """Check residue accessibility features"""

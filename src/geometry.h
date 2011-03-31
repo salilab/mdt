@@ -13,6 +13,9 @@
 
 G_BEGIN_DECLS
 
+/** Return TRUE iff the coordinate value is undefined (-999.0) */
+#define coordinate_undefined(x) (ABS(-999.0 - (x)) < 1e-4)
+
 /** Return the distance between two coordinates */
 MDTDLLLOCAL
 float dist1(float x1, float y1, float z1, float x2, float y2, float z2);

@@ -11,22 +11,10 @@
 #include "mdt_index.h"
 #include "mdt_stereo.h"
 
-/** Test a Modeller coordinate to see if it is 'defined' */
-#define DEFINED(x) ((x) != -999.0)
-
-/** Return True iff the atom index is OK, and the coordinates are
-    defined. */
+/** Return True iff the atom index is OK */
 gboolean atmdefd(int ia1, const struct mod_coordinates *cd)
 {
-  if (ia1 >= 0 && ia1 < cd->natm) {
-    float *x, *y, *z;
-    x = mod_float1_pt(&cd->x);
-    y = mod_float1_pt(&cd->y);
-    z = mod_float1_pt(&cd->z);
-    return DEFINED(x[ia1]) && DEFINED(x[ia1]) && DEFINED(z[ia1]);
-  } else {
-    return FALSE;
-  }
+  return ia1 >= 0 && ia1 < cd->natm;
 }
 
 /** Add a bond/angle/dihedral if all the atoms are OK. */

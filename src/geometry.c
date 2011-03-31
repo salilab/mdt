@@ -68,6 +68,16 @@ static float dihedral1(float x1, float y1, float z1, float x2, float y2,
   double rt[4][3], l1[3], l2[3], l3[3], xt1[3], xt2[3], leng1, leng2, dot1,
       ang, sign, norm, lengprod;
 
+  if (coordinate_undefined(x1) || coordinate_undefined(y1)
+      || coordinate_undefined(z1) || coordinate_undefined(x2)
+      || coordinate_undefined(y2) || coordinate_undefined(z2)
+      || coordinate_undefined(x3) || coordinate_undefined(y3)
+      || coordinate_undefined(z3) || coordinate_undefined(x4)
+      || coordinate_undefined(y4) || coordinate_undefined(z4)) {
+    *outrange = TRUE;
+    return 0.;
+  }
+
   rt[0][0] = x1;
   rt[0][1] = y1;
   rt[0][2] = z1;

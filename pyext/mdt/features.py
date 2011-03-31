@@ -260,35 +260,51 @@ class ResidueAccessibility(Residue):
     _setup = _mdt.mdt_feature_residue_accessibility
 
 class Chi1Dihedral(Residue):
-    """Residue chi1 dihedral angle, from -180 to 180 degrees."""
+    """Residue chi1 dihedral angle, from -180 to 180 degrees.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_chi1_dihedral
 
 class Chi2Dihedral(Residue):
-    """Residue chi2 dihedral angle, from -180 to 180 degrees."""
+    """Residue chi2 dihedral angle, from -180 to 180 degrees.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_chi2_dihedral
 
 class Chi3Dihedral(Residue):
-    """Residue chi3 dihedral angle, from -180 to 180 degrees."""
+    """Residue chi3 dihedral angle, from -180 to 180 degrees.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_chi3_dihedral
 
 class Chi4Dihedral(Residue):
-    """Residue chi4 dihedral angle, from -180 to 180 degrees."""
+    """Residue chi4 dihedral angle, from -180 to 180 degrees.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_chi4_dihedral
 
 class PhiDihedral(Residue):
-    """Residue phi dihedral angle, from -180 to 180 degrees."""
+    """Residue phi dihedral angle, from -180 to 180 degrees.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_phi_dihedral
 
 class PsiDihedral(Residue):
-    """Residue psi dihedral angle, from -180 to 180 degrees."""
+    """Residue psi dihedral angle, from -180 to 180 degrees.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_psi_dihedral
 
 class OmegaDihedral(Residue):
-    """Residue omega dihedral angle, from -180 to 180 degrees."""
+    """Residue omega dihedral angle, from -180 to 180 degrees.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_omega_dihedral
 
 class AlphaDihedral(Residue):
-    """Residue alpha dihedral angle, from -180 to 180 degrees."""
+    """Residue alpha dihedral angle, from -180 to 180 degrees.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_alpha_dihedral
 
 class Chi1Class(ResidueFixedBins):
@@ -379,15 +395,21 @@ class ResidueIndexDifference(ResiduePair):
     _setup = _mdt.mdt_feature_residue_index_difference
 
 class PhiDihedralDifference(AlignedResidue):
-    """Difference in phi dihedral between a pair of aligned residues."""
+    """Difference in phi dihedral between a pair of aligned residues.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_phi_dihedral_difference
 
 class PsiDihedralDifference(AlignedResidue):
-    """Difference in psi dihedral between a pair of aligned residues."""
+    """Difference in psi dihedral between a pair of aligned residues.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_psi_dihedral_difference
 
 class OmegaDihedralDifference(AlignedResidue):
-    """Difference in omega dihedral between a pair of aligned residues."""
+    """Difference in omega dihedral between a pair of aligned residues.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_omega_dihedral_difference
 
 class NeighborhoodDifference(AlignedResidue):
@@ -520,19 +542,25 @@ class TupleAngle2(TuplePair):
 class TupleDihedral1(TuplePair):
     """Dihedral (-180-180) between the second atom in the first tuple, the
        first atom in the first tuple, the first atom in the second tuple, and
-       the second atom in the second tuple."""
+       the second atom in the second tuple.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_dihedral1
 
 class TupleDihedral2(TuplePair):
     """Dihedral (-180-180) between the third atom in the first tuple, the
        second atom in the second tuple, the first atom in the first tuple, and
-       the first atom in the second tuple. Only works for atom triplets."""
+       the first atom in the second tuple. Only works for atom triplets.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_dihedral2
 
 class TupleDihedral3(TuplePair):
     """Dihedral (-180-180) between the first atom in the first tuple, the
        second atom in the first tuple, the second atom in the first tuple, and
-       the third atom in the second tuple. Only works for atom triplets."""
+       the third atom in the second tuple. Only works for atom triplets.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_dihedral3
 
 class BondType(ChemicalBondFixedBins):
@@ -563,5 +591,7 @@ class Angle(ChemicalBond):
     _setup = _mdt.mdt_feature_angle
 
 class Dihedral(ChemicalBond):
-    """Dihedral angle (-180-180). See :attr:`mdt.Library.dihedral_classes`."""
+    """Dihedral angle (-180-180). See :attr:`mdt.Library.dihedral_classes`.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_dihedral

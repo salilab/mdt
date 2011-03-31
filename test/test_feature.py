@@ -492,6 +492,27 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[0], 3.0)
         self.assertEqual(m[1], 2.0)
 
+    def test_feature_dihedral_undefined(self):
+        """Check dihedral feature undefined bin"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.dihedral_classes.read('data/impgrp.lib')
+        dih = mdt.features.Dihedral(mlib,
+                                    bins=mdt.uniform_bins(1, -500, 1000))
+        mdl = self.build_test_model()
+        m = self.build_mdt_from_model(mlib, dih, mdl,
+                                      residue_span_range=(-99999,0,0,99999))
+        self.assertEqual(m.shape, (2,))
+        self.assertEqual(m[0], 1.0)
+        self.assertEqual(m[1], 0.0)
+        # If any coordinate is undefined, the dihedral is
+        modeller.selection(mdl.atoms[0]).unbuild()
+        m = self.build_mdt_from_model(mlib, dih, mdl,
+                                      residue_span_range=(-99999,0,0,99999))
+        self.assertEqual(m.shape, (2,))
+        self.assertEqual(m[0], 0.0)
+        self.assertEqual(m[1], 1.0)
+
     def test_feature_dihedral_type(self):
         """Check dihedral type features"""
         env = self.get_environ()

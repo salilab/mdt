@@ -32,8 +32,9 @@ int numb_hda(int ia, const int hb_iattyp[], const struct mod_coordinates *cd,
     if (i != ia) {
       int iat = hb_iattyp[i] - 1;
       if (iat >= 0 && get_hbprop(atclass, iat, hbprop_type) > 0.) {
-        float d = dist1(x[i], y[i], z[i], x[ia], y[ia], z[ia]);
-        if (d > 2.5 && d < hbond_cutoff) {
+        gboolean outrange;
+        float d = dist1(x[i], y[i], z[i], x[ia], y[ia], z[ia], &outrange);
+        if (!outrange && d > 2.5 && d < hbond_cutoff) {
           num++;
         }
       }

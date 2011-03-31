@@ -357,7 +357,9 @@ class ResidueDistance(ResiduePair):
     """Distance between a pair of residues. This is defined as the distance
        between the 'special' atoms in each residue. The type of this special
        atom can be specified by the distance_atoms argument when creating a
-       :class:`mdt.Library` object."""
+       :class:`mdt.Library` object.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_residue_distance
 
 class AverageResidueAccessibility(ResiduePair):
@@ -405,7 +407,9 @@ class GapDistance(AlignedResidue):
 class ResidueDistanceDifference(AlignedResiduePair):
     """Distance between two residues in the second protein, minus the distance
        between the equivalent residues in the first protein.
-       See :class:`ResidueDistance`."""
+       See :class:`ResidueDistance`.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_residue_distance_difference
 
 class AverageNeighborhoodDifference(AlignedResiduePair):
@@ -425,7 +429,9 @@ class AtomAccessibility(Atom):
     _setup = _mdt.mdt_feature_atom_accessibility
 
 class AtomZCoordinate(Atom):
-    """Atom Z-coordinate. No orientation of the structure is performed."""
+    """Atom Z-coordinate. No orientation of the structure is performed.
+       The feature is considered undefined if the coordinate is equal
+       to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_z_coordinate
 
 class FractionalAtomAccessibility(Atom):
@@ -461,7 +467,9 @@ class HydrogenBondCharge(Atom):
     _setup = _mdt.mdt_feature_hydrogen_bond_charge
 
 class AtomDistance(AtomPair):
-    """Distance in angstroms between a pair of atoms."""
+    """Distance in angstroms between a pair of atoms.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_atom_distance
 
 class HydrogenBondSatisfaction(Protein):
@@ -490,7 +498,9 @@ class TupleType(TupleFixedBins):
     _setup = _mdt.mdt_feature_tuple_type
 
 class TupleDistance(TuplePair):
-    """Distance in angstroms between the first atom in each of two tuples."""
+    """Distance in angstroms between the first atom in each of two tuples
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_distance
 
 class TupleAngle1(TuplePair):

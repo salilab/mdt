@@ -7,13 +7,13 @@ import os
 
 class FeatureTests(MDTTest):
 
-    def build_mdt_from_model(self, mlib, features, mdl):
+    def build_mdt_from_model(self, mlib, features, mdl, **keys):
         """Build a simple test MDT for a given model"""
         env = self.get_environ()
         m = mdt.Table(mlib, features=features)
         a = modeller.alignment(env)
         a.append_model(mdl, atom_files='test', align_codes='test')
-        m.add_alignment(a)
+        m.add_alignment(a, **keys)
         return m
 
     def build_test_model(self):
@@ -450,6 +450,26 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m2[178], 38.0, 0.0005)
         self.assertEqual(m2.shape, (289,))
         self.assertEqual(m2[-1], 0.0)
+
+    def test_feature_distance_undefined(self):
+        """Check atom-atom distance feature undefined bin"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        dist = mdt.features.AtomDistance(mlib,
+                                         bins=mdt.uniform_bins(1, -1000, 2000))
+        mdl = self.build_test_model()
+        m = self.build_mdt_from_model(mlib, dist, mdl,
+                                      residue_span_range=(-99999,0,0,99999))
+        self.assertEqual(m.shape, (2,))
+        self.assertEqual(m[0], 21.0)
+        self.assertEqual(m[1], 0.0)
+        # If any coordinate is undefined, the distance is
+        modeller.selection(mdl.atoms[0]).unbuild()
+        m = self.build_mdt_from_model(mlib, dist, mdl,
+                                      residue_span_range=(-99999,0,0,99999))
+        self.assertEqual(m.shape, (2,))
+        self.assertEqual(m[0], 15.0)
+        self.assertEqual(m[1], 6.0)
 
     def test_feature_dihedral_type(self):
         """Check dihedral type features"""

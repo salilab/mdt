@@ -14,7 +14,7 @@
 /** Get the distance between two alignment positions in the same protein */
 static float get_distance(const struct mod_alignment *aln, int protein,
                           int alnpos1, int alnpos2, struct mdt_properties *prop,
-                          const struct mdt_library *mlib)
+                          const struct mdt_library *mlib, gboolean *outrange)
 {
   const int *dstind1, *dstind2;
   int residue1, residue2, atom1, atom2;
@@ -29,7 +29,8 @@ static float get_distance(const struct mod_alignment *aln, int protein,
   x = mod_float1_pt(&s->cd.x);
   y = mod_float1_pt(&s->cd.y);
   z = mod_float1_pt(&s->cd.z);
-  return dist1(x[atom1], y[atom1], z[atom1], x[atom2], y[atom2], z[atom2]);
+  return dist1(x[atom1], y[atom1], z[atom1], x[atom2], y[atom2], z[atom2],
+               outrange);
 }
 
 static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
@@ -38,8 +39,16 @@ static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {
-  float d1 = get_distance(aln, protein1, alnpos1, alnpos2, prop, mlib);
-  float d2 = get_distance(aln, protein2, alnpos1, alnpos2, prop, mlib);
+  float d1, d2;
+  gboolean outrange;
+  d1 = get_distance(aln, protein1, alnpos1, alnpos2, prop, mlib, &outrange);
+  if (outrange) {
+    return feat->nbins;
+  }
+  d2 = get_distance(aln, protein2, alnpos1, alnpos2, prop, mlib, &outrange);
+  if (outrange) {
+    return feat->nbins;
+  }
   return feat_to_bin(d2 - d1, feat);
 }
 

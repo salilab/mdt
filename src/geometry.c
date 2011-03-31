@@ -9,10 +9,19 @@
 #include "geometry.h"
 #include "mdt_index.h"
 
-/** Return the distance between two coordinates */
-float dist1(float x1, float y1, float z1, float x2, float y2, float z2)
+/** Return the distance between two coordinates.
+    outrange is set to TRUE if the distance cannot be reliably calculated. */
+float dist1(float x1, float y1, float z1, float x2, float y2, float z2,
+            gboolean *outrange)
 {
   float xd, yd, zd;
+  *outrange = FALSE;
+  if (coordinate_undefined(x1) || coordinate_undefined(y1)
+      || coordinate_undefined(z1) || coordinate_undefined(x2)
+      || coordinate_undefined(y2) || coordinate_undefined(z2)) {
+    *outrange = TRUE;
+    return 0.;
+  }
   xd = x1 - x2;
   yd = y1 - y2;
   zd = z1 - z2;
@@ -105,11 +114,16 @@ int idist0(int ia1, int ia1p, const struct mod_structure *struc,
 {
   if (ia1 >= 0 && ia1p >= 0) {
     float d, *x, *y, *z;
+    gboolean outrange;
     x = mod_float1_pt(&struc->cd.x);
     y = mod_float1_pt(&struc->cd.y);
     z = mod_float1_pt(&struc->cd.z);
-    d = dist1(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p]);
-    return feat_to_bin(d, feat);
+    d = dist1(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p], &outrange);
+    if (outrange) {
+      return feat->nbins;
+    } else {
+      return feat_to_bin(d, feat);
+    }
   } else {
     return feat->nbins;
   }

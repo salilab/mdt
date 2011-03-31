@@ -56,5 +56,8 @@ scons destdir=${RPM_BUILD_ROOT} docdir=/usr/share/doc/%{name}-%{version} \
 /usr/share/mdt
 
 %changelog
+* Thu Mar 31 2011 Ben Webb <ben@salilab.org>   5.0-1
+- Update to new release.
+
 * Thu Mar 24 2011 Ben Webb <ben@salilab.org>   SVN-1
 - First RPM build.

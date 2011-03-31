@@ -28,12 +28,22 @@ float dist1(float x1, float y1, float z1, float x2, float y2, float z2,
   return sqrt(xd * xd + yd * yd + zd * zd);
 }
 
-/** Return the angle between three coordinates */
+/** Return the angle between three coordinates.
+    outrange is set to TRUE if the angle cannot be reliably calculated. */
 static float angle1(float x1, float y1, float z1, float x2, float y2, float z2,
-                    float x3, float y3, float z3)
+                    float x3, float y3, float z3, gboolean *outrange)
 {
   static const float tiny = 1.0e-15;
   float d1, d2, v1x, v1y, v1z, v2x, v2y, v2z, scalprod, sizeprod, div;
+  *outrange = FALSE;
+  if (coordinate_undefined(x1) || coordinate_undefined(y1)
+      || coordinate_undefined(z1) || coordinate_undefined(x2)
+      || coordinate_undefined(y2) || coordinate_undefined(z2)
+      || coordinate_undefined(x3) || coordinate_undefined(y3)
+      || coordinate_undefined(z3)) {
+    *outrange = TRUE;
+    return 0.;
+  }
   v1x = x1 - x2;
   v1y = y1 - y2;
   v1z = z1 - z2;
@@ -164,11 +174,12 @@ float angle0witherr(int ia1, int ia2, int ia3,
 {
   float *x, *y, *z, *biso;
   float d,d1x,d1y,d1z,d2x,d2y,d2z,d3x,d3y,d3z,e1,e2,e3;
+  gboolean outrange;
   x = mod_float1_pt(&struc->cd.x);
   y = mod_float1_pt(&struc->cd.y);
   z = mod_float1_pt(&struc->cd.z);
   d = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
-             y[ia3], z[ia3]);
+             y[ia3], z[ia3], &outrange);
   biso = mod_float1_pt(&struc->cd.biso);
   e1=sqrt((biso[ia1])/79)/errorscale;
   e2=sqrt((biso[ia2])/79)/errorscale;
@@ -176,23 +187,23 @@ float angle0witherr(int ia1, int ia2, int ia3,
   /* The diff(andle,x1) is calculated numeriacally by changing the x1
      to x1-0.1*e1(the error on x1) */
   d1x = angle1(x[ia1]-0.1*e1, y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
-               x[ia3], y[ia3], z[ia3]);
+               x[ia3], y[ia3], z[ia3], &outrange);
   d1y = angle1(x[ia1], y[ia1]-0.1*e1, z[ia1], x[ia2], y[ia2], z[ia2],
-               x[ia3], y[ia3], z[ia3]);
+               x[ia3], y[ia3], z[ia3], &outrange);
   d1z = angle1(x[ia1], y[ia1], z[ia1]-0.1*e1, x[ia2], y[ia2], z[ia2],
-               x[ia3], y[ia3], z[ia3]);
+               x[ia3], y[ia3], z[ia3], &outrange);
   d2x = angle1(x[ia1], y[ia1], z[ia1], x[ia2]-0.1*e2, y[ia2], z[ia2],
-               x[ia3], y[ia3], z[ia3]);
+               x[ia3], y[ia3], z[ia3], &outrange);
   d2y = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2]-0.1*e2, z[ia2],
-               x[ia3], y[ia3], z[ia3]);
+               x[ia3], y[ia3], z[ia3], &outrange);
   d2z = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2]-0.1*e2,
-               x[ia3], y[ia3], z[ia3]);
+               x[ia3], y[ia3], z[ia3], &outrange);
   d3x = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
-               x[ia3]-0.1*e3, y[ia3], z[ia3]);
+               x[ia3]-0.1*e3, y[ia3], z[ia3], &outrange);
   d3y = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
-               x[ia3], y[ia3]-0.1*e3, z[ia3]);
+               x[ia3], y[ia3]-0.1*e3, z[ia3], &outrange);
   d3z = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
-               x[ia3], y[ia3], z[ia3]-0.1*e3);
+               x[ia3], y[ia3], z[ia3]-0.1*e3, &outrange);
   /* The error of the angle is calculated using the standard error propogation
      procedure shown below.*/
   *std=10*sqrt((d-d1x)*(d-d1x)+(d-d1y)*(d-d1y)+(d-d1z)*(d-d1z)
@@ -277,12 +288,17 @@ int iangle0(int ia1, int ia2, int ia3, const struct mod_structure *struc,
 {
   if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0) {
     float d, *x, *y, *z;
+    gboolean outrange;
     x = mod_float1_pt(&struc->cd.x);
     y = mod_float1_pt(&struc->cd.y);
     z = mod_float1_pt(&struc->cd.z);
     d = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
-               y[ia3], z[ia3]);
-    return feat_to_bin(d, feat);
+               y[ia3], z[ia3], &outrange);
+    if (outrange) {
+      return feat->nbins;
+    } else {
+      return feat_to_bin(d, feat);
+    }
   } else {
     return feat->nbins;
   }

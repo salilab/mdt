@@ -505,12 +505,16 @@ class TupleDistance(TuplePair):
 
 class TupleAngle1(TuplePair):
     """Angle (0-180) between the first atom in the first tuple, the first atom
-       in the second tuple, and the second atom in the second tuple."""
+       in the second tuple, and the second atom in the second tuple.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_angle1
 
 class TupleAngle2(TuplePair):
     """Angle (0-180) between the second atom in the first tuple, the first atom
-       in the first tuple, and the first atom in the second tuple."""
+       in the first tuple, and the first atom in the second tuple.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_angle2
 
 class TupleDihedral1(TuplePair):
@@ -547,11 +551,15 @@ class DihedralType(ChemicalBondFixedBins):
     _setup = _mdt.mdt_feature_dihedral_type
 
 class BondLength(ChemicalBond):
-    """Length of a bond in angstroms. See :attr:`mdt.Library.bond_classes`."""
+    """Length of a bond in angstroms. See :attr:`mdt.Library.bond_classes`.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_bond_length
 
 class Angle(ChemicalBond):
-    """Angle (0-180). See :attr:`mdt.Library.angle_classes`."""
+    """Angle (0-180). See :attr:`mdt.Library.angle_classes`.
+       The feature is considered undefined if any of the atom coordinates
+       are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_angle
 
 class Dihedral(ChemicalBond):

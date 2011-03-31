@@ -471,6 +471,27 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[0], 15.0)
         self.assertEqual(m[1], 6.0)
 
+    def test_feature_angle_undefined(self):
+        """Check angle feature undefined bin"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.angle_classes.read('data/anggrp.lib')
+        angle = mdt.features.Angle(mlib,
+                                   bins=mdt.uniform_bins(1, -500, 1000))
+        mdl = self.build_test_model()
+        m = self.build_mdt_from_model(mlib, angle, mdl,
+                                      residue_span_range=(-99999,0,0,99999))
+        self.assertEqual(m.shape, (2,))
+        self.assertEqual(m[0], 5.0)
+        self.assertEqual(m[1], 0.0)
+        # If any coordinate is undefined, the angle is
+        modeller.selection(mdl.atoms[0]).unbuild()
+        m = self.build_mdt_from_model(mlib, angle, mdl,
+                                      residue_span_range=(-99999,0,0,99999))
+        self.assertEqual(m.shape, (2,))
+        self.assertEqual(m[0], 3.0)
+        self.assertEqual(m[1], 2.0)
+
     def test_feature_dihedral_type(self):
         """Check dihedral type features"""
         env = self.get_environ()

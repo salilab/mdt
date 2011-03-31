@@ -8,16 +8,8 @@
 #include "mdt_types.h"
 #include "mdt_atom_classes.h"
 #include "mdt_hydrogen_bonds.h"
+#include "geometry.h"
 #include "modeller.h"
-
-static float dist1(float x1, float y1, float z1, float x2, float y2, float z2)
-{
-  float xdiff, ydiff, zdiff;
-  xdiff = x1 - x2;
-  ydiff = y1 - y2;
-  zdiff = z1 - z2;
-  return sqrt(xdiff * xdiff + ydiff * ydiff + zdiff * zdiff);
-}
 
 static float get_hbprop(const struct mdt_atom_class_list *atclass, int iat,
                         int hbprop_type)

@@ -1,0 +1,67 @@
+# 1) All nitrogens are treated only as proton donors. Their acceptor
+# valencies are consistently set to 0.
+# 
+# 2) For His, the charges on ND1 and NE2 could be +1 or 0 (depending
+# on the pH). But I indicated these atoms as having a single + charge to
+# account for an optimistic hydrogen bonding scenario.
+# 
+# 3) In all cases where there is a charge resonance (eg. OD1/OD2 of ASP), I
+# have given both atoms a unit charge.
+#
+# 4) various amides NH seem to be an acceptor too (according to statistics,
+#    partly because they may be mislabeled in structures, ie N, Q sidechains)
+#
+#                                Donor Acceptor 
+#                                  Valencies      Charge
+#
+ATMGRP 'N'                            1       1       0
+  ATOM            '*'       'N'
+ATMGRP  'O'                           0       2       0
+  ATOM            '*'       'O'
+ATMGRP  'SG'                          1       0       0
+  ATOM            'CYS'     'SG'
+ATMGRP  'OD1/2'                       0       2       -0.5
+  ATOM            'ASP'     'OD1'
+  ATOM            'ASP'     'OD2'
+ATMGRP  'OE1/2'                       0       2       -0.5
+  ATOM            'GLU'     'OE1'
+  ATOM            'GLU'     'OE2'
+ATMGRP  'ND1'                         1       0        0
+  ATOM            'HSD'     'ND1'
+ATMGRP  'NE2'                         1       0        0
+  ATOM            'HSD'     'NE2'
+ATMGRP  'NZ'                          3       0       +1
+  ATOM            'LYS'     'NZ'
+ATMGRP  'SD'                          0       0       0
+  ATOM            'MET'     'SD'
+ATMGRP  'OD1'                         0       2       0
+  ATOM            'ASN'     'OD1'
+ATMGRP  'ND2'                         2       1       0
+  ATOM            'ASN'     'ND2'
+ATMGRP  'OE1'                         0       2       0
+  ATOM            'GLN'     'OE1'
+ATMGRP  'NE2'                         2       1       0
+  ATOM            'GLN'     'NE2'
+ATMGRP  'NE'                          1       0       0
+  ATOM            'ARG'     'NE'
+ATMGRP  'NH1/2'                       2       0       +0.5
+  ATOM            'ARG'     'NH1'
+  ATOM            'ARG'     'NH2'
+ATMGRP  'OG'                          1       2       0
+  ATOM            'SER'     'OG'
+ATMGRP  'OG1'                         1       2       0
+  ATOM            'THR'     'OG1'
+ATMGRP  'NE1'                         1       0       0
+  ATOM            'TRP'     'NE1'
+ATMGRP  'OH'                          1       0       0
+  ATOM            'TYR'     'OH'
+ATMGRP  'SG2'                         0       0       0
+  ATOM            'CSS'     'SG'
+ATMGRP  'NH3'                         2       0       +1
+  ATOM            '*'       'NH3'
+ATMGRP  'OT1/2'                       0       2       -0.5
+  ATOM            '*'       'OT1'
+  ATOM            '*'       'OT2'
+ATMGRP  '*:*'                         0       0       0
+  ATOM            '*'       '*'
+  ATOM            '*'       '*'

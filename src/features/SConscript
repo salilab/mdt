@@ -1,0 +1,15 @@
+files = ['xray.c', 'radius_gyration.c', 'residue_accessibility.c',
+         'atom_accessibility.c', 'fractional_atom_accessibility.c',
+         'atom_type.c', 'atom_hydrogen_bonds.c', 'hydrogen_bond_satisfaction.c',
+         'tuple_type.c', 'tuple_distance.c', 'atom_distance.c', 'tuple_angle.c',
+         'tuple_dihedral.c', 'bond_type.c', 'bond_length.c', 'angle.c',
+         'dihedral.c', 'sequence_length.c', 'residue_dihedral.c',
+         'dihedral_class.c', 'residue_type.c', 'residue_distance.c',
+         'average_residue_accessibility.c', 'residue_index_difference.c',
+         'residue_dihedral_difference.c', 'residue_distance_difference.c',
+         'mainchain_conformation.c', 'residue_group.c',
+         'neighborhood_difference.c', 'sequence_identity.c', 'sidechain_biso.c',
+         'alpha_content.c', 'gap_distance.c', 'atom_z_coordinate.c']
+
+files = [File(x) for x in files]
+Return('files')

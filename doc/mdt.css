@@ -1,0 +1,23 @@
+pre.programlisting {
+  font-family: Courier New, Courier, monospace;
+  font-size: small;
+  font-weight: bold;
+  background-color: #ECECEC;
+  border: 1px dashed #666666;
+  color: #000000;
+  padding: 1em;
+}
+
+pre.screen {
+  font-family: Courier New, Courier, monospace;
+  font-size: small;
+  font-weight: bold;
+  background-color: #ECECEC;
+  border: 1px dashed #666666;
+  color: #000000;
+  padding: 1em;
+}
+
+.mathphrase {
+  font-style: italic;
+}

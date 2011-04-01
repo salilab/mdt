@@ -1,0 +1,9 @@
+
+#include "mdt.h"
+
+const char *mdt_version_get(void)
+{
+  static char *version = "@MDT_VERSION@";
+  return version;
+}
+

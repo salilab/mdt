@@ -1,0 +1,16 @@
+MDT 5.0   03-31-2011:
+ - First open source (GPLv2) release.
+ - Duplicated Modeller Fortran code removed; MDT now uses Modeller itself for
+   handling of protein structures and alignments.
+ - Added scans over atom pairs, atom tuples, atom tuple pairs, and chemical
+   bonds.
+ - Complete documentation, examples, and unit tests added.
+ - TOP scripting interface replaced with Python.
+ - Support storing MDT tables in binary form, using the HDF5 format and
+   library.
+
+MDT 4.0  April 2002:
+ - Reorganize directory structure.
+
+MDT 3.1  March 2002:
+ - Allow for a structure to be assessed against an existing MDT table.

@@ -1,0 +1,50 @@
+import sys
+
+Import('env', 'get_sharedlib_environment')
+
+# Get an environment suitable for building a shared library:
+e = get_sharedlib_environment(env, 'MDT_EXPORTS')
+
+e.Append(CPPDEFINES=[('MDT_SIZEOF_POINTER', e['SIZEOF_POINTER'])])
+
+e.MergeFlags(e['MODELLER'])
+e.MergeFlags(e['GLIB'])
+if e['PLATFORM'] != 'win32':
+    e.Append(LIBS=['m'])
+
+# AIX and w32 link complain about undefined symbols unless we explicitly
+# link HDF5:
+if sys.platform == 'aix5':
+    e.Append(LIBS=['hdf5', 'hdf5_hl'])
+if e['PLATFORM'] == 'win32':
+    e.Append(SHLINKFLAGS=['hdf5dll.lib', 'hdf5_hl.lib'])
+    # Necessary to link correctly with HDF5 DLLs:
+    e.Append(CPPDEFINES=['_HDF5USEDLL_', 'WIN32'])
+
+# Generate version file
+e.SubstFile('mdt_version.c', 'mdt_version.c.in')
+
+# Subdirectories:
+features_files = SConscript('features/SConscript')
+
+# Source files
+files = ['mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c', 'erf.c',
+         'num_recipes.c', 'mdt_error.c', 'mdt_index.c', 'mdt_types.c',
+         'mdt_inverse_transform.c', 'mdt_log_transform.c', 'mdt_offset_min.c',
+         'mdt_smooth.c', 'mdt_close.c', 'mdt_entropy_hx.c', 'mdt_write.c',
+         'mdt_write_hdf5.c', 'mdt_entropy_full.c', 'mdt_normalize.c',
+         'mdt_integrate.c', 'mdt_reshape.c', 'mdt_get.c', 'mdt_write_asgl.c',
+         'mdt_section.c', 'mdt_feature.c', 'mdt_super_smooth.c',
+         'mdt_alignment.c', 'mdt_atom_classes.c', 'mdt_hydrogen_bonds.c',
+         'mdt_stereo.c', 'mdt_tuples.c', 'mdt_property.c', 'mdt_make.c',
+         'mdt_copy.c', 'mdt_read.c', 'mdt_read_hdf5.c', 'mdt_hdf5.c',
+         'mdt_set.c', 'mdt_add.c', 'geometry.c', 'luzzatiplot.c',
+         'mdt_version.c'] \
+        + features_files
+
+# Build the shared library
+lib = e.SharedLibrary('mdt', files)
+
+# Install the shared library
+libinst = e.Install(e['destdir'] + e['libdir'], lib)
+e.Alias('install', libinst)

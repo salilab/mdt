@@ -1,0 +1,24 @@
+Import('env', 'get_pyext_environment')
+
+# Get a modified build environment suitable for building Python extensions:
+e = get_pyext_environment(env, 'mdt')
+e.MergeFlags(e['MODELLER'])
+e.MergeFlags(e['GLIB'])
+
+e.Append(LIBPATH=['../src'])
+e.Append(LIBS=['mdt'])
+
+# Build the Python extension from SWIG interface file:
+pyso = e.LoadableModule('_mdt', 'mdt.i',
+                        SWIGFLAGS='-python -noproxy ' + \
+                                  '-nodefaultctor -nodefaultdtor')
+
+# Subdirectories containing pure Python files:
+Export('e')
+pyext = SConscript('mdt/SConscript')
+
+# Install the Python extension:
+libinst = e.Install(e['destdir'] + e['pyextdir'], pyso)
+e.Alias('install', libinst)
+
+Return('pyso', 'pyext')

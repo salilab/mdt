@@ -1,0 +1,20 @@
+Import('env', 'bin')
+
+e = env.Clone()
+
+# Custom builder to run unit tests:
+def builder_unit_test(target, source, env):
+    app = "%s %s %s -v > /dev/null" % (source[1].abspath, e['PYTHON'],
+                                       source[0])
+    if env.Execute(app) == 0:
+        file(str(target[0]), 'w').write('PASSED\n')
+    else:
+        print "unit tests FAILED"
+        return 1
+e.Append(BUILDERS = {'Test': Builder(action=builder_unit_test)})
+
+# Always run our unit test:
+test = e.Test("test.passed", ["run-all-tests.py", bin])
+e.Alias("test", test)
+e.AlwaysBuild("test.passed")
+Return('test')

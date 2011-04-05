@@ -47,8 +47,8 @@ static float local_difference(const struct mod_alignment *aln, int protein1,
 }
 
 static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
-                  int alnpos, struct mdt_properties *prop, void *data,
-                  const struct mod_mdt_libfeature *feat,
+                  int alnpos, struct mdt_properties *prop,
+                  const struct mdt_feature *feat,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {
@@ -58,7 +58,7 @@ static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
 
 static int avgetbin(const struct mod_alignment *aln, int protein1, int protein2,
                     int alnpos1, int alnpos2, struct mdt_properties *prop,
-                    void *data, const struct mod_mdt_libfeature *feat,
+                    const struct mdt_feature *feat,
                     const struct mdt_library *mlib,
                     const struct mod_libraries *libs, GError **err)
 {

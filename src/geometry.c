@@ -8,6 +8,7 @@
 #include "modeller.h"
 #include "geometry.h"
 #include "mdt_index.h"
+#include "mdt_feature.h"
 
 /** Return the distance between two coordinates.
     outrange is set to TRUE if the distance cannot be reliably calculated. */
@@ -130,7 +131,7 @@ static float dihedral1(float x1, float y1, float z1, float x2, float y2,
 /** Return the bin index for the distance between two specified atoms in the
     same protein. */
 int idist0(int ia1, int ia1p, const struct mod_structure *struc,
-           const struct mod_mdt_libfeature *feat)
+           const struct mdt_feature *feat)
 {
   if (ia1 >= 0 && ia1p >= 0) {
     float d, *x, *y, *z;
@@ -140,12 +141,12 @@ int idist0(int ia1, int ia1p, const struct mod_structure *struc,
     z = mod_float1_pt(&struc->cd.z);
     d = dist1(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p], &outrange);
     if (outrange) {
-      return feat->nbins;
+      return mdt_feature_undefined_bin_get(feat);
     } else {
       return feat_to_bin(d, feat);
     }
   } else {
-    return feat->nbins;
+    return mdt_feature_undefined_bin_get(feat);
   }
 }
 
@@ -294,7 +295,7 @@ float dihedral0witherr(int ia1, int ia2, int ia3, int ia4,
 /** Return the bin index for the angle between three specified atoms in the
     same protein. */
 int iangle0(int ia1, int ia2, int ia3, const struct mod_structure *struc,
-            const struct mod_mdt_libfeature *feat)
+            const struct mdt_feature *feat)
 {
   if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0) {
     float d, *x, *y, *z;
@@ -305,12 +306,12 @@ int iangle0(int ia1, int ia2, int ia3, const struct mod_structure *struc,
     d = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
                y[ia3], z[ia3], &outrange);
     if (outrange) {
-      return feat->nbins;
+      return mdt_feature_undefined_bin_get(feat);
     } else {
       return feat_to_bin(d, feat);
     }
   } else {
-    return feat->nbins;
+    return mdt_feature_undefined_bin_get(feat);
   }
 }
 
@@ -318,7 +319,7 @@ int iangle0(int ia1, int ia2, int ia3, const struct mod_structure *struc,
     in the same protein. */
 int idihedral0(int ia1, int ia2, int ia3, int ia4,
                const struct mod_structure *struc,
-               const struct mod_mdt_libfeature *feat)
+               const struct mdt_feature *feat)
 {
   if (ia1 >= 0 && ia2 >= 0 && ia3 >= 0 && ia4 >= 0) {
     gboolean outrange;
@@ -329,11 +330,11 @@ int idihedral0(int ia1, int ia2, int ia3, int ia4,
     d = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
                   y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
     if (outrange) {
-      return feat->nbins;
+      return mdt_feature_undefined_bin_get(feat);
     } else {
       return feat_to_bin(d, feat);
     }
   } else {
-    return feat->nbins;
+    return mdt_feature_undefined_bin_get(feat);
   }
 }

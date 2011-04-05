@@ -10,8 +10,8 @@
 #include "../mdt_property.h"
 
 static int getbin(const struct mod_alignment *aln, int protein, int residue,
-                  struct mdt_properties *prop, void *data,
-                  const struct mod_mdt_libfeature *feat,
+                  struct mdt_properties *prop,
+                  const struct mdt_feature *feat,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {
@@ -19,7 +19,7 @@ static int getbin(const struct mod_alignment *aln, int protein, int residue,
   table = property_sidechain_biso(aln, protein, prop);
   if (table[residue] == 0.) {
     /* Biso of zero counts as undefined */
-    return feat->nbins;
+    return mdt_feature_undefined_bin_get(feat);
   } else {
     return feat_to_bin(table[residue], feat);
   }

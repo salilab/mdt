@@ -33,62 +33,63 @@ struct mdt_properties;
 struct mdt_library;
 struct mdt_tuple;
 struct mdt_bond;
+struct mdt_feature;
 
 typedef void (*mdt_cb_free)(void *data);
 
 typedef int (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
                                       int protein,
-                                      struct mdt_properties *prop, void *data,
-                                      const struct mod_mdt_libfeature *feat,
+                                      struct mdt_properties *prop,
+                                      const struct mdt_feature *feat,
                                       const struct mdt_library *mlib,
                                       const struct mod_libraries *libs,
                                       GError **err);
 
 typedef int (*mdt_cb_feature_protein_pair)
     (const struct mod_alignment *aln, int protein1, int protein2,
-     struct mdt_properties *prop, void *data,
-     const struct mod_mdt_libfeature *feat, const struct mdt_library *mlib,
+     struct mdt_properties *prop,
+     const struct mdt_feature *feat, const struct mdt_library *mlib,
      const struct mod_libraries *libs, GError **err);
 
 typedef int (*mdt_cb_feature_residue)(const struct mod_alignment *aln,
                                       int protein, int residue,
-                                      struct mdt_properties *prop, void *data,
-                                      const struct mod_mdt_libfeature *feat,
+                                      struct mdt_properties *prop,
+                                      const struct mdt_feature *feat,
                                       const struct mdt_library *mlib,
                                       const struct mod_libraries *libs,
                                       GError **err);
 
 typedef int (*mdt_cb_feature_residue_pair)
     (const struct mod_alignment *aln, int protein, int residue1, int residue2,
-     struct mdt_properties *prop, void *data,
-     const struct mod_mdt_libfeature *feat, const struct mdt_library *mlib,
+     struct mdt_properties *prop,
+     const struct mdt_feature *feat, const struct mdt_library *mlib,
      const struct mod_libraries *libs, GError **err);
 
 typedef int (*mdt_cb_feature_aligned_residue)
     (const struct mod_alignment *aln, int protein1, int protein2, int alnpos,
-     struct mdt_properties *prop, void *data,
-     const struct mod_mdt_libfeature *feat, const struct mdt_library *mlib,
+     struct mdt_properties *prop,
+     const struct mdt_feature *feat, const struct mdt_library *mlib,
      const struct mod_libraries *libs, GError **err);
 
 typedef int (*mdt_cb_feature_aligned_residue_pair)
     (const struct mod_alignment *aln, int protein1, int protein2, int alnpos1,
-     int alnpos2, struct mdt_properties *prop, void *data,
-     const struct mod_mdt_libfeature *feat, const struct mdt_library *mlib,
+     int alnpos2, struct mdt_properties *prop,
+     const struct mdt_feature *feat, const struct mdt_library *mlib,
      const struct mod_libraries *libs, GError **err);
 
 
 typedef int (*mdt_cb_feature_atom)(const struct mod_alignment *aln,
                                    int protein, int atom,
-                                   struct mdt_properties *prop, void *data,
-                                   const struct mod_mdt_libfeature *feat,
+                                   struct mdt_properties *prop,
+                                   const struct mdt_feature *feat,
                                    const struct mdt_library *mlib,
                                    const struct mod_libraries *libs,
                                    GError **err);
 
 typedef int (*mdt_cb_feature_atom_pair)(const struct mod_alignment *aln,
                                         int protein, int atom1, int atom2,
-                                        struct mdt_properties *prop, void *data,
-                                        const struct mod_mdt_libfeature *feat,
+                                        struct mdt_properties *prop,
+                                        const struct mdt_feature *feat,
                                         const struct mdt_library *mlib,
                                         const struct mod_libraries *libs,
                                         GError **err);
@@ -96,8 +97,8 @@ typedef int (*mdt_cb_feature_atom_pair)(const struct mod_alignment *aln,
 typedef int (*mdt_cb_feature_tuple)(const struct mod_alignment *aln,
                                     int protein, int atom,
                                     const struct mdt_tuple *tuple,
-                                    struct mdt_properties *prop, void *data,
-                                    const struct mod_mdt_libfeature *feat,
+                                    struct mdt_properties *prop,
+                                    const struct mdt_feature *feat,
                                     const struct mdt_library *mlib,
                                     const struct mod_libraries *libs,
                                     GError **err);
@@ -108,16 +109,15 @@ typedef int (*mdt_cb_feature_tuple_pair)(const struct mod_alignment *aln,
                                          int atom2,
                                          const struct mdt_tuple *tuple2,
                                          struct mdt_properties *prop,
-                                         void *data,
-                                         const struct mod_mdt_libfeature *feat,
+                                         const struct mdt_feature *feat,
                                          const struct mdt_library *mlib,
                                          const struct mod_libraries *libs,
                                          GError **err);
 
 typedef int (*mdt_cb_feature_bond)(const struct mod_alignment *aln,
                                    int protein, const struct mdt_bond *bond,
-                                   struct mdt_properties *prop, void *data,
-                                   const struct mod_mdt_libfeature *feat,
+                                   struct mdt_properties *prop,
+                                   const struct mdt_feature *feat,
                                    const struct mdt_library *mlib,
                                    const struct mod_libraries *libs,
                                    GError **err);
@@ -193,8 +193,11 @@ struct mdt_feature_bond {
   mdt_cb_feature_bond getbin;
 };
 
-/** User-defined feature */
+/** MDT feature */
 struct mdt_feature {
+  /** Base Modeller feature (stores bins, name, Modeller properties such as
+      accessible surface area to precalculate). Only valid during a scan. */
+  struct mod_mdt_libfeature *base;
   mdt_feature_type type;
   union {
     struct mdt_feature_protein protein;
@@ -214,6 +217,9 @@ struct mdt_feature {
   /** TRUE if the feature range is periodic (e.g. for a dihedral) */
   gboolean periodic;
 };
+
+/** Get the index of the undefined bin. */
+#define mdt_feature_undefined_bin_get(feat) ((feat)->base->nbins)
 
 /** Add a protein feature.
     \return the index of the new feature, or -1 on error. */

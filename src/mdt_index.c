@@ -31,19 +31,21 @@ static int index_inrange_err(int index, const struct mod_mdt_libfeature *feat)
 }
 
 /** Convert a raw number to the corresponding feature's MDT bin index */
-int feat_to_bin(float x, const struct mod_mdt_libfeature *feat)
+int feat_to_bin(float x, const struct mdt_feature *feat)
 {
   int i;
-  const struct mod_mdt_bin *bin = feat->bins;
-  for (i = 1; i < feat->nbins; i++, bin++) {
+  const struct mod_mdt_libfeature *base = feat->base;
+  const struct mod_mdt_bin *bin = base->bins;
+  for (i = 1; i < base->nbins; i++, bin++) {
     if (x >= bin->rang1 && x < bin->rang2) {
       return i;
     }
   }
-  bin = &feat->bins[0];
+  bin = &base->bins[0];
   mod_logwarning("feat_to_bin", "Undefined value; X,x1,x2,n,bin: %f %f %f %d",
-                 x, bin->rang1, bin->rang2, feat->nbins);
-  return feat->nbins;
+                 x, bin->rang1, bin->rang2,
+                 mdt_feature_undefined_bin_get(feat));
+  return mdt_feature_undefined_bin_get(feat);
 }
 
 /** Get the index into the MDT for the given alignment feature */
@@ -60,8 +62,9 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   const struct mdt_bond *bond;
   const struct mdt_tuple *tup, *tup2;
   struct mod_mdt_libfeature *feat = &mlib->base.features[ifi - 1];
-  struct mdt_feature *mfeat = &g_array_index(mlib->features,
-                                             struct mdt_feature, ifi - 1);
+  const struct mdt_feature *mfeat = &g_array_index(mlib->features,
+                                                   const struct mdt_feature,
+                                                   ifi - 1);
   switch (mfeat->type) {
   default:
     g_assert_not_reached();
@@ -69,13 +72,12 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case MDT_FEATURE_PROTEIN:
     ibin = mfeat->u.protein.getbin(aln, feat->iknown == MOD_MDTP_A ? is1 :
                                         feat->iknown == MOD_MDTP_B ? is2 : is3,
-                                   prop, mfeat->data, feat, mlib, libs, err);
+                                   prop, mfeat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_PROTEIN_PAIR:
     ibin = mfeat->u.protein_pair.getbin(aln, is1,
                                         feat->iknown == MOD_MDTP_AB ? is2 : is3,
-                                        prop, mfeat->data, feat, mlib, libs,
-                                        err);
+                                        prop, mfeat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_RESIDUE:
     seq1 = mod_alignment_sequence_get(aln, is1);
@@ -116,7 +118,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
       }
     }
     ibin = mfeat->u.residue.getbin(aln, iseq, ires, prop,
-                                   mfeat->data, feat, mlib, libs, err);
+                                   mfeat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_ALIGNED_RESIDUE:
     if (feat->iknown == MOD_MDTP_AB) {
@@ -125,7 +127,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
       iseq = is3;
     }
     ibin = mfeat->u.aligned_residue.getbin(aln, is1, iseq, ip1, prop,
-                                           mfeat->data, feat, mlib, libs, err);
+                                           mfeat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_RESIDUE_PAIR:
     switch(feat->iknown) {
@@ -146,7 +148,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
       break;
     }
     ibin = mfeat->u.residue_pair.getbin(aln, iseq, ires1, ires2, prop,
-                                        mfeat->data, feat, mlib, libs, err);
+                                        mfeat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_ALIGNED_RESIDUE_PAIR:
     if (feat->iknown == MOD_MDTP_AB) {
@@ -155,16 +157,15 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
       iseq = is3;
     }
     ibin = mfeat->u.aligned_residue_pair.getbin(aln, is1, iseq, ip1, ip2, prop,
-                                                mfeat->data, feat, mlib, libs,
-                                                err);
+                                                mfeat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_ATOM:
     ibin = mfeat->u.atom.getbin(aln, is1, mfeat->u.atom.pos2 ? ia1p : ia1,
-                                prop, mfeat->data, feat, mlib, libs, err);
+                                prop, mfeat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_ATOM_PAIR:
-    ibin = mfeat->u.atom_pair.getbin(aln, is1, ia1, ia1p, prop, mfeat->data,
-                                     feat, mlib, libs, err);
+    ibin = mfeat->u.atom_pair.getbin(aln, is1, ia1, ia1p, prop, mfeat,
+                                     mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_TUPLE:
     if (mfeat->u.tuple.pos2) {
@@ -175,20 +176,19 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
       ibnd = ibnd1;
     }
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd, iatom, libs);
-    ibin = mfeat->u.tuple.getbin(aln, is1, iatom, tup, prop, mfeat->data,
-                                 feat, mlib, libs, err);
+    ibin = mfeat->u.tuple.getbin(aln, is1, iatom, tup, prop, mfeat, mlib,
+                                 libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_TUPLE_PAIR:
     tup = property_one_tuple(aln, is1, prop, mlib, ibnd1, ia1, libs);
     tup2 = property_one_tuple(aln, is1, prop, mlib, ibnd1p, ia1p, libs);
     ibin = mfeat->u.tuple_pair.getbin(aln, is1, ia1, tup, ia1p, tup2, prop,
-                                      mfeat->data, feat, mlib, libs, err);
+                                      mfeat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_BOND:
     bond = property_one_bond(aln, is1, prop, mlib, mfeat->u.bond.type,
                              ibnd1, libs);
-    ibin = mfeat->u.bond.getbin(aln, is1, bond, prop, mfeat->data, feat, mlib,
-                                libs, err);
+    ibin = mfeat->u.bond.getbin(aln, is1, bond, prop, mfeat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   }
 }

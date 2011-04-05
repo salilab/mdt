@@ -10,12 +10,12 @@
 #include "../mdt_all_features.h"
 
 static int getbin(const struct mod_alignment *aln, int protein, int residue,
-                  struct mdt_properties *prop, void *data,
-                  const struct mod_mdt_libfeature *feat,
+                  struct mdt_properties *prop,
+                  const struct mdt_feature *feat,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {
-  int residue_grouping = GPOINTER_TO_INT(data);
+  int residue_grouping = GPOINTER_TO_INT(feat->data);
   struct mod_sequence *s = mod_alignment_sequence_get(aln, protein);
   int restyp = mod_int1_get(&s->irestyp, residue);
   return mod_residue_group_from_type(restyp, residue_grouping, libs);

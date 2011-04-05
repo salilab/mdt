@@ -13,8 +13,8 @@
 static int getbin(const struct mod_alignment *aln, int protein,
                   int atom1, const struct mdt_tuple *tuple1,
                   int atom2, const struct mdt_tuple *tuple2,
-                  struct mdt_properties *prop, void *data,
-                  const struct mod_mdt_libfeature *feat,
+                  struct mdt_properties *prop,
+                  const struct mdt_feature *feat,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {

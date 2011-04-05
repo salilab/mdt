@@ -13,12 +13,12 @@ struct feature_data {
 };
 
 static int getbin(const struct mod_alignment *aln, int protein,
-                  struct mdt_properties *prop, void *data,
-                  const struct mod_mdt_libfeature *feat,
+                  struct mdt_properties *prop,
+                  const struct mdt_feature *feat,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {
-  struct feature_data *feat_data = (struct feature_data *)data;
+  struct feature_data *feat_data = (struct feature_data *)feat->data;
   struct mod_sequence *seq = mod_alignment_sequence_get(aln, protein);
   /* artificially change the resolution of the NMR structures
      from the defined -1.00, to decrease the number of

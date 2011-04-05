@@ -35,7 +35,7 @@ void mdt_alignment_close(struct mdt_source *source);
 /** Scan all data points in the source, and return the sum. */
 MDTDLLEXPORT
 double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
-                      const struct mdt_library *mlib,
+                      struct mdt_library *mlib,
                       const int residue_span_range[4],
                       const int chain_span_range[4],
                       gboolean exclude_bonds, gboolean exclude_angles,
@@ -55,7 +55,7 @@ int mdt_alignment_index(struct mdt_source *source, int ifeat, int is1, int ip1,
 
 /** Add data from an alignment to an MDT. Return TRUE on success. */
 MDTDLLEXPORT
-gboolean mdt_add_alignment(struct mdt *mdt, const struct mdt_library *mlib,
+gboolean mdt_add_alignment(struct mdt *mdt, struct mdt_library *mlib,
                            struct mod_alignment *aln, float distngh,
                            gboolean sdchngh, int surftyp, int iacc1typ,
                            const int residue_span_range[4],
@@ -69,7 +69,7 @@ gboolean mdt_add_alignment(struct mdt *mdt, const struct mdt_library *mlib,
 /** Add data from an alignment to an MDT, with error. Return TRUE on success. */
 MDTDLLEXPORT
 gboolean mdt_add_alignment_witherr(struct mdt *mdt,
-                                   const struct mdt_library *mlib,
+                                   struct mdt_library *mlib,
                                    struct mod_alignment *aln, float distngh,
                                    gboolean sdchngh, int surftyp, int iacc1typ,
                                    const int residue_span_range[4],

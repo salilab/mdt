@@ -9,12 +9,12 @@
 #include "../mdt_all_features.h"
 
 static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
-                  int alnpos, struct mdt_properties *prop, void *data,
-                  const struct mod_mdt_libfeature *feat,
+                  int alnpos, struct mdt_properties *prop,
+                  const struct mdt_feature *feat,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {
-  int dihtype = GPOINTER_TO_INT(data);
+  int dihtype = GPOINTER_TO_INT(feat->data);
   struct mod_structure *s1 = mod_alignment_structure_get(aln, protein1);
   struct mod_structure *s2 = mod_alignment_structure_get(aln, protein2);
   int residue1 = mod_int2_get(&aln->ialn, alnpos, protein1) - 1;
@@ -25,7 +25,7 @@ static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
 
   /* If either dihedral is out of range (-999), return undefined */
   if (d1 == -999 || d2 == -999) {
-    return feat->nbins;
+    return mdt_feature_undefined_bin_get(feat);
   }
 
   /* Take difference and ensure it's in the range -180 to 180 */

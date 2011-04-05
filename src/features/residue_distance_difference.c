@@ -35,7 +35,7 @@ static float get_distance(const struct mod_alignment *aln, int protein,
 
 static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
                   int alnpos1, int alnpos2, struct mdt_properties *prop,
-                  void *data, const struct mod_mdt_libfeature *feat,
+                  const struct mdt_feature *feat,
                   const struct mdt_library *mlib,
                   const struct mod_libraries *libs, GError **err)
 {
@@ -43,11 +43,11 @@ static int getbin(const struct mod_alignment *aln, int protein1, int protein2,
   gboolean outrange;
   d1 = get_distance(aln, protein1, alnpos1, alnpos2, prop, mlib, &outrange);
   if (outrange) {
-    return feat->nbins;
+    return mdt_feature_undefined_bin_get(feat);
   }
   d2 = get_distance(aln, protein2, alnpos1, alnpos2, prop, mlib, &outrange);
   if (outrange) {
-    return feat->nbins;
+    return mdt_feature_undefined_bin_get(feat);
   }
   return feat_to_bin(d2 - d1, feat);
 }

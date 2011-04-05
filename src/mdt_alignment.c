@@ -916,12 +916,26 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
   return TRUE;
 }
 
+/** Makes sure that all features in the library are ready for a scan, by
+    doing any necessary precalculation or setup. */
+static void prepare_features_for_scan(struct mdt_library *mlib)
+{
+  int i;
+  for (i = 0; i < mlib->base.nfeat; ++i) {
+    struct mod_mdt_libfeature *feat = &mlib->base.features[i];
+    struct mdt_feature *mfeat = &g_array_index(mlib->features,
+                                               struct mdt_feature, i);
+    /* Make sure that base pointer is valid (it can change if features
+       are added to the library) */
+    mfeat->base = feat;
+  }
+}
 
 /** Scan all alignment positions or all alignment position pairs in the
     current alignment. If whole protein features only occur in the current
     MDT, then no positions are scanned. */
 static gboolean mdt_source_scan(struct mdt *mdt,
-                                const struct mdt_library *mlib,
+                                struct mdt_library *mlib,
                                 struct mdt_source *source, const int rsrang[4],
                                 const int chain_span_range[4],
                                 gboolean exclude_bonds,
@@ -940,6 +954,8 @@ static gboolean mdt_source_scan(struct mdt *mdt,
                 "alignment contains no sequences!");
     return FALSE;
   }
+
+  prepare_features_for_scan(mlib);
 
   update_protein_pairs(mdt, nseqacc, source->sympairs, source->symtriples);
 
@@ -1113,7 +1129,7 @@ void mdt_alignment_close(struct mdt_source *source)
 
 /** Scan all data points in the source, and return the sum. */
 double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
-                      const struct mdt_library *mlib,
+                      struct mdt_library *mlib,
                       const int residue_span_range[4],
                       const int chain_span_range[4],
                       gboolean exclude_bonds, gboolean exclude_angles,
@@ -1147,7 +1163,7 @@ int mdt_alignment_index(struct mdt_source *source, int ifeat, int is1, int ip1,
 
 
 /** Add data from an alignment to an MDT. Return TRUE on success. */
-gboolean mdt_add_alignment(struct mdt *mdt, const struct mdt_library *mlib,
+gboolean mdt_add_alignment(struct mdt *mdt, struct mdt_library *mlib,
                            struct mod_alignment *aln, float distngh,
                            gboolean sdchngh, int surftyp, int iacc1typ,
                            const int residue_span_range[4],
@@ -1185,7 +1201,7 @@ gboolean mdt_add_alignment(struct mdt *mdt, const struct mdt_library *mlib,
 
 /** Add data from an alignment to an MDT, with error. Return TRUE on success. */
 gboolean mdt_add_alignment_witherr(struct mdt *mdt,
-                                   const struct mdt_library *mlib,
+                                   struct mdt_library *mlib,
                                    struct mod_alignment *aln, float distngh,
                                    gboolean sdchngh, int surftyp, int iacc1typ,
                                    const int residue_span_range[4],

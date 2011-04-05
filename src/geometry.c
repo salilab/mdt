@@ -10,10 +10,10 @@
 #include "mdt_index.h"
 #include "mdt_feature.h"
 
-/** Return the distance between two coordinates.
+/** Return the squared distance between two coordinates.
     outrange is set to TRUE if the distance cannot be reliably calculated. */
-float dist1(float x1, float y1, float z1, float x2, float y2, float z2,
-            gboolean *outrange)
+float dist1sq(float x1, float y1, float z1, float x2, float y2, float z2,
+              gboolean *outrange)
 {
   float xd, yd, zd;
   *outrange = FALSE;
@@ -26,7 +26,7 @@ float dist1(float x1, float y1, float z1, float x2, float y2, float z2,
   xd = x1 - x2;
   yd = y1 - y2;
   zd = z1 - z2;
-  return sqrt(xd * xd + yd * yd + zd * zd);
+  return xd * xd + yd * yd + zd * zd;
 }
 
 /** Return the angle between three coordinates.
@@ -139,11 +139,11 @@ int idist0(int ia1, int ia1p, const struct mod_structure *struc,
     x = mod_float1_pt(&struc->cd.x);
     y = mod_float1_pt(&struc->cd.y);
     z = mod_float1_pt(&struc->cd.z);
-    d = dist1(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p], &outrange);
-    if (outrange) {
+    d = dist1sq(x[ia1], y[ia1], z[ia1], x[ia1p], y[ia1p], z[ia1p], &outrange);
+    if (outrange || d > feat->max_range_squared) {
       return mdt_feature_undefined_bin_get(feat);
     } else {
-      return feat_to_bin(d, feat);
+      return feat_to_bin(sqrt(d), feat);
     }
   } else {
     return mdt_feature_undefined_bin_get(feat);

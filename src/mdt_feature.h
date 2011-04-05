@@ -220,6 +220,8 @@ struct mdt_feature {
   gboolean uniform_bins;
   /** If uniform bins, the reciprocal of the bin width */
   float inverse_bin_width;
+  /** The square of the largest value that can be binned during a scan */
+  float max_range_squared;
 };
 
 /** Get the index of the undefined bin. */

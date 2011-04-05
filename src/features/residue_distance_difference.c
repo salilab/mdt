@@ -4,6 +4,7 @@
  *             Part of MDT, Copyright(c) 1989-2011 Andrej Sali
  */
 
+#include <math.h>
 #include "modeller.h"
 #include "../mdt_index.h"
 #include "../mdt_feature.h"
@@ -29,8 +30,8 @@ static float get_distance(const struct mod_alignment *aln, int protein,
   x = mod_float1_pt(&s->cd.x);
   y = mod_float1_pt(&s->cd.y);
   z = mod_float1_pt(&s->cd.z);
-  return dist1(x[atom1], y[atom1], z[atom1], x[atom2], y[atom2], z[atom2],
-               outrange);
+  return sqrt(dist1sq(x[atom1], y[atom1], z[atom1], x[atom2], y[atom2],
+                      z[atom2], outrange));
 }
 
 static int getbin(const struct mod_alignment *aln, int protein1, int protein2,

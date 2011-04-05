@@ -919,6 +919,7 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
 static void prepare_feature_for_scan(struct mdt_feature *feat)
 {
   int i;
+  float max_range;
   const struct mod_mdt_bin *bin = feat->base->bins;
   float bin_width = bin->rang2 - bin->rang1;
 
@@ -937,6 +938,13 @@ static void prepare_feature_for_scan(struct mdt_feature *feat)
   } else {
     feat->uniform_bins = FALSE;
   }
+
+  max_range = 0.0;
+  for (i = 0, bin = feat->base->bins; i < feat->base->nbins; ++i, ++bin) {
+    max_range = MAX(max_range, bin->rang2);
+  }
+  /* Add a little extra to be on the safe side */
+  feat->max_range_squared = max_range * max_range * 1.05;
 }
 
 /** Makes sure that all features in the library are ready for a scan, by

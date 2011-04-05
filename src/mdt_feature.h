@@ -216,6 +216,10 @@ struct mdt_feature {
   mdt_cb_free freefunc;
   /** TRUE if the feature range is periodic (e.g. for a dihedral) */
   gboolean periodic;
+  /** TRUE during scans if the bins are of uniform width */
+  gboolean uniform_bins;
+  /** If uniform bins, the reciprocal of the bin width */
+  float inverse_bin_width;
 };
 
 /** Get the index of the undefined bin. */

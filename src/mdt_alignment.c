@@ -916,6 +916,29 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
   return TRUE;
 }
 
+static void prepare_feature_for_scan(struct mdt_feature *feat)
+{
+  int i;
+  const struct mod_mdt_bin *bin = feat->base->bins;
+  float bin_width = bin->rang2 - bin->rang1;
+
+  if (bin_width != 0.0) {
+    /* If bin widths vary by less than 1%, treat as uniform */
+    feat->uniform_bins = TRUE;
+    for (i = 0; feat->uniform_bins && i < feat->base->nbins; ++i, ++bin) {
+      float pct_diff = (bin_width - (bin->rang2 - bin->rang1)) / bin_width;
+      if (ABS(pct_diff) > 0.01) {
+        feat->uniform_bins = FALSE;
+      }
+    }
+    if (feat->uniform_bins) {
+      feat->inverse_bin_width = 1.0 / bin_width;
+    }
+  } else {
+    feat->uniform_bins = FALSE;
+  }
+}
+
 /** Makes sure that all features in the library are ready for a scan, by
     doing any necessary precalculation or setup. */
 static void prepare_features_for_scan(struct mdt_library *mlib)
@@ -928,6 +951,7 @@ static void prepare_features_for_scan(struct mdt_library *mlib)
     /* Make sure that base pointer is valid (it can change if features
        are added to the library) */
     mfeat->base = feat;
+    prepare_feature_for_scan(mfeat);
   }
 }
 

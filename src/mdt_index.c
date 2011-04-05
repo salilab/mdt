@@ -33,15 +33,22 @@ static int index_inrange_err(int index, const struct mod_mdt_libfeature *feat)
 /** Convert a raw number to the corresponding feature's MDT bin index */
 int feat_to_bin(float x, const struct mdt_feature *feat)
 {
-  int i;
   const struct mod_mdt_libfeature *base = feat->base;
   const struct mod_mdt_bin *bin = base->bins;
-  for (i = 1; i < base->nbins; i++, bin++) {
-    if (x >= bin->rang1 && x < bin->rang2) {
-      return i;
+  if (feat->uniform_bins) {
+    int index = (int)((x - bin[0].rang1) * feat->inverse_bin_width);
+    if (index >= 0 && index < base->nbins - 1) {
+      return index + 1;
     }
+  } else {
+    int i;
+    for (i = 1; i < base->nbins; i++, bin++) {
+      if (x >= bin->rang1 && x < bin->rang2) {
+        return i;
+      }
+    }
+    bin = &base->bins[0];
   }
-  bin = &base->bins[0];
   mod_logwarning("feat_to_bin", "Undefined value; X,x1,x2,n,bin: %f %f %f %d",
                  x, bin->rang1, bin->rang2,
                  mdt_feature_undefined_bin_get(feat));

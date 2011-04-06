@@ -551,6 +551,19 @@ class TableTests(MDTTest):
         while self.roll_inds(inds, m3.shape, m3.offset):
             self.assertAlmostEqual(m[inds], m3[inds], places=3)
 
+    def test_reshape_distancemdt(self):
+        """Check that reshaping distance mdt produces the table correctly"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        dist = mdt.features.AtomDistance(mlib,
+                                         bins=mdt.uniform_bins(30, 0, 0.5))
+        aln = alignment(env, file='test/data/alignment.ali', align_codes='5fd1')
+        m1 = mdt.Table(mlib, features=dist)
+        m1.reshape(dist,[0],[-1])
+        m1.add_alignment(aln, residue_span_range=(-999, -1, 1, 999))
+        self.assertEqual(m1[29],10014.0)
+        self.assertEqual(m1[28],9758.0)
+
     def test_sum(self):
         """Check that sum of each row sums to that of the whole table"""
         mlib = self.get_mdt_library()
@@ -659,6 +672,23 @@ class TableTests(MDTTest):
             self.assertMDTsEqual(m1, m2)
             m3 = m1.copy(bin_type=bin_type)
             self.assertMDTsEqual(m1, m3)
+
+    def test_mdt_witherr(self):
+        """Test the calculation of mdt with error"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.tuple_classes.read('data/dblcls.lib')
+        dbldist = mdt.features.TupleDistance(mlib,
+                                             bins=mdt.uniform_bins(30, 0, 0.5))
+        aln = alignment(env, file='test/data/tiny.ali',
+                        align_codes='5fd1')
+        m1 = mdt.Table(mlib, features=dbldist)
+        m1.add_alignment_witherr(aln, residue_span_range=(-999, -1, 1, 999),
+                                 errorscale=0.1)
+        self.assertInTolerance(m1.sum(), 1456.64, 0.01)
+        self.assertInTolerance(m1[29], 28.77, 0.5)
+        self.assertInTolerance(m1[25], 42.49, 0.5)
+        self.assertInTolerance(m1[0], 6.05, 1.0)
 
 if __name__ == '__main__':
     unittest.main()

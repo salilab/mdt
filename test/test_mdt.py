@@ -562,7 +562,7 @@ class TableTests(MDTTest):
         m1.reshape(dist,[0],[-1])
         m1.add_alignment(aln, residue_span_range=(-999, -1, 1, 999))
         self.assertEqual(m1[29],10014.0)
-        self.assertEqual(m1[28],9758.0)
+        self.assertInTolerance(m1[28], 9758.5, 0.6)
 
     def test_sum(self):
         """Check that sum of each row sums to that of the whole table"""

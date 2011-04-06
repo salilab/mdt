@@ -685,10 +685,10 @@ class TableTests(MDTTest):
         m1 = mdt.Table(mlib, features=dbldist)
         m1.add_alignment_witherr(aln, residue_span_range=(-999, -1, 1, 999),
                                  errorscale=0.1)
-        self.assertInTolerance(m1.sum(), 1456.64, 0.01)
-        self.assertInTolerance(m1[29], 28.77, 0.5)
-        self.assertInTolerance(m1[25], 42.49, 0.5)
-        self.assertInTolerance(m1[0], 6.05, 1.0)
+        self.assertInTolerance(m1.sum(), 1475.91, 0.01)
+        self.assertInTolerance(m1[29], 22.00, 0.5)
+        self.assertInTolerance(m1[25], 38.00, 0.5)
+        self.assertInTolerance(m1[0], 0.00, 1.0)
 
 if __name__ == '__main__':
     unittest.main()

@@ -28,6 +28,29 @@ struct mdt_source {
   gboolean sympairs, symtriples;
 };
 
+/**the correlation coefficient for add_alignment_witherr */
+const static float ccs[150] = {0.000000, 0.000098, 0.000121, 0.000097, 0.000051,
+0.000012, 0.000006, 0.000060, 0.000202, 0.000457, 0.000854, 0.001389, 0.001948,
+0.002385, 0.002554, 0.002310, 0.001623, 0.000915, 0.000722, 0.001581, 0.004030,
+0.007643, 0.010569, 0.012783, 0.014390, 0.015494, 0.016199, 0.016607, 0.016824,
+0.016953, 0.017098, 0.017364, 0.017918, 0.018982, 0.020781, 0.023542, 0.027490,
+0.032850, 0.039849, 0.048713, 0.059666, 0.072919, 0.088347, 0.105484, 0.123852,
+0.142970, 0.162361, 0.181544, 0.200040, 0.217371, 0.233057, 0.246634, 0.258004,
+0.267431, 0.275196, 0.281580, 0.286863, 0.291327, 0.295252, 0.298918, 0.302607,
+0.306592, 0.310982, 0.315717, 0.320735, 0.325970, 0.331357, 0.336832, 0.342330,
+0.347787, 0.353137, 0.358318, 0.363305, 0.368115, 0.372765, 0.377272, 0.381653,
+0.385926, 0.390108, 0.394216, 0.398267, 0.402279, 0.406256, 0.410196, 0.414092,
+0.417940, 0.421734, 0.425470, 0.429142, 0.432745, 0.436275, 0.439726, 0.443097,
+0.446391, 0.449611, 0.452759, 0.455839, 0.458853, 0.461804, 0.464695, 0.467528,
+0.470308, 0.473034, 0.475707, 0.478328, 0.480896, 0.483412, 0.485876, 0.488288,
+0.490648, 0.492956, 0.495213, 0.497419, 0.499577, 0.501689, 0.503756, 0.505781,
+0.507765, 0.509711, 0.511621, 0.513496, 0.515339, 0.517148, 0.518921, 0.520655,
+0.522346, 0.523991, 0.525587, 0.527130, 0.528618, 0.530047, 0.531413, 0.532717,
+0.533962, 0.535150, 0.536285, 0.537368, 0.538404, 0.539394, 0.540342, 0.541250,
+0.542122, 0.542960, 0.543767, 0.544547, 0.545301, 0.546033, 0.546745, 0.547441,
+0.548123};
+
+
 /** For update MDT with error only. Identify the bins needed to be updated,
     and calculate the bincounts for each bin. */
 static void gaussian_weight_calc(struct mod_mdt_libfeature *libfeat,
@@ -35,7 +58,7 @@ static void gaussian_weight_calc(struct mod_mdt_libfeature *libfeat,
                                  int **cpos, float std, float **bincounts,
                                  int **pos, float m1, int *numofbins, int i)
 {
-  const static float sqrt2 = 1.41421356;
+  float scv = 1.41421356*std;
   int j, quitloop=0;
   float lb=0, hb=0,hc,lc;
 
@@ -57,19 +80,21 @@ static void gaussian_weight_calc(struct mod_mdt_libfeature *libfeat,
     }
     if (*(*(cpos+i)+j-1) >0)  {
       *(*(bincounts+i)+*(*(cpos+i)+j-1)) +=
-                    0.5*erf((hb-m1)/(sqrt2*std))
-                    -0.5*erf((lb-m1)/(sqrt2*std));
+                    0.5*(erf((hb-m1)/scv)
+                    -erf((lb-m1)/scv));
     } else {
       *(*(cpos+i)+j-1)=numofbins[i];
       *(*(pos+i)+numofbins[i])=j;
       *(*(bincounts+i)+numofbins[i]) =
-                     0.5*erf((hb-m1)/(sqrt2*std))
-                    -0.5*erf((lb-m1)/(sqrt2*std));
+                     0.5*(erf((hb-m1)/scv)
+                    -erf((lb-m1)/scv));
       numofbins[i]=numofbins[i]+1;
     }
     if (quitloop>0) break;
   }
 }
+
+
 
 /** Function to update mdt by taking errors into consideration */
 static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
@@ -84,9 +109,9 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
                                    float errorscale)
 {
   int i,j,*witherr,*periodic,*numofbins, **pos, **cpos,ifi;
-  float *mean,*std,**bincounts;
+  float *mean,*std,**bincounts, d, *x, *y, *z;
   GError *tmperr = NULL;
-  int numofstd=5;
+  int numofstd=4;
   float m1=0;
   double binval;
   int totalbinnum=1;
@@ -95,6 +120,19 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
   const struct mdt_tuple *tuple1, *tuple2;
   struct mod_structure *s = mod_alignment_structure_get(source->aln, 0);
   int *indf = g_malloc(sizeof(int) * mdt->base.nfeat);
+  const struct mod_mdt_feature *feat;
+  struct mod_mdt_libfeature *libfeat;
+  const struct mod_mdt_bin *bin;
+  struct mdt_feature *mfeat;
+  x = mod_float1_pt(&s->cd.x);
+  y = mod_float1_pt(&s->cd.y);
+  z = mod_float1_pt(&s->cd.z);
+  d = sqrt((x[ia1]-x[ia1p]) * (x[ia1]-x[ia1p]) + (y[ia1]-y[ia1p]) *
+          (y[ia1]-y[ia1p]) + (z[ia1]-z[ia1p]) * (z[ia1]-z[ia1p]));
+  if (d<15)
+    errorscale=errorscale*ccs[((int)(floor(d*10)))];
+  else
+    errorscale=errorscale*ccs[149];
 
   *outrange = FALSE;
   witherr = g_malloc0(sizeof(int) * mdt->base.nfeat);
@@ -110,13 +148,10 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
 
   /** Calculate the mean and error for each feature */
   for (i = 0; i < mdt->base.nfeat && !tmperr && *outrange == FALSE; i++) {
-    const struct mod_mdt_feature *feat;
-    struct mod_mdt_libfeature *libfeat;
-    struct mdt_feature *mfeat;
-
     feat = &mdt->base.features[i];
     ifi = feat->ifeat;
     libfeat = &mlib->base.features[ifi - 1];
+    bin = libfeat->bins;
     mfeat = &g_array_index(mlib->features, struct mdt_feature, ifi - 1);
 
     switch (mfeat->type) {
@@ -124,26 +159,39 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
       mean[i] = dist0witherr(ia1, ia1p, s, &std[i], errorscale);
       witherr[i]=1;
       periodic[i]=0;
-      break;
+      if (std[i]>mean[i]/numofstd)
+        std[i]=mean[i]/numofstd;
+      if (std[i]>1)
+        std[i]=1;
+      if (std[i]>0)
+        break;
     case MDT_FEATURE_TUPLE_PAIR:
       switch (libfeat->name[28]) {
       case 'n':
         mean[i] = dist0witherr(ia1, ia1p, s, &std[i], errorscale);
         periodic[i]=0;
+        if (std[i]>mean[i]/numofstd)
+          std[i]=mean[i]/numofstd;
+        if (std[i]>1)
+          std[i]=1;
         break;
       case '1':
         tuple2 = property_one_tuple(source->aln, is1, source->prop, mlib,
                                     ibnd1p, ia1p, libs);
         mean[i] = angle0witherr(ia1, ia1p, tuple2->iata[0], s, &std[i],
-                                errorscale);
+                                errorscale/2);
         periodic[i]=180;
+        if (std[i]>180/numofstd)
+          std[i]=180/numofstd;
         break;
       case '2':
         tuple1 = property_one_tuple(source->aln, is1, source->prop, mlib,
                                     ibnd1, ia1, libs);
         mean[i] = angle0witherr(tuple1->iata[0], ia1, ia1p, s, &std[i],
-                                errorscale);
+                                errorscale/2);
         periodic[i]=180;
+        if (std[i]>180/numofstd)
+          std[i]=180/numofstd;
         break;
       case 'r':
         tuple1 = property_one_tuple(source->aln, is1, source->prop, mlib,
@@ -151,12 +199,15 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
         tuple2 = property_one_tuple(source->aln, is1, source->prop, mlib,
                                     ibnd1p, ia1p, libs);
         mean[i] = dihedral0witherr(tuple1->iata[0], ia1, ia1p, tuple2->iata[0],
-                                   s, &std[i], errorscale);
+                                   s, &std[i], errorscale/2);
         periodic[i]=360;
+        if (std[i]>360/numofstd)
+          std[i]=360/numofstd;
         break;
       }
       witherr[i]=1;
-      break;
+      if (std[i]>0)
+        break;
     default:
       numofbins[i]=1;
       *(cpos+i)=g_malloc0(sizeof(int));
@@ -176,9 +227,6 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
   /* Based on the mean and standard deviation calculated, the bins need to
      be updated and the corresponding bin counts are calculated */
   for (i = 0; i < mdt->base.nfeat && !tmperr && *outrange == FALSE; i++) {
-    const struct mod_mdt_feature *feat;
-    struct mod_mdt_libfeature *libfeat;
-    const struct mod_mdt_bin *bin;
     if (witherr[i]==0) continue;
 
     feat = &mdt->base.features[i];
@@ -1248,8 +1296,6 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
                                    float errorscale)
 {
   struct mdt_source *source;
-  float *biso, bisomax=0, bisomaxerror;
-  int i, ind;
 
   mod_lognote("Calculating and checking other data: %d", aln->nseq);
 
@@ -1261,17 +1307,13 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
     /* The errorscale, used to scale errors, is calculated by assuming the
        atom with the largest Biso has the error defined by R-factor,
        X-ray resolution and the Luzzati plot. */
-    struct mod_sequence *seq = mod_alignment_sequence_get(source->aln, 0);
-    struct mod_structure *struc = mod_alignment_structure_get(source->aln, 0);
-    biso = mod_float1_pt(&struc->cd.biso);
-    for(i=0; i< struc->cd.natm; i++){
-      if (biso[i]>bisomax) {
-        bisomax=biso[i];
-      }
+    if (errorscale>0) {
+      struct mod_sequence *seq = mod_alignment_sequence_get(source->aln, 0);
+      errorscale=errorscale*(seq->rfactr)/1000;
     }
-    bisomaxerror=sqrt(bisomax/79);
-    ind=(int)floor((seq->rfactr)*1000+0.5);
-    errorscale=errorscale*bisomaxerror/(luzzatiplot(ind)*(seq->resol));
+    else {
+      errorscale=0;
+    }
 
     mdt->nalns++;
     mdt->n_proteins += source->nseqacc;

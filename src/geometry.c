@@ -166,14 +166,14 @@ float dist0witherr(int ia1, int ia1p, const struct mod_structure *struc,
      The scale, defined by errorscale, is calculated by assuming the atom with
      the largest Biso has the error defined by R-factor, X-ray resolution and
      the luzzati plot. */
-  e1=(biso[ia1])/79;
-  e1p=(biso[ia1p])/79;
+  e1=biso[ia1]*biso[ia1];
+  e1p=biso[ia1p]*biso[ia1p];
   xd = x[ia1]-x[ia1p];
   yd = y[ia1] - y[ia1p];
   zd = z[ia1]- z[ia1p];
   /* The error for the distance is calculated using the standard error
      propogation procedure shown below.*/
-  *std=sqrt(e1+e1p)/errorscale;
+  *std=sqrt(e1+e1p)*errorscale;
   return sqrt(xd * xd + yd * yd + zd * zd);
 }
 
@@ -192,9 +192,9 @@ float angle0witherr(int ia1, int ia2, int ia3,
   d = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2], x[ia3],
              y[ia3], z[ia3], &outrange);
   biso = mod_float1_pt(&struc->cd.biso);
-  e1=sqrt((biso[ia1])/79)/errorscale;
-  e2=sqrt((biso[ia2])/79)/errorscale;
-  e3=sqrt((biso[ia3])/79)/errorscale;
+  e1=biso[ia1]*errorscale;
+  e2=biso[ia2]*errorscale;
+  e3=biso[ia3]*errorscale;
   /* The diff(andle,x1) is calculated numeriacally by changing the x1
      to x1-0.1*e1(the error on x1) */
   d1x = angle1(x[ia1]-0.1*e1, y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
@@ -239,10 +239,10 @@ float dihedral0witherr(int ia1, int ia2, int ia3, int ia4,
                 y[ia3], z[ia3], x[ia4], y[ia4], z[ia4], &outrange);
 
   biso = mod_float1_pt(&struc->cd.biso);
-  e1=sqrt((biso[ia1])/79)/errorscale;
-  e2=sqrt((biso[ia2])/79)/errorscale;
-  e3=sqrt((biso[ia3])/79)/errorscale;
-  e4=sqrt((biso[ia4])/79)/errorscale;
+  e1=biso[ia1]*errorscale;
+  e2=biso[ia2]*errorscale;
+  e3=biso[ia3]*errorscale;
+  e4=biso[ia4]*errorscale;
   /* The diff(andle,x1) is calculated numeriacally by changing the
      x1 to x1-0.1*e1(the error on x1) */
 

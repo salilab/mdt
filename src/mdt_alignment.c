@@ -28,7 +28,9 @@ struct mdt_source {
   gboolean sympairs, symtriples;
 };
 
-/**the correlation coefficient for add_alignment_witherr */
+/** Correlation coefficients between positions of atoms at different
+    distances, extracted from simple MD simulations,
+    for add_alignment_witherr */
 const static float ccs[150] = {0.000000, 0.000098, 0.000121, 0.000097, 0.000051,
 0.000012, 0.000006, 0.000060, 0.000202, 0.000457, 0.000854, 0.001389, 0.001948,
 0.002385, 0.002554, 0.002310, 0.001623, 0.000915, 0.000722, 0.001581, 0.004030,
@@ -58,6 +60,7 @@ static void gaussian_weight_calc(struct mod_mdt_libfeature *libfeat,
                                  int **cpos, float std, float **bincounts,
                                  int **pos, float m1, int *numofbins, int i)
 {
+  /* sqrt(2) */
   float scv = 1.41421356*std;
   int j, quitloop=0;
   float lb=0, hb=0,hc,lc;

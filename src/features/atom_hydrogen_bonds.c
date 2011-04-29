@@ -4,6 +4,7 @@
  */
 
 #include "modeller.h"
+#include "../geometry.h"
 #include "../mdt_index.h"
 #include "../mdt_feature.h"
 #include "../mdt_all_features.h"
@@ -18,9 +19,12 @@ static int getbin(const struct mod_alignment *aln, int protein, int atom,
 {
   int hbprop_type = GPOINTER_TO_INT(feat->data);
   const int *binprop;
-  binprop = property_hb_iatta(aln, protein, prop, mlib, libs, err);
-  if (binprop) {
-    struct mod_structure *s = mod_alignment_structure_get(aln, protein);
+  struct mod_structure *s = mod_alignment_structure_get(aln, protein);
+  float f = mod_float1_get(&s->cd.x, atom);
+  if (coordinate_undefined(f)) {
+    return mdt_feature_undefined_bin_get(feat);
+  } else if ((binprop = property_hb_iatta(aln, protein, prop, mlib,
+                                          libs, err))) {
     return feat_to_bin(numb_hda(atom, binprop, &s->cd, mlib->hbond,
                                 mlib->hbond_cutoff, hbprop_type), feat);
   } else {

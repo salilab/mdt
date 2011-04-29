@@ -447,8 +447,9 @@ class AverageGapDistance(AlignedResiduePair):
 class AtomAccessibility(Atom):
     """Atom solvent accessibility. This is calculated by the PSA algorithm,
        and controlled by the surftyp and accessibility_type arguments to
-       :meth:`mdt.Table.add_alignment`. Atoms with 'undefined' coordinates
-       (-999.0) have zero accessibility."""
+       :meth:`mdt.Table.add_alignment`.
+       The feature is considered undefined if the atom's Cartesian
+       coordinates are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_atom_accessibility
 
 class AtomZCoordinate(Atom):
@@ -461,7 +462,8 @@ class FractionalAtomAccessibility(Atom):
     """Fractional atom solvent accessibility, from 0 to 1. This is the atom
        solvent accessibility (see :class:`AtomAccessibility`) divided by
        the volume of the atom, derived from its van der Waals radius.
-       Atoms with 'undefined' coordinates (-999.0) have zero accessibility."""
+       The feature is considered undefined if the atom's Cartesian
+       coordinates are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_fractional_atom_accessibility
 
 class AtomType(AtomFixedBins):
@@ -473,14 +475,18 @@ class HydrogenBondDonor(Atom):
     """Number of hydrogen bond donors. It is defined as the sum, over all atoms
        within hbond_cutoff (see :class:`mdt.Library`) of the atom, of their
        donor valencies as defined in the hydrogen bond file
-       (see :attr:`mdt.Library.hbond_classes`)."""
+       (see :attr:`mdt.Library.hbond_classes`).
+       The feature is considered undefined if the atom's Cartesian
+       coordinates are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_hydrogen_bond_donor
 
 class HydrogenBondAcceptor(Atom):
     """Number of hydrogen bond acceptors. It is defined as the sum, over all
        atoms within hbond_cutoff (see :class:`mdt.Library`) of the atom,
        of their acceptor valencies as defined in the hydrogen bond file
-       (see :attr:`mdt.Library.hbond_classes`)."""
+       (see :attr:`mdt.Library.hbond_classes`).
+       The feature is considered undefined if the atom's Cartesian
+       coordinates are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_hydrogen_bond_acceptor
 
 class HydrogenBondCharge(Atom):

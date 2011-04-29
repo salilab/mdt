@@ -7,6 +7,7 @@
 #include "../mdt_index.h"
 #include "../mdt_feature.h"
 #include "../mdt_all_features.h"
+#include "../geometry.h"
 
 static int getbin(const struct mod_alignment *aln, int protein, int atom,
                   struct mdt_properties *prop,
@@ -15,8 +16,13 @@ static int getbin(const struct mod_alignment *aln, int protein, int atom,
                   const struct mod_libraries *libs, GError **err)
 {
   struct mod_structure *s = mod_alignment_structure_get(aln, protein);
-  float f = mod_float1_get(&s->cd.atmacc, atom);
-  return feat_to_bin(f, feat);
+  float f = mod_float1_get(&s->cd.x, atom);
+  if (coordinate_undefined(f)) {
+    return mdt_feature_undefined_bin_get(feat);
+  } else {
+    f = mod_float1_get(&s->cd.atmacc, atom);
+    return feat_to_bin(f, feat);
+  }
 }
 
 int mdt_feature_atom_accessibility(struct mdt_library *mlib, gboolean pos2)

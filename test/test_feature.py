@@ -208,6 +208,23 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[0], 74.0, 0.0005)
         self.assertInTolerance(m[1], 0.0, 0.0005)
 
+    def test_feature_hbond_undef(self):
+        """Check hydrogen bond features undefined bin"""
+        mdl = self.build_test_model()
+        modeller.selection(mdl).unbuild()
+        mlib = self.get_mdt_library()
+        mlib.hbond_classes.read('data/atmcls-hbda.lib')
+        bins = mdt.uniform_bins(1, -20000, 40000)
+
+        # All features should go in the undefined bin, even though
+        # the raw value of the feature should fit in the first bin
+        for f in [mdt.features.HydrogenBondDonor(mlib, bins),
+                  mdt.features.HydrogenBondAcceptor(mlib, bins),
+                  mdt.features.HydrogenBondCharge(mlib, bins)]:
+            m = self.build_mdt_from_model(mlib, f, mdl)
+            self.assertEqual(m[0], 0)
+            self.assertEqual(m[-1], 7)
+
     def test_feature_hbond(self):
         """Check hydrogen bond features"""
         env = self.get_environ()
@@ -295,6 +312,21 @@ class FeatureTests(MDTTest):
                                      align_codes=code)
             m.add_alignment(aln)
             self.assertEqual(m[bin], 1.0)
+
+    def test_feature_atmacc_undef(self):
+        """Check atom accessibility features undefined bin"""
+        mdl = self.build_test_model()
+        modeller.selection(mdl).unbuild()
+        mlib = self.get_mdt_library()
+        bins = mdt.uniform_bins(1, -20000, 40000)
+
+        # All features should go in the undefined bin, even though
+        # the raw value of the feature should fit in the first bin
+        for f in [mdt.features.AtomAccessibility(mlib, bins),
+                  mdt.features.FractionalAtomAccessibility(mlib, bins)]:
+            m = self.build_mdt_from_model(mlib, f, mdl)
+            self.assertEqual(m[0], 0)
+            self.assertEqual(m[-1], 7)
 
     def test_feature_atmacc(self):
         """Check atom accessibility features"""

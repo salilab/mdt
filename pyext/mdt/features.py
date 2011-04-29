@@ -447,7 +447,8 @@ class AverageGapDistance(AlignedResiduePair):
 class AtomAccessibility(Atom):
     """Atom solvent accessibility. This is calculated by the PSA algorithm,
        and controlled by the surftyp and accessibility_type arguments to
-       :meth:`mdt.Table.add_alignment`."""
+       :meth:`mdt.Table.add_alignment`. Atoms with 'undefined' coordinates
+       (-999.0) have zero accessibility."""
     _setup = _mdt.mdt_feature_atom_accessibility
 
 class AtomZCoordinate(Atom):
@@ -459,7 +460,8 @@ class AtomZCoordinate(Atom):
 class FractionalAtomAccessibility(Atom):
     """Fractional atom solvent accessibility, from 0 to 1. This is the atom
        solvent accessibility (see :class:`AtomAccessibility`) divided by
-       the volume of the atom, derived from its van der Waals radius."""
+       the volume of the atom, derived from its van der Waals radius.
+       Atoms with 'undefined' coordinates (-999.0) have zero accessibility."""
     _setup = _mdt.mdt_feature_fractional_atom_accessibility
 
 class AtomType(AtomFixedBins):

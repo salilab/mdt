@@ -284,6 +284,8 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         if conf.CheckModeller() is False:
             _modeller_check_failed(require_modeller)
         conf.Finish()
+    else:
+        env['SIZEOF_POINTER'] = ''
     return env
 
 def _fix_aix_cpp_link(env, cplusplus, linkflags):

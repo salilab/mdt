@@ -12,7 +12,12 @@ static type *to_list_ ## type ##(PyObject *pyinput, int fixsize, int *sizevar, c
     outlist[0] = (type)convertfn(pyinput);
     return outlist;
   }
+#if PY_VERSION_HEX < 0x03000000
   if (!PySequence_Check(pyinput) || PyString_Check(pyinput)) {
+#else
+  if (!PySequence_Check(pyinput) || PyUnicode_Check(pyinput)
+      || PyBytes_Check(pyinput)) {
+#endif
     PyErr_Format(PyExc_ValueError, "%s should be a sequence", displayname);
     return NULL;
   }

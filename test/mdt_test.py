@@ -2,6 +2,10 @@ import unittest
 from modeller.test import ModellerTest
 import modeller
 import mdt
+import sys
+
+if sys.version_info[0] >= 3:
+    from functools import reduce
 
 class MDTTest(ModellerTest):
 

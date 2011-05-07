@@ -980,22 +980,22 @@ def _pass_cutoffs(mdt, num, bin, density_cutoff, entropy_cutoff):
     if density_cutoff is not None:
         sum = mdt[num].sum()
         if sum < density_cutoff:
-            print "Restraint %s skipped: density %.4f below cutoff %.4f" \
-                  % (bin.symbol, sum, density_cutoff)
+            print("Restraint %s skipped: density %.4f below cutoff %.4f" \
+                  % (bin.symbol, sum, density_cutoff))
             return False
     if entropy_cutoff is not None:
         entropy = mdt[num].entropy()
         if entropy > entropy_cutoff:
-            print "Restraint %s skipped: entropy %.4f above cutoff %.4f" \
-                  % (bin.symbol, entropy, entropy_cutoff)
+            print("Restraint %s skipped: entropy %.4f above cutoff %.4f" \
+                  % (bin.symbol, entropy, entropy_cutoff))
             return False
     return True
 
 
 def _write_meanstdevlib(fh, mdt, numat, phystype, feattype, convfunc,
                         density_cutoff=None, entropy_cutoff=None):
-    print >> fh, "#   residue    atoms        mean    stdev"
-    print >> fh, "_params = ["
+    fh.write("#   residue    atoms        mean    stdev\n")
+    fh.write("_params = [\n")
     for (num,bin) in enumerate(mdt.features[0].bins):
         if _pass_cutoffs(mdt, num, bin, density_cutoff, entropy_cutoff):
             symbols = bin.symbol.split(':')
@@ -1005,9 +1005,9 @@ def _write_meanstdevlib(fh, mdt, numat, phystype, feattype, convfunc,
                 raise ValueError("Bin name %s should be res. plus %d atoms"
                                  % (bin.symbol, numat))
             mean, stdev = mdt[num].mean_stdev()
-            print >> fh, "    ( '%s', %s, %.4f, %.4f )," \
-                         % (res, str(ats), convfunc(mean), convfunc(stdev))
-    print >> fh, """  ]
+            fh.write("    ( '%s', %s, %.4f, %.4f ),\n" \
+                     % (res, str(ats), convfunc(mean), convfunc(stdev)))
+    fh.write("""  ]
 
 def make_restraints(atmsel, restraints, num_selected):
     from modeller import forms, physical, features
@@ -1015,7 +1015,7 @@ def make_restraints(atmsel, restraints, num_selected):
         for a in atmsel.find_atoms(res, atoms, num_selected):
             r = forms.gaussian(%s, %s(*a), mean,
                                stdev)
-            restraints.add(r)""" % (phystype, feattype)
+            restraints.add(r)\n""" % (phystype, feattype))
 
 def _noconv(a):
     return a
@@ -1094,15 +1094,15 @@ def write_splinelib(fh, mdt, dihtype, density_cutoff=None, entropy_cutoff=None):
     """
     (periodic, dx, x1, x2) = _get_splinerange(mdt.features[1])
 
-    print >> fh, "#   residue   spline values"
-    print >> fh, "_params = ["
+    fh.write("#   residue   spline values\n")
+    fh.write("_params = [\n")
     for (nx,bin) in enumerate(mdt.features[0].bins):
         if _pass_cutoffs(mdt, nx, bin, density_cutoff, entropy_cutoff):
             splinevals = ["%.4f" % mdt[nx,ny] \
                           for ny in range(len(mdt.features[1].bins))]
-            print >> fh, "    ( '%s', (%s) )," \
-                         % (bin.symbol, ', '.join(splinevals))
-    print >> fh, """  ]
+            fh.write("    ( '%s', (%s) ),\n" \
+                     % (bin.symbol, ', '.join(splinevals)))
+    fh.write("""  ]
 
 def make_restraints(atmsel, restraints, num_selected):
     from modeller import forms, physical, features
@@ -1113,8 +1113,8 @@ def make_restraints(atmsel, restraints, num_selected):
                              features.dihedral(*a), open=%s, low=%.5f,
                              high=%.5f, delta=%.5f, lowderiv=0,
                              highderiv=0, values=values, use_array=arr)
-            arr = restraints.add(r)""" % (dihtype, dihtype, not periodic,
-                                          x1, x2, dx)
+            arr = restraints.add(r)\n""" % (dihtype, dihtype, not periodic,
+                                            x1, x2, dx))
 
 
 def write_2dsplinelib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
@@ -1126,17 +1126,17 @@ def write_2dsplinelib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     (yperiodic, dy, y1, y2) = _get_splinerange(mdt.features[1])
     (zperiodic, dz, z1, z2) = _get_splinerange(mdt.features[2])
 
-    print >> fh, "#   residue   spline values"
-    print >> fh, "_params = ["
+    fh.write("#   residue   spline values\n")
+    fh.write("_params = [\n")
     for (nx,bin) in enumerate(mdt.features[0].bins):
         if _pass_cutoffs(mdt, nx, bin, density_cutoff, entropy_cutoff):
             splinevals = []
             for ny in range(len(mdt.features[1].bins)):
                 for nz in range(len(mdt.features[2].bins)):
                     splinevals.append("%.4f" % mdt[nx,ny,nz])
-            print >> fh, "    ( '%s', (%s) )," \
-                         % (bin.symbol, ', '.join(splinevals))
-    print >> fh, """  ]
+            fh.write("    ( '%s', (%s) ),\n" \
+                     % (bin.symbol, ', '.join(splinevals)))
+    fh.write("""  ]
 
 def make_restraints(atmsel, restraints, num_selected):
     from modeller import forms, physical, features
@@ -1152,10 +1152,10 @@ def make_restraints(atmsel, restraints, num_selected):
             r.add_dimension(features.dihedral(*a[4:]), open=%s,
                             low=%.5f, high=%.5f, delta=%.5f,
                             lowderiv=0., highderiv=0.)
-            arr = restraints.add(r)""" % (len(mdt.features[1].bins),
-                                          len(mdt.features[2].bins),
-                                          not yperiodic, y1, y2, dy,
-                                          not zperiodic, z1, z2, dz)
+            arr = restraints.add(r)\n""" % (len(mdt.features[1].bins),
+                                            len(mdt.features[2].bins),
+                                            not yperiodic, y1, y2, dy,
+                                            not zperiodic, z1, z2, dz))
 
 def uniform_bins(num, start, width):
     """Make a list of `num` equally-sized bins, each of which has the given

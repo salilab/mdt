@@ -97,7 +97,7 @@ class FeatureTests(MDTTest):
             m.add_alignment(aln)
             self.assertEqual(m.shape, (6,))
             self.assertEqual(m.sum(), 2.0)
-            self.assertEqual(m[id / 25], 2.0)
+            self.assertEqual(m[int(id / 25)], 2.0)
 
     def test_delta(self):
         """Test residue type at delta features"""

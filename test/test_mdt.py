@@ -643,13 +643,13 @@ class TableTests(MDTTest):
         m.write_asgl(asglroot=root, plots_per_page=8, dimensions=1,
                      plot_position=1, every_x_numbered=999, text="test text",
                      x_decimal=0)
-        f = file(root+'.top', 'r')
+        f = open(root+'.top', 'r')
         self.assertEqual(len(f.readlines()), 486)
         del f
         os.unlink(root+'.top')
         for n in range(1,23):
             fname = '%s.%d' % (root, n)
-            f = file(fname, 'r')
+            f = open(fname, 'r')
             self.assertEqual(len(f.readlines()), 22)
             del f
             os.unlink(fname)

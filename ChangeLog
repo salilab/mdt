@@ -2,6 +2,7 @@ HEAD:
  - All atom features, with the exception of atom type, are now considered
    undefined if the atom coordinates are equal to the Modeller undefined
    value (-999.0).
+ - Support Python 3.
 
 MDT 5.0   03-31-2011:
  - First open source (GPLv2) release.

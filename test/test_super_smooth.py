@@ -102,7 +102,7 @@ class SuperSmoothTests(MDTTest):
         w1, w2 = self._get_weights(1.0, 22, 2.0)
         for i in (1,2):
             self.assertInTolerance(m2[1,i], w1 * lev1[i] + w2 * 0.5, 1e-5)
-        for i in range(3,22) + [0]:
+        for i in list(range(3,22)) + [0]:
             self.assertInTolerance(m2[1,i], w1 * lev1[i], 1e-5)
         # Every other row is just the level1 data:
         for i in range(2,22):

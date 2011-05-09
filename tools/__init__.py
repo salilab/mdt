@@ -52,7 +52,10 @@ class WineEnvironment(Environment):
         self['PSPAWN'] = posix_env['PSPAWN']
         self['SPAWN'] = posix_env['SPAWN']
         self['SHELL'] = posix_env['SHELL']
-        self['PYTHON'] = 'w32python'
+        if 'python' in self and self['python']:
+            self['PYTHON'] = self['python']
+        else:
+            self['PYTHON'] = 'w32python'
         self['PATHSEP'] = ';'
         # Use / rather than \ path separator:
         self['LINKCOM'] = self['LINKCOM'].replace('.windows', '')
@@ -240,7 +243,10 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         env = WineEnvironment(variables=variables, *args, **kw)
     else:
         env = Environment(variables=variables, *args, **kw)
-        env['PYTHON'] = 'python'
+        if 'python' in env and env['python']:
+            env['PYTHON'] = env['python']
+        else:
+            env['PYTHON'] = 'python'
         env['PATHSEP'] = os.path.pathsep
     try:
         env['SHLINKFLAGS'] = [x for x in env['SHLINKFLAGS'] \
@@ -446,6 +452,9 @@ def add_common_variables(vars, package):
                              'Directory holding Python include files ' + \
                              '(if unspecified, distutils location is used)',
                              'no'))
+    vars.Add('python', "Python interpreter to use to run unit tests "
+             "(if unspecified, 'python' is used on regular builds, "
+             "'w32python' if wine=True)", None)
     vars.Add(PackageVariable('modeller', 'Location of the MODELLER package',
                              'no'))
     vars.Add(BoolVariable('wine',

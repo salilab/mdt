@@ -130,9 +130,9 @@ def CheckGlib2(context):
                          human_name='GLib2', env_key='GLIB'):
         return True
     else:
-        print "GLib2 is required to install this package."
-        print "Install the glib2-devel (or similar) package,"
-        print "or download the sourcecode from www.gtk.org"
+        print "GLib2 and pkg-config are required to install this software."
+        print "Install the glib2-devel and pkg-config (or similar) packages,"
+        print "or download the GLib2 sourcecode from www.gtk.org"
         Exit(1)
 
 def CheckModeller(context):

@@ -159,12 +159,11 @@ gboolean mdt_entropy_full(const struct mod_mdt *mdt,
 
   /* for each number of independent variables from 1 to nfeat-1 */
   for (n_feat_fix = 1; n_feat_fix < mdt->nfeat; n_feat_fix++) {
-    int ncomb2;
 
     /* the number of different combinations of n_feat_fix features from the
        set of numb_features-1 possible features */
-    ncomb2 = nperm(mdt->nfeat - 1) / (nperm(n_feat_fix)
-                                      * nperm(mdt->nfeat - 1 - n_feat_fix));
+    /* ncomb2 = nperm(mdt->nfeat - 1) / (nperm(n_feat_fix)
+                                      * nperm(mdt->nfeat - 1 - n_feat_fix)); */
 
     /* generate all combinations of independent features
        (there are n_feat_fix of these features, ncomb2 combinations); */

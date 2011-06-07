@@ -425,6 +425,14 @@ def add_common_variables(vars, package):
         # Install in /usr/lib64 rather than /usr/lib on x86_64 Linux boxes
         libdir += '64'
 
+
+    if sys.platform == 'darwin':
+        pythondir = '/Library/Python/%d.%d/site-packages' \
+                    % sys.version_info[0:2]
+    else:
+        pythondir = '${libdir}/python%d.%d/site-packages' \
+                    % sys.version_info[0:2]
+
     vars.Add(PathVariable('prefix', 'Top-level installation directory', '/usr',
                           PathVariable.PathAccept))
     # Note that destdir should not affect any compiled-in paths; see
@@ -440,8 +448,7 @@ def add_common_variables(vars, package):
     vars.Add(PathVariable('includedir', 'Include file installation directory',
                           '${prefix}/include', PathVariable.PathAccept))
     vars.Add(PathVariable('pythondir', 'Python module installation directory',
-                          '${libdir}/python%d.%d/site-packages' \
-                          % sys.version_info[0:2], PathVariable.PathAccept))
+                          pythondir, PathVariable.PathAccept))
     vars.Add(PathVariable('pyextdir',
                           'Python extension module installation directory',
                           '${pythondir}', PathVariable.PathAccept))

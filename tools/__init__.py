@@ -37,13 +37,16 @@ class WineEnvironment(Environment):
     """Environment to build Windows binaries under Linux, by running the
        MSVC compiler (cl) and linker (link) through wine, using the w32cc
        and w32link shell scripts"""
-    def __init__(self, platform='win32', CC='w32cc', LINK='w32link', **kw):
+    def __init__(self, platform='win32', CC='w32cc', LINK='w32link', path=None,
+                 **kw):
         if sys.platform != 'linux2':
             print "ERROR: Wine is supported only on Linux systems"
             Exit(1)
         self._fix_scons_msvc_detect()
 
         posix_env = Environment(platform='posix')
+        if path is not None:
+            posix_env['ENV']['PATH'] = path
         Environment.__init__(self, platform=platform, CC=CC, LINK=LINK,
                              ENV=posix_env['ENV'], **kw)
         self['SHLIBPREFIX'] = self['LIBLINKPREFIX'] = self['LIBPREFIX'] = 'lib'
@@ -241,8 +244,7 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         path = env['path'] + os.path.pathsep + path
 
     if env['wine']:
-        env = WineEnvironment(variables=variables,
-                              ENV = {'PATH':path}, *args, **kw)
+        env = WineEnvironment(variables=variables, path=path, *args, **kw)
     else:
         env = Environment(variables=variables,
                           ENV = {'PATH':path}, *args, **kw)

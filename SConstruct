@@ -8,7 +8,7 @@ EnsureSConsVersion(0, 98)
 vars = Variables('config.py', ARGUMENTS)
 add_common_variables(vars, 'mdt')
 env = MyEnvironment(variables=vars, require_modeller=True,
-                    tools=["default", "sphinx"],
+                    tools=["default", "swig", "sphinx"],
                     toolpath=["tools"])
 
 # Version number

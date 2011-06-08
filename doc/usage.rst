@@ -37,11 +37,13 @@ you can get the current MDT code by running the following::
    svn co https://svn.salilab.org/impmod/trunk/mdt mdt
 
 Unpack the source code and change into the newly-created MDT subdirectory.
-Install dependent packages needed for MDT: MODELLER, glib, pkg-config, and HDF5:
+Install dependent packages needed for MDT: MODELLER, glib, SWIG,
+pkg-config, and HDF5:
 
 * MODELLER 9.9 or later is required.
 * glib 2.4 or later is required. It is available as pre-built packages for most
   modern Linux distributions; there is also a MacPorts package for Mac users.
+* SWIG 1.3.39 or later is required.
 * Unfortunately HDF5 only works if you use the exact same version that is
   used by MODELLER. See the MODELLER ChangeLog for the version to use.
 
@@ -58,12 +60,12 @@ which can be used to run an MDT Python script :file:`foo.py`::
    the directory where you have MODELLER installed (on a Mac, this would look
    like `modeller="/Library/modeller-XXX"` where `XXX` is the Modeller version).
 
-   If you installed glib, HDF5, or pkg-config in non-standard locations (i.e.
-   not `/usr/include` for glib and HDF5, and not `/usr/bin` for pkg-config)
-   you will also need to tell scons where to find them. Add similar lines to
-   :file:`config.py` to set *path* for pkg-config and *includepath* for glib
-   and HDF5 (e.g. `path="/opt/local/bin"` and `includepath="/opt/local/include"`
-   on a Mac).
+   If you installed any of the prerequisites in non-standard locations (i.e.
+   not `/usr/include` for glib and HDF5, and not `/usr/bin` for pkg-config
+   or SWIG) you will also need to tell scons where to find them. Add similar
+   lines to :file:`config.py` to set *path* for pkg-config and SWIG
+   and *includepath* for glib and HDF5 (e.g. `path="/opt/local/bin"`
+   and `includepath="/opt/local/include"` on a Mac).
 
 If you want to install MDT, run `scons install`. You can additionally specify
 a `prefix` option (or set it in :file:`config.py`) to install in a different

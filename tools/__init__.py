@@ -336,6 +336,41 @@ class _swig_postprocess(object):
         fh.close()
         return 0
 
+def _check_swig_version(env, needversion):
+    """Make sure that a new enough version of SWIG was found."""
+    if env.GetOption('clean') or env.GetOption('help'):
+        return
+
+    needversion_str = ".".join([str(x) for x in needversion])
+    failmsg = """
+SWIG version %s or later must be installed to build MDT, but
+%s.
+Please make sure 'swig' is found in the path passed to scons.
+
+In particular, if you have SWIG installed in a non-standard location,
+please use the 'path' option to add this location to the search path.
+For example, if you have SWIG installed in /opt/local/bin/, edit (or create)
+config.py and add the line
+
+path='/opt/local/bin'
+"""
+    version = env.get('SWIGVERSION', None)
+    try:
+        v = [int(x) for x in version.split(".")]
+    except ValueError:
+        print failmsg % (needversion_str,
+                         "it could not be found on your system")
+        Exit(1)
+    if v >= needversion:
+        print "Checking for SWIG >= %s: %s found" \
+              % (needversion_str, ".".join([str(x) for x in v]))
+        return
+    else:
+        print failmsg % (needversion_str,
+                         "only an older version (%s) " % version + \
+                         "was found on your system")
+        Exit(1)
+
 def get_pyext_environment(env, mod_prefix, cplusplus=False):
     """Get a modified environment for building a Python extension.
        `mod_prefix` should be a unique prefix for this module.
@@ -343,9 +378,7 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
        extension is done."""
     from platform import system
     e = env.Clone()
-    if 'swig' not in e['TOOLS'] and not env.GetOption('clean'):
-        print "ERROR: SWIG could not be found. SWIG is needed to build."
-        Exit(1)
+    _check_swig_version(e, [1,3,39])
 
     if cplusplus and isinstance(e['SWIGCOM'], str):
         # See _swig_postprocess class comments:

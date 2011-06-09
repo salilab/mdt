@@ -673,6 +673,24 @@ class TableTests(MDTTest):
             m3 = m1.copy(bin_type=bin_type)
             self.assertMDTsEqual(m1, m3)
 
+    def test_copy_bad_bin_type(self):
+        """Table.copy() should complain if given a bad bin type"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        m = mdt.Table(mlib, features=mdt.features.ResidueType(mlib))
+        self.assertRaises(TypeError, m.copy, bin_type='garbage')
+
+    def test_features_to_ifeat(self):
+        """Test Table._features_to_ifeat method"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        f = mdt.features.ResidueType(mlib)
+        m = mdt.Table(mlib, features=f)
+        for arg in [f, [f], (f,)]:
+            ifeat = m._features_to_ifeat(arg)
+            self.assertEqual(ifeat, [1])
+        self.assertRaises(TypeError, m._features_to_ifeat, 'garbage')
+
     def test_mdt_witherr(self):
         """Test the calculation of mdt with error"""
         env = self.get_environ()

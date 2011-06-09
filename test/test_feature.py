@@ -845,5 +845,19 @@ class FeatureTests(MDTTest):
                      mdt.features.ChemicalBondFixedBins]:
             self.assertRaises(TypeError, feat, mlib)
 
+    def test_tuple_base(self):
+        """Test otherwise unexercised Tuple constructor"""
+        class DummyTuple(mdt.features.Tuple):
+            def _setup(self, mlib, pos2):
+                return "dummy ifeat"
+            def _create_bins(self, mlib, bins):
+                self.bins_created = bins
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        bins = mdt.uniform_bins(10, 0, 1.0)
+        f = DummyTuple(mlib, bins)
+        self.assertEqual(f._ifeat, 'dummy ifeat')
+        self.assertEqual(f.bins_created, bins)
+
 if __name__ == '__main__':
     unittest.main()

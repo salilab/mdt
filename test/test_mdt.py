@@ -664,6 +664,9 @@ class TableTests(MDTTest):
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
         features = (restyp0, restyp1)
         aln = alignment(env, file='test/data/alignment.ali')
+        # bin_type must be a valid MDT BinType
+        self.assertRaises(TypeError, mdt.Table, mlib, features=features,
+                          bin_type='garbage')
         m1 = mdt.Table(mlib, features=features, bin_type=mdt.Double)
         m1.add_alignment(aln)
         for bin_type in (mdt.Int8, mdt.Int16, mdt.Int32, mdt.UnsignedInt8,
@@ -692,6 +695,29 @@ class TableTests(MDTTest):
             ifeat = m._features_to_ifeat(arg)
             self.assertEqual(ifeat, [1])
         self.assertRaises(TypeError, m._features_to_ifeat, 'garbage')
+
+    def test_get_splinerange(self):
+        """Test _get_splinerange utility function"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        angle = mdt.features.Angle(mlib,
+                                   bins=mdt.uniform_bins(288, 0.0, 0.625))
+        dih = mdt.features.Dihedral(mlib,
+                                    bins=mdt.uniform_bins(1, -500, 1000))
+        t = mdt.Table(mlib, features=[angle,dih])
+        t = t.reshape(features=[angle,dih], offset=[0,0], shape=[-1,-1])
+
+        periodic, dx, x1, x2 = mdt._get_splinerange(t.features[0])
+        self.assertEqual(periodic, 0)
+        self.assertInTolerance(dx, 0.011, 1e-3)
+        self.assertInTolerance(x1, 0.005, 1e-3)
+        self.assertInTolerance(x2, 3.136, 1e-3)
+
+        periodic, dx, x1, x2 = mdt._get_splinerange(t.features[1])
+        self.assertEqual(periodic, 1)
+        self.assertInTolerance(dx, 17.453, 1e-3)
+        self.assertInTolerance(x1, 0.0, 1e-3)
+        self.assertInTolerance(x2, 17.453, 1e-3)
 
     def test_pass_cutoffs(self):
         """Test _pass_cutoffs utility function"""

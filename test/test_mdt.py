@@ -691,6 +691,29 @@ class TableTests(MDTTest):
             self.assertEqual(ifeat, [1])
         self.assertRaises(TypeError, m._features_to_ifeat, 'garbage')
 
+    def test_pass_cutoffs(self):
+        """Test _pass_cutoffs utility function"""
+        class DummySection(object):
+            def __init__(self, sum, entropy):
+                self._sum = sum
+                self._entropy = entropy
+            def sum(self):
+                return self._sum
+            def entropy(self):
+                return self._entropy
+        class DummyBin(object):
+            symbol = 'symbol'
+        dummy_table = [DummySection(10.0, 20.0)]
+        dummy_bin = DummyBin()
+        self.assertEqual(mdt._pass_cutoffs(dummy_table, 0, dummy_bin,
+                              density_cutoff=None, entropy_cutoff=None), True)
+        self.assertEqual(mdt._pass_cutoffs(dummy_table, 0, dummy_bin,
+                              density_cutoff=10.1, entropy_cutoff=None), False)
+        self.assertEqual(mdt._pass_cutoffs(dummy_table, 0, dummy_bin,
+                              density_cutoff=None, entropy_cutoff=19.9), False)
+        self.assertEqual(mdt._pass_cutoffs(dummy_table, 0, dummy_bin,
+                              density_cutoff=9.9, entropy_cutoff=20.1), True)
+
     def test_mdt_witherr(self):
         """Test the calculation of mdt with error"""
         env = self.get_environ()

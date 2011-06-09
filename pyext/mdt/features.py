@@ -22,6 +22,11 @@ import _mdt
 
 class _Base(object):
     """Base class for all features."""
+
+    def _setup(*args, **keys):
+        raise TypeError("This feature class is abstract, and cannot "
+                        "be instantiated directly.")
+
     def __init__(self, mlib):
         self._mlib = mlib
 

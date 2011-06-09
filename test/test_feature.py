@@ -828,5 +828,22 @@ class FeatureTests(MDTTest):
             m = mdt.Table(mlib, features=(a,b))
             self.assertEqual(m.symmetric, symm)
 
+    def test_abstract(self):
+        """Should not be able to instantiate abstract features"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        bins = mdt.uniform_bins(10, 0, 1.0)
+        for feat in [mdt.features.Protein, mdt.features.ProteinPair,
+                     mdt.features.Residue, mdt.features.ResiduePair,
+                     mdt.features.AlignedResidue,
+                     mdt.features.AlignedResiduePair, mdt.features.Atom,
+                     mdt.features.AtomPair, mdt.features.Tuple,
+                     mdt.features.TuplePair, mdt.features.ChemicalBond]:
+            self.assertRaises(TypeError, feat, mlib, bins)
+        for feat in [mdt.features.ResidueFixedBins, mdt.features.AtomFixedBins,
+                     mdt.features.TupleFixedBins,
+                     mdt.features.ChemicalBondFixedBins]:
+            self.assertRaises(TypeError, feat, mlib)
+
 if __name__ == '__main__':
     unittest.main()

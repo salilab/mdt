@@ -134,6 +134,8 @@ class TableTests(MDTTest):
         self.assertRaises(ValueError, m.__setitem__, [0,22,10], 0.0)
         self.assertRaises(IndexError, m.__setitem__, [0,22], 0.0)
         self.assertRaises(IndexError, m.__setitem__, [22,0], 0.0)
+        # Cannot set a section
+        self.assertRaises(ValueError, m.__setitem__, [0], [0.0])
         for i in range(0, 22):
             for j in range(0, 22):
                 val = 1.0 + i * 40.0 + j   # Some value different for each i,j

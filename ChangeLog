@@ -3,6 +3,8 @@ HEAD:
    undefined if the atom coordinates are equal to the Modeller undefined
    value (-999.0).
  - Support Python 3.
+ - "scons test" now reports the Python coverage (and also C coverage,
+   if using gcc and adding "coverage=true" to the scons command line).
 
 MDT 5.0   03-31-2011:
  - First open source (GPLv2) release.

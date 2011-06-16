@@ -25,20 +25,24 @@ class _CCoverageTester(object):
                 os.unlink(f)
 
     def _report(self):
-        for dir, pattern, report in self._files:
-            if report:
-                self._run_gcov(dir, pattern)
         print >> sys.stderr, "\n\nC coverage report\n"
         print >> sys.stderr, "%-41s Stmts   Exec  Cover   Missing" % "Name"
         divider = "-" * 71
         print >> sys.stderr, divider
         total_statements = total_executed = 0
-        for cov in glob.glob("*.gcov"):
-            source, statements, executed, missing = self._parse_gcov_file(cov)
-            self._report_gcov_file(source, statements, executed, missing)
-            total_statements += statements
-            total_executed += executed
-            os.unlink(cov)
+        for dir, pattern, report in self._files:
+            if report:
+                self._run_gcov(dir, pattern)
+                covs = glob.glob("*.gcov")
+                covs.sort()
+                for cov in covs:
+                    source, statements, executed, missing \
+                                 = self._parse_gcov_file(cov)
+                    self._report_gcov_file(source, statements, executed,
+                                           missing)
+                    total_statements += statements
+                    total_executed += executed
+                    os.unlink(cov)
         print >> sys.stderr, divider
         self._report_gcov_file('TOTAL', total_statements, total_executed, [])
 

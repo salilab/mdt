@@ -259,7 +259,15 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     subst.TOOL_SUBST(env)
 
     if env['CC'] == 'gcc':
-        env.Append(CCFLAGS="-Wall -Werror -g -O3")
+        if env.get('coverage', False):
+            env.Append(CCFLAGS="-Wall -Werror -g -O0 -fprofile-arcs "
+                               "-ftest-coverage")
+            env.Append(LINKFLAGS="-fprofile-arcs -ftest-coverage")
+        else:
+            env.Append(CCFLAGS="-Wall -Werror -g -O3")
+    elif env.get('coverage', False):
+        print "ERROR: C coverage testing currently only works with gcc"
+        Exit(1)
     _add_release_flags(env)
 
     if env.get('includepath', None):
@@ -498,6 +506,9 @@ def add_common_variables(vars, package):
     vars.Add(BoolVariable('release',
                           'Disable most runtime checks (e.g. for releases)',
                           False))
+    vars.Add(BoolVariable('coverage',
+                          'Enable coverage testing of C code in unit '
+                          'tests (gcc only)', False))
     vars.Add(PathVariable('includepath', 'Include search path ' + \
                           '(e.g. "/usr/local/include:/opt/local/include")',
                           None, PathVariable.PathAccept))

@@ -4,6 +4,7 @@ import os.path
 import re
 import sys
 import subst
+import c_coverage
 import sizeof_check
 from SCons.Script import *
 
@@ -257,6 +258,7 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         pass
     env.Prepend(SCANNERS = _SWIGScanner)
     subst.TOOL_SUBST(env)
+    env.AddMethod(c_coverage.CCoverageTester)
 
     if env['CC'] == 'gcc':
         if env.get('coverage', False):
@@ -507,8 +509,8 @@ def add_common_variables(vars, package):
                           'Disable most runtime checks (e.g. for releases)',
                           False))
     vars.Add(BoolVariable('coverage',
-                          'Enable coverage testing of C code in unit '
-                          'tests (gcc only)', False))
+                          'Enable coverage testing of C code (Python code '
+                          'is always tested) in unit tests (gcc only)', False))
     vars.Add(PathVariable('includepath', 'Include search path ' + \
                           '(e.g. "/usr/local/include:/opt/local/include")',
                           None, PathVariable.PathAccept))

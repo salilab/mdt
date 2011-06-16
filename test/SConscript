@@ -2,11 +2,16 @@ Import('env', 'bin')
 
 e = env.Clone()
 
+c = env.CCoverageTester()
+c.add(directory='src', pattern='*.c', report=True)
+c.add(directory='src/features', pattern='*.c', report=True)
+c.add(directory='pyext', pattern='*.c', report=False)
+
 # Custom builder to run unit tests:
 def builder_unit_test(target, source, env):
     app = "%s %s %s -v > /dev/null" % (source[1].abspath, e['PYTHON'],
                                        source[0])
-    if env.Execute(app) == 0:
+    if c.Execute(app) == 0:
         file(str(target[0]), 'w').write('PASSED\n')
     else:
         print "unit tests FAILED"

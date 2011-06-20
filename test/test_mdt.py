@@ -41,8 +41,19 @@ class TableTests(MDTTest):
         self.assertMDTsEqual(m1, m3)
         for (n, val) in enumerate((11,22,33,44)):
             self.assertEqual(m3[n], val)
+        # Cannot add if numbers of features are different
+        badmdt = mdt.Table(mlib, features=(xray0, xray1))
+        self.assertRaises(ValueError, m1.__add__, badmdt)
+
+        # Cannot add if feature types are different
         badmdt = mdt.Table(mlib, features=xray1)
         self.assertRaises(ValueError, m1.__add__, badmdt)
+
+        # Cannot add if starts are different
+        badmdt = m2.reshape(features=xray0, offset=1, shape=0)
+        self.assertRaises(ValueError, m1.__add__, badmdt)
+
+        # Cannot add if nbins are different
         badmdt = m2.reshape(features=xray0, offset=0, shape=-1)
         self.assertRaises(ValueError, m1.__add__, badmdt)
 

@@ -145,6 +145,21 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[9], 20)
         self.assertEqual(m[10], 20)
         self.assertEqual(sum([b for b in m]), 40)
+        self.assertEqual(m[-1], 0)
+
+        # Undefined (-999) coordinates in either structure should put
+        # features in the undefined bin
+        oldx = aln[0].residues[0].atoms['CA'].x
+        aln[0].residues[0].atoms['CA'].x = -999
+        m = mdt.Table(mlib, features=ddist)
+        m.add_alignment(aln)
+        self.assertEqual(m[-1], 16)
+
+        aln[0].residues[0].atoms['CA'].x = oldx
+        aln[1].residues[0].atoms['CA'].x = -999
+        m = mdt.Table(mlib, features=ddist)
+        m.add_alignment(aln)
+        self.assertEqual(m[-1], 16)
 
     def test_feature_neighborhood_difference(self):
         """Check residue neighborhood difference features"""

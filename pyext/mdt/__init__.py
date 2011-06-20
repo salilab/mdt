@@ -592,7 +592,7 @@ class Table(TableSection):
 
     def entropy_full(self):
         """Print full entropy information."""
-        return _mdt.mdt_entropy_full(self._modpt, self._mlib._modpt)
+        return _mdt.mdt_entropy_full(self._basept, self._mlib._modpt)
 
     def entropy_hx(self):
         """

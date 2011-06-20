@@ -372,6 +372,15 @@ class TableTests(MDTTest):
         # Check against ENTROPY_MDT_HX value for this system in MDT:
         self.assertAlmostEqual(m.entropy_hx(), 2.7048, places=3)
 
+    def test_entropy_full(self):
+        """Test entropy_full()"""
+        mlib = self.get_mdt_library()
+        restyp = mdt.features.ResidueType(mlib)
+        chi1 = mdt.features.Chi1Dihedral(mlib,
+                                         mdt.uniform_bins(36, -180, 10))
+        m = self.get_test_mdt(mlib, features=(restyp,chi1))
+        m.entropy_full()
+
     def test_exp_transform(self):
         """Check for correctness of exp transform"""
         mlib = self.get_mdt_library()

@@ -243,7 +243,7 @@ class FeatureTests(MDTTest):
         """Check reading of bad atom class file"""
         mlib = self.get_mdt_library()
 
-        self.assertRaises(mdt.IOError, mlib.atom_classes.read,
+        self.assertRaises(IOError, mlib.atom_classes.read,
                           '/does/not/exist/test.lib')
 
         # Bad fields after ATMGRP

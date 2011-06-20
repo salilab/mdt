@@ -555,6 +555,7 @@ gboolean mdt_close_file(struct mod_file *fh, GError **err)
   } else {
     ierr = 0;
   }
+  mod_error_clear();
   mod_file_close(fh, &ierr);
   if (ierr) {
     GError *moderr = mod_error_get();

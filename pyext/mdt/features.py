@@ -562,7 +562,7 @@ class TupleDihedral1(TuplePair):
 
 class TupleDihedral2(TuplePair):
     """Dihedral (-180-180) between the third atom in the first tuple, the
-       second atom in the second tuple, the first atom in the first tuple, and
+       second atom in the first tuple, the first atom in the first tuple, and
        the first atom in the second tuple. Only works for atom triplets.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
@@ -570,7 +570,7 @@ class TupleDihedral2(TuplePair):
 
 class TupleDihedral3(TuplePair):
     """Dihedral (-180-180) between the first atom in the first tuple, the
-       second atom in the first tuple, the second atom in the first tuple, and
+       first atom in the second tuple, the second atom in the second tuple, and
        the third atom in the second tuple. Only works for atom triplets.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""

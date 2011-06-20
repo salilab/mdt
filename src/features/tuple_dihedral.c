@@ -33,7 +33,7 @@ static int dihedral2(const struct mod_alignment *aln, int protein,
                      const struct mod_libraries *libs, GError **err)
 {
   struct mod_structure *s = mod_alignment_structure_get(aln, protein);
-  return idihedral0(tuple1->iata[1], tuple2->iata[0], atom1, atom2, s, feat);
+  return idihedral0(tuple1->iata[1], tuple1->iata[0], atom1, atom2, s, feat);
 }
 
 static int dihedral3(const struct mod_alignment *aln, int protein,
@@ -45,7 +45,7 @@ static int dihedral3(const struct mod_alignment *aln, int protein,
                      const struct mod_libraries *libs, GError **err)
 {
   struct mod_structure *s = mod_alignment_structure_get(aln, protein);
-  return idihedral0(atom1, atom2, tuple1->iata[0], tuple2->iata[1], s, feat);
+  return idihedral0(atom1, atom2, tuple2->iata[0], tuple2->iata[1], s, feat);
 }
 
 static int dihedral_feature(struct mdt_library *mlib, const char *name,

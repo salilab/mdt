@@ -633,6 +633,10 @@ class FeatureTests(MDTTest):
                                             bins=mdt.uniform_bins(6, 0, 30.0))
         tuple_dihed1 = mdt.features.TupleDihedral1(mlib,
                                           bins=mdt.uniform_bins(6, -180, 60.0))
+        tuple_dihed2 = mdt.features.TupleDihedral2(mlib,
+                                          bins=mdt.uniform_bins(6, -180, 60.0))
+        tuple_dihed3 = mdt.features.TupleDihedral3(mlib,
+                                          bins=mdt.uniform_bins(6, -180, 60.0))
         self.assertRaises(mdt.MDTError, mlib.tuple_classes.read,
                           'data/trpcls.lib')
         m1 = mdt.Table(mlib, features=tuple_type)
@@ -640,8 +644,10 @@ class FeatureTests(MDTTest):
         m3 = mdt.Table(mlib, features=tuple_dist)
         m4 = mdt.Table(mlib, features=tuple_angle1)
         m5 = mdt.Table(mlib, features=tuple_dihed1)
+        m6 = mdt.Table(mlib, features=tuple_dihed2)
+        m7 = mdt.Table(mlib, features=tuple_dihed3)
         aln = modeller.alignment(env, file='test/data/tiny.ali')
-        for m in (m1, m2, m3, m4, m5):
+        for m in (m1, m2, m3, m4, m5, m6, m7):
             m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))
         self.assertInTolerance(m1[0], 1.0, 0.0005)
         self.assertInTolerance(m1[1], 0.0, 0.0005)
@@ -668,6 +674,16 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m5[2], 470.0, 6.0005)
         self.assertEqual(m5.shape, (7,))
         self.assertInTolerance(m5[-1], 180.0, 0.0005)
+        self.assertInTolerance(m6[0], 661.0, 0.0005)
+        self.assertInTolerance(m6[1], 520.0, 0.0005)
+        self.assertInTolerance(m6[2], 545.0, 6.0005)
+        self.assertEqual(m6.shape, (7,))
+        self.assertInTolerance(m6[-1], 112.0, 0.0005)
+        self.assertInTolerance(m7[0], 661.0, 0.0005)
+        self.assertInTolerance(m7[1], 520.0, 0.0005)
+        self.assertInTolerance(m7[2], 545.0, 6.0005)
+        self.assertEqual(m7.shape, (7,))
+        self.assertInTolerance(m7[-1], 112.0, 0.0005)
 
     def test_feature_chi1_dihedral(self):
         """Check chi1 dihedral and dihedral class features"""

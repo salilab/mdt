@@ -576,6 +576,7 @@ class TableTests(MDTTest):
                                          mdt.uniform_bins(36, -180, 10))
         m = self.get_test_mdt(mlib, features=(restyp0,restyp1))
         m2 = self.get_test_mdt(mlib, features=(restyp1,restyp0))
+        # New features must be a subset of the old
         for features in ((chi1,restyp0), (restyp1,restyp0,restyp0)):
             self.assertRaises(ValueError, m.reshape, features=features,
                               offset=m.offset, shape=(22,22))
@@ -585,11 +586,29 @@ class TableTests(MDTTest):
         m3 = m.reshape(features=(restyp0,restyp1), offset=(0,0), shape=m.shape)
         self.assertMDTsEqual(m, m3)
         m3 = m.reshape(features=(restyp0,restyp1), offset=(4,2), shape=(11,10))
+        # Reshaping to same offset and shape should be a no-op
+        m4 = m3.reshape(features=(restyp0,restyp1), offset=(4,2), shape=(11,10))
         self.assertEqual(m3.shape, (11,10))
         self.assertEqual(m3.offset, (4,2))
         inds = []
         while self.roll_inds(inds, m3.shape, m3.offset):
             self.assertAlmostEqual(m[inds], m3[inds], places=3)
+            self.assertAlmostEqual(m[inds], m4[inds], places=3)
+        # Offset cannot be less than old
+        for offset in [(3,2), (4,1)]:
+            self.assertRaises(IndexError, m3.reshape,
+                              features=(restyp0,restyp1), offset=offset,
+                              shape=(1,1))
+        # Negative shape (old end+shape) must result in at least size 1
+        for shape in [(-11,10), (11,-10)]:
+            self.assertRaises(IndexError, m3.reshape,
+                              features=(restyp0,restyp1), offset=(4,2),
+                              shape=shape)
+        # Shape cannot be larger than old
+        for shape in [(12,10), (11,11)]:
+            self.assertRaises(IndexError, m3.reshape,
+                              features=(restyp0,restyp1), offset=(4,2),
+                              shape=shape)
 
     def test_reshape_distancemdt(self):
         """Check that reshaping distance mdt produces the table correctly"""

@@ -100,7 +100,7 @@ static gboolean check_start_end(const struct mod_mdt *mdt, const int offset[],
       end = offset[i] + shape[i];
     }
     if (offset[i] + 1 < oldfeat->istart || end < offset[i] + 1
-        || end > oldfeat->nbins) {
+        || end > oldfeat->iend) {
       g_set_error(err, MDT_ERROR, MDT_ERROR_INDEX,
                   "%s: For feature %d, new start %d and size %d are out "
                   "of range.", routine, features[i], offset[i], shape[i]);

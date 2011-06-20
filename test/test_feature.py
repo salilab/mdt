@@ -63,6 +63,8 @@ class FeatureTests(MDTTest):
         """Check average sidechain Biso feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        self.assertRaises(ValueError, mdt.features.SidechainBiso, mlib,
+                          bins=mdt.uniform_bins(5, 0, 10), protein=3)
         sidechain_biso = mdt.features.SidechainBiso(mlib,
                                                bins=mdt.uniform_bins(5, 0, 10))
         mdl = modeller.model(env)
@@ -108,6 +110,7 @@ class FeatureTests(MDTTest):
         aln.append_sequence("AFVVTDNCIKXCKYTDCVEVCPVDCFYEG")
         aln.append_sequence("DNCIKXCCYCDCVEPCPVDCFGEGAFVVT")
         mlib = self.get_mdt_library()
+        self.assertRaises(ValueError, mdt.features.ResidueType, mlib, protein=3)
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
         restyp0_del3 = mdt.features.ResidueType(mlib, protein=0, delta=3)
@@ -199,6 +202,8 @@ class FeatureTests(MDTTest):
         for out_of_range in (-1, 2):
             self.assertRaises(ValueError, mdt.features.ResidueGroup,
                               mlib, residue_grouping=out_of_range)
+        self.assertRaises(ValueError, mdt.features.ResidueGroup,
+                          mlib, protein=3)
         m = self.get_test_mdt(mlib, features=mnch)
         self.assertEqual([b for b in m], [139, 7, 14, 0])
         m = self.get_test_mdt(mlib, features=hydro)

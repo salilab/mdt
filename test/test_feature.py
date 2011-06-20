@@ -232,6 +232,37 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m[0], 74.0, 0.0005)
         self.assertInTolerance(m[1], 0.0, 0.0005)
 
+    def test_bad_hbond_class_file(self):
+        """Check reading of bad hbond class file"""
+        mlib = self.get_mdt_library()
+        open('badhbond', 'w').write("ATMGRP 'N'    not-a-float")
+        self.assertRaises(mdt.MDTError, mlib.hbond_classes.read, 'badhbond')
+        os.unlink('badhbond')
+
+    def test_bad_atom_class_file(self):
+        """Check reading of bad atom class file"""
+        mlib = self.get_mdt_library()
+
+        self.assertRaises(mdt.IOError, mlib.atom_classes.read,
+                          '/does/not/exist/test.lib')
+
+        # Bad fields after ATMGRP
+        open('badatmcls', 'w').write("ATMGRP not-a-quoted-string")
+        self.assertRaises(mdt.MDTError, mlib.atom_classes.read, 'badatmcls')
+
+        # ATOM outside of ATMGRP
+        open('badatmcls', 'w').write("ATOM 'foo' 'bar'")
+        self.assertRaises(mdt.MDTError, mlib.atom_classes.read, 'badatmcls')
+
+        # Bad fields after ATOM
+        open('badatmcls', 'w').write("ATMGRP 'foo'\nATOM 'ok' not-a-string")
+        self.assertRaises(mdt.MDTError, mlib.atom_classes.read, 'badatmcls')
+
+        # Line starting with something not ATOM or ATMGRP
+        open('badatmcls', 'w').write("DBLGRP 'foo'")
+        self.assertRaises(mdt.MDTError, mlib.atom_classes.read, 'badatmcls')
+        os.unlink('badatmcls')
+
     def test_feature_hbond_undef(self):
         """Check hydrogen bond features undefined bin"""
         mdl = self.build_test_model()

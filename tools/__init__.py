@@ -297,6 +297,16 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         env['SIZEOF_POINTER'] = conf.CheckSizeof()
         conf.CheckGCCVisibility()
         conf.CheckGlib2()
+        # Look for the hdf5.h header file. todo: make sure its version
+        # matches that of the HDF5 libraries included with Modeller.
+        if not conf.CheckCHeader('hdf5.h'):
+            print "HDF5 is required to build this package. Make sure you have"
+            print "the same version that MODELLER is built with (check the"
+            print "Modeller changelog). If it is installed already, set the"
+            print "scons 'includepath' option to the directory containing"
+            print "the hdf5.h header file."
+            Exit(1)
+
         # Check explicitly for False, since all checks will return Null if
         # configure has been disabled
         if conf.CheckModeller() is False:

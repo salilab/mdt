@@ -731,9 +731,11 @@ class TableTests(MDTTest):
                          mdt.Double):
             m2 = mdt.Table(mlib, features=features, bin_type=bin_type)
             m2.add_alignment(aln)
+            m2.write_hdf5('test.hdf5')
             self.assertMDTsEqual(m1, m2)
             m3 = m1.copy(bin_type=bin_type)
             self.assertMDTsEqual(m1, m3)
+        os.unlink('test.hdf5')
 
     def test_copy_bad_bin_type(self):
         """Table.copy() should complain if given a bad bin type"""

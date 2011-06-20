@@ -69,6 +69,15 @@ class TableTests(MDTTest):
             self.assertRaises(ValueError, mdt.Table, mlib,
                               features=(restyp1,restyp2))
 
+    def test_make_outrange(self):
+        """Check handling of out-of-range features in mdt.make()"""
+        class OutOfRangeFeature(object):
+            def _get_ifeat(self, mlib):
+                return 0
+        mlib = self.get_mdt_library()
+        f1 = OutOfRangeFeature()
+        self.assertRaises(IndexError, mdt.Table, mlib, features=f1)
+
     def test_mdt_formats(self):
         """Make sure we can read and write MDT files"""
         env = self.get_environ()

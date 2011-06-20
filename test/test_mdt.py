@@ -392,6 +392,10 @@ class TableTests(MDTTest):
         m = self.get_test_mdt(mlib, features=(restyp,chi1))
         m.entropy_full()
 
+        # Empty table should give an error
+        empty = mdt.Table(mlib, features=(restyp,chi1))
+        self.assertRaises(mdt.MDTError, empty.entropy_full)
+
     def test_exp_transform(self):
         """Check for correctness of exp transform"""
         mlib = self.get_mdt_library()

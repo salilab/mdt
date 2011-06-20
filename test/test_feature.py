@@ -46,6 +46,8 @@ class FeatureTests(MDTTest):
         """Check alpha content feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        self.assertRaises(ValueError, mdt.features.AlphaContent, mlib,
+                          bins=mdt.uniform_bins(10, 0, 0.1), protein=3)
         alpha = mdt.features.AlphaContent(mlib,
                                           bins=mdt.uniform_bins(10, 0, 0.1))
         for (alnfile, bin) in (('tiny.ali', 0), ('alignment.ali', 5)):

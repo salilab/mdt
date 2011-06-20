@@ -165,6 +165,8 @@ class FeatureTests(MDTTest):
         """Check Ramachandran mainchain conformation class feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        self.assertRaises(ValueError, mdt.features.MainchainConformation,
+                          mlib, protein=3)
         conf = mdt.features.MainchainConformation(mlib)
         aln = modeller.alignment(env, file='test/data/tiny.ali')
         m = mdt.Table(mlib, features=conf)
@@ -652,6 +654,7 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         chi1 = mdt.features.Chi1Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
+        self.assertRaises(ValueError, mdt.features.Chi1Class, mlib, protein=3)
         chi1class = mdt.features.Chi1Class(mlib)
         m = self.get_test_mdt(mlib, features=chi1)
         self.assertEqual(m.features[0].periodic, True)

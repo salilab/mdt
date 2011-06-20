@@ -4,6 +4,7 @@ from mdt_test import MDTTest
 import mdt
 import mdt.features
 import os
+import sys
 
 class BondLibTests(MDTTest):
 
@@ -33,6 +34,17 @@ class BondLibTests(MDTTest):
         # Make sure that valid Python code was produced
         code = compile(open('test.out').read(), 'test.out', 'exec')
         os.unlink('test.out')
+
+    def test_bad_bin_name_write_bondlib(self):
+        """Test the write_bondlib function handling of bad bin names"""
+        mlib = self.get_mdt_library()
+
+        f1 = mdt.features.XRayResolution(mlib, mdt.uniform_bins(3, -1.0, 1.5))
+        f2 = mdt.features.ResidueType(mlib)
+        m = self.get_test_mdt(mlib, [f1, f2])
+        for func in (mdt.write_bondlib, mdt.write_anglelib,
+                     mdt.write_improperlib):
+            self.assertRaises(ValueError, func, sys.stdout, m)
 
     def test_write_anglelib(self):
         """Test the write_anglelib function"""

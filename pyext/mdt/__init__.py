@@ -1002,8 +1002,11 @@ def _write_meanstdevlib(fh, mdt, numat, phystype, feattype, convfunc,
             res = symbols[0]
             ats = tuple(symbols[1:])
             if len(ats) != numat:
-                raise ValueError("Bin name %s should be res. plus %d atoms"
-                                 % (bin.symbol, numat))
+                example_atoms = ['CA', 'C', 'N', 'O']
+                raise ValueError("Bin name '%s' should be residue name "
+                                 "plus %d atoms, separated by colons, e.g. %s"
+                                 % (bin.symbol, numat,
+                                    'ALA:' + ':'.join(example_atoms[:numat])))
             mean, stdev = mdt[num].mean_stdev()
             fh.write("    ( '%s', %s, %.4f, %.4f ),\n" \
                      % (res, str(ats), convfunc(mean), convfunc(stdev)))

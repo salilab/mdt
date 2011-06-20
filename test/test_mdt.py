@@ -383,6 +383,10 @@ class TableTests(MDTTest):
         # Check against ENTROPY_MDT_HX value for this system in MDT:
         self.assertAlmostEqual(m.entropy_hx(), 2.7048, places=3)
 
+        # Empty table should give an error
+        empty = mdt.Table(mlib, features=(restyp,chi1))
+        self.assertRaises(mdt.MDTError, empty.entropy_hx)
+
     def test_entropy_full(self):
         """Test entropy_full()"""
         mlib = self.get_mdt_library()

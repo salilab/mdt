@@ -90,6 +90,7 @@ class TableTests(MDTTest):
         aln.append_sequence('CVEVCPVDCFYEGAFVVTDNCIKCKYTX')
         m.add_alignment(aln)
         m.write('test.mdt')
+        self.assertRaises(IOError, m.write, '/does/not/exist/foo.mdt')
         m2 = m.copy()
         self.assertMDTsEqual(m, m2)
         m2 = mdt.Table(mlib, file='test.mdt')

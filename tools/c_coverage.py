@@ -69,6 +69,7 @@ class _CCoverageTester(object):
         return ", ".join(ranges)
 
     def _parse_gcov_file(self, cov):
+        executable_statements = 0
         missing = []
         for line in open(cov):
             spl = line.split(':', 2)
@@ -79,7 +80,10 @@ class _CCoverageTester(object):
             if line_number == 0:
                 if spl[2].startswith('Source:'):
                     source = spl[2][7:].strip()
-        return source, line_number, line_number - len(missing), missing
+            elif calls != '-':
+                executable_statements += 1
+        return (source, executable_statements,
+                executable_statements - len(missing), missing)
 
     def _report_gcov_file(self, source, statements, executed, missing):
         cover = float(executed) * 100. / float(statements)

@@ -38,10 +38,12 @@ class _CCoverageTester(object):
                 for cov in covs:
                     source, statements, executed, missing \
                                  = self._parse_gcov_file(cov)
-                    self._report_gcov_file(source, statements, executed,
-                                           missing)
-                    total_statements += statements
-                    total_executed += executed
+                    # Skip system and non-MDT headers
+                    if not source.startswith('/'):
+                        self._report_gcov_file(source, statements, executed,
+                                               missing)
+                        total_statements += statements
+                        total_executed += executed
                     os.unlink(cov)
         print >> sys.stderr, divider
         self._report_gcov_file('TOTAL', total_statements, total_executed, [])

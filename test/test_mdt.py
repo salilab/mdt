@@ -677,6 +677,10 @@ class TableTests(MDTTest):
             self.assertRaises(ValueError, m.normalize, dimensions=dim,
                               dx_dy=(1,)*dim, to_zero=False, to_pdf=True)
 
+        # Size of dx_xy must match dimensions
+        self.assertRaises(ValueError, m.normalize, dimensions=2, dx_dy=1,
+                          to_zero=False, to_pdf=True)
+
         # A normalized empty MDT should be the prior, i.e. 1/nbin:
         m2 = m.normalize(dimensions=2, dx_dy=(1,1), to_zero=False, to_pdf=True)
         inds = []
@@ -686,6 +690,12 @@ class TableTests(MDTTest):
         inds = []
         while self.roll_inds(inds, m.shape, m.offset):
             self.assertAlmostEqual(1./22., m2[inds], places=3)
+
+        # A normalized empty MDT should be empty if to_zero=True
+        m2 = m.normalize(dimensions=2, dx_dy=(1,1), to_zero=True, to_pdf=False)
+        self.assertEqual(m.pdf, 0)
+        self.assertEqual(m2.pdf, 1)
+        self.assertMDTsEqual(m, m2, check_pdf=False)
 
     def test_write_asgl(self):
         """Check that ASGL output works"""

@@ -50,13 +50,14 @@ class MDTTest(ModellerTest):
             self.assertAlmostEqual(mdt1[inds], mdt2[inds], places=3)
         self.assertEqual(npoints, reduce(lambda x,y: x*y, shape))
 
-    def assertMDTsEqual(self, mdt1, mdt2):
+    def assertMDTsEqual(self, mdt1, mdt2, check_pdf=True):
         """Make sure that two MDTs are equal"""
         self.assertEqual(len(mdt1.features), len(mdt2.features))
         self.assertEqual(mdt1.n_proteins, mdt2.n_proteins)
         self.assertEqual(mdt1.n_protein_pairs, mdt2.n_protein_pairs)
         self.assertEqual(mdt1.sample_size, mdt2.sample_size)
-        self.assertEqual(mdt1.pdf, mdt2.pdf)
+        if check_pdf:
+            self.assertEqual(mdt1.pdf, mdt2.pdf)
         for (f1, f2) in zip(mdt1.features, mdt2.features):
             self.assertEqual(len(f1.bins), len(f2.bins))
             self.assertEqual(f1.ifeat, f2.ifeat)

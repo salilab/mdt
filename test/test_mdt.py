@@ -78,6 +78,49 @@ class TableTests(MDTTest):
         f1 = OutOfRangeFeature()
         self.assertRaises(IndexError, mdt.Table, mlib, features=f1)
 
+    def test_bad_read(self):
+        """Check error handling in Table.read()"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        restyp = mdt.features.ResidueType(mlib)
+        feat = """
+  #  FEATURE NBINS NAME
+  1        1    22 Residue type of protein 0
+
+"""
+
+        open('bad.mdt', 'w').write("%-37s: garbage\n" % "Number of alignments")
+        self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
+
+        open('bad.mdt', 'w').write("%-37s: garbage\n" % "Sample size")
+        self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
+
+        open('bad.mdt', 'w').write("  #  FEATURE NBINS NAME\ngarbage\n")
+        self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
+
+        open('bad.mdt', 'w').write(feat + "  # ISTART   IEND\n")
+        self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
+
+        open('bad.mdt', 'w').write(feat + "  # ISTART   IEND\ngarbage\n")
+        self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
+
+        open('bad.mdt', 'w').write(feat + "MDT TABLE START: garbage\n")
+        self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
+
+        open('bad.mdt', 'w').write(feat + "MDT TABLE START:       1\n")
+        self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
+
+        open('bad.mdt', 'w').write(feat + "MDT TABLE START:       1\ngarbage\n")
+        self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
+
+        open('bad.mdt', 'w').write(feat + "MDT TABLE START:       1\n1.0\n")
+        self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
+
+        open('bad.mdt', 'w').write(feat + "MDT TABLE START:       1\n1.0\nf\n")
+        self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
+
+        os.unlink('bad.mdt')
+
     def test_mdt_formats(self):
         """Make sure we can read and write MDT files"""
         env = self.get_environ()

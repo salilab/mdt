@@ -4,6 +4,7 @@ import mdt
 import mdt.features
 import modeller
 import os
+import math
 
 class FeatureTests(MDTTest):
 
@@ -827,6 +828,48 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[19], 2)
         self.assertEqual(m[20], 1)
         self.assertEqual(m[21], 0)
+
+    def test_dihedral_diff_periodic(self):
+        """Make sure that dihedral difference features are periodic"""
+        def set_omega(mdl, angle):
+            ca = mdl.atoms['CA:1']
+            c = mdl.atoms['C:1']
+            n2 = mdl.atoms['N:2']
+            ca2 = mdl.atoms['CA:2']
+            n2.x = n2.y = n2.z = 0.0
+            c.x = -2.0
+            c.y = c.z = 0.0
+            ca.x = -2.0
+            ca.y = 2.0
+            ca.z = 0.0
+            ca2.x = 0.0
+            ca2.y = 2.0 * math.cos(math.pi * angle / 180.0)
+            ca2.z = 2.0 * math.sin(math.pi * angle / 180.0)
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        omegadiff = mdt.features.OmegaDihedralDifference(mlib,
+                                       mdt.uniform_bins(36, -180, 10))
+        # Note that difference must be shortest around the circle, so
+        # 100.0 - (-100.0) is not 200 degrees but -160 degrees
+        for dih1, dih2, expected in ((80.0, 80.0, 0.0),
+                                     (80.0, -80.0, -160.0),
+                                     (-80.0, 80.0, 160.0),
+                                     (-100.0, 100.0, -160.0),
+                                     (100.0, -100.0, 160.0)):
+            m = mdt.Table(mlib, features=omegadiff)
+            a = modeller.alignment(env)
+            for d in dih1, dih2:
+                mdl = modeller.model(env)
+                mdl.build_sequence('CC')
+                set_omega(mdl, d)
+                a.append_model(mdl, atom_files='test', align_codes='test')
+            m.add_alignment(a, sympairs=True)
+            # 2 data points, 1 for each residue
+            self.assertInTolerance(m.sample_size, 2.0, 1e-5)
+            # Last residue has no omega, so is always undefined
+            self.assertInTolerance(m[-1], 1.0, 1e-5)
+            expected_bin = int((expected + 180.0) / 10.0)
+            self.assertInTolerance(m[expected_bin], 1.0, 1e-5)
 
     def test_feature_omega_dihedral(self):
         """Check omega dihedral and dihedral class features"""

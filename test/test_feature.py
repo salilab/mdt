@@ -847,8 +847,10 @@ class FeatureTests(MDTTest):
             ca2.z = 2.0 * math.sin(math.pi * angle / 180.0)
         env = self.get_environ()
         mlib = self.get_mdt_library()
+        # Make bins start at slightly less than -180, to allow for floating
+        # point rounding
         omegadiff = mdt.features.OmegaDihedralDifference(mlib,
-                                       mdt.uniform_bins(36, -180, 10))
+                                       mdt.uniform_bins(36, -180.01, 10))
         # Note that difference must be shortest around the circle, so
         # 100.0 - (-100.0) is not 200 degrees but -160 degrees
         for dih1, dih2, expected in ((80.0, 80.0, 0.0),

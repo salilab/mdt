@@ -210,6 +210,19 @@ class FeatureTests(MDTTest):
         m = self.get_test_mdt(mlib, features=hydro)
         self.assertEqual([b for b in m], [97, 47, 16])
 
+    def test_feature_iatta_special(self):
+        """Check atom type feature with disulfide/termini special handling"""
+        env = self.get_environ()
+        mlib = mdt.Library(env, special_atoms=True)
+        mlib.atom_classes.read('${LIB}/atmcls-melo.lib')
+        attyp = mdt.features.AtomType(mlib)
+        aln = modeller.alignment(env, file='test/data/tiny.ali')
+        m = mdt.Table(mlib, features=attyp)
+        m.add_alignment(aln)
+        self.assertInTolerance(m[0], 6.0, 0.0005)
+        self.assertInTolerance(m[1], 0.0, 0.0005)
+        self.assertInTolerance(m[2], 5.0, 0.0005)
+
     def test_feature_iatta(self):
         """Check for atom type features"""
         env = self.get_environ()

@@ -78,6 +78,22 @@ class TableTests(MDTTest):
         f1 = OutOfRangeFeature()
         self.assertRaises(IndexError, mdt.Table, mlib, features=f1)
 
+    def test_make_shape(self):
+        """Test Table.make() with shape"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        restyp = mdt.features.ResidueType(mlib)
+        for shape in [[0,0], [-22], [23]]:
+            self.assertRaises(ValueError, mdt.Table, mlib, features=restyp,
+                              shape=shape)
+        for shape in [[], [0], [22]]:
+            t = mdt.Table(mlib, features=restyp, shape=shape)
+            self.assertEqual(t.shape, (22,))
+        t = mdt.Table(mlib, features=restyp, shape=[10])
+        self.assertEqual(t.shape, (10,))
+        t = mdt.Table(mlib, features=restyp, shape=[-4])
+        self.assertEqual(t.shape, (18,))
+
     def test_bad_read(self):
         """Check error handling in Table.read()"""
         env = self.get_environ()

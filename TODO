@@ -1,3 +1,2 @@
 - pass indices array rather than reallocating for every atom pair
-- allow removal of undefined bin at feature creation time
 - residue type feature that includes dna/rna

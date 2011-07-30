@@ -103,7 +103,8 @@ gboolean mdt_reshape(const struct mdt *mdtin, struct mdt *mdtout,
 /** Clear the MDT array, and set feature types. Return TRUE on success. */
 MDTDLLEXPORT
 gboolean mdt_make(struct mdt *mdt, const struct mdt_library *mlib,
-                  const int features[], int n_features, GError **err);
+                  const int features[], int n_features, const int shape[],
+                  int n_shape, GError **err);
 
 /** Make mdtout a copy of mdtin. */
 MDTDLLEXPORT

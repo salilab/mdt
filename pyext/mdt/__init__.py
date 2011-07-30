@@ -280,6 +280,8 @@ class Table(TableSection):
          - `features`: if specified (and `file` is not), a list of feature
            types to initialize the table with (using :meth:`Table.make`)
          - `bin_type`: type of storage for bin data (see :ref:`binstorage`).
+         - `shape`: if specified with `features`, the shape of the new table
+           (see :meth:`Table.make`)
 
        Individual elements from the table can be accessed in standard Python
        fashion, e.g. ::
@@ -301,7 +303,8 @@ class Table(TableSection):
     _basept = None
     _mlib = None
 
-    def __init__(self, mlib, file=None, features=None, bin_type=Double):
+    def __init__(self, mlib, file=None, features=None, bin_type=Double,
+                 shape=[]):
         if not isinstance(bin_type, _BinType):
             raise TypeError("bin_type must be a BinType object - " + \
                             "e.g. mdt.Float, mdt.Double")
@@ -313,7 +316,7 @@ class Table(TableSection):
             else:
                 self.read(file)
         elif features:
-            self.make(features)
+            self.make(features, shape)
 
     def __getstate__(self):
         d = Table.__getstate__(self)
@@ -364,11 +367,13 @@ class Table(TableSection):
         _mdt.mdt_copy(self._modpt, mdtout._modpt, bin_type)
         return mdtout
 
-    def make(self, features):
+    def make(self, features, shape=[]):
         """Clear the table, and set the features. `features` must be a list of
-           previously created objects from the :mod:`mdt.features` module."""
+           previously created objects from the :mod:`mdt.features` module.
+           If given, `shape` has the same meaning as in :meth:`Table.reshape`
+           and causes the table to use only a subset of the feature bins."""
         features = self._features_to_ifeat(features)
-        _mdt.mdt_make(self._modpt, self._mlib._modpt, features)
+        _mdt.mdt_make(self._modpt, self._mlib._modpt, features, shape)
 
     def write(self, file, write_preamble=True):
         """Write the table to `file`. If `write_preamble` is False, it will

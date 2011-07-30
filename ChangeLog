@@ -5,6 +5,8 @@ HEAD:
  - Support Python 3.
  - "scons test" now reports the Python coverage (and also C coverage,
    if using gcc and adding "coverage=true" to the scons command line).
+ - mdt.Table() now takes an optional 'shape' argument, which acts identically
+   to that accepted by mdt.Table.reshape().
 
 MDT 5.0   03-31-2011:
  - First open source (GPLv2) release.

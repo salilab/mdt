@@ -46,6 +46,15 @@ void mdt_fill_residue_bonds(struct mdt_residue_bond_list *bondlist,
                             const struct mdt_library *mlib,
                             struct mod_libraries *libs);
 
+/** Assign atom types to a structure.
+    The array of atom types is returned. It is the caller's responsibility
+    to free it when it is no longer needed. */
+MDTDLLLOCAL
+int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
+                        const struct mod_sequence *seq,
+                        const struct mdt_residue_bond_list *bondlist,
+                        const struct mod_libraries *libs);
+
 G_END_DECLS
 
 #endif  /* __MDT_RESIDUE_BONDS_H */

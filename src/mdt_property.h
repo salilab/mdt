@@ -36,6 +36,8 @@ struct mdt_properties {
   float *sidechain_biso;
   /** Atom indices for distance_atoms */
   int *dstind1, *dstind2;
+  /** Atom types for residue bond separation */
+  int *resbond_attyp;
 };
 
 /** Make a new mdt_properties structure */
@@ -144,6 +146,12 @@ void property_distance_atom_indices(const struct mod_alignment *aln, int is,
                                     const struct mdt_library *mlib,
                                     const int **dstind1, const int **dstind2);
 
+/** Get/calculate the array of atom types for residue bond separation */
+MDTDLLLOCAL
+const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
+                                  struct mdt_properties *prop,
+                                  struct mdt_library *mlib,
+                                  struct mod_libraries *libs);
 
 /* Pack two atom indices into a pointer.
    Note  - no implementation for platforms where pointer is not 32 or 64 bits.

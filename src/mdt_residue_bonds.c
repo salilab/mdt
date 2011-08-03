@@ -230,3 +230,39 @@ void mdt_fill_residue_bonds(struct mdt_residue_bond_list *bondlist,
   g_hash_table_destroy(res_hash);
   fill_distances(bondlist);
 }
+
+/** Assign atom types to a structure.
+    The array of atom types is returned. It is the caller's responsibility
+    to free it when it is no longer needed. */
+int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
+                        const struct mod_sequence *seq,
+                        const struct mdt_residue_bond_list *bondlist,
+                        const struct mod_libraries *libs)
+{
+  int *attyp = g_malloc(sizeof(int) * struc->cd.natm);
+  int iat, *iresatm;
+
+  iresatm = mod_int1_pt(&struc->cd.iresatm);
+  for (iat = 0; iat < struc->cd.natm; ++iat) {
+    int ires, restyp;
+
+    attyp[iat] = -1;
+
+    ires = iresatm[iat] - 1;
+    restyp = mod_int1_get(&seq->irestyp, ires);
+
+    if (restyp <= bondlist->nres) {
+      struct mdt_residue_bonds *resbond = &bondlist->bonds[restyp-1];
+      char *atmnam = mod_coordinates_atmnam_get(&struc->cd, iat);
+      gpointer attyp_pt;
+
+      if (resbond->atom_names
+          && g_hash_table_lookup_extended(resbond->atom_names, atmnam, NULL,
+                                          &attyp_pt)) {
+        attyp[iat] = GPOINTER_TO_INT(attyp_pt);
+      }
+      g_free(atmnam);
+    }
+  }
+  return attyp;
+}

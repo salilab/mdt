@@ -35,6 +35,7 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
     prop[i].sidechain_biso = NULL;
     prop[i].dstind1 = NULL;
     prop[i].dstind2 = NULL;
+    prop[i].resbond_attyp = NULL;
   }
   return prop;
 }
@@ -68,6 +69,7 @@ void mdt_properties_free(struct mdt_properties *prop,
     g_free(prop[i].sidechain_biso);
     g_free(prop[i].dstind1);
     g_free(prop[i].dstind2);
+    g_free(prop[i].resbond_attyp);
   }
   g_free(prop);
 }
@@ -522,6 +524,26 @@ const struct mdt_tuple_list *property_tuples(const struct mod_alignment *aln,
     prop[is].tuples = tupclass(struc, seq, mlib->tupclass, libs);
   }
   return prop[is].tuples;
+}
+
+/** Get/calculate the array of atom types for residue bond separation */
+const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
+                                  struct mdt_properties *prop,
+                                  struct mdt_library *mlib,
+                                  struct mod_libraries *libs)
+{
+  if (!prop[is].resbond_attyp) {
+    struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
+    struct mod_structure *struc = mod_alignment_structure_get(aln, is);
+
+    /* Make sure the residue bond list is populated (once per mdt_library) */
+    mdt_fill_residue_bonds(&mlib->residue_bond_list, mlib, libs);
+
+    /* Populate the atom types (once per sequence) */
+    prop[is].resbond_attyp = mdt_residue_bonds_assign_atom_types(struc, seq,
+                                               &mlib->residue_bond_list, libs);
+  }
+  return prop[is].resbond_attyp;
 }
 
 /** Require that the tuples have at least min_natom atoms each */

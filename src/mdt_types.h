@@ -8,6 +8,7 @@
 
 #include "mdt_config.h"
 #include "mod_mdt_type.h"
+#include "mdt_residue_bonds.h"
 
 #include <glib.h>
 
@@ -68,6 +69,8 @@ struct mdt_library {
   gboolean feature_added;
   /** Atom names for distance calculation */
   char *distance_atoms[2];
+  /** For each residue, number of bonds separating each pair of atoms */
+  struct mdt_residue_bond_list residue_bond_list;
 };
 
 /** Make a new mdt structure */

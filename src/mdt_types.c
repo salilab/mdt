@@ -9,6 +9,7 @@
 #include "mdt_types.h"
 #include "mdt_atom_classes.h"
 #include "mdt_feature.h"
+#include "mdt_residue_bonds.h"
 
 /** Make a new mdt structure */
 struct mdt *mdt_new(mod_mdt_bin_type bin_type)
@@ -54,6 +55,7 @@ struct mdt_library *mdt_library_new(void)
   mlib->features = g_array_set_size(mlib->features, mlib->base.nfeat);
   mlib->distance_atoms[0] = g_strdup("");
   mlib->distance_atoms[1] = g_strdup("");
+  mdt_residue_bond_list_init(&mlib->residue_bond_list);
   return mlib;
 }
 
@@ -77,5 +79,6 @@ void mdt_library_free(struct mdt_library *mlib)
   g_array_free(mlib->features, TRUE);
   g_free(mlib->distance_atoms[0]);
   g_free(mlib->distance_atoms[1]);
+  mdt_residue_bond_list_free(&mlib->residue_bond_list);
   g_free(mlib);
 }

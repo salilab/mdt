@@ -47,6 +47,13 @@ try:
 except ValueError:
     version_info = version
 
+def _prepare_bond_span(bond_span):
+    """Helper function for bond_span_range"""
+    if bond_span is None:
+        return (-1,-1)
+    else:
+        return bond_span
+
 class _BinType(object):
     def __init__(self, bin_type):
         self._bin_type = bin_type
@@ -676,6 +683,7 @@ class Table(TableSection):
     def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
                       residue_span_range=(-99999, -2, 2, 99999),
                       chain_span_range=(-99999, 0, 0, 99999),
+                      bond_span_range=None,
                       exclude_bonds=False, exclude_angles=False,
                       exclude_dihedrals=False, sympairs=False,
                       symtriples=False, io=None, edat=None):
@@ -718,6 +726,18 @@ class Table(TableSection):
             of (-99999, 0, 0, 99999) allows all interactions. For example, using
             (-99999, -1, 1, 99999) instead would exclude all interactions
             within the same chain.
+          - `bond_span_range`: if given, it should be a list of two integers
+            which specify the minimum and maximum number of bonds that separate
+            a pair of atoms in the scan. It is used only by the
+            :ref:`atom pair <atom_pair_features>` and
+            :ref:`tuple pair <tuple_pair_features>` features. (See
+            :class:`features.AtomBondSeparation` for more details.) The bond
+            library (see :attr:`Library.bond_classes`) must be loaded to use
+            this. For example, using (1, 2) will include only atoms that
+            are directly chemically bonded or that are both bonded to a third
+            atom, while (0, 9999) will only exclude pairs of atoms that have
+            no path of bonds between them (e.g. atoms in different chains or
+            when at least one of the atoms is not involved in any bonds).
           - `exclude_bonds`: if True, then all pairs of atoms involved in a
             chemical bond (see :attr:`Library.bond_classes`) are excluded from
             :ref:`atom pair <atom_pair_features>` and
@@ -738,6 +758,7 @@ class Table(TableSection):
         _mdt.mdt_add_alignment(self._modpt, self._mlib._modpt, aln.modpt,
                                distngh, False, surftyp, accessibility_type,
                                residue_span_range, chain_span_range,
+                               _prepare_bond_span(bond_span_range),
                                exclude_bonds, exclude_angles, exclude_dihedrals,
                                sympairs, symtriples, io.modpt, edat.modpt)
 
@@ -745,6 +766,7 @@ class Table(TableSection):
                               accessibility_type=8,
                               residue_span_range=(-99999, -2, 2, 99999),
                               chain_span_range=(-99999, 0, 0, 99999),
+                              bond_span_range=None,
                               exclude_bonds=False, exclude_angles=False,
                               exclude_dihedrals=False,
                               sympairs=False, symtriples=False, io=None,
@@ -769,7 +791,9 @@ class Table(TableSection):
         _mdt.mdt_add_alignment_witherr(self._modpt, self._mlib._modpt,
                                        aln.modpt, distngh, False, surftyp,
                                        accessibility_type, residue_span_range,
-                                       chain_span_range, exclude_bonds,
+                                       chain_span_range,
+                                       _prepare_bond_span(bond_span_range),
+                                       exclude_bonds,
                                        exclude_angles, exclude_dihedrals,
                                        sympairs, symtriples, io.modpt,
                                        edat.modpt, errorscale)
@@ -934,6 +958,7 @@ class Source(object):
 
     def sum(self, residue_span_range=(-99999, -2, 2, 99999),
             chain_span_range=(-99999, 0, 0, 99999),
+            bond_span_range=None,
             exclude_bonds=False, exclude_angles=False, exclude_dihedrals=False):
         """Scan all data points in the source, and return the sum.
            See :meth:`Table.add_alignment` for a description of the
@@ -942,6 +967,7 @@ class Source(object):
         f = _mdt.mdt_source_sum
         return f(self._modpt, self._mdt._modpt, self._mlib._modpt,
                  residue_span_range, chain_span_range,
+                 _prepare_bond_span(bond_span_range),
                  exclude_bonds, exclude_angles, exclude_dihedrals,
                  self._edat.modpt)
 

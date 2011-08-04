@@ -63,6 +63,14 @@ int mdt_get_bond_separation(const struct mod_structure *struc,
                             int atom1, int atom2, const int *attyp,
                             const struct mdt_residue_bond_list *bondlist);
 
+/** Get the number of bonds separating two atoms in the same chain.
+    -1 is returned if the atoms are not connected.
+ */
+int mdt_get_bond_separation_same_chain(int atom1, int atom2, int res1,
+                            int res2, const struct mod_sequence *seq,
+                            const int *attyp,
+                            const struct mdt_residue_bond_list *bondlist);
+
 G_END_DECLS
 
 #endif  /* __MDT_RESIDUE_BONDS_H */

@@ -288,6 +288,41 @@ static gboolean residues_in_same_chain(int res1, int res2,
   return FALSE;
 }
 
+/** Get bond separation between two atoms in the same residue */
+static int bond_separation_internal(const struct mod_sequence *seq, int atom1,
+                int atom2, int res, const int *attyp,
+                const struct mdt_residue_bond_list *bondlist)
+{
+  int restyp = mod_int1_get(&seq->irestyp, res) - 1;
+  return get_distance(&bondlist->bonds[restyp], attyp[atom1], attyp[atom2]);
+}
+
+/** Get bond separation between two atoms in different residues. Note that
+    atom1/res1 must be come before atom2/res2 in the amino acid sequence. */
+static int bond_separation_external(const struct mod_sequence *seq, int atom1,
+                int atom2, int res1, int res2, const int *attyp,
+                const struct mdt_residue_bond_list *bondlist)
+{
+  /* Get distance to backbone C in first residue, distance to backbone N
+     in second residue, and add backbone bonds for all intervening residues. */
+  int dist_to_c, dist_to_n, backbone_bonds;
+  int restyp1 = mod_int1_get(&seq->irestyp, res1) - 1;
+  int restyp2 = mod_int1_get(&seq->irestyp, res2) - 1;
+
+  dist_to_c = get_distance(&bondlist->bonds[restyp1], ATOM_TYPE_C,
+                           attyp[atom1]);
+  if (dist_to_c == -1) {
+    return -1;
+  }
+  dist_to_n = get_distance(&bondlist->bonds[restyp2], ATOM_TYPE_N,
+                           attyp[atom2]);
+  if (dist_to_n == -1) {
+    return -1;
+  }
+  backbone_bonds = (res2 - res1 - 1) * 3 + 1;
+  return dist_to_c + backbone_bonds + dist_to_n;
+}
+
 /** Get the number of bonds separating two atoms in a structure.
     -1 is returned if the atoms are not connected. */
 int mdt_get_bond_separation(const struct mod_structure *struc,
@@ -311,34 +346,40 @@ int mdt_get_bond_separation(const struct mod_structure *struc,
   maxres = iresatm[maxatom] - 1;
 
   if (minres == maxres) {
-    /* If atoms are in the same residue, use distance directly */
-    int restyp = mod_int1_get(&seq->irestyp, minres) - 1;
-    return get_distance(&bondlist->bonds[restyp], attyp[minatom],
-                        attyp[maxatom]);
-
+    return bond_separation_internal(seq, minatom, maxatom, minres, attyp,
+                                    bondlist);
   } else if (!residues_in_same_chain(minres, maxres, seq)) {
     /* Atoms in different chains can't be connected. */
     return -1;
 
   } else {
-    /* Otherwise, get distance to backbone C in min residue, distance to
-       backbone N in max residue, and add backbone bonds for all intervening
-       residues. */
-    int dist_to_c, dist_to_n, backbone_bonds;
-    int minrestyp = mod_int1_get(&seq->irestyp, minres) - 1;
-    int maxrestyp = mod_int1_get(&seq->irestyp, maxres) - 1;
+    return bond_separation_external(seq, minatom, maxatom, minres, maxres,
+                                    attyp, bondlist);
+  }
+}
 
-    dist_to_c = get_distance(&bondlist->bonds[minrestyp], ATOM_TYPE_C,
-                             attyp[minatom]);
-    if (dist_to_c == -1) {
-      return -1;
+/** Get the number of bonds separating two atoms in the same chain.
+    -1 is returned if the atoms are not connected.
+ */
+int mdt_get_bond_separation_same_chain(int atom1, int atom2, int res1,
+                            int res2, const struct mod_sequence *seq,
+                            const int *attyp,
+                            const struct mdt_residue_bond_list *bondlist)
+{
+  if (attyp[atom1] < 0 || attyp[atom2] < 0) {
+    return -1;
+  }
+
+  if (res1 == res2) {
+    return bond_separation_internal(seq, atom1, atom2, res1, attyp, bondlist);
+  } else {
+    /* Order atoms by sequence */
+    if (atom1 <= atom2) {
+      return bond_separation_external(seq, atom1, atom2, res1, res2, attyp,
+                                      bondlist);
+    } else {
+      return bond_separation_external(seq, atom2, atom1, res2, res1, attyp,
+                                      bondlist);
     }
-    dist_to_n = get_distance(&bondlist->bonds[maxrestyp], ATOM_TYPE_N,
-                             attyp[maxatom]);
-    if (dist_to_n == -1) {
-      return -1;
-    }
-    backbone_bonds = (maxres - minres - 1) * 3 + 1;
-    return dist_to_c + backbone_bonds + dist_to_n;
   }
 }

@@ -386,6 +386,63 @@ class TableTests(MDTTest):
                         residue_span_range=(-999, 0, 0, 999))
         self.assertEqual(m.sum(), 32.0)
 
+    def test_bond_span_range(self):
+        """Test bond_span_range argument"""
+        env = self.get_environ()
+        mdl = model(env)
+        mdl.build_sequence('A')
+        aln = alignment(env)
+        aln.append_model(mdl, align_codes='test')
+        mlib = self.get_mdt_library()
+        mlib.bond_classes.read('data/bndgrp.lib')
+        dist = mdt.features.AtomDistance(mlib,
+                                         bins=mdt.uniform_bins(60, 0, 0.5))
+
+        # Only 4 direct chemical bonds (N-CA, CA-CB, CA-C, C-O) in ALA; note
+        # that bond library does not include OXT so C-OXT interaction is
+        # excluded
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, bond_span_range=(1,1),
+                        residue_span_range=(0,0,0,0))
+        self.assertEqual(m.sample_size, 4.0)
+
+        # Only 2 dihedrals (N-CA-C-O, O-C-CA-CB)
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, bond_span_range=(3,3),
+                        residue_span_range=(0,0,0,0))
+        self.assertEqual(m.sample_size, 2.0)
+
+        # 4 bonds, 4 angles and 2 dihedrals: 10 in total
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, bond_span_range=(1,3),
+                        residue_span_range=(0,0,0,0))
+        self.assertEqual(m.sample_size, 10.0)
+
+        # Check for bonds between residues (just the N-C bond here)
+        mdl = model(env)
+        mdl.build_sequence('AA')
+        aln = alignment(env)
+        aln.append_model(mdl, align_codes='test')
+
+        # Force a non-symmetric scan (to check handling of bond separation
+        # regardless of which order atom indices are in)
+        diff = mdt.features.ResidueIndexDifference(mlib,
+                                      bins=mdt.uniform_bins(21, -10, 1))
+        m = mdt.Table(mlib, features=(dist,diff))
+        m.add_alignment(aln, bond_span_range=(0,1),
+                        residue_span_range=(-10,-1,1,10))
+        self.assertEqual(m.sample_size, 2.0)
+
+        # Bonds never span chains
+        mdl = model(env)
+        mdl.build_sequence('A/A')
+        aln = alignment(env)
+        aln.append_model(mdl, align_codes='test')
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, bond_span_range=(0,99999),
+                        residue_span_range=(-10,-1,1,10))
+        self.assertEqual(m.sample_size, 0.0)
+
     def test_sources(self):
         """Make sure that alignments and models both work as sources"""
         env = self.get_environ()

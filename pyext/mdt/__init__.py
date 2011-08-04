@@ -739,8 +739,7 @@ class Table(TableSection):
                                distngh, False, surftyp, accessibility_type,
                                residue_span_range, chain_span_range,
                                exclude_bonds, exclude_angles, exclude_dihedrals,
-                               sympairs, symtriples, io.modpt, edat.modpt,
-                               self._mlib._env.libs.modpt)
+                               sympairs, symtriples, io.modpt, edat.modpt)
 
     def add_alignment_witherr(self, aln, distngh=6.0, surftyp=1,
                               accessibility_type=8,
@@ -773,8 +772,7 @@ class Table(TableSection):
                                        chain_span_range, exclude_bonds,
                                        exclude_angles, exclude_dihedrals,
                                        sympairs, symtriples, io.modpt,
-                                       edat.modpt, self._mlib._env.libs.modpt,
-                                       errorscale)
+                                       edat.modpt, errorscale)
 
     def open_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
                        sympairs=False, symtriples=False, io=None, edat=None):
@@ -928,8 +926,7 @@ class Source(object):
         self._modpt = _mdt.mdt_alignment_open(mdt._modpt, mlib._modpt,
                                               aln.modpt, distngh, False,
                                               surftyp, accessibility_type,
-                                              sympairs, symtriples, io.modpt,
-                                              mlib._env.libs.modpt)
+                                              sympairs, symtriples, io.modpt)
 
     def __del__(self):
         if hasattr(self, "_modpt"):
@@ -946,7 +943,7 @@ class Source(object):
         return f(self._modpt, self._mdt._modpt, self._mlib._modpt,
                  residue_span_range, chain_span_range,
                  exclude_bonds, exclude_angles, exclude_dihedrals,
-                 self._mlib._env.libs.modpt, self._edat.modpt)
+                 self._edat.modpt)
 
     def index(self, feat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,
               ip2, ibnd1, ibnd1p, is3, ir3, ir3p):
@@ -973,8 +970,7 @@ class Source(object):
         f = _mdt.mdt_alignment_index
         return f(self._modpt, feat._ifeat, is1, ip1, is2, ir1, ir2, ir1p, ir2p,
                  ia1, ia1p, ip2, ibnd1, ibnd1p, is3, ir3, ir3p,
-                 self._mlib._modpt, self._mlib._env.libs.modpt,
-                 self._edat.modpt)
+                 self._mlib._modpt, self._edat.modpt)
 
 
 def _pass_cutoffs(mdt, num, bin, density_cutoff, entropy_cutoff):

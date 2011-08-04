@@ -1161,20 +1161,19 @@ struct mdt_source *mdt_alignment_open(struct mdt *mdt,
                                       gboolean sdchngh, int surftyp,
                                       int iacc1typ, gboolean sympairs,
                                       gboolean symtriples,
-                                      struct mod_io_data *io,
-                                      struct mod_libraries *libs, GError **err)
+                                      struct mod_io_data *io, GError **err)
 {
   int nseqacc, ierr;
 
   mod_mdt_getdata(&mdt->base, &nseqacc, aln, distngh, sdchngh, surftyp,
-                  iacc1typ, io, libs, &ierr);
+                  iacc1typ, io, mlib->libs, &ierr);
   if (ierr) {
     handle_modeller_error(err);
     return NULL;
   }
 
   mod_lognote("Pre-calculating");
-  mod_mdt_precalc(&mdt->base, &mlib->base, aln, libs, &ierr);
+  mod_mdt_precalc(&mdt->base, &mlib->base, aln, mlib->libs, &ierr);
   if (ierr) {
     handle_modeller_error(err);
     return NULL;
@@ -1220,14 +1219,14 @@ double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
                       const int chain_span_range[4],
                       gboolean exclude_bonds, gboolean exclude_angles,
                       gboolean exclude_dihedrals,
-                      const struct mod_libraries *libs,
                       const struct mod_energy_data *edat, GError **err)
 {
   double sum = 0.;
   int *indf = g_malloc(sizeof(int) * mdt->base.nfeat);
   mdt_source_scan(mdt, mlib, source, residue_span_range, chain_span_range,
-                  exclude_bonds, exclude_angles, exclude_dihedrals, indf, libs,
-                  edat, source->acceptd, source->nseqacc, scan_sum, &sum, err);
+                  exclude_bonds, exclude_angles, exclude_dihedrals, indf,
+                  mlib->libs, edat, source->acceptd, source->nseqacc,
+                  scan_sum, &sum, err);
   g_free(indf);
   return sum;
 }
@@ -1239,13 +1238,12 @@ int mdt_alignment_index(struct mdt_source *source, int ifeat, int is1, int ip1,
                         int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,
                         int ia1p, int ip2, int ibnd1, int ibnd1p, int is3,
                         int ir3, int ir3p, const struct mdt_library *mlib,
-                        const struct mod_libraries *libs,
                         struct mod_energy_data *edat, GError **err)
 {
   int indf;
   indf = my_mdt_index(ifeat, source->aln, is1, ip1, is2, ir1, ir2, ir1p, ir2p,
                       ia1, ia1p, mlib, ip2, ibnd1, ibnd1p, is3, ir3,
-                      ir3p, libs, edat, source->prop, err);
+                      ir3p, mlib->libs, edat, source->prop, err);
   return indf;
 }
 
@@ -1259,15 +1257,14 @@ gboolean mdt_add_alignment(struct mdt *mdt, struct mdt_library *mlib,
                            gboolean exclude_bonds, gboolean exclude_angles,
                            gboolean exclude_dihedrals, gboolean sympairs,
                            gboolean symtriples, struct mod_io_data *io,
-                           struct mod_energy_data *edat,
-                           struct mod_libraries *libs, GError **err)
+                           struct mod_energy_data *edat, GError **err)
 {
   struct mdt_source *source;
 
   mod_lognote("Calculating and checking other data: %d", aln->nseq);
 
   source = mdt_alignment_open(mdt, mlib, aln, distngh, sdchngh, surftyp,
-                              iacc1typ, sympairs, symtriples, io, libs, err);
+                              iacc1typ, sympairs, symtriples, io, err);
   if (source) {
     gboolean ret;
     int *indf = g_malloc(sizeof(int) * mdt->base.nfeat);
@@ -1278,8 +1275,9 @@ gboolean mdt_add_alignment(struct mdt *mdt, struct mdt_library *mlib,
     mod_lognote("Updating the statistics array:");
     ret = mdt_source_scan(mdt, mlib, source, residue_span_range,
                           chain_span_range, exclude_bonds, exclude_angles,
-                          exclude_dihedrals, indf, libs, edat, source->acceptd,
-                          source->nseqacc, scan_update, NULL, err);
+                          exclude_dihedrals, indf, mlib->libs, edat,
+                          source->acceptd, source->nseqacc, scan_update,
+                          NULL, err);
     g_free(indf);
 
     mdt_alignment_close(source);
@@ -1302,15 +1300,14 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
                                    gboolean sympairs, gboolean symtriples,
                                    struct mod_io_data *io,
                                    struct mod_energy_data *edat,
-                                   struct mod_libraries *libs, GError **err,
-                                   float errorscale)
+                                   GError **err, float errorscale)
 {
   struct mdt_source *source;
 
   mod_lognote("Calculating and checking other data: %d", aln->nseq);
 
   source = mdt_alignment_open(mdt, mlib, aln, distngh, sdchngh, surftyp,
-                              iacc1typ, sympairs, symtriples, io, libs, err);
+                              iacc1typ, sympairs, symtriples, io, err);
   if (source) {
     gboolean ret;
     int *indf = g_malloc(sizeof(int) * mdt->base.nfeat);
@@ -1332,9 +1329,9 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
     mod_lognote("Updating the statistics array:");
     ret = mdt_source_scan(mdt, mlib, source, residue_span_range,
                           chain_span_range, exclude_bonds, exclude_angles,
-                          exclude_dihedrals, indf, libs, edat, source->acceptd,
-                          source->nseqacc, scan_update_witherr, &errorscale,
-                          err);
+                          exclude_dihedrals, indf, mlib->libs, edat,
+                          source->acceptd, source->nseqacc,
+                          scan_update_witherr, &errorscale, err);
     g_free(indf);
     mdt_alignment_close(source);
     return ret;

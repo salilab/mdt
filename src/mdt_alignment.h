@@ -25,8 +25,7 @@ struct mdt_source *mdt_alignment_open(struct mdt *mdt,
                                       gboolean sdchngh, int surftyp,
                                       int iacc1typ, gboolean sympairs,
                                       gboolean symtriples,
-                                      struct mod_io_data *io,
-                                      struct mod_libraries *libs, GError **err);
+                                      struct mod_io_data *io, GError **err);
 
 /** Close a source alignment previously opened with mdt_alignment_open(). */
 MDTDLLEXPORT
@@ -40,7 +39,6 @@ double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
                       const int chain_span_range[4],
                       gboolean exclude_bonds, gboolean exclude_angles,
                       gboolean exclude_dihedrals,
-                      const struct mod_libraries *libs,
                       const struct mod_energy_data *edat, GError **err);
 
 /** Return the bin index (starting at 1) of a single MDT feature, at the
@@ -50,7 +48,6 @@ int mdt_alignment_index(struct mdt_source *source, int ifeat, int is1, int ip1,
                         int is2, int ir1, int ir2, int ir1p, int ir2p, int ia1,
                         int ia1p, int ip2, int ibnd1, int ibnd1p, int is3,
                         int ir3, int ir3p, const struct mdt_library *mlib,
-                        const struct mod_libraries *libs,
                         struct mod_energy_data *edat, GError **err);
 
 /** Add data from an alignment to an MDT. Return TRUE on success. */
@@ -63,8 +60,7 @@ gboolean mdt_add_alignment(struct mdt *mdt, struct mdt_library *mlib,
                            gboolean exclude_bonds, gboolean exclude_angles,
                            gboolean exclude_dihedrals, gboolean sympairs,
                            gboolean symtriples, struct mod_io_data *io,
-                           struct mod_energy_data *edat,
-                           struct mod_libraries *libs, GError **err);
+                           struct mod_energy_data *edat, GError **err);
 
 /** Add data from an alignment to an MDT, with error. Return TRUE on success. */
 MDTDLLEXPORT
@@ -79,8 +75,7 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
                                    gboolean exclude_dihedrals,
                                    gboolean sympairs, gboolean symtriples,
                                    struct mod_io_data *io,
-                                   struct mod_energy_data *edat,
-                                   struct mod_libraries *libs, GError **err,
+                                   struct mod_energy_data *edat, GError **err,
                                    float errorscale);
 
 G_END_DECLS

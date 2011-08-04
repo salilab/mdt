@@ -34,12 +34,13 @@ void mdt_free(struct mdt *mdt)
 }
 
 /** Make a new mdt_library structure */
-struct mdt_library *mdt_library_new(void)
+struct mdt_library *mdt_library_new(const struct mod_libraries *libs)
 {
   int i;
   struct mdt_library *mlib;
   mlib = g_malloc(sizeof(struct mdt_library));
   mod_mdt_library_init(&mlib->base);
+  mlib->libs = libs;
   mlib->hbond_cutoff = 3.5;
   mlib->special_atoms = FALSE;
   mlib->feature_added = FALSE;

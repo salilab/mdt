@@ -507,6 +507,12 @@ class AtomDistance(AtomPair):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_atom_distance
 
+class AtomBondSeparation(AtomPair):
+    """Number of bonds between a pair of atoms.
+       For example, two atoms that are directly bonded return '1', while two
+       at opposite ends of an angle return '2'."""
+    _setup = _mdt.mdt_feature_atom_bond_separation
+
 class HydrogenBondSatisfaction(Protein):
     """Hydrogen bond satisfaction index for a protein. This is the average
        difference, over all atoms in the protein, between the HydrogenBondDonor

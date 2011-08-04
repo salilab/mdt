@@ -529,15 +529,12 @@ const struct mdt_tuple_list *property_tuples(const struct mod_alignment *aln,
 /** Get/calculate the array of atom types for residue bond separation */
 const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
                                   struct mdt_properties *prop,
-                                  struct mdt_library *mlib,
-                                  struct mod_libraries *libs)
+                                  const struct mdt_library *mlib,
+                                  const struct mod_libraries *libs)
 {
   if (!prop[is].resbond_attyp) {
     struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
     struct mod_structure *struc = mod_alignment_structure_get(aln, is);
-
-    /* Make sure the residue bond list is populated (once per mdt_library) */
-    mdt_fill_residue_bonds(&mlib->residue_bond_list, mlib, libs);
 
     /* Populate the atom types (once per sequence) */
     prop[is].resbond_attyp = mdt_residue_bonds_assign_atom_types(struc, seq,

@@ -150,8 +150,8 @@ void property_distance_atom_indices(const struct mod_alignment *aln, int is,
 MDTDLLLOCAL
 const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
                                   struct mdt_properties *prop,
-                                  struct mdt_library *mlib,
-                                  struct mod_libraries *libs);
+                                  const struct mdt_library *mlib,
+                                  const struct mod_libraries *libs);
 
 /* Pack two atom indices into a pointer.
    Note  - no implementation for platforms where pointer is not 32 or 64 bits.

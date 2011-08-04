@@ -83,14 +83,10 @@ class Library(modobject):
     _modpt = None
     _env = None
 
-    def __new__(cls, *args, **vars):
-        obj = modobject.__new__(cls)
-        obj._modpt = _mdt.mdt_library_new()
-        return obj
-
     def __init__(self, env, distance_atoms=('CA', 'CA'), special_atoms=False,
                  hbond_cutoff=3.5):
         self._env = env.copy()
+        self._modpt = _mdt.mdt_library_new(self._env.libs.modpt)
         _mdt.mdt_library_hbond_cutoff_set(self._modpt, hbond_cutoff)
         _mdt.mdt_library_special_atoms_set(self._modpt, special_atoms)
         _mdt.mdt_library_distance_atoms_set(self._modpt, *distance_atoms)

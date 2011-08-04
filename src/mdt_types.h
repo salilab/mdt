@@ -8,6 +8,7 @@
 
 #include "mdt_config.h"
 #include "mod_mdt_type.h"
+#include "mod_types.h"
 #include "mdt_residue_bonds.h"
 
 #include <glib.h>
@@ -53,6 +54,8 @@ struct mdt_atom_class_list;
 struct mdt_library {
   /** Base Modeller type */
   struct mod_mdt_library base;
+  /** Modeller libraries */
+  const struct mod_libraries *libs;
   /** Whether to treat disulfides and termini specially for atom types */
   gboolean special_atoms;
   /** Cutoff distance for hydrogen bonds */
@@ -83,7 +86,7 @@ void mdt_free(struct mdt *mdt);
 
 /** Make a new mdt_library structure */
 MDTDLLEXPORT
-struct mdt_library *mdt_library_new(void);
+struct mdt_library *mdt_library_new(const struct mod_libraries *libs);
 
 /** Free an mdt_library structure */
 MDTDLLEXPORT

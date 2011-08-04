@@ -9,6 +9,10 @@
 #include "mdt_atom_classes.h"
 #include "modeller.h"
 
+/* N and C are always placed first in the atom-atom distance matrix */
+#define ATOM_TYPE_N 0
+#define ATOM_TYPE_C 1
+
 /** Initialize a residue bond list. */
 void mdt_residue_bond_list_init(struct mdt_residue_bond_list *bondlist)
 {
@@ -32,7 +36,7 @@ void mdt_residue_bond_list_free(struct mdt_residue_bond_list *bondlist)
 /* Do initial setup of the residue bond list. */
 static GHashTable *make_residue_types(struct mdt_residue_bond_list *bondlist,
                                       const int nres,
-                                      struct mod_libraries *libs)
+                                      const struct mod_libraries *libs)
 {
   GHashTable *res_hash;
   int i;
@@ -67,8 +71,8 @@ static void add_residue_atom(struct mdt_residue_bonds *resbond, char *atom)
        struct does) so don't free them when we're done with the hash. */
     resbond->atom_names = g_hash_table_new(g_str_hash, g_str_equal);
     /* Add backbone N and C atoms at start of table for speed */
-    g_hash_table_insert(resbond->atom_names, "N", GINT_TO_POINTER(0));
-    g_hash_table_insert(resbond->atom_names, "C", GINT_TO_POINTER(1));
+    g_hash_table_insert(resbond->atom_names, "N", GINT_TO_POINTER(ATOM_TYPE_N));
+    g_hash_table_insert(resbond->atom_names, "C", GINT_TO_POINTER(ATOM_TYPE_C));
   }
 
   if (!g_hash_table_lookup_extended(resbond->atom_names, atom, NULL, NULL)) {
@@ -211,7 +215,7 @@ static void add_bonds(struct mdt_residue_bonds *resbonds,
 /** Fill residue bonds using the bond library. */
 void mdt_fill_residue_bonds(struct mdt_residue_bond_list *bondlist,
                             const struct mdt_library *mlib,
-                            struct mod_libraries *libs)
+                            const struct mod_libraries *libs)
 {
   /* Consider only standard amino acids */
   const int n_std_restyp = 20;
@@ -265,4 +269,47 @@ int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
     }
   }
   return attyp;
+}
+
+/** Get the number of bonds separating two atoms in a structure. */
+int mdt_get_bond_separation(const struct mod_structure *struc,
+                            const struct mod_sequence *seq,
+                            int atom1, int atom2, const int *attyp,
+                            const struct mdt_residue_bond_list *bondlist)
+{
+  const int *iresatm;
+  int minres, maxres, minatom, maxatom;
+
+  if (attyp[atom1] < 0 || attyp[atom2] < 0) {
+    return -1;
+  }
+
+  /* Order by sequence */
+  minatom = MIN(atom1, atom2);
+  maxatom = MAX(atom1, atom2);
+
+  iresatm = mod_int1_pt(&struc->cd.iresatm);
+  minres = iresatm[minatom] - 1;
+  maxres = iresatm[maxatom] - 1;
+
+  if (minres == maxres) {
+    /* If atoms are in the same residue, use distance directly */
+    int restyp = mod_int1_get(&seq->irestyp, minres) - 1;
+    return get_distance(&bondlist->bonds[restyp], attyp[minatom],
+                        attyp[maxatom]);
+
+  } else {
+    /* Otherwise, get distance to backbone C in min residue, distance to
+       backbone N in max residue, and add backbone bonds for all intervening
+       residues. TODO: check for different chain */
+    int minrestyp = mod_int1_get(&seq->irestyp, minres) - 1;
+    int maxrestyp = mod_int1_get(&seq->irestyp, maxres) - 1;
+
+    int dist_to_c = get_distance(&bondlist->bonds[minrestyp], ATOM_TYPE_C,
+                                 attyp[minatom]);
+    int dist_to_n = get_distance(&bondlist->bonds[maxrestyp], ATOM_TYPE_N,
+                                 attyp[maxatom]);
+    int backbone_bonds = (maxres - minres - 1) * 3 + 1;
+    return dist_to_c + backbone_bonds + dist_to_n;
+  }
 }

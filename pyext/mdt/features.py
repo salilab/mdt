@@ -515,11 +515,12 @@ class AtomBondSeparation(AtomPair):
        must be read in first (see :attr:`mdt.Library.bond_classes`). For
        atoms in different residues, the residues are assumed to be linked by
        a peptide backbone, and the number of bonds is calculated accordingly.
-       Atoms in different chains are not connected. No account is taken of
-       patches and other modifications such as disulfide bridges or terminal
-       oxygens (unless bonds to OXT are explicitly listed in the bond class
-       file). If a pair of atoms is not connected it is placed in the
-       'undefined' bin."""
+       Atoms in different chains, or atoms of types not referenced in the bond
+       class file, are not connected. No account is taken of patches and
+       other modifications such as disulfide bridges or terminal oxygens
+       (unless bonds to OXT are explicitly listed in the bond class file).
+       If a pair of atoms is not connected it is placed in the 'undefined'
+       bin."""
     _setup = _mdt.mdt_feature_atom_bond_separation
 
 class HydrogenBondSatisfaction(Protein):

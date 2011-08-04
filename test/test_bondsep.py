@@ -3,6 +3,7 @@ from mdt_test import MDTTest
 import mdt
 import mdt.features
 import modeller
+import os
 
 class BondSeparationFeatureTests(MDTTest):
 
@@ -36,17 +37,94 @@ class BondSeparationFeatureTests(MDTTest):
         self.assertEqual(m.sample_size, 49.0)
         self.assertEqual(m[-1], 49.0)
 
-    def test_unconnected(self):
-        """Unconnected atoms should count as undefined"""
+    def test_unknown_atom_type(self):
+        """Atoms of unknown type should count as undefined"""
         mlib = self.get_all_libraries()
         bsep = mdt.features.AtomBondSeparation(mlib,
                                  bins=mdt.uniform_bins(10, -1000, 1000.0))
         m = self.build_mdt_from_sequence(mlib, bsep, 'C',
                                          residue_span_range=(0,0,0,0))
-        # The OXT atom is not connected to any of the other 6 atoms, as
-        # defined by the bond library, so will count as undefined (even though
-        # the raw "distance" of -1 should fall in the first bin)
+        # The OXT atom is not referenced in the bond library, so bond separation
+        # to any of the other 6 atoms should count as undefined (even though
+        # the raw "distance" of -1 would otherwise fall in the first bin)
         self.assertEqual(m[-1], 6.0)
+
+    def test_unconnected_internal(self):
+        """Separation between unconnected internal atoms is undefined"""
+        mlib = self.get_mdt_library()
+        mlib.atom_classes.read('${LIB}/atmcls-mf.lib')
+        # Make dummy bond class library that does not connect C and CA atoms
+        open('dummy.lib', 'w').write("""
+BNDGRP 'ALA:CB:CA'
+  BOND 'ALA' 'CB' 'CA'
+BNDGRP 'ALA:N:CA'
+  BOND 'ALA' 'N' 'CA'
+BNDGRP 'ALA:O:C'
+  BOND 'ALA' 'O' 'C'
+""")
+        mlib.bond_classes.read('dummy.lib')
+
+        attyp1 = mdt.features.AtomType(mlib)
+        attyp2 = mdt.features.AtomType(mlib, pos2=True)
+        bsep = mdt.features.AtomBondSeparation(mlib,
+                                        bins=mdt.uniform_bins(20, 0, 1.0))
+        m = self.build_mdt_from_sequence(mlib, [attyp1, attyp2, bsep],
+                        'A', residue_span_range=(0,0,0,0))
+        atom_types = {}
+        for n, b in enumerate(m.features[0].bins):
+            atom_types[b.symbol] = n
+
+        def assertBondSep(at1, at2, numbond, sep):
+            bins = [b for b in m[atom_types[at1]][atom_types[at2]]]
+            self.assertEqual(sum(bins), numbond)
+            self.assertEqual(bins[sep], numbond)
+
+        # All bonds that pass through C-CA should be undefined, others are OK
+        assertBondSep('AN', 'ACA', numbond=1, sep=1)
+        assertBondSep('AN', 'AC', numbond=1, sep=-1)
+        assertBondSep('AN', 'AO', numbond=1, sep=-1)
+        assertBondSep('AN', 'ACB', numbond=1, sep=2)
+        os.unlink('dummy.lib')
+
+    def test_unconnected_external(self):
+        """Separation between unconnected external atoms is undefined"""
+        mlib = self.get_mdt_library()
+        mlib.atom_classes.read('${LIB}/atmcls-mf.lib')
+        # Make dummy bond class library that does not connect C and CA atoms
+        open('dummy.lib', 'w').write("""
+BNDGRP 'ALA:CB:CA'
+  BOND 'ALA' 'CB' 'CA'
+BNDGRP 'ALA:N:CA'
+  BOND 'ALA' 'N' 'CA'
+BNDGRP 'ALA:O:C'
+  BOND 'ALA' 'O' 'C'
+""")
+        mlib.bond_classes.read('dummy.lib')
+
+        attyp1 = mdt.features.AtomType(mlib)
+        attyp2 = mdt.features.AtomType(mlib, pos2=True)
+        bsep = mdt.features.AtomBondSeparation(mlib,
+                                        bins=mdt.uniform_bins(20, 0, 1.0))
+        m = self.build_mdt_from_sequence(mlib, [attyp1, attyp2, bsep],
+                        'AA', residue_span_range=(-1,-1,1,1))
+        atom_types = {}
+        for n, b in enumerate(m.features[0].bins):
+            atom_types[b.symbol] = n
+
+        def assertBondSep(at1, at2, numbond, sep):
+            bins = [b for b in m[atom_types[at1]][atom_types[at2]]]
+            self.assertEqual(sum(bins), numbond)
+            self.assertEqual(bins[sep], numbond)
+
+        # All bonds that pass through C-CA should be undefined, others are OK
+        assertBondSep('AN', 'ACA', numbond=1, sep=-1)
+        assertBondSep('AN', 'AC', numbond=1, sep=-1)
+        assertBondSep('AN', 'AO', numbond=1, sep=-1)
+        assertBondSep('AN', 'ACB', numbond=1, sep=-1)
+
+        assertBondSep('AC', 'AN', numbond=1, sep=1)
+        assertBondSep('AO', 'ACB', numbond=1, sep=4)
+        os.unlink('dummy.lib')
 
     def test_internal(self):
         """Check bond separation feature within residues"""

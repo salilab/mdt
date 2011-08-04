@@ -271,6 +271,21 @@ int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
   return attyp;
 }
 
+static gboolean residues_in_same_chain(int res1, int res2,
+                                       const struct mod_sequence *seq)
+{
+  const int *iress2;
+  int i;
+
+  iress2 = mod_int1_pt(&seq->iress2);
+  for (i = 0; i < seq->nseg; ++i) {
+    if (res1 < iress2[i]) {
+      return (res2 < iress2[i]);
+    }
+  }
+  return FALSE;
+}
+
 /** Get the number of bonds separating two atoms in a structure.
     -1 is returned if the atoms are not connected. */
 int mdt_get_bond_separation(const struct mod_structure *struc,
@@ -299,10 +314,14 @@ int mdt_get_bond_separation(const struct mod_structure *struc,
     return get_distance(&bondlist->bonds[restyp], attyp[minatom],
                         attyp[maxatom]);
 
+  } else if (!residues_in_same_chain(minres, maxres, seq)) {
+    /* Atoms in different chains can't be connected. */
+    return -1;
+
   } else {
     /* Otherwise, get distance to backbone C in min residue, distance to
        backbone N in max residue, and add backbone bonds for all intervening
-       residues. TODO: check for different chain */
+       residues. */
     int dist_to_c, dist_to_n, backbone_bonds;
     int minrestyp = mod_int1_get(&seq->irestyp, minres) - 1;
     int maxrestyp = mod_int1_get(&seq->irestyp, maxres) - 1;

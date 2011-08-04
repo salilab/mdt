@@ -181,7 +181,7 @@ static void init_distances(struct mdt_residue_bond_list *bondlist)
       resbonds->distance = g_malloc(sizeof(int) * natom * natom);
       for (j = 0; j < natom; ++j) {
         for (k = 0; k < natom; ++k) {
-          resbonds->distance[ind++] = (k == j ? 0 : 10000);
+          resbonds->distance[ind++] = (k == j ? 0 : -1);
         }
       }
     }
@@ -271,7 +271,8 @@ int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
   return attyp;
 }
 
-/** Get the number of bonds separating two atoms in a structure. */
+/** Get the number of bonds separating two atoms in a structure.
+    -1 is returned if the atoms are not connected. */
 int mdt_get_bond_separation(const struct mod_structure *struc,
                             const struct mod_sequence *seq,
                             int atom1, int atom2, const int *attyp,
@@ -302,14 +303,21 @@ int mdt_get_bond_separation(const struct mod_structure *struc,
     /* Otherwise, get distance to backbone C in min residue, distance to
        backbone N in max residue, and add backbone bonds for all intervening
        residues. TODO: check for different chain */
+    int dist_to_c, dist_to_n, backbone_bonds;
     int minrestyp = mod_int1_get(&seq->irestyp, minres) - 1;
     int maxrestyp = mod_int1_get(&seq->irestyp, maxres) - 1;
 
-    int dist_to_c = get_distance(&bondlist->bonds[minrestyp], ATOM_TYPE_C,
-                                 attyp[minatom]);
-    int dist_to_n = get_distance(&bondlist->bonds[maxrestyp], ATOM_TYPE_N,
-                                 attyp[maxatom]);
-    int backbone_bonds = (maxres - minres - 1) * 3 + 1;
+    dist_to_c = get_distance(&bondlist->bonds[minrestyp], ATOM_TYPE_C,
+                             attyp[minatom]);
+    if (dist_to_c == -1) {
+      return -1;
+    }
+    dist_to_n = get_distance(&bondlist->bonds[maxrestyp], ATOM_TYPE_N,
+                             attyp[maxatom]);
+    if (dist_to_n == -1) {
+      return -1;
+    }
+    backbone_bonds = (maxres - minres - 1) * 3 + 1;
     return dist_to_c + backbone_bonds + dist_to_n;
   }
 }

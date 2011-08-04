@@ -153,15 +153,17 @@ static void fill_distances(struct mdt_residue_bond_list *bondlist)
 
   for (ires = 0; ires < bondlist->nres; ++ires) {
     struct mdt_residue_bonds *resbond = &bondlist->bonds[ires];
-    int natom = g_hash_table_size(resbond->atom_names);
-    int start_atom;
-    for (start_atom = 0; start_atom < natom; ++start_atom) {
-      int other_atom;
-      for (other_atom = 0; other_atom < natom; ++other_atom) {
-        if (other_atom != start_atom) {
-          int dist = get_distance(resbond, start_atom, other_atom);
-          if (dist == 1) {
-            follow_bond(resbond, natom, start_atom, -1, other_atom, 1);
+    if (resbond->atom_names) {
+      int natom = g_hash_table_size(resbond->atom_names);
+      int start_atom;
+      for (start_atom = 0; start_atom < natom; ++start_atom) {
+        int other_atom;
+        for (other_atom = 0; other_atom < natom; ++other_atom) {
+          if (other_atom != start_atom) {
+            int dist = get_distance(resbond, start_atom, other_atom);
+            if (dist == 1) {
+              follow_bond(resbond, natom, start_atom, -1, other_atom, 1);
+            }
           }
         }
       }

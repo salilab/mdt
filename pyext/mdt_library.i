@@ -15,7 +15,7 @@ struct mdt_library {
   gboolean special_atoms;
 };
 
-struct mdt_library *mdt_library_new(const struct mod_libraries *libs);
+struct mdt_library *mdt_library_new(struct mod_libraries *libs);
 void mdt_library_free(struct mdt_library *mlib);
 gboolean mdt_atom_classes_read(const gchar *filename,
                                struct mdt_library *mlib, int natom,

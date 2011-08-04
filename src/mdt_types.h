@@ -55,7 +55,7 @@ struct mdt_library {
   /** Base Modeller type */
   struct mod_mdt_library base;
   /** Modeller libraries */
-  const struct mod_libraries *libs;
+  struct mod_libraries *libs;
   /** Whether to treat disulfides and termini specially for atom types */
   gboolean special_atoms;
   /** Cutoff distance for hydrogen bonds */
@@ -86,7 +86,7 @@ void mdt_free(struct mdt *mdt);
 
 /** Make a new mdt_library structure */
 MDTDLLEXPORT
-struct mdt_library *mdt_library_new(const struct mod_libraries *libs);
+struct mdt_library *mdt_library_new(struct mod_libraries *libs);
 
 /** Free an mdt_library structure */
 MDTDLLEXPORT

@@ -34,7 +34,7 @@ void mdt_free(struct mdt *mdt)
 }
 
 /** Make a new mdt_library structure */
-struct mdt_library *mdt_library_new(const struct mod_libraries *libs)
+struct mdt_library *mdt_library_new(struct mod_libraries *libs)
 {
   int i;
   struct mdt_library *mlib;

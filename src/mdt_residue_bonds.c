@@ -136,7 +136,7 @@ static void follow_bond(struct mdt_residue_bonds *resbond, int natom,
       if (dist == 1) {
         int old_distance = get_distance(resbond, start_atom, other_atom);
         /* In case of cycles, take the shortest route */
-        if (distance + 1 <= old_distance) {
+        if (old_distance == -1 || distance + 1 <= old_distance) {
           set_distance(resbond, start_atom, other_atom, distance + 1);
           follow_bond(resbond, natom, start_atom, endpoint2, other_atom,
                       distance + 1);

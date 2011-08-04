@@ -510,7 +510,16 @@ class AtomDistance(AtomPair):
 class AtomBondSeparation(AtomPair):
     """Number of bonds between a pair of atoms.
        For example, two atoms that are directly bonded return '1', while two
-       at opposite ends of an angle return '2'."""
+       at opposite ends of an angle return '2'. The bonds between atoms in
+       each standard amino acid are derived from the bond class file, so this
+       must be read in first (see :attr:`mdt.Library.bond_classes`). For
+       atoms in different residues, the residues are assumed to be linked by
+       a peptide backbone, and the number of bonds is calculated accordingly.
+       Atoms in different chains are not connected. No account is taken of
+       patches and other modifications such as disulfide bridges or terminal
+       oxygens (unless bonds to OXT are explicitly listed in the bond class
+       file). If a pair of atoms is not connected it is placed in the
+       'undefined' bin."""
     _setup = _mdt.mdt_feature_atom_bond_separation
 
 class HydrogenBondSatisfaction(Protein):

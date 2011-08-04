@@ -22,7 +22,11 @@ static int getbin(const struct mod_alignment *aln, int protein,
 
   int bond_separation = mdt_get_bond_separation(struc, seq, atom1, atom2, attyp,
                                                 &mlib->residue_bond_list);
-  return feat_to_bin(bond_separation, feat);
+  if (bond_separation == -1) {
+    return mdt_feature_undefined_bin_get(feat);
+  } else {
+    return feat_to_bin(bond_separation, feat);
+  }
 }
 
 int mdt_feature_atom_bond_separation(struct mdt_library *mlib)

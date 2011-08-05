@@ -54,7 +54,7 @@ which can be used to run an MDT Python script :file:`foo.py`::
    bin/mdtpy.sh python foo.py
 
 .. note::
-   If you didn't use the RPM to install Modeller then you
+   If you didn't use the RPM or Debian package to install Modeller then you
    will need to tell MDT where it can find Modeller. To do this, create a file
    called :file:`config.py`, and in it set the *modeller* Python variable to
    the directory where you have MODELLER installed (on a Mac, this would look

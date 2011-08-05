@@ -1,2 +1,1 @@
-- pass indices array rather than reallocating for every atom pair
 - residue type feature that includes dna/rna

@@ -386,6 +386,32 @@ class TableTests(MDTTest):
                         residue_span_range=(-999, 0, 0, 999))
         self.assertEqual(m.sum(), 32.0)
 
+    def test_tuple_pair_bond_span_range(self):
+        """Test bond_span_range with tuple pair scan"""
+        env = self.get_environ()
+        mdl = model(env)
+        mdl.build_sequence('A')
+        aln = alignment(env)
+        aln.append_model(mdl, align_codes='test')
+        mlib = self.get_mdt_library()
+        mlib.bond_classes.read('data/bndgrp.lib')
+        mlib.tuple_classes.read('data/trpcls.lib')
+        typ = mdt.features.TupleType(mlib)
+        typ2 = mdt.features.TupleType(mlib, pos2=True)
+        dist = mdt.features.TupleDistance(mlib,
+                                          bins=mdt.uniform_bins(9, 2.0, 0.2))
+
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, residue_span_range=(0,0,0,0))
+        self.assertEqual(m.sample_size, 10.0)
+
+        m = mdt.Table(mlib, features=dist)
+        m.add_alignment(aln, bond_span_range=(1,1),
+                        residue_span_range=(0,0,0,0))
+        # Bond span should restrict interactions to 6
+        # (C:CA:CB-CA:C:O, CA:C:O-N:CA:C, CA:C:O-N:CA:CB, and the reverse)
+        self.assertEqual(m.sample_size, 6.0)
+
     def test_bond_span_range(self):
         """Test bond_span_range argument"""
         env = self.get_environ()

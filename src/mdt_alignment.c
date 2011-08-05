@@ -821,7 +821,7 @@ static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
                                GError **err)
 {
   int ia1, ia1p, ir1, *iresatm;
-  const int *resbond_attyp;
+  const int *resbond_attyp = NULL;
   struct mod_structure *s1;
   struct mod_sequence *seq;
   GHashTable *exclusions;
@@ -961,7 +961,7 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
                                      GError **err)
 {
   int ia1, ir1, ibnd1, ibnd1p, ia1p, ir1p, *iresatm;
-  const int *resbond_attyp;
+  const int *resbond_attyp = NULL;
   struct mod_structure *s1;
   struct mod_sequence *seq;
   const struct mdt_tuple_list *tup;

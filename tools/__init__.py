@@ -206,7 +206,7 @@ def CheckModeller(context):
     libs = ["modeller", "saxs"]
     if exetype in ('mac10v4-xlf', 'mac10v4-gnu'):
         libs += ["hdf5", "hdf5_hl"]
-    elif exetype == 'mac10v4-intel':
+    elif exetype in ('mac10v4-intel', 'mac10v4-intel64'):
         libs += ["hdf5", "hdf5_hl", "imf", "svml", "ifcore", "irc"]
     modpy = "%s/bin/modpy.sh" % modeller
     # If the modpy.sh script doesn't exist, assume that Modeller will work

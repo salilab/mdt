@@ -15,7 +15,9 @@
 
 G_BEGIN_DECLS
 
-/** Modeller dihedral angle types */
+/** Modeller dihedral angle types.
+    These correspond to types hard-coded into Modeller and defined in
+    Modeller's modlib/resdih.lib file, so should not be changed. */
 typedef enum {
   MDT_DIHEDRAL_ALPHA = 0,
   MDT_DIHEDRAL_PHI,

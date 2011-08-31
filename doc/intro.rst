@@ -195,7 +195,8 @@ or perform normalization, smoothing, etc.
 .. rubric:: Footnotes
 
 .. [#undefbin] You can, however, remove the 'undefined' bin using
-   :meth:`Table.reshape`.
+   :meth:`Table.reshape` or by using the 'shape' argument when you create
+   the :class:`Table` object.
 
 .. [#resscan] Residue and residue pair scans are also used for
    'one atom per residue' features, such as

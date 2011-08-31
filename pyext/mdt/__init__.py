@@ -686,6 +686,13 @@ class Table(TableSection):
                       symtriples=False, io=None, edat=None):
         """
         Add data from a Modeller alignment to this MDT.
+        This method will first scan through all proteins, pairs of proteins,
+        or triples of proteins in the alignment (it will scan all triples if
+        the :class:`mdt.Library` contains features defined on all of
+        proteins 0, 1 and 2, pairs if the features are defined on two
+        different proteins, and individual proteins otherwise). Within each
+        protein, it may then scan through all residues, atoms, etc. if the
+        features request it (see :ref:`the scan types table <scantypes>`).
 
         :Parameters:
           - `aln`: Modeller alignment.
@@ -743,10 +750,15 @@ class Table(TableSection):
             angle are excluded (see `exclude_bonds`).
           - `exclude_dihedrals`: if True, then the 1-4 pair of atoms from each
             dihedral are excluded (see `exclude_bonds`).
-          - `sympairs`: if True, all features involving pairs of proteins
-            are symmetric.
-          - `symtriples`: if True, all features involving triples of proteins
-            are symmetric.
+          - `sympairs`: if True, then protein pair scans are done in a
+            symmetric fashion - e.g. when scanning an alignment of A, B and
+            C, the following pairs are scanned: AB, BC, AC. By default a
+            non-symmetric scan is performed, scanning AB, BC, AC, BA, CB, CA.
+          - `symtriples`: if True, then protein triple scans are done in a
+            symmetric fashion - e.g. when scanning an alignment of A, B and
+            C, the following triples are scanned: ABC, ACB, BAC. By default a
+            non-symmetric scan is performed, scanning ABC, ACB, BAC, CBA,
+            BCA, CAB.
         """
         if io is None:
             io = self._mlib._env.io

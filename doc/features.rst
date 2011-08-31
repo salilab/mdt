@@ -16,13 +16,9 @@ Each feature takes some common arguments:
  * *mlib*: the :class:`mdt.Library` to create the feature in.
  * *bins*: list of bins (see :ref:`binspec`).
  * *protein*: the protein index on which to evaluate the feature
-   from each group of proteins selected from the alignment (0 for
-   the first, 1 for the second, etc.). If 0, a scan over all
-   individual proteins is requested, while 1 requests a scan over
-   all pairs, 2 over all triples, etc. (However, another feature may
-   request a scan over a larger group - for example, if some other
-   feature requests a triples scan while *protein=1*, this feature will
-   be evaluated on the second protein in each triple.)
+   from each group of proteins (individual protein, pairs, triples)
+   selected from the alignment (0 for the first, 1 for the second, 2 for
+   the third). See :meth:`Table.add_alignment` for more details.
 
 .. autoclass:: XRayResolution
 
@@ -45,11 +41,9 @@ Each feature takes some common arguments:
  * *mlib*: the :class:`mdt.Library` to create the feature in.
  * *bins*: list of bins (see :ref:`binspec`).
  * *protein1* and *protein2*: the indexes of proteins in each group of
-   proteins selected from the alignment to evaluate the feature on. If set
-   to 0 and 1 respectively, a scan of all protein pairs in the alignment is
-   requested and the feature is evaluated on each pair in turn. If set to
-   0 and 2, a scan of all protein triples is asked for, and the feature
-   is evaluated on the first and third proteins in each triple.
+   proteins selected from the alignment to evaluate the feature on; each can
+   range from 0 to 2 inclusive. See :meth:`Table.add_alignment` for more
+   details.
 
 .. autoclass:: SequenceIdentity
 

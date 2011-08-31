@@ -970,5 +970,35 @@ class TableTests(MDTTest):
         self.assertInTolerance(m1[25], 38.00, 0.5)
         self.assertInTolerance(m1[0], 0.00, 1.0)
 
+    def test_triple_protein_scan(self):
+        """Test scan of triples of proteins"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+
+        a = alignment(env, file='test/data/resol.ali',
+                      align_codes=('bin1', 'bin2', 'undef2'))
+
+        f1 = mdt.features.XRayResolution(mlib, mdt.uniform_bins(5, 0, 1.0),
+                                         protein=0)
+        f2 = mdt.features.XRayResolution(mlib, mdt.uniform_bins(5, 0, 1.0),
+                                         protein=1)
+        f3 = mdt.features.XRayResolution(mlib, mdt.uniform_bins(5, 0, 1.0),
+                                         protein=2)
+
+        # When we have features that cover proteins 0,1,2, triple scan should
+        # be forced; different number of samples for symmetric/non-symmetric
+        for (sym,size) in ((False, 6.0), (True, 3.0)):
+            t = mdt.Table(mlib, features=(f1,f2,f3))
+            t.add_alignment(a, symtriples=sym)
+            self.assertInTolerance(t.sample_size, size, 1e-6)
+
+        # When feature only covers some of the proteins, triplet scan does
+        # not occur.
+        for sym in (True, False):
+            t = mdt.Table(mlib, features=f3)
+            t.add_alignment(a, symtriples=sym)
+            self.assertInTolerance(t.sample_size, 3.0, 1e-6)
+
+
 if __name__ == '__main__':
     unittest.main()

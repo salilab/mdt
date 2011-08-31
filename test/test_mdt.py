@@ -999,6 +999,14 @@ class TableTests(MDTTest):
             t.add_alignment(a, symtriples=sym)
             self.assertInTolerance(t.sample_size, 3.0, 1e-6)
 
+        # Exercise residue pair features in combination with triplet scans
+        ri = mdt.features.ResidueIndexDifference(mlib,
+                                                 mdt.uniform_bins(5, 0, 1.0),
+                                                 protein=2)
+        t = mdt.Table(mlib, features=(f1,f2,ri))
+        t.add_alignment(a, symtriples=sym)
+        self.assertInTolerance(t.sample_size, 12, 1e-6)
+
 
 if __name__ == '__main__':
     unittest.main()

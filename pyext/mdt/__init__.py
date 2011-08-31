@@ -101,8 +101,6 @@ class Library(modobject):
     def __del__(self):
         _mdt.mdt_library_free(self._modpt)
 
-    def __get_basept(self):
-        return _mdt.mdt_library_base_get(self._modpt)
     def __get_atom_classes(self):
         return BondClasses(self, 1)
     def __get_bond_classes(self):
@@ -116,7 +114,6 @@ class Library(modobject):
     def __get_hbond_classes(self):
         return HydrogenBondClasses(self)
 
-    _basept = property(__get_basept)
     atom_classes = property(__get_atom_classes,
                             doc="Atom classes; see :class:`BondClasses`")
     bond_classes = property(__get_bond_classes,

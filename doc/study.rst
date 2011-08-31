@@ -69,12 +69,12 @@ models are statistically as similar to PDB structures as possible.
 .. _stereo:
 
 Stereochemical restraints
-=========================
+-------------------------
 
 .. _sample:
 
 The sample
-----------
+~~~~~~~~~~
 
 The starting point for deriving the restraints in this section consists of
 9,365 chains that are representative of the 65,629 chains in the October 2005
@@ -127,7 +127,7 @@ plotting (which we then execute with ASGL using Python's
 .. _chembonds:
 
 Chemical bonds
---------------
+~~~~~~~~~~~~~~
 
 The MDT table is constructed with the following MDT Python script:
 
@@ -184,7 +184,7 @@ distributions.
 .. _chemangles:
 
 Chemical angles
----------------
+~~~~~~~~~~~~~~~
 
 As for the bonds above, the MDT table is constructed with the following
 MDT Python script:
@@ -216,7 +216,7 @@ The final MODELLER MDT library is produced with:
 .. _impropers:
 
 Improper dihedral angles
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Exactly the same situation applies as for the chemical bonds.
 The MDT table is constructed with the following MDT Python script:
@@ -239,7 +239,7 @@ The final MODELLER MDT library is produced with:
 .. _chi1:
 
 Sidechain dihedral angle χ1
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The first question asked was "What is the impact of resolution on the
 distributions of residue χ1?". The answer was
@@ -284,7 +284,7 @@ added to the MODELLER MDT library.
 .. _chi2:
 
 Sidechain dihedral angle χ2
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The situation is very similar to that for χ1,
 except that the shapes of histograms are not Gaussian in most cases.
@@ -321,7 +321,7 @@ by the script above.
 .. _chi3:
 
 Sidechain dihedral angle χ3
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Exactly the same considerations apply as to χ2.
 The MDT table is constructed with the following MDT Python script:
@@ -346,7 +346,7 @@ also produced by the script above.
 .. _chi4:
 
 Sidechain dihedral angle χ4
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Exactly the same considerations apply as to χ2 and χ3. The MDT table is
 constructed with the following MDT Python script:
@@ -371,7 +371,7 @@ also produced by the script above.
 .. _phi:
 
 Mainchain dihedral angle Φ
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Exactly the same considerations apply as to χ2, χ3, and χ4. The MDT
 table is constructed with the following MDT Python script:
@@ -396,7 +396,7 @@ also produced by the script above.
 .. _psi:
 
 Mainchain dihedral angle Ψ
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Exactly the same considerations apply as to χ2, χ3, χ4, and Φ.
 The MDT table is constructed with the following MDT Python script:
@@ -421,7 +421,7 @@ also produced by the script above.
 .. _omega:
 
 Mainchain dihedral angle ω
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This dihedral angle is a little different from all others explored thus far
 because it depends more strongly on the type of the subsequent residue than
@@ -489,7 +489,7 @@ means and standard deviations with `179.8  0.0   2.3  2.3`.
 .. _phipsi:
 
 Mainchain dihedral angles Φ and Ψ
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The initial runs in :file:`run1` explored Ramachandran maps
 extracted from different representative sets of structures (e.g., clustered by
@@ -523,7 +523,7 @@ with Mathematica.
 .. _nonbonded:
 
 Non-bonded restraints
-=====================
+---------------------
 
 A general pairwise distance- and atom-type dependent statistical potential
 for all atom type pairs has been derived by Min-yi Shen (DOPE).

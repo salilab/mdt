@@ -1,5 +1,3 @@
-HEAD:
-
 MDT 5.1   09-29-2011:
  - All atom features, with the exception of atom type, are now considered
    undefined if the atom coordinates are equal to the Modeller undefined

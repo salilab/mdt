@@ -1,6 +1,9 @@
-HEAD:
+HEAD
+====
 
-MDT 5.1   09-29-2011:
+MDT 5.1   09-29-2011
+====================
+
  - All atom features, with the exception of atom type, are now considered
    undefined if the atom coordinates are equal to the Modeller undefined
    value (-999.0).
@@ -12,7 +15,9 @@ MDT 5.1   09-29-2011:
  - mdt.Table() now takes an optional 'shape' argument, which acts identically
    to that accepted by mdt.Table.reshape().
 
-MDT 5.0   03-31-2011:
+MDT 5.0   03-31-2011
+====================
+
  - First open source (GPLv2) release.
  - Duplicated Modeller Fortran code removed; MDT now uses Modeller itself for
    handling of protein structures and alignments.
@@ -23,8 +28,12 @@ MDT 5.0   03-31-2011:
  - Support storing MDT tables in binary form, using the HDF5 format and
    library.
 
-MDT 4.0  April 2002:
+MDT 4.0  April 2002
+===================
+
  - Reorganize directory structure.
 
-MDT 3.1  March 2002:
+MDT 3.1  March 2002
+===================
+
  - Allow for a structure to be assessed against an existing MDT table.

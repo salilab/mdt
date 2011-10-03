@@ -16,6 +16,7 @@ Contents
    module
    features
    copying
+   changes
 
 
 Indices and tables

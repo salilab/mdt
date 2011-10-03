@@ -189,6 +189,7 @@ protein in each group of proteins selected from the alignment.
 See :ref:`protein_features` for a description of the common arguments.
 
 .. autoclass:: AtomDistance
+.. autoclass:: AtomBondSeparation
 
 .. _tuple_features:
 

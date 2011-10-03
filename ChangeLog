@@ -4,16 +4,16 @@ HEAD
 MDT 5.1   09-29-2011
 ====================
 
- - All atom features, with the exception of atom type, are now considered
-   undefined if the atom coordinates are equal to the Modeller undefined
-   value (-999.0).
- - Support for bond separation, with a new AtomBondSeparation feature and
-   a bond_span_range argument to Table.add_alignment().
+ - All atom features, with the exception of :class:`~features.AtomType`,
+   are now considered undefined if the atom coordinates are equal to the
+   Modeller undefined value (-999.0).
+ - Support for bond separation, with a new :class:`~features.AtomBondSeparation`
+   feature and a bond_span_range argument to :meth:`Table.add_alignment`.
  - Support Python 3 (requires Modeller 9.10 or later).
  - "scons test" now reports the Python coverage (and also C coverage,
    if using gcc and adding "coverage=true" to the scons command line).
- - mdt.Table() now takes an optional 'shape' argument, which acts identically
-   to that accepted by mdt.Table.reshape().
+ - The :class:`Table` constructor now takes an optional 'shape' argument,
+   which acts identically to that accepted by :meth:`Table.reshape`.
 
 MDT 5.0   03-31-2011
 ====================

@@ -46,3 +46,89 @@
   PyModule_AddObject(m, "FileFormatError", file_format_error);
 #endif
 }
+
+%{
+#ifdef MDT_WITH_NUMPY
+#include <numpy/arrayobject.h>
+
+static int import_numpy_module(void)
+{
+  static gboolean imported;
+
+  if (imported) {
+    return 0;
+  } else {
+    imported = TRUE;
+    return _import_array();
+  }
+}
+
+static int get_numpy_bin_type(const struct mdt *mdt)
+{
+  switch (mdt->base.bin_type) {
+  case MOD_MDTB_FLOAT:
+    return NPY_FLOAT;
+  case MOD_MDTB_DOUBLE:
+    return NPY_DOUBLE;
+  case MOD_MDTB_INT32:
+    return NPY_INT32;
+  case MOD_MDTB_UINT32:
+    return NPY_UINT32;
+  case MOD_MDTB_INT16:
+    return NPY_INT16;
+  case MOD_MDTB_UINT16:
+    return NPY_UINT16;
+  case MOD_MDTB_INT8:
+    return NPY_INT8;
+  case MOD_MDTB_UINT8:
+    return NPY_UINT8;
+  }
+  g_assert_not_reached();
+  return 0;
+}
+#endif
+%}
+
+
+%inline %{
+PyObject *get_numpy(struct mdt *mdt, PyObject *mdt_pyobj)
+{
+#ifdef MDT_WITH_NUMPY
+  int i, type_num;
+  PyObject *obj;
+  npy_intp *dims;
+  char *data = mdt->base.bindata;
+
+  if (import_numpy_module() != 0) {
+    return NULL;
+  }
+
+  dims = g_malloc(sizeof(npy_intp) * mdt->base.nfeat);
+  for (i = 0; i < mdt->base.nfeat; ++i) {
+    dims[i] = mdt->base.features[i].nbins;
+  }
+
+  type_num = get_numpy_bin_type(mdt);
+  /* Note that MDT tables are C-style contiguous so no special strides or
+     other flags need to be passed to NumPy */
+  obj = PyArray_New(&PyArray_Type, mdt->base.nfeat, dims, type_num, NULL,
+                    data, 0, NPY_WRITEABLE, NULL);
+  if (!obj) {
+    g_free(dims);
+    return NULL;
+  }
+
+  /* Ensure that the mdt.Table is kept around as long as the numpy object
+     is alive. */
+  Py_INCREF(mdt_pyobj);
+  PyArray_BASE(obj) = mdt_pyobj;
+
+  g_free(dims);
+  return obj;
+#else
+  PyErr_SetString(PyExc_NotImplementedError,
+                  "MDT was built without NumPy support");
+  return NULL;
+#endif
+}
+%}

@@ -302,12 +302,14 @@ class Table(TableSection):
     _modpt = None
     _basept = None
     _mlib = None
+    __views = None
 
     def __init__(self, mlib, file=None, features=None, bin_type=Double,
                  shape=[]):
         if not isinstance(bin_type, _BinType):
             raise TypeError("bin_type must be a BinType object - " + \
                             "e.g. mdt.Float, mdt.Double")
+        self.__views = []
         self._modpt = _mdt.mdt_new(bin_type._bin_type)
         self._mlib = mlib
         if file:
@@ -341,12 +343,49 @@ class Table(TableSection):
         return mdtout
 
     def read(self, file):
-        """Read an MDT from `file`."""
+        """Read an MDT from `file`.
+           ValueError is raised if any views of the table exist
+           (see :meth:`Table.get_array_view`)."""
+        self.__check_for_views()
         _mdt.mdt_read(self._modpt, self._mlib._modpt, file)
 
     def read_hdf5(self, file):
-        """Read an MDT in HDF5 format from `file`."""
+        """Read an MDT in HDF5 format from `file`.
+           ValueError is raised if any views of the table exist
+           (see :meth:`Table.get_array_view`)."""
+        self.__check_for_views()
         _mdt.mdt_read_hdf5(self._modpt, self._mlib._modpt, file)
+
+    def __check_for_views(self):
+        # Remove any dead weakrefs
+        self.__views = [x for x in self.__views if x() is not None]
+        if len(self.__views) > 0:
+            raise ValueError("Cannot modify the table: views of it exist")
+
+    def __track_view(self, v):
+        import weakref
+        self.__views.append(weakref.ref(v))
+
+    def get_array_view(self):
+        """Get a NumPy array 'view' of this Table. The array contains all of
+           the raw data in the MDT table, allowing it to be manipulated with
+           NumPy functions. The data are not copied; modifications made to
+           the data by NumPy affect the data in the Table (and vice versa).
+
+           Functions that destroy the data in the Table (:meth:`Table.make`,
+           :meth:`Table.read` and :meth:`Table.read_hdf5`) cannot be called
+           if any NumPy array views exist, since they would invalidate the
+           views. The views must first be deleted.
+
+           If MDT was not built with NumPy support, a NotImplementedError
+           exception is raised.
+
+           :return: a view of this table.
+           :rtype: NumPy array
+           """
+        v = _mdt.get_numpy(self._modpt, self)
+        self.__track_view(v)
+        return v
 
     def copy(self, bin_type=None):
         """
@@ -371,7 +410,12 @@ class Table(TableSection):
         """Clear the table, and set the features. `features` must be a list of
            previously created objects from the :mod:`mdt.features` module.
            If given, `shape` has the same meaning as in :meth:`Table.reshape`
-           and causes the table to use only a subset of the feature bins."""
+           and causes the table to use only a subset of the feature bins.
+
+           ValueError is raised if any views of the table exist
+           (see :meth:`Table.get_array_view`).
+        """
+        self.__check_for_views()
         features = self._features_to_ifeat(features)
         _mdt.mdt_make(self._modpt, self._mlib._modpt, features, shape)
 

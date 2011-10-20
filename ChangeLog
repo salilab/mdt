@@ -1,6 +1,9 @@
 HEAD
 ====
 
+ - A new method :meth:`Table.get_array_view` allows the raw MDT table data
+   to be modified using NumPy functions.
+
 MDT 5.1   09-29-2011
 ====================
 

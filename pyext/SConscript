@@ -5,6 +5,13 @@ e = get_pyext_environment(env, 'mdt')
 e.MergeFlags(e['MODELLER'])
 e.MergeFlags(e['GLIB'])
 
+# Check for NumPy support:
+if not e.GetOption('clean') and not e.GetOption('help'):
+    conf = e.Configure()
+    if conf.CheckCHeader(['Python.h', 'numpy/arrayobject.h']):
+        e.Append(CPPDEFINES=[('MDT_WITH_NUMPY', 1)])
+    conf.Finish()
+
 e.Append(LIBPATH=['../src'])
 e.Append(LIBS=['mdt'])
 

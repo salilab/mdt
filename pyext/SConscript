@@ -1,3 +1,4 @@
+import os
 Import('env', 'get_pyext_environment')
 
 # Get a modified build environment suitable for building Python extensions:
@@ -7,10 +8,15 @@ e.MergeFlags(e['GLIB'])
 
 # Check for NumPy support:
 if not e.GetOption('clean') and not e.GetOption('help'):
-    conf = e.Configure()
-    if conf.CheckCHeader(['Python.h', 'numpy/arrayobject.h']):
+    print "Checking for numpy...",
+    try:
+        import numpy
         e.Append(CPPDEFINES=[('MDT_WITH_NUMPY', 1)])
-    conf.Finish()
+        path = os.path.join(numpy.__path__[0], 'core', 'include')
+        print "found in " + path
+        e.Append(CPPPATH=[path])
+    except ImportError:
+        print "not found"
 
 e.Append(LIBPATH=['../src'])
 e.Append(LIBS=['mdt'])

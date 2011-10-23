@@ -9,18 +9,14 @@ e.MergeFlags(e['GLIB'])
 # Check for NumPy support:
 if not e.GetOption('clean') and not e.GetOption('help'):
     print "Checking for numpy...",
-    # Disable support for now if building for a different version of Python
-    if env['pythoninclude']:
+    try:
+        import numpy
+        e.Append(CPPDEFINES=[('MDT_WITH_NUMPY', 1)])
+        path = os.path.join(numpy.__path__[0], 'core', 'include')
+        print "found in " + path
+        e.Append(CPPPATH=[path])
+    except ImportError:
         print "not found"
-    else:
-        try:
-            import numpy
-            e.Append(CPPDEFINES=[('MDT_WITH_NUMPY', 1)])
-            path = os.path.join(numpy.__path__[0], 'core', 'include')
-            print "found in " + path
-            e.Append(CPPPATH=[path])
-        except ImportError:
-            print "not found"
 
 e.Append(LIBPATH=['../src'])
 e.Append(LIBS=['mdt'])

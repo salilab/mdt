@@ -378,7 +378,8 @@ class Table(TableSection):
            views. The views must first be deleted.
 
            If MDT was not built with NumPy support, a NotImplementedError
-           exception is raised.
+           exception is raised. If NumPy cannot be loaded, an ImportError
+           is raised.
 
            :return: a view of this table.
            :rtype: NumPy array

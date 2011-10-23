@@ -16,7 +16,7 @@ class ViewTests(MDTTest):
         m = self.get_test_mdt(mlib, features=(restyp,chi1))
         try:
             a = m.get_array_view()
-        except NotImplementedError:
+        except (ImportError, NotImplementedError):
             sys.stderr.write("No NumPy support; skipping test; ")
             a = None
         return m, a, restyp

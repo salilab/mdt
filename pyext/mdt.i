@@ -58,8 +58,11 @@ static int import_numpy_module(void)
   if (imported) {
     return 0;
   } else {
-    imported = TRUE;
-    return _import_array();
+    int ret = _import_array();
+    if (ret == 0) {
+      imported = TRUE;
+    }
+    return ret;
   }
 }
 

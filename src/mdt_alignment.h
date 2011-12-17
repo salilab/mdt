@@ -37,9 +37,9 @@ double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
                       struct mdt_library *mlib,
                       const int residue_span_range[4],
                       const int chain_span_range[4],
-                      const int bond_span_range[2],
+                      const int bond_span_range[2], gboolean ss_patch,
                       gboolean exclude_bonds, gboolean exclude_angles,
-                      gboolean exclude_dihedrals,gboolean ss_patch,
+                      gboolean exclude_dihedrals,
                       const struct mod_energy_data *edat, GError **err);
 
 /** Return the bin index (starting at 1) of a single MDT feature, at the
@@ -58,12 +58,11 @@ gboolean mdt_add_alignment(struct mdt *mdt, struct mdt_library *mlib,
                            gboolean sdchngh, int surftyp, int iacc1typ,
                            const int residue_span_range[4],
                            const int chain_span_range[4],
-                           const int bond_span_range[2],
+                           const int bond_span_range[2], gboolean ss_patch,
                            gboolean exclude_bonds, gboolean exclude_angles,
                            gboolean exclude_dihedrals, gboolean sympairs,
                            gboolean symtriples, struct mod_io_data *io,
-                           struct mod_energy_data *edat, GError **err,
-                           gboolean ss_patch);
+                           struct mod_energy_data *edat, GError **err);
 
 /** Add data from an alignment to an MDT, with error. Return TRUE on success. */
 MDTDLLEXPORT
@@ -74,14 +73,14 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
                                    const int residue_span_range[4],
                                    const int chain_span_range[4],
                                    const int bond_span_range[2],
+                                   gboolean ss_patch,
                                    gboolean exclude_bonds,
                                    gboolean exclude_angles,
                                    gboolean exclude_dihedrals,
                                    gboolean sympairs, gboolean symtriples,
                                    struct mod_io_data *io,
                                    struct mod_energy_data *edat, GError **err,
-                                   float errorscale,
-                                   gboolean ss_patch);
+                                   float errorscale);
 
 G_END_DECLS
 

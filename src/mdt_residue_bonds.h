@@ -13,7 +13,7 @@
 
 G_BEGIN_DECLS
 
-struct mdt_properties;
+struct mdt_disulfide_list;
 
 /** Number of bonds separating each pair of atoms for a residue type */
 struct mdt_residue_bonds {
@@ -64,17 +64,19 @@ int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
 MDTDLLLOCAL
 int mdt_get_bond_separation(const struct mod_structure *struc,
                             const struct mod_sequence *seq,
-                            int atom1, int atom2,
-                            const struct mdt_properties * prop, int is,
-                            const struct mdt_residue_bond_list *bondlist);
+                            int atom1, int atom2, const int *attyp,
+                            const struct mdt_residue_bond_list *bondlist,
+                            const struct mdt_disulfide_list *disulfides);
 
 /** Get the number of bonds separating two atoms in the same chain.
     -1 is returned if the atoms are not connected.
  */
 int mdt_get_bond_separation_same_chain(int atom1, int atom2, int res1,
                             int res2, const struct mod_sequence *seq,
-                            const struct mdt_properties * prop, int is,
-                            const struct mdt_residue_bond_list *bondlist);
+                            const int *attyp,
+                            const struct mdt_residue_bond_list *bondlist,
+                            const struct mdt_disulfide_list *disulfides);
+
 
 G_END_DECLS
 

@@ -536,8 +536,7 @@ const struct mdt_tuple_list *property_tuples(const struct mod_alignment *aln,
 const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
                                   struct mdt_properties *prop,
                                   const struct mdt_library *mlib,
-                                  const struct mod_libraries *libs,
-                                  gboolean ss_patch)
+                                  const struct mod_libraries *libs)
 {
   if (!prop[is].resbond_attyp) {
     struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
@@ -546,12 +545,23 @@ const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
     /* Populate the atom types (once per sequence) */
     prop[is].resbond_attyp = mdt_residue_bonds_assign_atom_types(struc, seq,
                                                &mlib->residue_bond_list, libs);
-
-    if (ss_patch && !prop[is].disulfides) {
-      prop[is].disulfides = get_disulfides(struc, seq, libs);
-    }
   }
   return prop[is].resbond_attyp;
+}
+
+/** Get/calculate the list of disulfide bridges */
+const struct mdt_disulfide_list *property_disulfides(
+                               const struct mod_alignment *aln, int is,
+                               struct mdt_properties *prop,
+                               const struct mdt_library *mlib,
+                               const struct mod_libraries *libs)
+{
+  if (!prop[is].disulfides) {
+    struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
+    struct mod_structure *struc = mod_alignment_structure_get(aln, is);
+    prop[is].disulfides = get_disulfides(struc, seq, libs);
+  }
+  return prop[is].disulfides;
 }
 
 /** Require that the tuples have at least min_natom atoms each */

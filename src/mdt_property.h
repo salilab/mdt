@@ -169,8 +169,15 @@ MDTDLLLOCAL
 const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
                                   struct mdt_properties *prop,
                                   const struct mdt_library *mlib,
-                                  const struct mod_libraries *libs,
-                                  gboolean ss_patch);
+                                  const struct mod_libraries *libs);
+
+/** Get/calculate the list of disulfide bridges */
+MDTDLLLOCAL
+const struct mdt_disulfide_list *property_disulfides(
+                               const struct mod_alignment *aln, int is,
+                               struct mdt_properties *prop,
+                               const struct mdt_library *mlib,
+                               const struct mod_libraries *libs);
 
 /* Pack two atom indices into a pointer.
    Note  - no implementation for platforms where pointer is not 32 or 64 bits.

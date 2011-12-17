@@ -725,10 +725,10 @@ class Table(TableSection):
     def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
                       residue_span_range=(-99999, -2, 2, 99999),
                       chain_span_range=(-99999, 0, 0, 99999),
-                      bond_span_range=None,
+                      bond_span_range=None, ss_patch=False,
                       exclude_bonds=False, exclude_angles=False,
                       exclude_dihedrals=False, sympairs=False,
-                      symtriples=False, io=None, edat=None, ss_patch=False):
+                      symtriples=False, io=None, edat=None):
         """
         Add data from a Modeller alignment to this MDT.
         This method will first scan through all proteins, pairs of proteins,
@@ -812,20 +812,19 @@ class Table(TableSection):
         _mdt.mdt_add_alignment(self._modpt, self._mlib._modpt, aln.modpt,
                                distngh, False, surftyp, accessibility_type,
                                residue_span_range, chain_span_range,
-                               _prepare_bond_span(bond_span_range),
+                               _prepare_bond_span(bond_span_range), ss_patch,
                                exclude_bonds, exclude_angles, exclude_dihedrals,
-                               sympairs, symtriples, io.modpt, edat.modpt,
-                               ss_patch)
+                               sympairs, symtriples, io.modpt, edat.modpt)
 
     def add_alignment_witherr(self, aln, distngh=6.0, surftyp=1,
                               accessibility_type=8,
                               residue_span_range=(-99999, -2, 2, 99999),
                               chain_span_range=(-99999, 0, 0, 99999),
-                              bond_span_range=None,
+                              bond_span_range=None, ss_patch=False,
                               exclude_bonds=False, exclude_angles=False,
                               exclude_dihedrals=False,
                               sympairs=False, symtriples=False, io=None,
-                              edat=None, errorscale=1, ss_patch=False):
+                              edat=None, errorscale=1):
         """
         Add data from a Modeller alignment to this MDT. Same as add_alignment
         except the errors in data are taken into account.
@@ -848,10 +847,11 @@ class Table(TableSection):
                                        accessibility_type, residue_span_range,
                                        chain_span_range,
                                        _prepare_bond_span(bond_span_range),
+                                       ss_patch,
                                        exclude_bonds,
                                        exclude_angles, exclude_dihedrals,
                                        sympairs, symtriples, io.modpt,
-                                       edat.modpt, errorscale, ss_patch)
+                                       edat.modpt, errorscale)
 
     def open_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
                        sympairs=False, symtriples=False, io=None, edat=None):
@@ -1013,9 +1013,8 @@ class Source(object):
 
     def sum(self, residue_span_range=(-99999, -2, 2, 99999),
             chain_span_range=(-99999, 0, 0, 99999),
-            bond_span_range=None,
-            exclude_bonds=False, exclude_angles=False, exclude_dihedrals=False,
-            ss_patch=False):
+            bond_span_range=None, ss_patch=False,
+            exclude_bonds=False, exclude_angles=False, exclude_dihedrals=False):
         """Scan all data points in the source, and return the sum.
            See :meth:`Table.add_alignment` for a description of the
            `residue_span_range`, `chain_span_range` and `exclude_*`
@@ -1023,8 +1022,8 @@ class Source(object):
         f = _mdt.mdt_source_sum
         return f(self._modpt, self._mdt._modpt, self._mlib._modpt,
                  residue_span_range, chain_span_range,
-                 _prepare_bond_span(bond_span_range),
-                 exclude_bonds, exclude_angles, exclude_dihedrals, ss_patch,
+                 _prepare_bond_span(bond_span_range), ss_patch,
+                 exclude_bonds, exclude_angles, exclude_dihedrals,
                  self._edat.modpt)
 
     def index(self, feat, is1, ip1, is2, ir1, ir2, ir1p, ir2p, ia1, ia1p,

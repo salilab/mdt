@@ -10,7 +10,10 @@
 #include "mod_types.h"
 #include "mdt_config.h"
 
+
 G_BEGIN_DECLS
+
+struct mdt_properties;
 
 /** Number of bonds separating each pair of atoms for a residue type */
 struct mdt_residue_bonds {
@@ -20,6 +23,7 @@ struct mdt_residue_bonds {
       Note that this is a square matrix; size = g_hash_table_size(atom_names),
       although only the upper triangle is used. */
   int *distance;
+
 };
 
 /** A list of residue bonds */
@@ -53,14 +57,17 @@ MDTDLLLOCAL
 int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
                         const struct mod_sequence *seq,
                         const struct mdt_residue_bond_list *bondlist,
-                        const struct mod_libraries *libs);
+                        const struct mod_libraries *libs,
+                        struct mdt_properties *prop,int is,
+                        gboolean ss_patch);
 
 /** Get the number of bonds separating two atoms in a structure.
     -1 is returned if the atoms are not connected. */
 MDTDLLLOCAL
 int mdt_get_bond_separation(const struct mod_structure *struc,
                             const struct mod_sequence *seq,
-                            int atom1, int atom2, const int *attyp,
+                            int atom1, int atom2,
+                            const struct mdt_properties * prop, int is,
                             const struct mdt_residue_bond_list *bondlist);
 
 /** Get the number of bonds separating two atoms in the same chain.
@@ -68,7 +75,7 @@ int mdt_get_bond_separation(const struct mod_structure *struc,
  */
 int mdt_get_bond_separation_same_chain(int atom1, int atom2, int res1,
                             int res2, const struct mod_sequence *seq,
-                            const int *attyp,
+                            const struct mdt_properties * prop, int is,
                             const struct mdt_residue_bond_list *bondlist);
 
 G_END_DECLS

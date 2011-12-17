@@ -38,6 +38,12 @@ struct mdt_properties {
   int *dstind1, *dstind2;
   /** Atom types for residue bond separation */
   int *resbond_attyp;
+  /** Residue indices of S-S bonds */
+  int *issa;
+  int *issap;
+  int *issr;
+  int *issrp;
+  int numofss;
 };
 
 /** Make a new mdt_properties structure */
@@ -151,7 +157,8 @@ MDTDLLLOCAL
 const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
                                   struct mdt_properties *prop,
                                   const struct mdt_library *mlib,
-                                  const struct mod_libraries *libs);
+                                  const struct mod_libraries *libs,
+                                  gboolean ss_patch);
 
 /* Pack two atom indices into a pointer.
    Note  - no implementation for platforms where pointer is not 32 or 64 bits.

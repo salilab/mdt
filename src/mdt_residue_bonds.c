@@ -8,6 +8,9 @@
 #include "mdt_residue_bonds.h"
 #include "mdt_atom_classes.h"
 #include "modeller.h"
+#include "mdt_property.h"
+#include <math.h>
+#include <stdlib.h>
 
 /* N and C are always placed first in the atom-atom distance matrix */
 #define ATOM_TYPE_N 0
@@ -243,10 +246,20 @@ void mdt_fill_residue_bonds(struct mdt_residue_bond_list *bondlist,
 int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
                         const struct mod_sequence *seq,
                         const struct mdt_residue_bond_list *bondlist,
-                        const struct mod_libraries *libs)
+                        const struct mod_libraries *libs,
+                        struct mdt_properties *prop,int is,
+                        gboolean ss_patch)
 {
   int *attyp = g_malloc(sizeof(int) * struc->cd.natm);
   int iat, *iresatm;
+  int *sindlist=NULL;
+  int numofs=0;
+  int *issa=NULL;
+  int *issap=NULL;
+  int numofss=0;
+  int i,j;
+  float dist;
+
 
   iresatm = mod_int1_pt(&struc->cd.iresatm);
   for (iat = 0; iat < struc->cd.natm; ++iat) {
@@ -269,6 +282,60 @@ int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
       }
       g_free(atmnam);
     }
+    if (ss_patch){
+      /*populate the sulfur atom list*/
+      if (restyp==2 && attyp[iat]==4){
+        numofs+=1;
+        sindlist=g_realloc(sindlist,sizeof(int)*numofs);
+        sindlist[numofs-1]=iat;
+        mod_lognote("Residue %s ATOM1 %s",mod_residue_name_from_type(2,libs),
+                    mod_coordinates_atmnam_get(&struc->cd,iat));
+      }
+    }
+  }
+  if (ss_patch){
+    /*Find the ss bond atoms*/
+    for (i=0;i<numofs;i++){
+      for (j=i+1;j<numofs;j++){
+          float *x,*y,*z;
+          float  xd,yd,zd;
+          x = mod_float1_pt(&struc->cd.x);
+          y = mod_float1_pt(&struc->cd.y);
+          z = mod_float1_pt(&struc->cd.z);
+          xd = x[sindlist[i]]-x[sindlist[j]];
+          yd = y[sindlist[i]] - y[sindlist[j]];
+          zd = z[sindlist[i]]- z[sindlist[j]];
+          dist=sqrt(xd * xd + yd * yd + zd * zd);
+          if (dist<2.5){
+            numofss+=1;
+            issa=g_realloc(issa,sizeof(int)*numofss*2);
+            issa[numofss*2-1]=sindlist[i];
+            issa[numofss*2-2]=sindlist[j];
+            issap=g_realloc(issap,sizeof(int)*numofss*2);
+            issap[numofss*2-1]=sindlist[j];
+            issap[numofss*2-2]=sindlist[i];
+          }
+      }
+    }
+    prop[is].issa=issa;
+    prop[is].issap=issap;
+    prop[is].numofss=numofss;
+    if (numofss>0){
+      mod_lognote("%d s-s bond",numofss);
+      prop[is].issr=g_malloc(sizeof(int)*numofss*2);
+      prop[is].issrp=g_malloc(sizeof(int)*numofss*2);
+      for(i=0;i<numofss*2;i++){
+        prop[is].issr[i]=iresatm[prop[is].issa[i]]-1;
+        prop[is].issrp[i]=iresatm[prop[is].issap[i]]-1;
+        mod_lognote("Residue %s ATOM1 %s %d, ATOM2, %s %d",
+                    mod_residue_name_from_type(2,libs),
+                    mod_coordinates_atmnam_get(&struc->cd,prop[is].issa[i]),
+                    prop[is].issr[i],
+                    mod_coordinates_atmnam_get(&struc->cd,prop[is].issa[i]),
+                    prop[is].issrp[i]);
+      }
+    }
+    g_free(sindlist);
   }
   return attyp;
 }
@@ -300,11 +367,13 @@ static int bond_separation_internal(const struct mod_sequence *seq, int atom1,
 /** Get bond separation between two atoms in different residues. Note that
     atom1/res1 must be come before atom2/res2 in the amino acid sequence. */
 static int bond_separation_external(const struct mod_sequence *seq, int atom1,
-                int atom2, int res1, int res2, const int *attyp,
+                int atom2, int res1, int res2,
+                const struct mdt_properties * prop, int is,
                 const struct mdt_residue_bond_list *bondlist)
 {
   /* Get distance to backbone C in first residue, distance to backbone N
      in second residue, and add backbone bonds for all intervening residues. */
+  int *attyp=prop[is].resbond_attyp;
   int dist_to_c, dist_to_n, backbone_bonds;
   int restyp1 = mod_int1_get(&seq->irestyp, res1) - 1;
   int restyp2 = mod_int1_get(&seq->irestyp, res2) - 1;
@@ -323,15 +392,16 @@ static int bond_separation_external(const struct mod_sequence *seq, int atom1,
   return dist_to_c + backbone_bonds + dist_to_n;
 }
 
-/** Get the number of bonds separating two atoms in a structure.
-    -1 is returned if the atoms are not connected. */
-int mdt_get_bond_separation(const struct mod_structure *struc,
+
+int mdt_get_bond_separation_anytwo(const struct mod_structure *struc,
                             const struct mod_sequence *seq,
-                            int atom1, int atom2, const int *attyp,
+                            int atom1, int atom2,
+                            const struct mdt_properties * prop, int is,
                             const struct mdt_residue_bond_list *bondlist)
 {
-  const int *iresatm;
+    const int *iresatm;
   int minres, maxres, minatom, maxatom;
+  int *attyp=prop[is].resbond_attyp;
 
   if (attyp[atom1] < 0 || attyp[atom2] < 0) {
     return -1;
@@ -354,18 +424,20 @@ int mdt_get_bond_separation(const struct mod_structure *struc,
 
   } else {
     return bond_separation_external(seq, minatom, maxatom, minres, maxres,
-                                    attyp, bondlist);
+                                    prop,is, bondlist);
   }
 }
 
 /** Get the number of bonds separating two atoms in the same chain.
-    -1 is returned if the atoms are not connected.
+    -1 is returned if the atoms are not connected. Without s-s path.
  */
-int mdt_get_bond_separation_same_chain(int atom1, int atom2, int res1,
+int mdt_get_bond_separation_same_chain_noss(int atom1, int atom2, int res1,
                             int res2, const struct mod_sequence *seq,
-                            const int *attyp,
+                            const struct mdt_properties * prop, int is,
                             const struct mdt_residue_bond_list *bondlist)
 {
+  int *attyp=prop[is].resbond_attyp;
+
   if (attyp[atom1] < 0 || attyp[atom2] < 0) {
     return -1;
   }
@@ -375,11 +447,80 @@ int mdt_get_bond_separation_same_chain(int atom1, int atom2, int res1,
   } else {
     /* Order atoms by sequence */
     if (atom1 <= atom2) {
-      return bond_separation_external(seq, atom1, atom2, res1, res2, attyp,
+      return bond_separation_external(seq, atom1, atom2, res1, res2, prop,is,
                                       bondlist);
     } else {
-      return bond_separation_external(seq, atom2, atom1, res2, res1, attyp,
+      return bond_separation_external(seq, atom2, atom1, res2, res1, prop,is,
                                       bondlist);
     }
   }
+}
+
+/** Get the number of bonds separating two atoms in a structure.
+    -1 is returned if the atoms are not connected. */
+int mdt_get_bond_separation(const struct mod_structure *struc,
+                            const struct mod_sequence *seq,
+                            int atom1, int atom2,
+                            const struct mdt_properties * prop, int is,
+                            const struct mdt_residue_bond_list *bondlist)
+{
+  const int *iresatm;
+  int minres, maxres, minatom, maxatom;
+
+  /* Order by sequence */
+  minatom = MIN(atom1, atom2);
+  maxatom = MAX(atom1, atom2);
+
+  iresatm = mod_int1_pt(&struc->cd.iresatm);
+  minres = iresatm[minatom] - 1;
+  maxres = iresatm[maxatom] - 1;
+
+
+  if (!residues_in_same_chain(minres, maxres, seq)) {
+      /* Atoms in different chains can't be connected. */
+      return -1;
+  }
+  return mdt_get_bond_separation_same_chain(minatom,maxatom,minres,maxres,seq,
+                                            prop,is,bondlist);
+}
+
+/** Get the number of bonds separating two atoms in the same chain.
+    -1 is returned if the atoms are not connected.
+ */
+int mdt_get_bond_separation_same_chain(int atom1, int atom2, int res1,
+                            int res2, const struct mod_sequence *seq,
+                            const struct mdt_properties * prop, int is,
+                            const struct mdt_residue_bond_list *bondlist)
+{
+  int bonddist;
+  bonddist=mdt_get_bond_separation_same_chain_noss(atom1,atom2,res1,res2,
+                                                       seq,prop,is,bondlist);
+
+  /*recalcualte the bond separation using s-s bonds  prop[is].numofss>*/
+  if (prop[is].numofss>0){
+    const int ssseq=3;
+    int bd,i;
+    /*calculate bond distance when there is a disulfide bond nearby*/
+    for(i=0;i<2*prop[is].numofss;i++){
+      if ((abs(prop[is].issr[i]-res1)+abs(prop[is].issrp[i]-res2))<=ssseq){
+        bd=1;
+        bd+=mdt_get_bond_separation_same_chain_noss(atom1,prop[is].issa[i],res1,
+                                                   prop[is].issr[i],seq,
+                                                   prop,is,bondlist);
+        bd+=mdt_get_bond_separation_same_chain_noss(prop[is].issap[i],atom2,
+                                                   prop[is].issrp[i],res2,seq,
+                                                   prop,is,bondlist);
+        /*mod_lognote("####s-s ATOM1 %d %d, ATOM2, %d %d",
+            prop[is].issa[i], prop[is].issr[i],
+            prop[is].issap[i],prop[is].issrp[i]);
+        mod_lognote("    ATOM1 %d %d, ATOM2, %d %d,  DIST %d",
+            atom1,res1,atom2,res2,bd);*/
+        if (bd<bonddist){
+          bonddist=bd;
+        }
+      }
+    }
+  }
+  return bonddist;
+
 }

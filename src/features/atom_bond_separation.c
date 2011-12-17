@@ -18,9 +18,10 @@ static int getbin(const struct mod_alignment *aln, int protein,
 {
   struct mod_structure *struc = mod_alignment_structure_get(aln, protein);
   struct mod_sequence *seq = mod_alignment_sequence_get(aln, protein);
-  const int *attyp = property_resbond_attyp(aln, protein, prop, mlib, libs);
+  property_resbond_attyp(aln, protein, prop, mlib, libs, 1);
 
-  int bond_separation = mdt_get_bond_separation(struc, seq, atom1, atom2, attyp,
+  int bond_separation = mdt_get_bond_separation(struc, seq, atom1, atom2, prop,
+                                                protein,
                                                 &mlib->residue_bond_list);
   if (bond_separation == -1) {
     return mdt_feature_undefined_bin_get(feat);

@@ -39,7 +39,7 @@ double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
                       const int chain_span_range[4],
                       const int bond_span_range[2],
                       gboolean exclude_bonds, gboolean exclude_angles,
-                      gboolean exclude_dihedrals,
+                      gboolean exclude_dihedrals,gboolean ss_patch,
                       const struct mod_energy_data *edat, GError **err);
 
 /** Return the bin index (starting at 1) of a single MDT feature, at the
@@ -62,7 +62,8 @@ gboolean mdt_add_alignment(struct mdt *mdt, struct mdt_library *mlib,
                            gboolean exclude_bonds, gboolean exclude_angles,
                            gboolean exclude_dihedrals, gboolean sympairs,
                            gboolean symtriples, struct mod_io_data *io,
-                           struct mod_energy_data *edat, GError **err);
+                           struct mod_energy_data *edat, GError **err,
+                           gboolean ss_patch);
 
 /** Add data from an alignment to an MDT, with error. Return TRUE on success. */
 MDTDLLEXPORT
@@ -79,7 +80,8 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
                                    gboolean sympairs, gboolean symtriples,
                                    struct mod_io_data *io,
                                    struct mod_energy_data *edat, GError **err,
-                                   float errorscale);
+                                   float errorscale,
+                                   gboolean ss_patch);
 
 G_END_DECLS
 

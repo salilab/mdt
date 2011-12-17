@@ -36,6 +36,11 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
     prop[i].dstind1 = NULL;
     prop[i].dstind2 = NULL;
     prop[i].resbond_attyp = NULL;
+    prop[i].issa = NULL;
+    prop[i].issap = NULL;
+    prop[i].issr = NULL;
+    prop[i].issrp = NULL;
+    prop[i].numofss=0;
   }
   return prop;
 }
@@ -70,6 +75,10 @@ void mdt_properties_free(struct mdt_properties *prop,
     g_free(prop[i].dstind1);
     g_free(prop[i].dstind2);
     g_free(prop[i].resbond_attyp);
+    g_free(prop[i].issa);
+    g_free(prop[i].issap);
+    g_free(prop[i].issr);
+    g_free(prop[i].issrp);
   }
   g_free(prop);
 }
@@ -530,7 +539,8 @@ const struct mdt_tuple_list *property_tuples(const struct mod_alignment *aln,
 const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
                                   struct mdt_properties *prop,
                                   const struct mdt_library *mlib,
-                                  const struct mod_libraries *libs)
+                                  const struct mod_libraries *libs,
+                                  gboolean ss_patch)
 {
   if (!prop[is].resbond_attyp) {
     struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
@@ -538,7 +548,8 @@ const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
 
     /* Populate the atom types (once per sequence) */
     prop[is].resbond_attyp = mdt_residue_bonds_assign_atom_types(struc, seq,
-                                               &mlib->residue_bond_list, libs);
+                                               &mlib->residue_bond_list, libs,
+                                               prop,is,ss_patch);
   }
   return prop[is].resbond_attyp;
 }

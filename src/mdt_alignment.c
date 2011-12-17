@@ -683,14 +683,16 @@ static gboolean check_bond_separation(int atom, int atomp, int res, int resp,
                                       const struct mod_sequence *seq,
                                       const struct mdt_library *mlib,
                                       const int bond_span_range[2],
-                                      const int *resbond_attyp)
+                                      const struct mdt_properties * prop,
+                                      int is)
 {
   /* Atoms in separate chains are never connected */
   if (chain != chainp) {
     return FALSE;
   } else {
     int sep = mdt_get_bond_separation_same_chain(atom, atomp, res, resp, seq,
-                                   resbond_attyp, &mlib->residue_bond_list);
+                                                 prop, is,
+                                                 &mlib->residue_bond_list);
     if (sep == -1) {
       return FALSE;
     } else {
@@ -794,7 +796,7 @@ static gboolean gen_atompair(struct mdt *mdt, const struct mdt_library *mlib,
       && check_chain_separation(chain, chainp, chain_span_range)
       && (!bond_span_range
           || check_bond_separation(ia1, ia1p, ir1, ir1p, chain, chainp, seq,
-                                   mlib, bond_span_range, resbond_attyp))
+                                   mlib, bond_span_range, source->prop,is1))
       && (!exclusions || !check_atom_pair_excluded(ia1, ia1p, exclusions))) {
     if (!update_mdt(mdt, mlib, is1, 1, 1, ir1, 1, ir1p, 1, 1, ia1,
                     ia1p, 1, 1, 1, 1, 1, indf, libs, edat, source, scanfunc,
@@ -818,7 +820,7 @@ static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
                                const struct mod_energy_data *edat,
                                struct mdt_source *source,
                                mdt_scan_cb scanfunc, void *scandata,
-                               GError **err)
+                               GError **err,gboolean ss_patch)
 {
   int ia1, ia1p, ir1, *iresatm;
   const int *resbond_attyp = NULL;
@@ -841,7 +843,7 @@ static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
   }
   if (bond_span_range) {
     resbond_attyp = property_resbond_attyp(source->aln, is1, source->prop,
-                                           mlib, libs);
+                                           mlib, libs, ss_patch);
   }
 
   if (mdt->symmetric) {
@@ -958,10 +960,9 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
                                      const struct mod_energy_data *edat,
                                      struct mdt_source *source,
                                      mdt_scan_cb scanfunc, void *scandata,
-                                     GError **err)
+                                     GError **err,gboolean ss_patch)
 {
   int ia1, ir1, ibnd1, ibnd1p, ia1p, ir1p, *iresatm;
-  const int *resbond_attyp = NULL;
   struct mod_structure *s1;
   struct mod_sequence *seq;
   const struct mdt_tuple_list *tup;
@@ -978,8 +979,8 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
     return FALSE;
   }
   if (bond_span_range) {
-    resbond_attyp = property_resbond_attyp(source->aln, is1, source->prop,
-                                           mlib, libs);
+    property_resbond_attyp(source->aln, is1, source->prop,
+                                           mlib, libs,ss_patch);
   }
 
   for (ia1 = 0; ia1 < s1->cd.natm; ia1++) {
@@ -998,7 +999,7 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
             && (!bond_span_range
                 || check_bond_separation(ia1, ia1p, ir1, ir1p, chain, chainp,
                                          seq, mlib, bond_span_range,
-                                         resbond_attyp))
+                                         source->prop,is1))
             && (!exclusions
                 || !check_atom_pair_excluded(ia1, ia1p, exclusions))) {
           for (ibnd1p = 0; ibnd1p < tup[ia1p].ntuples; ibnd1p++) {
@@ -1090,7 +1091,7 @@ static gboolean mdt_source_scan(struct mdt *mdt,
                                 const struct mod_energy_data *edat,
                                 const gboolean acceptd[], int nseqacc,
                                 mdt_scan_cb scanfunc, void *scandata,
-                                GError **err)
+                                GError **err,gboolean ss_patch)
 {
   int ip1;
 
@@ -1150,7 +1151,7 @@ static gboolean mdt_source_scan(struct mdt *mdt,
                           prepare_bond_span_range(bond_span_range, mlib),
                           exclude_bonds, exclude_angles, exclude_dihedrals,
                           0, indf, libs, edat, source, scanfunc, scandata,
-                          err)) {
+                          err,ss_patch)) {
         return FALSE;
       }
     }
@@ -1175,7 +1176,7 @@ static gboolean mdt_source_scan(struct mdt *mdt,
                                 prepare_bond_span_range(bond_span_range, mlib),
                                 exclude_bonds, exclude_angles,
                                 exclude_dihedrals, 0, indf, libs, edat, source,
-                                scanfunc, scandata, err)) {
+                                scanfunc, scandata, err,ss_patch)) {
         return FALSE;
       }
     }
@@ -1281,7 +1282,7 @@ double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
                       const int chain_span_range[4],
                       const int bond_span_range[2],
                       gboolean exclude_bonds, gboolean exclude_angles,
-                      gboolean exclude_dihedrals,
+                      gboolean exclude_dihedrals, gboolean ss_patch,
                       const struct mod_energy_data *edat, GError **err)
 {
   double sum = 0.;
@@ -1289,7 +1290,7 @@ double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
   mdt_source_scan(mdt, mlib, source, residue_span_range, chain_span_range,
                   bond_span_range, exclude_bonds, exclude_angles,
                   exclude_dihedrals, indf, mlib->libs, edat, source->acceptd,
-                  source->nseqacc, scan_sum, &sum, err);
+                  source->nseqacc, scan_sum, &sum, err,ss_patch);
   g_free(indf);
   return sum;
 }
@@ -1321,14 +1322,15 @@ gboolean mdt_add_alignment(struct mdt *mdt, struct mdt_library *mlib,
                            gboolean exclude_bonds, gboolean exclude_angles,
                            gboolean exclude_dihedrals, gboolean sympairs,
                            gboolean symtriples, struct mod_io_data *io,
-                           struct mod_energy_data *edat, GError **err)
+                           struct mod_energy_data *edat, GError **err,
+                           gboolean ss_patch)
 {
   struct mdt_source *source;
 
   mod_lognote("Calculating and checking other data: %d", aln->nseq);
 
   source = mdt_alignment_open(mdt, mlib, aln, distngh, sdchngh, surftyp,
-                              iacc1typ, sympairs, symtriples, io, err);
+                              iacc1typ, sympairs, symtriples,io, err);
   if (source) {
     gboolean ret;
     int *indf = g_malloc(sizeof(int) * mdt->base.nfeat);
@@ -1341,7 +1343,7 @@ gboolean mdt_add_alignment(struct mdt *mdt, struct mdt_library *mlib,
                           chain_span_range, bond_span_range, exclude_bonds,
                           exclude_angles, exclude_dihedrals, indf, mlib->libs,
                           edat, source->acceptd, source->nseqacc, scan_update,
-                          NULL, err);
+                          NULL, err,ss_patch);
     g_free(indf);
 
     mdt_alignment_close(source);
@@ -1365,7 +1367,8 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
                                    gboolean sympairs, gboolean symtriples,
                                    struct mod_io_data *io,
                                    struct mod_energy_data *edat,
-                                   GError **err, float errorscale)
+                                   GError **err, float errorscale,
+                                   gboolean ss_patch)
 {
   struct mdt_source *source;
 
@@ -1396,7 +1399,7 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
                           chain_span_range, bond_span_range, exclude_bonds,
                           exclude_angles, exclude_dihedrals, indf, mlib->libs,
                           edat, source->acceptd, source->nseqacc,
-                          scan_update_witherr, &errorscale, err);
+                          scan_update_witherr, &errorscale, err,ss_patch);
     g_free(indf);
     mdt_alignment_close(source);
     return ret;

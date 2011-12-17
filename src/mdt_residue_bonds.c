@@ -294,13 +294,12 @@ int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
   }
   if (ss_patch){
     /*Find the ss bond atoms*/
+    float *x = mod_float1_pt(&struc->cd.x);
+    float *y = mod_float1_pt(&struc->cd.y);
+    float *z = mod_float1_pt(&struc->cd.z);
     for (i=0;i<numofs;i++){
       for (j=i+1;j<numofs;j++){
-          float *x,*y,*z;
           float  xd,yd,zd, dist2;
-          x = mod_float1_pt(&struc->cd.x);
-          y = mod_float1_pt(&struc->cd.y);
-          z = mod_float1_pt(&struc->cd.z);
           xd = x[sindlist[i]]-x[sindlist[j]];
           yd = y[sindlist[i]] - y[sindlist[j]];
           zd = z[sindlist[i]]- z[sindlist[j]];

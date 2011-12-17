@@ -305,13 +305,11 @@ int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
           zd = z[sindlist[i]]- z[sindlist[j]];
           dist2 = xd * xd + yd * yd + zd * zd;
           if (dist2 < 2.5 * 2.5){
-            numofss+=1;
-            issa=g_realloc(issa,sizeof(int)*numofss*2);
-            issa[numofss*2-1]=sindlist[i];
-            issa[numofss*2-2]=sindlist[j];
-            issap=g_realloc(issap,sizeof(int)*numofss*2);
-            issap[numofss*2-1]=sindlist[j];
-            issap[numofss*2-2]=sindlist[i];
+            numofss++;
+            issa=g_realloc(issa,sizeof(int)*numofss);
+            issa[numofss - 1]=sindlist[i];
+            issap=g_realloc(issap,sizeof(int)*numofss);
+            issap[numofss - 1]=sindlist[j];
           }
       }
     }
@@ -320,9 +318,9 @@ int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
     prop[is].numofss=numofss;
     if (numofss>0){
       mod_lognote("%d s-s bond",numofss);
-      prop[is].issr=g_malloc(sizeof(int)*numofss*2);
-      prop[is].issrp=g_malloc(sizeof(int)*numofss*2);
-      for(i=0;i<numofss*2;i++){
+      prop[is].issr=g_malloc(sizeof(int)*numofss);
+      prop[is].issrp=g_malloc(sizeof(int)*numofss);
+      for(i = 0; i < numofss; i++){
         prop[is].issr[i]=iresatm[prop[is].issa[i]]-1;
         prop[is].issrp[i]=iresatm[prop[is].issap[i]]-1;
         mod_lognote("Residue %s ATOM1 %s %d, ATOM2, %s %d",
@@ -499,21 +497,28 @@ int mdt_get_bond_separation_same_chain(int atom1, int atom2, int res1,
     const int ssseq=3;
     int bd,i;
     /*calculate bond distance when there is a disulfide bond nearby*/
-    for(i=0;i<2*prop[is].numofss;i++){
-      if ((abs(prop[is].issr[i]-res1)+abs(prop[is].issrp[i]-res2))<=ssseq){
-        bd=1;
-        bd+=mdt_get_bond_separation_same_chain_noss(atom1,prop[is].issa[i],res1,
-                                                   prop[is].issr[i],seq,
-                                                   prop,is,bondlist);
-        bd+=mdt_get_bond_separation_same_chain_noss(prop[is].issap[i],atom2,
-                                                   prop[is].issrp[i],res2,seq,
-                                                   prop,is,bondlist);
-        /*mod_lognote("####s-s ATOM1 %d %d, ATOM2, %d %d",
-            prop[is].issa[i], prop[is].issr[i],
-            prop[is].issap[i],prop[is].issrp[i]);
-        mod_lognote("    ATOM1 %d %d, ATOM2, %d %d,  DIST %d",
-            atom1,res1,atom2,res2,bd);*/
-        if (bd<bonddist){
+    for(i = 0; i < prop[is].numofss; i++) {
+      if ((abs(prop[is].issr[i]-res1)+abs(prop[is].issrp[i]-res2)) <= ssseq) {
+        bd = 1
+             + mdt_get_bond_separation_same_chain_noss(atom1, prop[is].issa[i],
+                                                       res1, prop[is].issr[i],
+                                                       seq, prop, is, bondlist)
+             + mdt_get_bond_separation_same_chain_noss(prop[is].issap[i], atom2,
+                                                       prop[is].issrp[i], res2,
+                                                       seq, prop, is, bondlist);
+        if (bd < bonddist) {
+          bonddist=bd;
+        }
+      }
+      if ((abs(prop[is].issrp[i]-res1)+abs(prop[is].issr[i]-res2)) <= ssseq) {
+        bd = 1
+             + mdt_get_bond_separation_same_chain_noss(atom1, prop[is].issap[i],
+                                                       res1, prop[is].issrp[i],
+                                                       seq, prop, is, bondlist)
+             + mdt_get_bond_separation_same_chain_noss(prop[is].issa[i], atom2,
+                                                       prop[is].issr[i], res2,
+                                                       seq, prop, is, bondlist);
+        if (bd < bonddist) {
           bonddist=bd;
         }
       }

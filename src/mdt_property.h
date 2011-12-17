@@ -14,6 +14,22 @@
 
 G_BEGIN_DECLS
 
+/** A single disulfide bridge */
+struct mdt_disulfide {
+  /** Indices of the two atoms */
+  int atom1, atom2;
+  /** Indices of the two residues */
+  int res1, res2;
+};
+
+/** A list of disulfide bridges */
+struct mdt_disulfide_list {
+  /** Number of bridges */
+  int nss;
+  /** Atom and residue information for each bridge */
+  struct mdt_disulfide *ss;
+};
+
 /** Precalculated per-sequence properties for calculating MDT indices */
 struct mdt_properties {
   /** Lists of bonds */
@@ -39,11 +55,7 @@ struct mdt_properties {
   /** Atom types for residue bond separation */
   int *resbond_attyp;
   /** Residue indices of S-S bonds */
-  int *issa;
-  int *issap;
-  int *issr;
-  int *issrp;
-  int numofss;
+  struct mdt_disulfide_list *disulfides;
 };
 
 /** Make a new mdt_properties structure */

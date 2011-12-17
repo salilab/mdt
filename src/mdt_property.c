@@ -37,11 +37,7 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
     prop[i].dstind1 = NULL;
     prop[i].dstind2 = NULL;
     prop[i].resbond_attyp = NULL;
-    prop[i].issa = NULL;
-    prop[i].issap = NULL;
-    prop[i].issr = NULL;
-    prop[i].issrp = NULL;
-    prop[i].numofss=0;
+    prop[i].disulfides = NULL;
   }
   return prop;
 }
@@ -67,6 +63,9 @@ void mdt_properties_free(struct mdt_properties *prop,
         g_free(prop[i].tuples[j].tuples);
       }
     }
+    if (prop[i].disulfides) {
+      g_free(prop[i].disulfides->ss);
+    }
     g_free(prop[i].tuples);
     g_free(prop[i].hb_iatta);
     g_free(prop[i].hbpot);
@@ -76,10 +75,7 @@ void mdt_properties_free(struct mdt_properties *prop,
     g_free(prop[i].dstind1);
     g_free(prop[i].dstind2);
     g_free(prop[i].resbond_attyp);
-    g_free(prop[i].issa);
-    g_free(prop[i].issap);
-    g_free(prop[i].issr);
-    g_free(prop[i].issrp);
+    g_free(prop[i].disulfides);
   }
   g_free(prop);
 }
@@ -551,8 +547,8 @@ const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
     prop[is].resbond_attyp = mdt_residue_bonds_assign_atom_types(struc, seq,
                                                &mlib->residue_bond_list, libs);
 
-    if (ss_patch) {
-      get_disulfides(struc, seq, libs, prop, is);
+    if (ss_patch && !prop[is].disulfides) {
+      prop[is].disulfides = get_disulfides(struc, seq, libs);
     }
   }
   return prop[is].resbond_attyp;

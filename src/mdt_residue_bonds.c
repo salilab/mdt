@@ -434,30 +434,32 @@ int mdt_get_bond_separation_same_chain(int atom1, int atom2, int res1,
                                                        seq,prop,is,bondlist);
 
   /*recalcualte the bond separation using s-s bonds  prop[is].numofss>*/
-  if (prop[is].numofss>0){
+  if (prop[is].disulfides && prop[is].disulfides->nss > 0) {
     const int ssseq=3;
     int bd,i;
     /*calculate bond distance when there is a disulfide bond nearby*/
-    for(i = 0; i < prop[is].numofss; i++) {
-      if ((abs(prop[is].issr[i]-res1)+abs(prop[is].issrp[i]-res2)) <= ssseq) {
+    struct mdt_disulfide *ss;
+    for(i = 0, ss = prop[is].disulfides->ss; i < prop[is].disulfides->nss;
+        i++, ss++) {
+      if ((abs(ss->res1-res1)+abs(ss->res2-res2)) <= ssseq) {
         bd = 1
-             + mdt_get_bond_separation_same_chain_noss(atom1, prop[is].issa[i],
-                                                       res1, prop[is].issr[i],
+             + mdt_get_bond_separation_same_chain_noss(atom1, ss->atom1,
+                                                       res1, ss->res1,
                                                        seq, prop, is, bondlist)
-             + mdt_get_bond_separation_same_chain_noss(prop[is].issap[i], atom2,
-                                                       prop[is].issrp[i], res2,
+             + mdt_get_bond_separation_same_chain_noss(ss->atom2, atom2,
+                                                       ss->res2, res2,
                                                        seq, prop, is, bondlist);
         if (bd < bonddist) {
           bonddist=bd;
         }
       }
-      if ((abs(prop[is].issrp[i]-res1)+abs(prop[is].issr[i]-res2)) <= ssseq) {
+      if ((abs(ss->res2-res1)+abs(ss->res1-res2)) <= ssseq) {
         bd = 1
-             + mdt_get_bond_separation_same_chain_noss(atom1, prop[is].issap[i],
-                                                       res1, prop[is].issrp[i],
+             + mdt_get_bond_separation_same_chain_noss(atom1, ss->atom2,
+                                                       res1, ss->res2,
                                                        seq, prop, is, bondlist)
-             + mdt_get_bond_separation_same_chain_noss(prop[is].issa[i], atom2,
-                                                       prop[is].issr[i], res2,
+             + mdt_get_bond_separation_same_chain_noss(ss->atom1, atom2,
+                                                       ss->res2, res2,
                                                        seq, prop, is, bondlist);
         if (bd < bonddist) {
           bonddist=bd;

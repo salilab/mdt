@@ -10,18 +10,16 @@
 #include <stdio.h>
 #include "mdt_config.h"
 #include "modeller.h"
-#include "mdt_types.h"
 
 G_BEGIN_DECLS
 
-struct mdt_properties;
+struct mdt_disulfide_list;
 
 /** Get list of disulfides. */
 MDTDLLLOCAL
-void get_disulfides(const struct mod_structure *struc,
-                    const struct mod_sequence *seq,
-                    const struct mod_libraries *libs,
-                    struct mdt_properties *prop, int is);
+struct mdt_disulfide_list *get_disulfides(const struct mod_structure *struc,
+                                          const struct mod_sequence *seq,
+                                          const struct mod_libraries *libs);
 
 G_END_DECLS
 

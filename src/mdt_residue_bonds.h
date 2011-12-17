@@ -57,9 +57,7 @@ MDTDLLLOCAL
 int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
                         const struct mod_sequence *seq,
                         const struct mdt_residue_bond_list *bondlist,
-                        const struct mod_libraries *libs,
-                        struct mdt_properties *prop,int is,
-                        gboolean ss_patch);
+                        const struct mod_libraries *libs);
 
 /** Get the number of bonds separating two atoms in a structure.
     -1 is returned if the atoms are not connected. */

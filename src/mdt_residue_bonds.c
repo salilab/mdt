@@ -246,18 +246,10 @@ void mdt_fill_residue_bonds(struct mdt_residue_bond_list *bondlist,
 int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
                         const struct mod_sequence *seq,
                         const struct mdt_residue_bond_list *bondlist,
-                        const struct mod_libraries *libs,
-                        struct mdt_properties *prop,int is,
-                        gboolean ss_patch)
+                        const struct mod_libraries *libs)
 {
   int *attyp = g_malloc(sizeof(int) * struc->cd.natm);
   int iat, *iresatm;
-  int *sindlist=NULL;
-  int numofs=0;
-  int *issa=NULL;
-  int *issap=NULL;
-  int numofss=0;
-  int i,j;
 
 
   iresatm = mod_int1_pt(&struc->cd.iresatm);
@@ -281,57 +273,6 @@ int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
       }
       g_free(atmnam);
     }
-    if (ss_patch){
-      /*populate the sulfur atom list*/
-      if (restyp==2 && attyp[iat]==4){
-        numofs+=1;
-        sindlist=g_realloc(sindlist,sizeof(int)*numofs);
-        sindlist[numofs-1]=iat;
-        mod_lognote("Residue %s ATOM1 %s",mod_residue_name_from_type(2,libs),
-                    mod_coordinates_atmnam_get(&struc->cd,iat));
-      }
-    }
-  }
-  if (ss_patch){
-    /*Find the ss bond atoms*/
-    float *x = mod_float1_pt(&struc->cd.x);
-    float *y = mod_float1_pt(&struc->cd.y);
-    float *z = mod_float1_pt(&struc->cd.z);
-    for (i=0;i<numofs;i++){
-      for (j=i+1;j<numofs;j++){
-          float  xd,yd,zd, dist2;
-          xd = x[sindlist[i]]-x[sindlist[j]];
-          yd = y[sindlist[i]] - y[sindlist[j]];
-          zd = z[sindlist[i]]- z[sindlist[j]];
-          dist2 = xd * xd + yd * yd + zd * zd;
-          if (dist2 < 2.5 * 2.5){
-            numofss++;
-            issa=g_realloc(issa,sizeof(int)*numofss);
-            issa[numofss - 1]=sindlist[i];
-            issap=g_realloc(issap,sizeof(int)*numofss);
-            issap[numofss - 1]=sindlist[j];
-          }
-      }
-    }
-    prop[is].issa=issa;
-    prop[is].issap=issap;
-    prop[is].numofss=numofss;
-    if (numofss>0){
-      mod_lognote("%d s-s bond",numofss);
-      prop[is].issr=g_malloc(sizeof(int)*numofss);
-      prop[is].issrp=g_malloc(sizeof(int)*numofss);
-      for(i = 0; i < numofss; i++){
-        prop[is].issr[i]=iresatm[prop[is].issa[i]]-1;
-        prop[is].issrp[i]=iresatm[prop[is].issap[i]]-1;
-        mod_lognote("Residue %s ATOM1 %s %d, ATOM2, %s %d",
-                    mod_residue_name_from_type(2,libs),
-                    mod_coordinates_atmnam_get(&struc->cd,prop[is].issa[i]),
-                    prop[is].issr[i],
-                    mod_coordinates_atmnam_get(&struc->cd,prop[is].issa[i]),
-                    prop[is].issrp[i]);
-      }
-    }
-    g_free(sindlist);
   }
   return attyp;
 }

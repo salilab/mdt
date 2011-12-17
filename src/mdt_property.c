@@ -9,6 +9,7 @@
 #include "modeller.h"
 #include "util.h"
 #include "mdt_index.h"
+#include "mdt_disulfides.h"
 #include "mdt_property.h"
 #include "mdt_hydrogen_bonds.h"
 #include "mdt_stereo.h"
@@ -548,8 +549,11 @@ const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
 
     /* Populate the atom types (once per sequence) */
     prop[is].resbond_attyp = mdt_residue_bonds_assign_atom_types(struc, seq,
-                                               &mlib->residue_bond_list, libs,
-                                               prop,is,ss_patch);
+                                               &mlib->residue_bond_list, libs);
+
+    if (ss_patch) {
+      get_disulfides(struc, seq, libs, prop, is);
+    }
   }
   return prop[is].resbond_attyp;
 }

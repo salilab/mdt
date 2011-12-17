@@ -39,7 +39,7 @@ files = ['mdt_exp_transform.c', 'mdt_linear_transform.c', 'util.c', 'erf.c',
          'mdt_stereo.c', 'mdt_tuples.c', 'mdt_property.c', 'mdt_make.c',
          'mdt_copy.c', 'mdt_read.c', 'mdt_read_hdf5.c', 'mdt_hdf5.c',
          'mdt_set.c', 'mdt_add.c', 'geometry.c', 'luzzatiplot.c',
-         'mdt_version.c', 'mdt_residue_bonds.c'] \
+         'mdt_version.c', 'mdt_residue_bonds.c', 'mdt_disulfides.c'] \
         + features_files
 
 # Build the shared library

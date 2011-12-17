@@ -258,7 +258,6 @@ int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
   int *issap=NULL;
   int numofss=0;
   int i,j;
-  float dist;
 
 
   iresatm = mod_int1_pt(&struc->cd.iresatm);
@@ -298,15 +297,15 @@ int *mdt_residue_bonds_assign_atom_types(const struct mod_structure *struc,
     for (i=0;i<numofs;i++){
       for (j=i+1;j<numofs;j++){
           float *x,*y,*z;
-          float  xd,yd,zd;
+          float  xd,yd,zd, dist2;
           x = mod_float1_pt(&struc->cd.x);
           y = mod_float1_pt(&struc->cd.y);
           z = mod_float1_pt(&struc->cd.z);
           xd = x[sindlist[i]]-x[sindlist[j]];
           yd = y[sindlist[i]] - y[sindlist[j]];
           zd = z[sindlist[i]]- z[sindlist[j]];
-          dist=sqrt(xd * xd + yd * yd + zd * zd);
-          if (dist<2.5){
+          dist2 = xd * xd + yd * yd + zd * zd;
+          if (dist2 < 2.5 * 2.5){
             numofss+=1;
             issa=g_realloc(issa,sizeof(int)*numofss*2);
             issa[numofss*2-1]=sindlist[i];

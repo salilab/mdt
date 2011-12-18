@@ -3,6 +3,9 @@ HEAD
 
  - A new method :meth:`Table.get_array_view` allows the raw MDT table data
    to be modified using NumPy functions.
+ - Disulfide bonds can now be considered in the calculation of atom bond
+   separation, by the :class:`~features.AtomBondSeparation` feature and
+   the :meth:`Table.add_alignment` method.
 
 MDT 5.1   09-29-2011
 ====================

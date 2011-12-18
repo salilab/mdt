@@ -787,6 +787,11 @@ class Table(TableSection):
             atom, while (0, 9999) will only exclude pairs of atoms that have
             no path of bonds between them (e.g. atoms in different chains or
             when at least one of the atoms is not involved in any bonds).
+          - `ss_patch`: if True, then the `bond_span_range` considers
+            disulfide bonds (defined as any pair of SG atoms in CYS residues
+            less than 2.5 angstroms apart) when calculating the bond separation
+            between atoms. Only disulfide bridges within 3 residues of the
+            atom pair are considered for computational efficiency.
           - `exclude_bonds`: if True, then all pairs of atoms involved in a
             chemical bond (see :attr:`Library.bond_classes`) are excluded from
             :ref:`atom pair <atom_pair_features>` and

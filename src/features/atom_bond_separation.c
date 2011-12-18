@@ -39,12 +39,12 @@ static int getbin(const struct mod_alignment *aln, int protein,
 }
 
 int mdt_feature_atom_bond_separation(struct mdt_library *mlib,
-                                     gboolean ss_patch)
+                                     gboolean disulfide)
 {
   /* Make sure that the residue bonds list is populated */
   mdt_fill_residue_bonds(&mlib->residue_bond_list, mlib, mlib->libs);
 
   return mdt_feature_atom_pair_add(mlib, "Atom-atom bond separation",
                                    MOD_MDTC_NONE, FALSE, getbin,
-                                   ss_patch ? GINT_TO_POINTER(1) : NULL, NULL);
+                                   disulfide ? GINT_TO_POINTER(1) : NULL, NULL);
 }

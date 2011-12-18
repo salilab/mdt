@@ -1007,8 +1007,8 @@ class TableTests(MDTTest):
         t.add_alignment(a, symtriples=sym)
         self.assertInTolerance(t.sample_size, 12, 1e-6)
 
-    def test_bond_span_range_ss_patch(self):
-        """Test bond_span_range argument"""
+    def test_bond_span_range_disulfide(self):
+        """Test bond_span_range argument with disulfides"""
         env = self.get_environ()
         mdl = model(env)
         mdl.read('1HEL.pdb')
@@ -1025,7 +1025,7 @@ class TableTests(MDTTest):
 
         m2 = mdt.Table(mlib, features=dist)
         m2.add_alignment(aln, bond_span_range=(1,1),
-                        residue_span_range=(-9999,0,0,9999),ss_patch=True)
+                        residue_span_range=(-9999,0,0,9999), disulfide=True)
         self.assertEqual(m2.sample_size-m.sample_size, 4.0)
 
         m = mdt.Table(mlib, features=dist)
@@ -1034,7 +1034,7 @@ class TableTests(MDTTest):
 
         m2 = mdt.Table(mlib, features=dist)
         m2.add_alignment(aln, bond_span_range=(3,3),
-                        residue_span_range=(-9999,0,0,9999),ss_patch=True)
+                        residue_span_range=(-9999,0,0,9999), disulfide=True)
         self.assertEqual(m2.sample_size-m.sample_size, 12.0)
 
 if __name__ == '__main__':

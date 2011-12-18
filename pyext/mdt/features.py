@@ -516,18 +516,18 @@ class AtomBondSeparation(AtomPair):
        atoms in different residues, the residues are assumed to be linked by
        a peptide backbone, and the number of bonds is calculated accordingly.
        Atoms in different chains, or atoms of types not referenced in the bond
-       class file, are not connected. If ss_patch is set to True, disulfide
+       class file, are not connected. If disulfide is set to True, disulfide
        bridges are also considered (if two residues have SG atoms within 2.5
-       angstroms, they are counted as bonded). If ss_patch is set to False (the
+       angstroms, they are counted as bonded). If disulfide is set to False (the
        default) any disulfide bridges are ignored. Either way, no account is
        taken of patches and other modifications such as terminal oxygens
        (unless bonds to OXT are explicitly listed in the bond class file).
        If a pair of atoms is not connected it is placed in the 'undefined'
        bin."""
     _setup = _mdt.mdt_feature_atom_bond_separation
-    def __init__(self, mlib, bins, ss_patch=False):
+    def __init__(self, mlib, bins, disulfide=False):
         _Base.__init__(self, mlib)
-        self._ifeat = self._setup(mlib._modpt, ss_patch)
+        self._ifeat = self._setup(mlib._modpt, disulfide)
         self._create_bins(mlib, bins)
 
 class HydrogenBondSatisfaction(Protein):

@@ -814,7 +814,7 @@ static gboolean gen_atompair(struct mdt *mdt, const struct mdt_library *mlib,
 static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
                                const int rsrang[4],
                                const int chain_span_range[4],
-                               const int *bond_span_range, gboolean ss_patch,
+                               const int *bond_span_range, gboolean disulfide,
                                gboolean exclude_bonds,
                                gboolean exclude_angles,
                                gboolean exclude_dihedrals,
@@ -848,7 +848,7 @@ static gboolean gen_atom_pairs(struct mdt *mdt, const struct mdt_library *mlib,
   if (bond_span_range) {
     resbond_attyp = property_resbond_attyp(source->aln, is1, source->prop,
                                            mlib, libs);
-    if (ss_patch) {
+    if (disulfide) {
       disulfides = property_disulfides(source->aln, is1, source->prop,
                                        mlib, libs);
     }
@@ -961,7 +961,7 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
                                      const int rsrang[4],
                                      const int chain_span_range[4],
                                      const int *bond_span_range,
-                                     gboolean ss_patch,
+                                     gboolean disulfide,
                                      gboolean exclude_bonds,
                                      gboolean exclude_angles,
                                      gboolean exclude_dihedrals, int is1,
@@ -993,7 +993,7 @@ static gboolean gen_atom_tuple_pairs(struct mdt *mdt,
   if (bond_span_range) {
     resbond_attyp = property_resbond_attyp(source->aln, is1, source->prop,
                                            mlib, libs);
-    if (ss_patch) {
+    if (disulfide) {
       disulfides = property_disulfides(source->aln, is1, source->prop,
                                        mlib, libs);
     }
@@ -1100,7 +1100,7 @@ static gboolean mdt_source_scan(struct mdt *mdt,
                                 struct mdt_source *source, const int rsrang[4],
                                 const int chain_span_range[4],
                                 const int bond_span_range[2],
-                                gboolean ss_patch,
+                                gboolean disulfide,
                                 gboolean exclude_bonds,
                                 gboolean exclude_angles,
                                 gboolean exclude_dihedrals, int *indf,
@@ -1166,7 +1166,7 @@ static gboolean mdt_source_scan(struct mdt *mdt,
     if (acceptd[0]) {
       if (!gen_atom_pairs(mdt, mlib, rsrang, chain_span_range,
                           prepare_bond_span_range(bond_span_range, mlib),
-                          ss_patch,
+                          disulfide,
                           exclude_bonds, exclude_angles, exclude_dihedrals,
                           0, indf, libs, edat, source, scanfunc, scandata,
                           err)) {
@@ -1192,7 +1192,7 @@ static gboolean mdt_source_scan(struct mdt *mdt,
     if (acceptd[0]) {
       if (!gen_atom_tuple_pairs(mdt, mlib, rsrang, chain_span_range,
                                 prepare_bond_span_range(bond_span_range, mlib),
-                                ss_patch,
+                                disulfide,
                                 exclude_bonds, exclude_angles,
                                 exclude_dihedrals, 0, indf, libs, edat, source,
                                 scanfunc, scandata, err)) {
@@ -1299,7 +1299,7 @@ double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
                       struct mdt_library *mlib,
                       const int residue_span_range[4],
                       const int chain_span_range[4],
-                      const int bond_span_range[2], gboolean ss_patch,
+                      const int bond_span_range[2], gboolean disulfide,
                       gboolean exclude_bonds, gboolean exclude_angles,
                       gboolean exclude_dihedrals,
                       const struct mod_energy_data *edat, GError **err)
@@ -1307,7 +1307,7 @@ double mdt_source_sum(struct mdt_source *source, struct mdt *mdt,
   double sum = 0.;
   int *indf = g_malloc(sizeof(int) * mdt->base.nfeat);
   mdt_source_scan(mdt, mlib, source, residue_span_range, chain_span_range,
-                  bond_span_range, ss_patch, exclude_bonds, exclude_angles,
+                  bond_span_range, disulfide, exclude_bonds, exclude_angles,
                   exclude_dihedrals, indf, mlib->libs, edat, source->acceptd,
                   source->nseqacc, scan_sum, &sum, err);
   g_free(indf);
@@ -1337,7 +1337,7 @@ gboolean mdt_add_alignment(struct mdt *mdt, struct mdt_library *mlib,
                            gboolean sdchngh, int surftyp, int iacc1typ,
                            const int residue_span_range[4],
                            const int chain_span_range[4],
-                           const int bond_span_range[2], gboolean ss_patch,
+                           const int bond_span_range[2], gboolean disulfide,
                            gboolean exclude_bonds, gboolean exclude_angles,
                            gboolean exclude_dihedrals, gboolean sympairs,
                            gboolean symtriples, struct mod_io_data *io,
@@ -1358,7 +1358,7 @@ gboolean mdt_add_alignment(struct mdt *mdt, struct mdt_library *mlib,
 
     mod_lognote("Updating the statistics array:");
     ret = mdt_source_scan(mdt, mlib, source, residue_span_range,
-                          chain_span_range, bond_span_range, ss_patch,
+                          chain_span_range, bond_span_range, disulfide,
                           exclude_bonds,
                           exclude_angles, exclude_dihedrals, indf, mlib->libs,
                           edat, source->acceptd, source->nseqacc, scan_update,
@@ -1380,7 +1380,7 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
                                    const int residue_span_range[4],
                                    const int chain_span_range[4],
                                    const int bond_span_range[2],
-                                   gboolean ss_patch,
+                                   gboolean disulfide,
                                    gboolean exclude_bonds,
                                    gboolean exclude_angles,
                                    gboolean exclude_dihedrals,
@@ -1415,7 +1415,7 @@ gboolean mdt_add_alignment_witherr(struct mdt *mdt,
 
     mod_lognote("Updating the statistics array:");
     ret = mdt_source_scan(mdt, mlib, source, residue_span_range,
-                          chain_span_range, bond_span_range, ss_patch,
+                          chain_span_range, bond_span_range, disulfide,
                           exclude_bonds,
                           exclude_angles, exclude_dihedrals, indf, mlib->libs,
                           edat, source->acceptd, source->nseqacc,

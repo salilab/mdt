@@ -725,7 +725,7 @@ class Table(TableSection):
     def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
                       residue_span_range=(-99999, -2, 2, 99999),
                       chain_span_range=(-99999, 0, 0, 99999),
-                      bond_span_range=None, ss_patch=False,
+                      bond_span_range=None, disulfide=False,
                       exclude_bonds=False, exclude_angles=False,
                       exclude_dihedrals=False, sympairs=False,
                       symtriples=False, io=None, edat=None):
@@ -787,7 +787,7 @@ class Table(TableSection):
             atom, while (0, 9999) will only exclude pairs of atoms that have
             no path of bonds between them (e.g. atoms in different chains or
             when at least one of the atoms is not involved in any bonds).
-          - `ss_patch`: if True, then the `bond_span_range` considers
+          - `disulfide`: if True, then the `bond_span_range` considers
             disulfide bonds (defined as any pair of SG atoms in CYS residues
             less than 2.5 angstroms apart) when calculating the bond separation
             between atoms. Only disulfide bridges within 3 residues of the
@@ -817,7 +817,7 @@ class Table(TableSection):
         _mdt.mdt_add_alignment(self._modpt, self._mlib._modpt, aln.modpt,
                                distngh, False, surftyp, accessibility_type,
                                residue_span_range, chain_span_range,
-                               _prepare_bond_span(bond_span_range), ss_patch,
+                               _prepare_bond_span(bond_span_range), disulfide,
                                exclude_bonds, exclude_angles, exclude_dihedrals,
                                sympairs, symtriples, io.modpt, edat.modpt)
 
@@ -825,7 +825,7 @@ class Table(TableSection):
                               accessibility_type=8,
                               residue_span_range=(-99999, -2, 2, 99999),
                               chain_span_range=(-99999, 0, 0, 99999),
-                              bond_span_range=None, ss_patch=False,
+                              bond_span_range=None, disulfide=False,
                               exclude_bonds=False, exclude_angles=False,
                               exclude_dihedrals=False,
                               sympairs=False, symtriples=False, io=None,
@@ -852,7 +852,7 @@ class Table(TableSection):
                                        accessibility_type, residue_span_range,
                                        chain_span_range,
                                        _prepare_bond_span(bond_span_range),
-                                       ss_patch,
+                                       disulfide,
                                        exclude_bonds,
                                        exclude_angles, exclude_dihedrals,
                                        sympairs, symtriples, io.modpt,
@@ -1018,7 +1018,7 @@ class Source(object):
 
     def sum(self, residue_span_range=(-99999, -2, 2, 99999),
             chain_span_range=(-99999, 0, 0, 99999),
-            bond_span_range=None, ss_patch=False,
+            bond_span_range=None, disulfide=False,
             exclude_bonds=False, exclude_angles=False, exclude_dihedrals=False):
         """Scan all data points in the source, and return the sum.
            See :meth:`Table.add_alignment` for a description of the
@@ -1027,7 +1027,7 @@ class Source(object):
         f = _mdt.mdt_source_sum
         return f(self._modpt, self._mdt._modpt, self._mlib._modpt,
                  residue_span_range, chain_span_range,
-                 _prepare_bond_span(bond_span_range), ss_patch,
+                 _prepare_bond_span(bond_span_range), disulfide,
                  exclude_bonds, exclude_angles, exclude_dihedrals,
                  self._edat.modpt)
 

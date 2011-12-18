@@ -58,7 +58,7 @@ int mdt_feature_atom_distance(struct mdt_library *mlib);
 /** Add an atom-atom bond separation feature. */
 MDTDLLEXPORT
 int mdt_feature_atom_bond_separation(struct mdt_library *mlib,
-                                     gboolean ss_patch);
+                                     gboolean disulfide);
 
 /** Add a hydrogen bond donor feature. */
 MDTDLLEXPORT

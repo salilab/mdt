@@ -199,20 +199,20 @@ BNDGRP 'ALA:O:C'
         assertBondSep('AN', 'NC', numbond=1, sep=8)
         assertBondSep('ACB', 'NCG', numbond=1, sep=9)
 
-    def test_ss_patch(self):
+    def test_disulfide(self):
         """Test handling of disulfide bonds"""
         mlib = self.get_all_libraries()
         bsep = mdt.features.AtomBondSeparation(mlib,
                                         bins=mdt.uniform_bins(20, 0, 1.0))
         bsep_ss = mdt.features.AtomBondSeparation(mlib,
                                         bins=mdt.uniform_bins(20, 0, 1.0),
-                                        ss_patch=True)
+                                        disulfide=True)
         env = self.get_environ()
         mdl = modeller.model(env)
         mdl.build_sequence('CC')
         # When SG-SG distance is small enough, an extra bond
         # (separation feature = 1) should be detected, but only with
-        # ss_patch=True
+        # disulfide=True
         for (dist, num) in [(2.6, 11.0), (2.4, 12.0)]:
             sg1 = mdl.residues[0].atoms['SG']
             sg2 = mdl.residues[1].atoms['SG']

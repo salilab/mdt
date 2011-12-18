@@ -199,6 +199,34 @@ BNDGRP 'ALA:O:C'
         assertBondSep('AN', 'NC', numbond=1, sep=8)
         assertBondSep('ACB', 'NCG', numbond=1, sep=9)
 
+    def test_ss_patch(self):
+        """Test handling of disulfide bonds"""
+        mlib = self.get_all_libraries()
+        bsep = mdt.features.AtomBondSeparation(mlib,
+                                        bins=mdt.uniform_bins(20, 0, 1.0))
+        bsep_ss = mdt.features.AtomBondSeparation(mlib,
+                                        bins=mdt.uniform_bins(20, 0, 1.0),
+                                        ss_patch=True)
+        env = self.get_environ()
+        mdl = modeller.model(env)
+        mdl.build_sequence('CC')
+        # When SG-SG distance is small enough, an extra bond
+        # (separation feature = 1) should be detected, but only with
+        # ss_patch=True
+        for (dist, num) in [(2.6, 11.0), (2.4, 12.0)]:
+            sg1 = mdl.residues[0].atoms['SG']
+            sg2 = mdl.residues[1].atoms['SG']
+            sg1.x = sg1.y = sg1.z = 0.
+            sg2.x = sg2.y = 0.
+            sg2.z = dist
+            a = modeller.alignment(env)
+            a.append_model(mdl, atom_files='test', align_codes='test')
+            m = mdt.Table(mlib, features=bsep)
+            m.add_alignment(a, residue_span_range=(-999,0,0,999))
+            self.assertEqual(m[1], 11.0)
+            m2 = mdt.Table(mlib, features=bsep_ss)
+            m2.add_alignment(a, residue_span_range=(-999,0,0,999))
+            self.assertEqual(m2[1], num)
 
 if __name__ == '__main__':
     unittest.main()

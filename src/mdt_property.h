@@ -30,33 +30,10 @@ struct mdt_disulfide_list {
   struct mdt_disulfide *ss;
 };
 
-/** Precalculated per-sequence properties for calculating MDT indices */
-struct mdt_properties {
-  /** Lists of bonds */
-  struct mdt_bond_list *bonds[N_MDT_BOND_TYPES];
-  /** Hash of excluded atom pairs */
-  GHashTable *exclusions;
-  /** Lists of atom tuples for each atom */
-  struct mdt_tuple_list *tuples;
-  /** Bin indices for hydrogen bond atom type */
-  int *hb_iatta;
-  /** Hydrogen bond satisfaction index */
-  float *hbpot;
-  /** Radius of gyration, or -1 if not yet calculated */
-  float radius_gyration;
-  /** Bin indices for atom type */
-  int *iatta;
-  /** Fractional atom accessibility */
-  float *fatmacc;
-  /** Average sidechain Biso */
-  float *sidechain_biso;
-  /** Atom indices for distance_atoms */
-  int *dstind1, *dstind2;
-  /** Atom types for residue bond separation */
-  int *resbond_attyp;
-  /** Residue indices of S-S bonds */
-  struct mdt_disulfide_list *disulfides;
-};
+/** Precalculated per-sequence properties for calculating MDT indices.
+    Note that this is an 'opaque' struct; it should only be accessed
+    via the functions in this header. */
+struct mdt_properties;
 
 /** Make a new mdt_properties structure */
 MDTDLLLOCAL

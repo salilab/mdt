@@ -281,6 +281,10 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         env['includepath'] = [os.path.abspath(x) for x in \
                               env['includepath'].split(os.path.pathsep)]
         env.Append(CPPPATH=env['includepath'])
+    if env.get('libpath', None):
+        env['libpath'] = [os.path.abspath(x) for x in \
+                          env['libpath'].split(os.path.pathsep)]
+        env.Prepend(LIBPATH=env['libpath'])
 
     sys = platform.system()
     if sys == 'SunOS':
@@ -528,6 +532,9 @@ def add_common_variables(vars, package):
                           'is always tested) in unit tests (gcc only)', False))
     vars.Add(PathVariable('includepath', 'Include search path ' + \
                           '(e.g. "/usr/local/include:/opt/local/include")',
+                          None, PathVariable.PathAccept))
+    vars.Add(PathVariable('libpath', 'Library search path ' + \
+                          '(e.g. "/usr/local/lib:/opt/local/lib")',
                           None, PathVariable.PathAccept))
     vars.Add(PathVariable('path', 'Path to search for build tools ' + \
                           '(e.g. "/usr/local/bin:/opt/local/bin")',

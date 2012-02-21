@@ -260,6 +260,11 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     subst.TOOL_SUBST(env)
     env.AddMethod(c_coverage.CCoverageTester)
 
+    # Make sure destdir is relative to the toplevel directory,
+    # if a relative path
+    if env['destdir'] != '':
+        env['destdir'] = Dir(env['destdir']).abspath
+
     if env['CC'] == 'gcc':
         if env.get('coverage', False):
             env.Append(CCFLAGS="-Wall -Werror -g -O0 -fprofile-arcs "

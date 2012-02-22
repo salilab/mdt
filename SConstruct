@@ -28,6 +28,7 @@ src = SConscript('src/SConscript')
 data = SConscript('data/SConscript')
 Export('pyext', 'pyso')
 doc = SConscript('doc/SConscript')
+w32 = SConscript('tools/w32/SConscript')
 rpm = SConscript('tools/rpm/SConscript')
 
 # bin script first require Python extensions to be built:

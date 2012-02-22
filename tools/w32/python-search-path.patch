@@ -1,0 +1,31 @@
+--- orig/__init__.py	2012-02-21 15:20:47.000000000 -0800
++++ patched/__init__.py	2012-02-21 16:52:39.000000000 -0800
+@@ -27,6 +27,28 @@
+            'write_2dsplinelib', 'write_anglelib', 'write_bondlib',
+            'write_improperlib', 'write_splinelib', 'uniform_bins']
+ 
++def _add_pyext_to_path():
++    import os.path
++    import sys
++    # Get directory containing MDT's __init__.py
++    mdt_dir = os.path.abspath(os.path.dirname(__file__))
++    # Make sure we're on a Windows system
++    if hasattr(sys, 'dllhandle') and len(mdt_dir) > 4:
++        # Strip '\mdt' suffix from directory
++        pydir = mdt_dir[:-4]
++        # Add Python version-specific directory to search path
++        pyextdir = pydir + '\\python%d.%d' % sys.version_info[:2]
++        if pyextdir not in sys.path:
++            sys.path.insert(1, pyextdir)
++        # Strip '\python\mdt' suffix to get directory containing DLLs
++        dlldir = mdt_dir[:-11] + '\\bin'
++        # Add DLL directory to PATH so Windows can find them
++        if dlldir not in os.environ['PATH']:
++            os.environ['PATH'] = dlldir + ';' + os.environ['PATH']
++
++_add_pyext_to_path()
++
++
+ from modeller.util.modobject import modobject
+ from modeller.util import modlist
+ # Import _modeller after modeller itself, since the latter modifies the search

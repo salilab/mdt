@@ -1,0 +1,3 @@
+Import('env')
+
+conf = env.SubstFile("w32-install.nsi", "w32-install.nsi.in")

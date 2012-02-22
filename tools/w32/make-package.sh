@@ -35,6 +35,9 @@ done
 # Modify Python search path to find version-specific modules
 patch -f -d ${ROOT}/python/mdt -p1 < tools/w32/python-search-path.patch || exit 1
 
+# Add README
+cp tools/w32/README.txt ${ROOT}
+
 tools/w32/gen-w32instlist ${ROOT} > w32files.tmp || exit 1
 sed -e '/\.pyc"$/d' < w32files.tmp > w32files.install || exit 1
 tac w32files.tmp | sed -e 's/File "w32-inst\\/Delete "$INSTDIR\\/' -e 's/^SetOutPath/RMDir/' > w32files.uninstall || exit 1

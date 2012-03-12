@@ -168,13 +168,22 @@ def parse_modeller_dirs(context, modeller, exetype):
                            "a Windows scons run (tip: can run on Linux " + \
                            "using Wine with 'scons wine=true'")
             return False
+        # Since we don't install a symlink for
+        # libmodeller.lib -> libmodeller${SOVER}.lib, glob to find a suitable
+        # Modeller import library
+        libs = []
+        for d in os.listdir(libpath[0]):
+            if d.startswith('libmodeller') and d.endswith('.lib'):
+                libs.append(d[3:-4])
+                break
+        libs.append('saxs')
     else:
         libpath = ['%s/lib/%s' % (modeller, exetype)]
         if platform == 'win32':
             context.Result("this is a Windows scons run, but this is not a " + \
                            "Windows MODELLER binary")
             return False
-    libs = ["modeller", "saxs"]
+        libs = ["modeller", "saxs"]
     if exetype in ('mac10v4-xlf', 'mac10v4-gnu'):
         libs += ["hdf5", "hdf5_hl"]
     elif exetype in ('mac10v4-intel', 'mac10v4-intel64'):

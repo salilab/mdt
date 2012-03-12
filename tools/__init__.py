@@ -49,9 +49,6 @@ class WineEnvironment(Environment):
             posix_env['ENV']['PATH'] = path
         Environment.__init__(self, platform=platform, CC=CC, LINK=LINK,
                              ENV=posix_env['ENV'], **kw)
-        self['SHLIBPREFIX'] = self['LIBLINKPREFIX'] = self['LIBPREFIX'] = 'lib'
-        self['WINDOWSEXPPREFIX'] = 'lib'
-        self['LIBSUFFIX'] = '.lib'
         self['PSPAWN'] = posix_env['PSPAWN']
         self['SPAWN'] = posix_env['SPAWN']
         self['SHELL'] = posix_env['SHELL']
@@ -59,10 +56,6 @@ class WineEnvironment(Environment):
         self['PATHSEP'] = ';'
         # Use / rather than \ path separator:
         self['LINKCOM'] = self['LINKCOM'].replace('.windows', '')
-        # Make sure we get the same Windows C/C++ library as Modeller, and
-        # enable C++ exception handling
-        self.Append(CFLAGS="/MD")
-        self.Append(CXXFLAGS="/MD /GR /GX")
 
     def _fix_scons_msvc_detect(self):
         """Ensure that MSVC auto-detection finds tools on Wine builds"""
@@ -290,6 +283,15 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     env.Prepend(SCANNERS = _SWIGScanner)
     subst.TOOL_SUBST(env)
     env.AddMethod(c_coverage.CCoverageTester)
+
+    if env['PLATFORM'] == 'win32' or env['wine']:
+        env['SHLIBPREFIX'] = env['LIBLINKPREFIX'] = env['LIBPREFIX'] = 'lib'
+        env['WINDOWSEXPPREFIX'] = 'lib'
+        env['LIBSUFFIX'] = '.lib'
+        # Make sure we get the same Windows C/C++ library as Modeller, and
+        # enable C++ exception handling
+        env.Append(CFLAGS="/MD")
+        env.Append(CXXFLAGS="/MD /GR /GX")
 
     # Make sure destdir is relative to the toplevel directory,
     # if a relative path

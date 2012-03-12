@@ -472,16 +472,23 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
             cxx = 'g++'
         # Don't require stack protector stuff on Linux, as this adds a
         # requirement for glibc-2.4:
-        opt = opt.replace("-fstack-protector", "")
+        if opt:
+            opt = opt.replace("-fstack-protector", "")
         # Remove options that don't work with C++ code:
-        if cplusplus:
+        if cplusplus and opt:
             opt = opt.replace("-Wstrict-prototypes", "")
-        e.Replace(CC=cc, CXX=cxx, LDMODULESUFFIX=so)
-        e.Replace(CPPFLAGS=basecflags.split() + opt.split())
+        if cc:
+            e.Replace(CC=cc)
+        if cxx:
+            e.Replace(CXX=cxx)
+        if so:
+            e.Replace(LDMODULESUFFIX=so)
+        if basecflags or opt:
+            e.Replace(CPPFLAGS=basecflags.split() + opt.split())
 
         # Remove NDEBUG preprocessor stuff if defined (we do it ourselves for
         # release builds)
-        if '-DNDEBUG' in e['CPPFLAGS']:
+        if 'CPPFLAGS' in e and '-DNDEBUG' in e['CPPFLAGS']:
             e['CPPFLAGS'].remove('-DNDEBUG')
 
         # Some gcc versions don't like the code that SWIG generates - but let

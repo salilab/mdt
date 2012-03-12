@@ -41,11 +41,13 @@ MDTError = _mdt.MDTError
 FileFormatError = _mdt.FileFormatError
 
 # Get version info
+def __get_version_info(version):
+    try:
+        return tuple([int(x) for x in version.split('.')])
+    except ValueError:
+        return version
 version = _mdt.mdt_version_get()
-try:
-    version_info = tuple([int(x) for x in version.split('.')])
-except ValueError:
-    version_info = version
+version_info = __get_version_info(version)
 
 def _prepare_bond_span(bond_span):
     """Helper function for bond_span_range"""

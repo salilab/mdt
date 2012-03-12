@@ -516,7 +516,7 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
             e.Replace(LDMODULEFLAGS= \
                       '$LINKFLAGS -bundle -flat_namespace -undefined suppress')
         # Don't set link flags on Linux, as that would negate our GNU_HASH check
-        elif system() != "Linux":
+        elif system() != "Linux" and ldshared:
             e['LDMODULEFLAGS'] = []
             e['SHLINK'] = e['LDMODULE'] = ldshared
     e.Append(CPPPATH=[_get_python_include(e)])

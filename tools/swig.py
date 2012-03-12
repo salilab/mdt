@@ -44,13 +44,25 @@ import SCons.Defaults
 import SCons.Scanner
 import SCons.Tool
 import SCons.Util
+try:
+    import subprocess
+except ImportError:
+    subprocess = None
 
 def _get_swig_version(env):
     """Run the SWIG command line tool to get and return the version number"""
     if not env['SWIG']:
         return ""
-    out = os.popen(env['SWIG'] + ' -version').read()
-    match = re.search(r'SWIG Version\s+(\S+)$', out, re.MULTILINE)
+    if subprocess is not None and hasattr(SCons.Action, '_subproc'):
+        pipe = SCons.Action._subproc(env, [env['SWIG'], '-version'],
+                                     stdin = 'devnull',
+                                     stderr = 'devnull',
+                                     stdout = subprocess.PIPE)
+        if pipe.wait() != 0: return ""
+        out = pipe.stdout.read()
+    else:
+        out = os.popen(env['SWIG'] + ' -version').read()
+    match = re.search(r'SWIG Version\s+(\S+)\s*$', out, re.MULTILINE)
     if match:
         return match.group(1)
     else:

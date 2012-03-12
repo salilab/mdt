@@ -19,8 +19,11 @@ def builder_script_file(target, source, env):
 
 env.Append(BUILDERS = {'ScriptFile': Builder(action=builder_script_file)})
 
-bin = env.ScriptFile("mdtpy.sh",
-                     ["mdtpy.sh.in", env.Value(env.Dir('#').abspath),
-                      env.Value(env['MODELLER_MODPY']),
-                      env.Value(env['PATHSEP'])])
+if not env['wine'] and env['PLATFORM'] == 'win32':
+    bin = File('mdtpy.bat')
+else:
+    bin = env.ScriptFile("mdtpy.sh",
+                         ["mdtpy.sh.in", env.Value(env.Dir('#').abspath),
+                          env.Value(env['MODELLER_MODPY']),
+                          env.Value(env['PATHSEP'])])
 Return('bin')

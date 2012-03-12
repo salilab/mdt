@@ -302,6 +302,13 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         env.Append(CFLAGS="/MD")
         env.Append(CXXFLAGS="/MD /GR /GX")
 
+    if env['PLATFORM'] == 'win32' and not env['wine']:
+        env['DEVNULL'] = 'nul'
+        # 'python' typically isn't in the path on Windows systems
+        env['PYTHON'] = sys.executable
+    else:
+        env['DEVNULL'] = '/dev/null'
+
     # Make sure destdir is relative to the toplevel directory,
     # if a relative path
     if env['destdir'] != '':
@@ -328,8 +335,8 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
                           env['libpath'].split(os.path.pathsep)]
         env.Prepend(LIBPATH=env['libpath'])
 
-    sys = platform.system()
-    if sys == 'SunOS':
+    system = platform.system()
+    if system == 'SunOS':
         # Find locally-installed libraries in /usr/local (e.g. for SWIG)
         env['ENV']['LD_LIBRARY_PATH'] = '/usr/local/lib'
     # Make Modeller exetype variable available:

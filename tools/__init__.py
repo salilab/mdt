@@ -590,6 +590,12 @@ def add_common_variables(vars, package):
                           'is always tested if at least version 3 of the '
                           'coverage module is available) in unit tests '
                           '(gcc only)', False))
+    vars.Add(PathVariable('html_coverage',
+                          'Directory to output HTML coverage reports into '
+                          '(requires coverage=true and the lcov package for '
+                          'C output, and the Python coverage module for '
+                          'Python output).',
+                          None, PathVariable.PathIsDirCreate))
     vars.Add(PathVariable('includepath', 'Include search path ' + \
                           '(e.g. "/usr/local/include:/opt/local/include")',
                           None, PathVariable.PathAccept))

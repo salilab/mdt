@@ -1,4 +1,5 @@
 import unittest, sys, os, re
+from optparse import OptionParser
 import glob
 
 # Only use coverage if it's new enough
@@ -33,7 +34,8 @@ except ImportError:
 
 class RunAllTests(unittest.TestProgram):
     """Custom main program that also displays a final coverage report"""
-    def __init__(self, *args, **keys):
+    def __init__(self, opts, *args, **keys):
+        self.opts = opts
         if coverage:
             # Start coverage testing now before we import any modules
             cwd = os.path.dirname(sys.argv[0])
@@ -58,6 +60,10 @@ class RunAllTests(unittest.TestProgram):
 
             self.cov.file_locator.relative_dir = self.topdir + '/'
             self.cov.report(self.mods, file=sys.stderr)
+            html = self.opts.html_coverage
+            if html:
+                self.cov.html_report(self.mods,
+                                     directory=os.path.join(html, 'python'))
             for cov in glob.glob('.coverage.*'):
                 os.unlink(cov)
         sys.exit(not result.wasSuccessful())
@@ -74,5 +80,18 @@ def regressionTest():
     tests = [unittest.defaultTestLoader.loadTestsFromModule(o) for o in modobjs]
     return unittest.TestSuite(tests)
 
+def parse_options():
+    parser = OptionParser()
+    parser.add_option("-v", dest="verbose", action='store_true',
+                      help="verbose test output")
+    parser.add_option("--html_coverage", dest="html_coverage", type="string",
+                      default=None,
+                      help="directory to write HTML coverage info into")
+    return parser.parse_args()
+
 if __name__ == "__main__":
-    RunAllTests(defaultTest="regressionTest")
+    opts, args = parse_options()
+    sys.argv = [sys.argv[0]] + args
+    if opts.verbose:
+        sys.argv.append('-v')
+    RunAllTests(opts, defaultTest="regressionTest")

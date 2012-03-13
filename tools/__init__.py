@@ -506,8 +506,10 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
 
         # Remove NDEBUG preprocessor stuff if defined (we do it ourselves for
         # release builds)
-        if 'CPPFLAGS' in e and '-DNDEBUG' in e['CPPFLAGS']:
+        try:
             e['CPPFLAGS'].remove('-DNDEBUG')
+        except (ValueError, KeyError):
+            pass
 
         # Some gcc versions don't like the code that SWIG generates - but let
         # that go, because we have no control over it:

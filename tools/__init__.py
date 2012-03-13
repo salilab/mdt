@@ -587,7 +587,9 @@ def add_common_variables(vars, package):
                           False))
     vars.Add(BoolVariable('coverage',
                           'Enable coverage testing of C code (Python code '
-                          'is always tested) in unit tests (gcc only)', False))
+                          'is always tested if at least version 3 of the '
+                          'coverage module is available) in unit tests '
+                          '(gcc only)', False))
     vars.Add(PathVariable('includepath', 'Include search path ' + \
                           '(e.g. "/usr/local/include:/opt/local/include")',
                           None, PathVariable.PathAccept))

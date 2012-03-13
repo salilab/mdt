@@ -1,10 +1,12 @@
 import unittest, sys, os, re
 import glob
 
-# Our bundled version of coverage only works with Python 2
-if sys.version_info[0] < 3:
+# Only use coverage if it's new enough
+try:
     import coverage
-else:
+except ImportError:
+    coverage = None
+if not hasattr(coverage.coverage, 'combine'):
     coverage = None
 
 try:
@@ -34,7 +36,12 @@ class RunAllTests(unittest.TestProgram):
     def __init__(self, *args, **keys):
         if coverage:
             # Start coverage testing now before we import any modules
-            coverage.start()
+            cwd = os.path.dirname(sys.argv[0])
+            self.topdir = os.path.abspath(os.path.join(cwd, '..', 'pyext'))
+            self.mods = glob.glob("%s/mdt/*.py" % self.topdir)
+
+            self.cov = coverage.coverage(branch=True, include=self.mods)
+            self.cov.start()
 
         # Run the tests
         unittest.TestProgram.__init__(self, *args, **keys)
@@ -44,18 +51,13 @@ class RunAllTests(unittest.TestProgram):
         result = self.testRunner.run(self.test)
 
         if coverage:
-            coverage.stop()
-            coverage.the_coverage.collect()
-            coverage.use_cache(False)
+            self.cov.stop()
+            self.cov.combine()
+            self.cov.use_cache(False)
             print >> sys.stderr, "\nPython coverage report\n"
 
-            # Don't show full paths to modules in coverage output
-            cwd = os.path.dirname(sys.argv[0])
-            topdir = os.path.abspath(os.path.join(cwd, '..', 'pyext')) + '/'
-            coverage.the_coverage.relative_dir = topdir
-
-            mods = [topdir + 'mdt/*.py']
-            coverage.report(mods, file=sys.stderr)
+            self.cov.file_locator.relative_dir = self.topdir + '/'
+            self.cov.report(self.mods, file=sys.stderr)
             for cov in glob.glob('.coverage.*'):
                 os.unlink(cov)
         sys.exit(not result.wasSuccessful())

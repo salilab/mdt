@@ -1,12 +1,25 @@
 import sys
 import os
 import glob
+import tempfile
+import shutil
+
+class _TempDir(object):
+    """Simple RAII-style class to make a temporary directory"""
+    def __init__(self):
+        self._tmpdir = tempfile.mkdtemp()
+    def tempfile(self, fname):
+        return os.path.join(self._tmpdir, fname)
+    def __del__(self):
+        shutil.rmtree(self._tmpdir, ignore_errors=True)
+
 
 class _CCoverageTester(object):
     def __init__(self, env):
         self._env = env
         self._files = []
         self._coverage = self._env.get('coverage', False)
+        self._html_coverage = self._env.get('html_coverage', None)
 
     def add(self, directory, pattern, report):
         self._files.append([directory, pattern, report])
@@ -16,6 +29,8 @@ class _CCoverageTester(object):
         ret = self._env.Execute(*args, **keys)
         if self._coverage:
             self._report()
+            if self._html_coverage:
+                self._report_html(self._html_coverage)
         self._cleanup_coverage_files()
         return ret
 
@@ -23,6 +38,21 @@ class _CCoverageTester(object):
         for dir, pattern, report in self._files:
             for f in glob.glob(os.path.join(dir, '*.gcda')):
                 os.unlink(f)
+
+    def _report_html(self, html_coverage):
+        import subprocess
+        def call(args):
+            r = subprocess.call(args)
+            if r != 0:
+                raise OSError("%s failed with exit code %d" % (args[0], r))
+        topdir = os.getcwd()
+        d = _TempDir()
+        call(['lcov', '-c', '-b', '.', '-d', 'src',
+              '-o', d.tempfile('all.info')])
+        call(['lcov', '-e', d.tempfile('all.info'),
+              os.path.join(topdir, 'src', '*'), '-o', d.tempfile('mdt.info')])
+        call(['genhtml', '--legend', '--title', 'MDT C Coverage ',
+              '-o', os.path.join(html_coverage, 'c'), d.tempfile('mdt.info')])
 
     def _report(self):
         print >> sys.stderr, "\n\nC coverage report\n"

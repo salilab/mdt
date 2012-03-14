@@ -5,9 +5,9 @@ import glob
 # Only use coverage if it's new enough
 try:
     import coverage
+    if not hasattr(coverage.coverage, 'combine'):
+        coverage = None
 except ImportError:
-    coverage = None
-if not hasattr(coverage.coverage, 'combine'):
     coverage = None
 
 try:

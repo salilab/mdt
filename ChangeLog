@@ -6,6 +6,8 @@ HEAD
  - Disulfide bonds can now be considered in the calculation of atom bond
    separation, by the :class:`~features.AtomBondSeparation` feature and
    the :meth:`Table.add_alignment` method.
+ - Atoms in atom tuples can now be restricted to match only in certain
+   residue types.
 
 MDT 5.1   09-29-2011
 ====================

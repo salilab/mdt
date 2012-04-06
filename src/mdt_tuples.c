@@ -12,22 +12,53 @@
 #include "mdt_tuples.h"
 #include "mdt_atom_classes.h"
 
+static int find_atom(const struct mod_coordinates *cd,
+                     const struct mod_sequence *seq, int ir1,
+                     const char *name, const int *irestyp,
+                     const struct mod_libraries *libs)
+{
+  if (name[0] == '(') {
+    char *right = index(name, ')');
+    if (right && right[1] != '\0') {
+      int atind = mod_residue_find_atom(cd, seq, ir1, &right[1]) - 1;
+      if (atind >= 0) {
+        int cmp;
+        char *resnam;
+        if (right[1] == '+') {
+          ir1++;
+        } else if (right[1] == '-') {
+          ir1--;
+        }
+        resnam = mod_residue_name_from_type(irestyp[ir1], libs);
+        cmp = strncmp(&name[1], resnam, right - name - 1);
+        g_free(resnam);
+        if (cmp != 0) {
+          return -1;
+        }
+      }
+      return atind;
+    }
+  }
+  return mod_residue_find_atom(cd, seq, ir1, name) - 1;
+}
+
 static void add_tuple(const struct mod_coordinates *cd,
                       const struct mod_sequence *seq,
                       const struct mdt_atom_type *atype, int ia1, int ir1,
-                      int iclass, int natom, GArray *tlist)
+                      int iclass, int natom, const int *irestyp,
+                      const struct mod_libraries *libs, GArray *tlist)
 {
   int ia2, ia3 = 0;
   struct mdt_tuple newtup;
 
   /* 2nd atom of the tuple: */
-  ia2 = mod_residue_find_atom(cd, seq, ir1, atype->names[2]) - 1;
+  ia2 = find_atom(cd, seq, ir1, atype->names[2], irestyp, libs);
   if (ia1 == ia2 || !atmdefd(ia2, cd)) {
     return;
   }
   if (natom > 2) {
     /* 3rd atom of the tuple (if applicable): */
-    ia3 = mod_residue_find_atom(cd, seq, ir1, atype->names[3]) - 1;
+    ia3 = find_atom(cd, seq, ir1, atype->names[3], irestyp, libs);
     if (ia1 == ia3 || ia2 == ia3 || !atmdefd(ia3, cd)) {
       return;
     }
@@ -64,7 +95,7 @@ static void get_tuples(int iatm, const struct mod_structure *struc,
         /* Does the lead atom type match? */
         if (strcmp(atmnam, t->names[1]) == 0) {
           add_tuple(&struc->cd, seq, t, iatm, ir1, iclass, atclass->natom,
-                    tlist);
+                    irestyp, libs, tlist);
         }
         g_free(atmnam);
       }

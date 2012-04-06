@@ -665,6 +665,22 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m1[0], 311.0, 0.0005)
         self.assertInTolerance(m2[0], 302.0, 0.0005)
 
+    def test_feature_triplet_residue(self):
+        """Check triplet features with residue qualifier"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.tuple_classes.read('test/data/trpcls-residue.lib')
+        feat = mdt.features.TupleType(mlib)
+        m = mdt.Table(mlib, features=feat)
+
+        mdl = modeller.model(env)
+        mdl.build_sequence('AAACAAACSAA')
+        a = modeller.alignment(env)
+        a.append_model(mdl, align_codes='test')
+
+        m.add_alignment(a)
+        self.assertEqual([x for x in m], [6.0, 2.0, 1.0, 1.0, 0.0, 0.0])
+
     def test_feature_triplet_type(self):
         """Check triplet type features"""
         env = self.get_environ()

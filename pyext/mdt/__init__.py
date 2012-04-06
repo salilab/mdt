@@ -147,7 +147,31 @@ class BondClasses(object):
         self.__n_atom = n_atom
 
     def read(self, filename):
-        """Read class information from `filename`"""
+        """Read class information from `filename`.
+           This is a text file with a simple format. Each line either
+           denotes the start of a new named class, or names a member of the
+           last-named class, as a residue name followed by one or more atom
+           names. For example, an atom class file might start with
+           ATMGRP 'AC'
+             ATOM 'ALA' 'CA'
+             ATOM 'ALA' 'C'
+             ATOM '*' 'CB'
+           Thus, the first atom class is called 'AC' and any CA or C atom in
+           an ALA residue, or the CB atom in any residue, will be placed in
+           this class.
+
+           Bond class files are similar but use BNDGRP and BOND lines,
+           each of which names two atoms:
+           BNDGRP 'ALA:C:+N'
+             BOND 'ALA' 'C' '+N'
+           Note that CHARMM-style + or - prefixes can be added to atom names
+           for all but the first atom on a BOND line, to indicate the atom
+           must be found in the next or previous residue.
+
+           Angle class files use ANGGRP and ANGLE lines; each ANGLE line
+           names three atoms. Dihedral class files use DIHGRP and DIHEDRAL
+           lines; each DIHEDRAL line names four atoms.
+        """
         return _mdt.mdt_atom_classes_read(filename, self._mlib._modpt,
                                           self.__n_atom)
 
@@ -163,7 +187,26 @@ class TupleClasses(BondClasses):
         BondClasses.__init__(self, mlib, 0)
 
     def read(self, filename):
-        """Read atom tuple information from a file"""
+        """Read atom tuple information from `filename`.
+           This is a text file with a format similar to that accepted by
+           :meth:`BondClasses.read`. The file can consist either of sets
+           of atom triplets (named with TRPGRP lines and containing triples
+           of atoms named on TRIPLET lines) or sets of atom doublets
+           using DBLGRP and DOUBLET lines. Each atom but the first in each
+           doublet or triplet can also be restricted to match only in
+           certain residue types by naming the residue in parentheses before
+           the rest of the atom name (and CHARMM-style + or - qualifier).
+           For example, a suitable atom triplet file looks like:
+             TRPGRP 't1'
+               TRIPLET 'ALA' 'CA' '+C' '-C'
+             TRPGRP 't2'
+               TRIPLET 'ALA' 'CA' '(CYS)+C' '-C'
+           The first triplet is named 't1' and will match any set of three
+           atoms where the first is called CA in an ALA residue, and the
+           other two atoms are C atoms in the previous and next residue.
+           The second triplet is similar but will only include triplets where
+           the next residue is a CYS.
+        """
         return _mdt.mdt_tuple_read(filename, self._mlib._modpt)
 
 

@@ -151,19 +151,23 @@ class BondClasses(object):
            This is a text file with a simple format. Each line either
            denotes the start of a new named class, or names a member of the
            last-named class, as a residue name followed by one or more atom
-           names. For example, an atom class file might start with
-           ATMGRP 'AC'
-             ATOM 'ALA' 'CA'
-             ATOM 'ALA' 'C'
-             ATOM '*' 'CB'
+           names. For example, an atom class file might start with::
+
+             ATMGRP 'AC'
+               ATOM 'ALA' 'CA'
+               ATOM 'ALA' 'C'
+               ATOM '*' 'CB'
+
            Thus, the first atom class is called 'AC' and any CA or C atom in
            an ALA residue, or the CB atom in any residue, will be placed in
            this class.
 
            Bond class files are similar but use BNDGRP and BOND lines,
-           each of which names two atoms:
-           BNDGRP 'ALA:C:+N'
-             BOND 'ALA' 'C' '+N'
+           each of which names two atoms::
+
+             BNDGRP 'ALA:C:+N'
+               BOND 'ALA' 'C' '+N'
+
            Note that CHARMM-style + or - prefixes can be added to atom names
            for all but the first atom on a BOND line, to indicate the atom
            must be found in the next or previous residue.
@@ -196,11 +200,13 @@ class TupleClasses(BondClasses):
            doublet or triplet can also be restricted to match only in
            certain residue types by naming the residue in parentheses before
            the rest of the atom name (and CHARMM-style + or - qualifier).
-           For example, a suitable atom triplet file looks like:
+           For example, a suitable atom triplet file looks like::
+
              TRPGRP 't1'
                TRIPLET 'ALA' 'CA' '+C' '-C'
              TRPGRP 't2'
                TRIPLET 'ALA' 'CA' '(CYS)+C' '-C'
+
            The first triplet is named 't1' and will match any set of three
            atoms where the first is called CA in an ALA residue, and the
            other two atoms are C atoms in the previous and next residue.

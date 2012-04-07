@@ -18,7 +18,7 @@ static int find_atom(const struct mod_coordinates *cd,
                      const struct mod_libraries *libs)
 {
   if (name[0] == '(') {
-    char *right = index(name, ')');
+    char *right = strchr(name, ')');
     if (right && right[1] != '\0') {
       int atind = mod_residue_find_atom(cd, seq, ir1, &right[1]) - 1;
       if (atind >= 0) {

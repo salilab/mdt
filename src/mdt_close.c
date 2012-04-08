@@ -1,6 +1,6 @@
 /** \file mdt_close.c   Functions to close MDTs, e.g. for splines.
  *
- *             Part of MDT, Copyright(c) 1989-2011 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2012 Andrej Sali
  */
 
 #include <stdlib.h>

@@ -1,6 +1,6 @@
 /** \file mdt_linear_transform.c  Functions to transform MDTs.
  *
- *             Part of MDT, Copyright(c) 1989-2011 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2012 Andrej Sali
  */
 
 #include "modeller.h"

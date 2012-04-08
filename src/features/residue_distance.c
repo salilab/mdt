@@ -1,6 +1,6 @@
 /** \file residue_distance.c     Residue-residue distance feature.
  *
- *             Part of MDT, Copyright(c) 1989-2011 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2012 Andrej Sali
  */
 
 #include "modeller.h"

@@ -11,10 +11,13 @@ if not e.GetOption('clean') and not e.GetOption('help'):
     print "Checking for numpy...",
     try:
         import numpy
-        e.Append(CPPDEFINES=[('MDT_WITH_NUMPY', 1)])
         path = os.path.join(numpy.__path__[0], 'core', 'include')
-        print "found in " + path
-        e.Append(CPPPATH=[path])
+        if os.path.exists(path):
+            e.Append(CPPDEFINES=[('MDT_WITH_NUMPY', 1)])
+            print "found in " + path
+            e.Append(CPPPATH=[path])
+        else:
+            print "module found, but no headers"
     except ImportError:
         print "not found"
 

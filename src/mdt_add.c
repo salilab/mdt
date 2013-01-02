@@ -1,6 +1,6 @@
 /** \file mdt_add.c       Functions to add an MDT to another.
  *
- *             Part of MDT, Copyright(c) 1989-2012 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2013 Andrej Sali
  */
 
 #include "mdt.h"

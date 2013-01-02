@@ -1,6 +1,6 @@
 /** \file mdt_set.c        Functions to set elements in MDTs.
  *
- *             Part of MDT, Copyright(c) 1989-2012 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2013 Andrej Sali
  */
 
 #include "mdt.h"

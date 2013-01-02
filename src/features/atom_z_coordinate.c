@@ -1,6 +1,6 @@
 /** \file atom_z_coordinate.c  Z-coordinate of an atom.
  *
- *             Part of MDT, Copyright(c) 1989-2012 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2013 Andrej Sali
  */
 
 #include "modeller.h"

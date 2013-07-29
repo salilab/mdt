@@ -471,11 +471,6 @@ class Table(TableSection):
         features = self._features_to_ifeat(features)
         _mdt.mdt_make(self._modpt, self._mlib._modpt, features, shape)
 
-    def clear(self):
-        """Clear the table (set all bins to zero)"""
-        self.__check_for_views()
-        _mdt.mdt_clear(self._modpt)
-
     def write(self, file, write_preamble=True):
         """Write the table to `file`. If `write_preamble` is False, it will
            only write out the contents of the MDT table, without the preamble

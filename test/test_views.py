@@ -70,13 +70,11 @@ class ViewTests(MDTTest):
         self.assertRaises(ValueError, m.read, 'test.mdt')
         self.assertRaises(ValueError, m.read_hdf5, 'test.hdf5')
         self.assertRaises(ValueError, m.make, features=restyp)
-        self.assertRaises(ValueError, m.clear)
         # OK once the view is destroyed
         del a
         m.read('test.mdt')
         m.read_hdf5('test.hdf5')
         m.make(features=restyp)
-        m.clear()
         os.unlink('test.mdt')
         os.unlink('test.hdf5')
 

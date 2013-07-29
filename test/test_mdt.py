@@ -94,16 +94,6 @@ class TableTests(MDTTest):
         t = mdt.Table(mlib, features=restyp, shape=[-4])
         self.assertEqual(t.shape, (18,))
 
-    def test_clear(self):
-        """Check Table.clear()"""
-        env = self.get_environ()
-        mlib = self.get_mdt_library()
-        restyp = mdt.features.ResidueType(mlib)
-        t = mdt.Table(mlib, features=restyp)
-        t[0] = 5
-        t.clear()
-        self.assertEqual(t[0], 0)
-
     def test_bad_read(self):
         """Check error handling in Table.read()"""
         env = self.get_environ()

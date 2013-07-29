@@ -100,6 +100,10 @@ gboolean mdt_reshape(const struct mdt *mdtin, struct mdt *mdtout,
                      int n_offset, const int shape[], int n_shape,
                      GError **err);
 
+/** Clear an MDT (set all elements to zero). */
+MDTDLLEXPORT
+void mdt_clear(struct mdt *mdt);
+
 /** Clear the MDT array, and set feature types. Return TRUE on success. */
 MDTDLLEXPORT
 gboolean mdt_make(struct mdt *mdt, const struct mdt_library *mlib,

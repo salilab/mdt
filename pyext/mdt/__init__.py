@@ -473,7 +473,6 @@ class Table(TableSection):
 
     def clear(self):
         """Clear the table (set all bins to zero)"""
-        self.__check_for_views()
         _mdt.mdt_clear(self._modpt)
 
     def write(self, file, write_preamble=True):

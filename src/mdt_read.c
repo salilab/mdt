@@ -11,12 +11,10 @@
 #include "util.h"
 
 /** Read a single line of text from the file. Return TRUE on success. */
-static gboolean mdt_file_read_line(FILE *fp, GString *str, int *eof,
+static gboolean mdt_file_read_line(struct mod_file *fh, GString *str, int *eof,
                                    GError **err)
 {
-  int ierr;
-  mod_file_read_line(fp, str, &ierr, eof);
-  if (ierr != 0) {
+  if (!mod_file_read_line(fh, str, eof)) {
     handle_modeller_error(err);
     return FALSE;
   } else {
@@ -93,8 +91,8 @@ static gboolean read_mdt_feature(struct mdt *mdt,
 /** Read the definition of MDT features from the file. Return TRUE on
     success. */
 static gboolean read_mdt_features(struct mdt *mdt,
-                                  const struct mdt_library *mlib, FILE *fp,
-                                  GError **err)
+                                  const struct mdt_library *mlib,
+                                  struct mod_file *fh, GError **err)
 {
   int nfeat = 0, eof;
   gboolean retval = TRUE;
@@ -104,7 +102,7 @@ static gboolean read_mdt_features(struct mdt *mdt,
   while (retval) {
     int ifeat, nbins;
 
-    if (!mdt_file_read_line(fp, str, &eof, err)) {
+    if (!mdt_file_read_line(fh, str, &eof, err)) {
       retval = FALSE;
     } else if (eof != 0 || strlen(str->str) == 0) {
       break;
@@ -128,7 +126,8 @@ static gboolean read_mdt_features(struct mdt *mdt,
 
 /** Read the MDT feature offsets and shape from the file. Return TRUE on
     success. */
-static gboolean read_mdt_offsets(struct mdt *mdt, FILE *fp, GError **err)
+static gboolean read_mdt_offsets(struct mdt *mdt, struct mod_file *fh,
+                                 GError **err)
 {
   int i;
   gboolean retval = TRUE;
@@ -136,7 +135,7 @@ static gboolean read_mdt_offsets(struct mdt *mdt, FILE *fp, GError **err)
 
   for (i = 0; i < mdt->base.nfeat && retval; i++) {
     int eof, nfeat, istart, iend;
-    if (!mdt_file_read_line(fp, str, &eof, err)) {
+    if (!mdt_file_read_line(fh, str, &eof, err)) {
       retval = FALSE;
     } else if (eof != 0) {
       g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
@@ -161,12 +160,12 @@ static gboolean read_mdt_offsets(struct mdt *mdt, FILE *fp, GError **err)
 }
 
 /** Read a single line of MDT data from the file. Return TRUE on success. */
-static gboolean read_mdt_data_line(FILE *fp, GString *str, double *output,
-                                   GError **err)
+static gboolean read_mdt_data_line(struct mod_file *fh, GString *str,
+                                   double *output, GError **err)
 {
   int eof;
 
-  if (!mdt_file_read_line(fp, str, &eof, err)) {
+  if (!mdt_file_read_line(fh, str, &eof, err)) {
     return FALSE;
   } else if (eof != 0) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
@@ -182,12 +181,12 @@ static gboolean read_mdt_data_line(FILE *fp, GString *str, double *output,
 }
 
 /** Read the footer from the MDT file. Return TRUE on success. */
-static gboolean read_mdt_footer(FILE *fp, GString *str, gboolean *pdf,
-                                GError **err)
+static gboolean read_mdt_footer(struct mod_file *fh, GString *str,
+                                gboolean *pdf, GError **err)
 {
   int eof;
 
-  if (!mdt_file_read_line(fp, str, &eof, err)) {
+  if (!mdt_file_read_line(fh, str, &eof, err)) {
     return FALSE;
   } else if (eof != 0) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FILE_FORMAT,
@@ -206,8 +205,8 @@ static gboolean read_mdt_footer(FILE *fp, GString *str, gboolean *pdf,
 }
 
 /** Read the MDT data from the file. Return TRUE on success. */
-static gboolean read_mdt_data(struct mdt *mdt, FILE *fp, const char *header,
-                              GError **err)
+static gboolean read_mdt_data(struct mdt *mdt, struct mod_file *fh,
+                              const char *header, GError **err)
 {
   int nelems;
   if (strlen(header) > 16 && sscanf(&header[16], "%9d", &nelems) == 1) {
@@ -218,14 +217,14 @@ static gboolean read_mdt_data(struct mdt *mdt, FILE *fp, const char *header,
     mod_mdt_nelems_set(&mdt->base, nelems);
     for (i = 0; i < nelems && retval; i++) {
       double output;
-      retval = read_mdt_data_line(fp, str, &output, err);
+      retval = read_mdt_data_line(fh, str, &output, err);
       if (retval) {
         mod_mdt_bin_set(&mdt->base, i, output);
       }
     }
 
     if (retval) {
-      retval = read_mdt_footer(fp, str, &mdt->pdf, err);
+      retval = read_mdt_footer(fh, str, &mdt->pdf, err);
     }
     g_string_free(str, TRUE);
     return retval;
@@ -239,15 +238,16 @@ static gboolean read_mdt_data(struct mdt *mdt, FILE *fp, const char *header,
 
 /** Read a single line of text from an MDT file. Return TRUE on success. */
 static gboolean read_mdt_file_line(struct mdt *mdt,
-                                   const struct mdt_library *mlib, FILE *fp,
+                                   const struct mdt_library *mlib,
+                                   struct mod_file *fh,
                                    GString *str, GError **err)
 {
   if (strcmp(str->str, "  #  FEATURE NBINS NAME") == 0) {
-    return read_mdt_features(mdt, mlib, fp, err);
+    return read_mdt_features(mdt, mlib, fh, err);
   } else if (strcmp(str->str, "  # ISTART   IEND") == 0) {
-    return read_mdt_offsets(mdt, fp, err);
+    return read_mdt_offsets(mdt, fh, err);
   } else if (strncmp(str->str, "MDT TABLE START:", 16) == 0) {
-    return read_mdt_data(mdt, fp, str->str, err);
+    return read_mdt_data(mdt, fh, str->str, err);
   } else if (!read_int_line(str->str, "Number of alignments", 39,
                             &mdt->nalns, err)
              || !read_int_line(str->str,
@@ -278,10 +278,10 @@ gboolean mdt_read(struct mdt *mdt, const struct mdt_library *mlib,
     GString *str = g_string_new(NULL);
 
     while (eof == 0 && retval) {
-      if (!mdt_file_read_line(fh->filept, str, &eof, err)) {
+      if (!mdt_file_read_line(fh, str, &eof, err)) {
         retval = FALSE;
       } else if (eof == 0) {
-        retval = read_mdt_file_line(mdt, mlib, fh->filept, str, err);
+        retval = read_mdt_file_line(mdt, mlib, fh, str, err);
       }
     }
 

@@ -256,7 +256,6 @@ static gboolean read_atom_class_file(const gchar *filename,
 {
   struct mod_file *fh;
   char *text;
-  int ierr;
   gboolean retval;
   unsigned filelen;
 
@@ -270,10 +269,9 @@ static gboolean read_atom_class_file(const gchar *filename,
     return FALSE;
   }
 
-  mod_file_read_contents(fh->filept, &text, &filelen, &ierr);
-  if (ierr != 0) {
+  if (!mod_file_read_contents(fh, &text, &filelen)) {
     handle_modeller_error(err);
-    return FALSE;
+    retval = FALSE;
   } else {
     retval = scan_atom_classes_file(filename, text, filelen, atclass,
                                     read_hbond, tuples, err);

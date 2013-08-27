@@ -25,7 +25,8 @@ __all__ = ['MDTError', 'FileFormatError', 'TableSection', 'Table', 'Library',
            'HydrogenBondClasses', 'Float', 'Double', 'Int32', 'UnsignedInt32',
            'Int16', 'UnsignedInt16', 'Int8', 'UnsignedInt8',
            'write_2dsplinelib', 'write_anglelib', 'write_bondlib',
-           'write_improperlib', 'write_splinelib', 'uniform_bins']
+           'write_improperlib', 'write_splinelib', 'uniform_bins',
+           'write_statpot']
 
 from modeller.util.modobject import modobject
 from modeller.util import modlist
@@ -1218,6 +1219,30 @@ def _get_splinerange(feat):
     x1 = _degrees_to_radians(x1)
     x2 = _degrees_to_radians(x2)
     return periodic, dx, x1, x2
+
+def write_statpot(fh, mdt):
+    """
+    Write out a Modeller statistical potential file (as accepted by
+    group_restraints.append()). The MDT is assumed to be a 3D table of distance
+    against the types of the two atoms. No special processing
+    is done, so it is expected that the user has first done any necessary
+    transformations (e.g. normalization with :meth:`Table.normalize` to
+    convert raw counts into a PDF, negative log transform with
+    :meth:`Table.log_transform` and :meth:`Table.linear_transform` to
+    convert a PDF into a statistical potential).
+    """
+    modality = len(mdt.features[0].bins)
+    delta = mdt.features[0].bins[0].range[1]
+    low = mdt.features[0].bins[0].range[0] + delta / 2.
+    high = mdt.features[0].bins[-1].range[0] + delta / 2.
+    fh.write("MOD5\n")
+    fmt = "R" + " %4d" * 7 + " %5s   %5s  " + " %9.4f" * 6 + " "
+    for na1, a1 in enumerate(mdt.features[1].bins):
+        for na2, a2 in enumerate(mdt.features[2].bins[na1:]):
+            splinevals = ["%9.4f" % mdt[x,na1,na2] for x in range(modality)]
+            fh.write(fmt % (10, modality, 1, 31, 2, modality + 6, 0, a1.symbol,
+                            a2.symbol, 0., low, high, delta, 0., 0.) \
+                     + " ".join(splinevals) + "\n")
 
 def write_splinelib(fh, mdt, dihtype, density_cutoff=None, entropy_cutoff=None):
     """

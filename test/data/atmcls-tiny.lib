@@ -1,0 +1,6 @@
+ATMGRP 'AN'
+  ATOM 'ALA' 'N'
+ATMGRP 'ACA'
+  ATOM 'ALA' 'CA'
+ATMGRP 'AC'
+  ATOM 'ALA' 'C'

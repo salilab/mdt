@@ -8,6 +8,8 @@ HEAD
    the :meth:`Table.add_alignment` method.
  - Atoms in atom tuples can now be restricted to match only in certain
    residue types.
+ - A new function :func:`write_statpot` can generate a Modeller statistical
+   potential file given a suitable input table.
 
 MDT 5.1   09-29-2011
 ====================

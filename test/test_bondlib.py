@@ -104,5 +104,27 @@ class BondLibTests(MDTTest):
         code = compile(open('test.out').read(), 'test.out', 'exec')
         os.unlink('test.out')
 
+    def test_write_statpot(self):
+        """Test the write_statpot function"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.atom_classes.read('test/data/atmcls-tiny.lib')
+
+        d = mdt.features.AtomDistance(mlib, bins=mdt.uniform_bins(5, 0, 0.5))
+        a1 = mdt.features.AtomType(mlib)
+        a2 = mdt.features.AtomType(mlib, pos2=True)
+        m = mdt.Table(mlib, features=(d,a1,a2))
+        # Remove undefined bin
+        m = m.reshape((d,a1,a2), m.offset, (-1, -1, -1))
+        mdt.write_statpot(open('test.out', 'w'), m)
+        # Check size of file
+        lines = open('test.out').readlines()
+        self.assertEqual(len(lines), 7)
+        self.assertEqual(len(lines[-1].split()), 21)
+        # Make sure Modeller can read the file
+        g = modeller.group_restraints(env, 'test/data/atmcls-tiny.lib',
+                                      'test.out')
+        os.unlink('test.out')
+
 if __name__ == '__main__':
     unittest.main()

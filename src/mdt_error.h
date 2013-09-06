@@ -1,6 +1,6 @@
 /** \file mdt_error.h      MDT error handling.
  *
- *             Part of MDT, Copyright(c) 1989-2012 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2013 Andrej Sali
  */
 
 #ifndef __MDT_ERROR_H

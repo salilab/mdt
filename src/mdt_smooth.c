@@ -1,6 +1,6 @@
 /** \file mdt_smooth.c     Functions to smooth MDTs.
  *
- *             Part of MDT, Copyright(c) 1989-2012 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2013 Andrej Sali
  */
 
 #include <stdlib.h>

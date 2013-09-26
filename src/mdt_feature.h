@@ -26,7 +26,8 @@ typedef enum {
   MDT_FEATURE_ATOM_PAIR,
   MDT_FEATURE_TUPLE,
   MDT_FEATURE_TUPLE_PAIR,
-  MDT_FEATURE_BOND
+  MDT_FEATURE_BOND,
+  MDT_FEATURE_GROUP
 } mdt_feature_type;
 
 struct mdt_properties;
@@ -122,6 +123,13 @@ typedef int (*mdt_cb_feature_bond)(const struct mod_alignment *aln,
                                    const struct mod_libraries *libs,
                                    GError **err);
 
+typedef int (*mdt_cb_feature_group)(int bin1, int bin2,
+                                   struct mdt_properties *prop,
+                                   const struct mdt_feature *feat,
+                                   const struct mdt_library *mlib,
+                                   const struct mod_libraries *libs,
+                                   GError **err);
+
 /** User-defined protein feature */
 struct mdt_feature_protein {
   int protein;
@@ -193,6 +201,12 @@ struct mdt_feature_bond {
   mdt_cb_feature_bond getbin;
 };
 
+/** User-defined group feature */
+struct mdt_feature_group {
+  int ifeat1, ifeat2;
+  mdt_cb_feature_group getbin;
+};
+
 /** MDT feature */
 struct mdt_feature {
   /** Base Modeller feature (stores bins, name, Modeller properties such as
@@ -211,6 +225,7 @@ struct mdt_feature {
     struct mdt_feature_tuple tuple;
     struct mdt_feature_tuple_pair tuple_pair;
     struct mdt_feature_bond bond;
+    struct mdt_feature_group group;
   } u;
   void *data;
   mdt_cb_free freefunc;
@@ -338,6 +353,14 @@ int mdt_feature_dihedral_add(struct mdt_library *mlib, const char *name,
                              mod_mdt_calc precalc_type,
                              mdt_cb_feature_bond getbin, void *data,
                              mdt_cb_free freefunc);
+
+/** Add a group feature.
+    \return the index of the new feature */
+MDTDLLEXPORT
+int mdt_feature_group_add(struct mdt_library *mlib, const char *name,
+                          mod_mdt_calc precalc_type, int ifeat1, int ifeat2,
+                          mdt_cb_feature_group getbin, void *data,
+                          mdt_cb_free freefunc);
 
 /** Add a data file type needed for a given feature */
 MDTDLLEXPORT

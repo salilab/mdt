@@ -420,3 +420,21 @@ int mdt_feature_dihedral_add(struct mdt_library *mlib, const char *name,
                               MOD_MDTP_A, MOD_MDTS_DIHEDRAL, FALSE, 0);
   return nfeat;
 }
+
+int mdt_feature_group_add(struct mdt_library *mlib, const char *name,
+                          mod_mdt_calc precalc_type, int ifeat1, int ifeat2,
+                          mdt_cb_feature_group getbin, void *data,
+                          mdt_cb_free freefunc)
+{
+  struct mdt_feature_group *feat;
+  int nfeat;
+
+  feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_GROUP, data,
+                       freefunc)->u.group);
+  feat->ifeat1 = ifeat1;
+  feat->ifeat2 = ifeat2;
+  feat->getbin = getbin;
+  mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
+                              MOD_MDTP_A, MOD_MDTS_PROTEIN, FALSE, 0);
+  return nfeat;
+}

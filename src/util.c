@@ -8,6 +8,7 @@
 #include <glib.h>
 #include "modeller.h"
 #include "util.h"
+#include "mdt_feature.h"
 #include "num_recipes.h"
 
 /** Return the indices of the "top-left" corner of the MDT. This must be freed
@@ -627,6 +628,19 @@ gboolean get_bin_index(const struct mod_mdt *mdt, const int indices[],
   return TRUE;
 }
 
+void consider_library_feature(const struct mdt_library *mlib, int ifeat,
+                              int *n, int *naa)
+{
+  const struct mod_mdt_libfeature *feat = &mlib->base.features[ifeat - 1];
+  /* you will compare proteins, residues or residue pairs if at least one
+     feature requires comparison of proteins, residues or residue pairs,
+     respectively. */
+  *n = MAX(*n, feat->iresfeat);
+  /* you will generate all NxN residue pairs if any of the relationships
+     is asymmetric */
+  *naa = MAX(*naa, feat->isymm);
+}
+
 /** Do some basic setup of an MDT's features. Return TRUE on success. */
 gboolean mdt_setup(struct mdt *mdt, const struct mdt_library *mlib,
                    GError **err)
@@ -643,14 +657,14 @@ gboolean mdt_setup(struct mdt *mdt, const struct mdt_library *mlib,
   n = naa = 0;
   for (i = 0; i < mdt->base.nfeat; i++) {
     int ifeat = mdt->base.features[i].ifeat;
-    const struct mod_mdt_libfeature *feat = &mlib->base.features[ifeat - 1];
-    /* you will compare proteins, residues or residue pairs if at least one
-       feature requires comparison of proteins, residues or residue pairs,
-       respectively. */
-    n = MAX(n, feat->iresfeat);
-    /* you will generate all NxN residue pairs if any of the relationships
-       is asymmetric */
-    naa = MAX(naa, feat->isymm);
+    struct mdt_feature *mfeat = &g_array_index(mlib->features,
+                                               struct mdt_feature, ifeat);
+    if (mfeat->type == MDT_FEATURE_GROUP) {
+      consider_library_feature(mlib, mfeat->u.group.ifeat1, &n, &naa);
+      consider_library_feature(mlib, mfeat->u.group.ifeat2, &n, &naa);
+    } else {
+      consider_library_feature(mlib, ifeat, &n, &naa);
+    }
   }
   mdt->scantype = n;
   mdt->symmetric = (naa == 0);

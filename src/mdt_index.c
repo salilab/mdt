@@ -65,6 +65,7 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
                  struct mdt_properties *prop, GError **err)
 {
   int ibin, ires, iseq, nres, iatom, ibnd, ialnpos, ires1, ires2, ibin1, ibin2;
+  GError *tmperr = NULL;
   struct mod_sequence *seq1, *seq2, *seq3;
   const struct mdt_bond *bond;
   const struct mdt_tuple *tup, *tup2;
@@ -79,12 +80,18 @@ int my_mdt_index(int ifi, const struct mod_alignment *aln, int is1, int ip1,
   case MDT_FEATURE_GROUP:
     ibin1 = my_mdt_index(mfeat->u.group.ifeat1, aln, is1, ip1, is2, ir1, ir2,
                          ir1p, ir2p, ia1, ia1p, mlib, ip2, ibnd1, ibnd1p, is3,
-                         ir3, ir3p, libs, edat, prop, err);
-    // todo: handle error
+                         ir3, ir3p, libs, edat, prop, &tmperr);
+    if (tmperr) {
+      g_propagate_error(err, tmperr);
+      return -1;
+    }
     ibin2 = my_mdt_index(mfeat->u.group.ifeat2, aln, is1, ip1, is2, ir1, ir2,
                          ir1p, ir2p, ia1, ia1p, mlib, ip2, ibnd1, ibnd1p, is3,
-                         ir3, ir3p, libs, edat, prop, err);
-    // todo: handle error
+                         ir3, ir3p, libs, edat, prop, &tmperr);
+    if (tmperr) {
+      g_propagate_error(err, tmperr);
+      return -1;
+    }
     ibin = mfeat->u.group.getbin(ibin1, ibin2, prop, mfeat, mlib, libs, err);
     return index_inrange_err(ibin, feat);
   case MDT_FEATURE_PROTEIN:

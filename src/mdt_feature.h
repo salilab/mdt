@@ -355,12 +355,12 @@ int mdt_feature_dihedral_add(struct mdt_library *mlib, const char *name,
                              mdt_cb_free freefunc);
 
 /** Add a group feature.
-    \return the index of the new feature */
+    \return the index of the new feature, or -1 on error. */
 MDTDLLEXPORT
 int mdt_feature_group_add(struct mdt_library *mlib, const char *name,
                           mod_mdt_calc precalc_type, int ifeat1, int ifeat2,
                           mdt_cb_feature_group getbin, void *data,
-                          mdt_cb_free freefunc);
+                          mdt_cb_free freefunc, GError **err);
 
 /** Add a data file type needed for a given feature */
 MDTDLLEXPORT

@@ -421,14 +421,31 @@ int mdt_feature_dihedral_add(struct mdt_library *mlib, const char *name,
   return nfeat;
 }
 
+static gboolean check_feature(int ifeat, struct mdt_library *mlib, int nfeat,
+                              GError **err)
+{
+  if (ifeat < 0 || ifeat >= mlib->base.nfeat) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "Feature %d (%d) out of range 0 to %d", nfeat, ifeat,
+                mlib->base.nfeat - 1);
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}
+
 int mdt_feature_group_add(struct mdt_library *mlib, const char *name,
                           mod_mdt_calc precalc_type, int ifeat1, int ifeat2,
                           mdt_cb_feature_group getbin, void *data,
-                          mdt_cb_free freefunc)
+                          mdt_cb_free freefunc, GError **err)
 {
   struct mdt_feature_group *feat;
   int nfeat;
 
+  if (!check_feature(ifeat1, mlib, 1, err)
+      || !check_feature(ifeat2, mlib, 2, err)) {
+    return -1;
+  }
   feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_GROUP, data,
                        freefunc)->u.group);
   feat->ifeat1 = ifeat1;

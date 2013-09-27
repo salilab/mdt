@@ -156,18 +156,22 @@ const struct mdt_disulfide_list *property_disulfides(
                                const struct mdt_library *mlib,
                                const struct mod_libraries *libs);
 
-/* Pack two atom indices into a pointer.
+/* Pack two atom or bin indices into a pointer.
    Note  - no implementation for platforms where pointer is not 32 or 64 bits.
-         - atom indices are first made unsigned, then padded out to the size
+         - indices are first made unsigned, then padded out to the size
            of the pointer (two casts).
-         - on 32-bit platforms, atom indices bigger than 2^16 cannot be stored;
+         - on 32-bit platforms, indices bigger than 2^16 cannot be stored;
            a runtime error is emitted on such a system.
  */
 #if MDT_SIZEOF_POINTER == 8
+#define MAKE_HASH_KEY_ASYMMETRIC(a, b) \
+        ((gpointer)((guint64)(guint32)a << 32 | (guint64)(guint32)b))
 #define MAKE_HASH_KEY(a, b) \
         (a < b ? (gpointer)((guint64)(guint32)a << 32 | (guint64)(guint32)b) \
                : (gpointer)((guint64)(guint32)b << 32 | (guint64)(guint32)a))
 #elif MDT_SIZEOF_POINTER == 4
+#define MAKE_HASH_KEY_ASYMMETRIC(a, b) \
+        ((gpointer)((guint32)(guint16)a << 16 | (guint32)(guint16)b))
 #define MAKE_HASH_KEY(a, b) \
         (a < b ? (gpointer)((guint32)(guint16)a << 16 | (guint32)(guint16)b) \
                : (gpointer)((guint32)(guint16)b << 16 | (guint32)(guint16)a))

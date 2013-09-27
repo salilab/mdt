@@ -1250,9 +1250,8 @@ static void mdt_precalc(struct mdt *mdt, const struct mdt_library *mlib,
                                                struct mdt_feature, ifi - 1);
     if (mfeat->type == MDT_FEATURE_GROUP) {
       nfeat += 2;
-    } else {
-      nfeat++;
     }
+    nfeat++;
   }
 
   fake_mdt.nfeat = nfeat;
@@ -1266,9 +1265,8 @@ static void mdt_precalc(struct mdt *mdt, const struct mdt_library *mlib,
     if (mfeat->type == MDT_FEATURE_GROUP) {
       fake_mdt.features[nfeat++].ifeat = mfeat->u.group.ifeat1;
       fake_mdt.features[nfeat++].ifeat = mfeat->u.group.ifeat2;
-    } else {
-      fake_mdt.features[nfeat++].ifeat = feat->ifeat;
     }
+    fake_mdt.features[nfeat++].ifeat = feat->ifeat;
   }
 
   mod_mdt_precalc(&fake_mdt, &mlib->base, aln, mlib->libs, ierr);

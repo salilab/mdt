@@ -1234,6 +1234,47 @@ static gboolean mdt_source_scan(struct mdt *mdt,
   return TRUE;
 }
 
+/** Have Modeller precalculate any desired properties */
+static void mdt_precalc(struct mdt *mdt, const struct mdt_library *mlib,
+                        struct mod_alignment *aln, int *ierr)
+{
+  /* Modeller doesn't understand group features, so expand them out and
+     make a fake MDT */
+  int nfeat = 0, i;
+  struct mod_mdt fake_mdt;
+
+  for (i = 0; i < mdt->base.nfeat; ++i) {
+    struct mod_mdt_feature *feat = &mdt->base.features[i];
+    int ifi = feat->ifeat;
+    struct mdt_feature *mfeat = &g_array_index(mlib->features,
+                                               struct mdt_feature, ifi - 1);
+    if (mfeat->type == MDT_FEATURE_GROUP) {
+      nfeat += 2;
+    } else {
+      nfeat++;
+    }
+  }
+
+  fake_mdt.nfeat = nfeat;
+  fake_mdt.features = g_malloc(sizeof(struct mod_mdt_feature) * nfeat);
+  nfeat = 0;
+  for (i = 0; i < mdt->base.nfeat; ++i) {
+    struct mod_mdt_feature *feat = &mdt->base.features[i];
+    int ifi = feat->ifeat;
+    struct mdt_feature *mfeat = &g_array_index(mlib->features,
+                                               struct mdt_feature, ifi - 1);
+    if (mfeat->type == MDT_FEATURE_GROUP) {
+      fake_mdt.features[nfeat++].ifeat = mfeat->u.group.ifeat1;
+      fake_mdt.features[nfeat++].ifeat = mfeat->u.group.ifeat2;
+    } else {
+      fake_mdt.features[nfeat++].ifeat = feat->ifeat;
+    }
+  }
+
+  mod_mdt_precalc(&fake_mdt, &mlib->base, aln, mlib->libs, ierr);
+  g_free(fake_mdt.features);
+}
+
 
 /** Prepare a source alignment to add data to an MDT. Returns a source pointer
     (to be later freed with mdt_alignment_close()), or NULL on error. */
@@ -1255,7 +1296,8 @@ struct mdt_source *mdt_alignment_open(struct mdt *mdt,
   }
 
   mod_lognote("Pre-calculating");
-  mod_mdt_precalc(&mdt->base, &mlib->base, aln, mlib->libs, &ierr);
+  mdt_precalc(mdt, mlib, aln, &ierr);
+
   if (ierr) {
     handle_modeller_error(err);
     return NULL;

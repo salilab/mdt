@@ -681,6 +681,45 @@ class FeatureTests(MDTTest):
         m.add_alignment(a)
         self.assertEqual([x for x in m], [6.0, 2.0, 1.0, 1.0, 0.0, 0.0])
 
+    def test_feature_cluster(self):
+        """Check Cluster feature"""
+        env = self.get_environ()
+        mlib = self.get_mdt_library()
+        mlib.tuple_classes.read('test/data/trpcls-residue.lib')
+        t1 = mdt.features.TupleType(mlib)
+        t2 = mdt.features.TupleType(mlib, pos2=True)
+        c = mdt.features.Cluster(mlib, t1, t2, nbins=5)
+        c.add((1,1), 1)
+        c.add((2,2), 1)
+        c.add((2,3), 2)
+        self.assertRaises(ValueError, c.add, (20,3), 2)
+        self.assertRaises(ValueError, c.add, (2,30), 2)
+        self.assertRaises(ValueError, c.add, (2,3), 7)
+
+        mdl = modeller.model(env)
+        mdl.build_sequence('AAACAAACSAA')
+        a = modeller.alignment(env)
+        a.append_model(mdl, align_codes='test')
+
+        m1 = mdt.Table(mlib, features=(t1,t2))
+        m1.add_alignment(a)
+        self.assertInTolerance(m1[0,0], 24.0, 1e-5)
+        self.assertInTolerance(m1[1,1], 2.0, 1e-5)
+        self.assertInTolerance(m1[1,2], 2.0, 1e-5)
+        self.assertInTolerance(m1.sample_size, 70.0, 1e-5)
+
+        m2 = mdt.Table(mlib, features=c)
+        m2.add_alignment(a)
+        # m2[0] should be the sum of m1[0,0] and m1[1,1]
+        self.assertInTolerance(m2[0], 26.0, 1e-5)
+        # m2[1] should be equal to m1[1,2]
+        self.assertInTolerance(m2[1], 2.0, 1e-5)
+        # Everything else should be undefined
+        self.assertInTolerance(m2[5], 42.0, 1e-5)
+        # Sample size should be the same
+        self.assertInTolerance(m2.sample_size, 70.0, 1e-5)
+        self.assertEqual(m1.symmetric, m2.symmetric)
+
     def test_feature_triplet_type(self):
         """Check triplet type features"""
         env = self.get_environ()

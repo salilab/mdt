@@ -658,7 +658,7 @@ gboolean mdt_setup(struct mdt *mdt, const struct mdt_library *mlib,
   for (i = 0; i < mdt->base.nfeat; i++) {
     int ifeat = mdt->base.features[i].ifeat;
     struct mdt_feature *mfeat = &g_array_index(mlib->features,
-                                               struct mdt_feature, ifeat);
+                                               struct mdt_feature, ifeat - 1);
     if (mfeat->type == MDT_FEATURE_GROUP) {
       consider_library_feature(mlib, mfeat->u.group.ifeat1, &n, &naa);
       consider_library_feature(mlib, mfeat->u.group.ifeat2, &n, &naa);

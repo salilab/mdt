@@ -631,3 +631,18 @@ class Dihedral(ChemicalBond):
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_dihedral
+
+class Group(_Base):
+    """A feature that groups other features."""
+    def __init__(self, mlib, feat1, feat2, nbins):
+        """See `Protein` for a description of the arguments."""
+        _Base.__init__(self, mlib)
+        self._ifeat = self._setup(mlib._modpt, feat1._get_ifeat(mlib),
+                                  feat2._get_ifeat(mlib), nbins)
+
+class Cluster(Group):
+    _setup = _mdt.mdt_feature_cluster
+
+    def add(self, child_bins, bin_index):
+        _mdt.mdt_cluster_add(self._mlib._modpt, self._ifeat, child_bins[0],
+                             child_bins[1], bin_index)

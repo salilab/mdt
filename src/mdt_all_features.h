@@ -326,11 +326,12 @@ int mdt_feature_average_gap_distance(struct mdt_library *mlib, int protein1,
 /** Add a cluster feature. */
 MDTDLLEXPORT
 int mdt_feature_cluster(struct mdt_library *mlib, int ifeat1, int ifeat2,
-                        GError **err);
+                        int nbins, GError **err);
 
-/** Add a bin pair to a cluster feature. */
+/** Add a bin pair to a cluster feature. Returns FALSE on error. */
 MDTDLLEXPORT
-void mdt_cluster_add(struct mdt_feature *feat, int bin1, int bin2, int bin);
+gboolean mdt_cluster_add(struct mdt_library *mlib, int ifeat, int bin1,
+                         int bin2, int bin, GError **err);
 
 G_END_DECLS
 

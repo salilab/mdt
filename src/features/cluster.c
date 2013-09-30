@@ -4,6 +4,7 @@
  */
 
 #include "modeller.h"
+#include "../mdt_error.h"
 #include "../mdt_index.h"
 #include "../mdt_property.h"
 #include "../mdt_feature.h"
@@ -36,19 +37,51 @@ static void free_data(void *data)
   g_hash_table_destroy(feat_data->map);
 }
 
-void mdt_cluster_add(struct mdt_feature *feat, int bin1, int bin2, int bin)
+static gboolean check_bin(const struct mdt_feature *feat, int bin, int nfeat,
+                          GError **err)
 {
-  struct feature_data *feat_data = (struct feature_data *)feat->data;
+  if (bin < 1 || bin > feat->base->nbins) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "Bin %d index (%d) is out of range 1-%d",
+                nfeat, bin, feat->base->nbins);
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}
+
+gboolean mdt_cluster_add(struct mdt_library *mlib, int ifeat,
+                         int bin1, int bin2, int bin, GError **err)
+{
+  struct mdt_feature *feat, *feat1, *feat2;
+  struct feature_data *feat_data;
+
+  feat = &g_array_index(mlib->features, struct mdt_feature, ifeat - 1);
+  if (feat->type != MDT_FEATURE_GROUP || feat->freefunc != free_data) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "Feature is not a cluster feature");
+    return FALSE;
+  }
+  feat1 = &g_array_index(mlib->features, struct mdt_feature,
+                         feat->u.group.ifeat1 - 1);
+  feat2 = &g_array_index(mlib->features, struct mdt_feature,
+                         feat->u.group.ifeat2 - 1);
+  if (!check_bin(feat1, bin1, 1, err) || !check_bin(feat2, bin2, 2, err)) {
+    return FALSE;
+  }
+
+  feat_data = (struct feature_data *)feat->data;
   g_hash_table_insert(feat_data->map,
                       MAKE_HASH_KEY_ASYMMETRIC(bin1, bin2),
                       GINT_TO_POINTER(bin));
+  return TRUE;
 }
 
 int mdt_feature_cluster(struct mdt_library *mlib, int ifeat1, int ifeat2,
-                        GError **err)
+                        int nbins, GError **err)
 {
   struct feature_data *feat_data;
-  int ifeat;
+  int ifeat, i;
 
   feat_data = g_malloc(sizeof(struct feature_data));
   feat_data->map = g_hash_table_new(NULL, NULL);
@@ -56,6 +89,17 @@ int mdt_feature_cluster(struct mdt_library *mlib, int ifeat1, int ifeat2,
                                 getbin, feat_data, free_data, err);
   if (ifeat < 0) {
     free_data(feat_data);
+  } else {
+    struct mod_mdt_libfeature *feat = &mlib->base.features[ifeat - 1];
+    mod_mdt_libfeature_nbins_set(feat, nbins + 1);
+    for (i = 0; i < nbins; ++i) {
+      g_free(feat->bins[i].symbol);
+      feat->bins[i].symbol = g_strdup("C");
+      feat->bins[i].rang1 = i;
+      feat->bins[i].rang2 = i + 1;
+    }
+    g_free(feat->bins[nbins].symbol);
+    feat->bins[nbins].symbol = g_strdup("U");
   }
   return ifeat;
 }

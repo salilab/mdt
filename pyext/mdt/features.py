@@ -635,14 +635,35 @@ class Dihedral(ChemicalBond):
 class Group(_Base):
     """A feature that groups other features."""
     def __init__(self, mlib, feat1, feat2, nbins):
-        """See `Protein` for a description of the arguments."""
+        """
+        Create the Group feature.
+
+        :Parameters:
+          - `mlib`: the `Library` to create the feature in.
+          - `feat1`: an existing feature object that will be included
+                     in this group.
+          - `feat2`: another existing feature object to include.
+          - `nbins`: the number of bins in this feature.
+        """
         _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, feat1._get_ifeat(mlib),
                                   feat2._get_ifeat(mlib), nbins)
 
 class Cluster(Group):
+    """Cluster feature. When evaluated, it evaluates the two other features
+       grouped in this feature, and converts the pair of bin indices for
+       those features into a single bin index, which is returned. Use the
+       :meth:`add` method to control this conversion."""
     _setup = _mdt.mdt_feature_cluster
 
     def add(self, child_bins, bin_index):
+        """Add a single mapping from a pair of child feature bin indices into
+           this feature's bin index (all indexes start at 1). For example,
+           calling `add((1,2), 3)` would cause this Cluster feature to return
+           bin index 3 if the child features were in bins 1 and 2 respectively.
+           This method can be called multiple times (even for the same
+           `bin_index` to add additional mappings from child bin indices
+           to bin index. If no mapping from a given pair of child indices is
+           present, the undefined bin index is returned."""
         _mdt.mdt_cluster_add(self._mlib._modpt, self._ifeat, child_bins[0],
                              child_bins[1], bin_index)

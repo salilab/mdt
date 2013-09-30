@@ -424,10 +424,10 @@ int mdt_feature_dihedral_add(struct mdt_library *mlib, const char *name,
 static gboolean check_feature(int ifeat, struct mdt_library *mlib, int nfeat,
                               GError **err)
 {
-  if (ifeat < 0 || ifeat >= mlib->base.nfeat) {
+  if (ifeat < 1 || ifeat > mlib->base.nfeat) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
-                "Feature %d (%d) out of range 0 to %d", nfeat, ifeat,
-                mlib->base.nfeat - 1);
+                "Feature %d (%d) out of range 1 to %d", nfeat, ifeat,
+                mlib->base.nfeat);
     return FALSE;
   } else {
     return TRUE;

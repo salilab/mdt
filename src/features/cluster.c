@@ -53,23 +53,31 @@ static gboolean check_bin(const struct mod_mdt_libfeature *feat, int bin,
 gboolean mdt_cluster_add(struct mdt_library *mlib, int ifeat,
                          int bin1, int bin2, int bin, GError **err)
 {
-  struct mdt_feature *feat;
-  struct mod_mdt_libfeature *feat1, *feat2;
+  struct mdt_feature *mfeat;
+  struct mod_mdt_libfeature *feat, *feat1, *feat2;
   struct feature_data *feat_data;
 
-  feat = &g_array_index(mlib->features, struct mdt_feature, ifeat - 1);
-  if (feat->type != MDT_FEATURE_GROUP || feat->freefunc != free_data) {
+  feat = &mlib->base.features[ifeat - 1];
+  mfeat = &g_array_index(mlib->features, struct mdt_feature, ifeat - 1);
+  if (mfeat->type != MDT_FEATURE_GROUP || mfeat->freefunc != free_data) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
                 "Feature is not a cluster feature");
     return FALSE;
   }
-  feat1 = &mlib->base.features[feat->u.group.ifeat1 - 1];
-  feat2 = &mlib->base.features[feat->u.group.ifeat2 - 1];
+  feat1 = &mlib->base.features[mfeat->u.group.ifeat1 - 1];
+  feat2 = &mlib->base.features[mfeat->u.group.ifeat2 - 1];
   if (!check_bin(feat1, bin1, 1, err) || !check_bin(feat2, bin2, 2, err)) {
     return FALSE;
   }
 
-  feat_data = (struct feature_data *)feat->data;
+  if (bin < 1 || bin > feat->nbins) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "Output bin index (%d) is out of range 1-%d",
+                bin, feat->nbins);
+    return FALSE;
+  }
+
+  feat_data = (struct feature_data *)mfeat->data;
   g_hash_table_insert(feat_data->map,
                       MAKE_HASH_KEY_ASYMMETRIC(bin1, bin2),
                       GINT_TO_POINTER(bin));

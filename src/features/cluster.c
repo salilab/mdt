@@ -37,13 +37,13 @@ static void free_data(void *data)
   g_hash_table_destroy(feat_data->map);
 }
 
-static gboolean check_bin(const struct mdt_feature *feat, int bin, int nfeat,
-                          GError **err)
+static gboolean check_bin(const struct mod_mdt_libfeature *feat, int bin,
+                          int nfeat, GError **err)
 {
-  if (bin < 1 || bin > feat->base->nbins) {
+  if (bin < 1 || bin > feat->nbins) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
                 "Bin %d index (%d) is out of range 1-%d",
-                nfeat, bin, feat->base->nbins);
+                nfeat, bin, feat->nbins);
     return FALSE;
   } else {
     return TRUE;
@@ -53,7 +53,8 @@ static gboolean check_bin(const struct mdt_feature *feat, int bin, int nfeat,
 gboolean mdt_cluster_add(struct mdt_library *mlib, int ifeat,
                          int bin1, int bin2, int bin, GError **err)
 {
-  struct mdt_feature *feat, *feat1, *feat2;
+  struct mdt_feature *feat;
+  struct mod_mdt_libfeature *feat1, *feat2;
   struct feature_data *feat_data;
 
   feat = &g_array_index(mlib->features, struct mdt_feature, ifeat - 1);
@@ -62,10 +63,8 @@ gboolean mdt_cluster_add(struct mdt_library *mlib, int ifeat,
                 "Feature is not a cluster feature");
     return FALSE;
   }
-  feat1 = &g_array_index(mlib->features, struct mdt_feature,
-                         feat->u.group.ifeat1 - 1);
-  feat2 = &g_array_index(mlib->features, struct mdt_feature,
-                         feat->u.group.ifeat2 - 1);
+  feat1 = &mlib->base.features[feat->u.group.ifeat1 - 1];
+  feat2 = &mlib->base.features[feat->u.group.ifeat2 - 1];
   if (!check_bin(feat1, bin1, 1, err) || !check_bin(feat2, bin2, 2, err)) {
     return FALSE;
   }

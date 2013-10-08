@@ -10,6 +10,7 @@
 #include <mod_types.h>
 #include "mdt_config.h"
 #include "mdt_types.h"
+#include "mdt_hdf5.h"
 
 G_BEGIN_DECLS
 
@@ -37,6 +38,10 @@ struct mdt_bond;
 struct mdt_feature;
 
 typedef void (*mdt_cb_free)(void *data);
+
+typedef gboolean (*mdt_cb_feature_write)(hid_t loc_id,
+                                         const struct mdt_feature *feat,
+                                         const struct mdt_library *mlib);
 
 typedef int (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
                                       int protein,
@@ -229,6 +234,7 @@ struct mdt_feature {
   } u;
   void *data;
   mdt_cb_free freefunc;
+  mdt_cb_feature_write writefunc;
   /** TRUE if the feature range is periodic (e.g. for a dihedral) */
   gboolean periodic;
   /** TRUE during scans if the bins are of uniform width */
@@ -366,6 +372,11 @@ int mdt_feature_group_add(struct mdt_library *mlib, const char *name,
 MDTDLLEXPORT
 void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
                                  mod_mdt_file filetype);
+
+/** Add a callback for writing extra per-feature info to HDF5 files */
+MDTDLLEXPORT
+void mdt_feature_set_write_callback(struct mdt_library *mlib, int ifeat,
+                                    mdt_cb_feature_write writefunc);
 
 /** Set whether a feature's range is periodic (FALSE by default) */
 MDTDLLEXPORT

@@ -42,6 +42,12 @@ static gboolean write_library_feature(hid_t group_id, const struct mdt *mdt,
     return FALSE;
   }
 
+  if (mfeat->writefunc) {
+    if (!mfeat->writefunc(featgroup_id, mfeat, mlib)) {
+      return FALSE;
+    }
+  }
+
   if (mfeat->uniform_bins) {
     if (!write_float_attribute(featgroup_id, "inverse_bin_width",
                                mfeat->inverse_bin_width)) {

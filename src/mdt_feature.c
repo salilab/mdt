@@ -18,6 +18,14 @@ void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
   feat->idatfil[feat->ndatfil - 1] = filetype;
 }
 
+void mdt_feature_set_write_callback(struct mdt_library *mlib, int ifeat,
+                                    mdt_cb_feature_write writefunc)
+{
+  struct mdt_feature *feat;
+  feat = &g_array_index(mlib->features, struct mdt_feature, ifeat - 1);
+  feat->writefunc = writefunc;
+}
+
 void mdt_feature_nbins_set(struct mdt_library *mlib, int ifeat,
                            int nbins)
 {
@@ -110,6 +118,7 @@ static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat,
   newfeat->type = type;
   newfeat->data = data;
   newfeat->freefunc = freefunc;
+  newfeat->writefunc = NULL;
   return newfeat;
 }
 

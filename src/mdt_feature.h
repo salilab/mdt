@@ -43,6 +43,10 @@ typedef gboolean (*mdt_cb_feature_write)(hid_t loc_id,
                                          const struct mdt_feature *feat,
                                          const struct mdt_library *mlib);
 
+typedef gboolean (*mdt_cb_feature_write_lib)(hid_t loc_id,
+                                             const struct mdt_feature *feat,
+                                             const struct mdt_library *mlib);
+
 typedef int (*mdt_cb_feature_protein)(const struct mod_alignment *aln,
                                       int protein,
                                       struct mdt_properties *prop,
@@ -235,6 +239,7 @@ struct mdt_feature {
   void *data;
   mdt_cb_free freefunc;
   mdt_cb_feature_write writefunc;
+  mdt_cb_feature_write_lib writelibfunc;
   /** TRUE if the feature range is periodic (e.g. for a dihedral) */
   gboolean periodic;
   /** TRUE during scans if the bins are of uniform width */
@@ -377,6 +382,12 @@ void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
 MDTDLLEXPORT
 void mdt_feature_set_write_callback(struct mdt_library *mlib, int ifeat,
                                     mdt_cb_feature_write writefunc);
+
+/** Add a callback for writing extra feature support info to HDF5 files.
+    Each callback is called once per file (not once per feature). */
+MDTDLLEXPORT
+void mdt_feature_set_write_lib_callback(struct mdt_library *mlib, int ifeat,
+                                        mdt_cb_feature_write_lib writelibfunc);
 
 /** Set whether a feature's range is periodic (FALSE by default) */
 MDTDLLEXPORT

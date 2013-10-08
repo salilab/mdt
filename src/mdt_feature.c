@@ -26,6 +26,14 @@ void mdt_feature_set_write_callback(struct mdt_library *mlib, int ifeat,
   feat->writefunc = writefunc;
 }
 
+void mdt_feature_set_write_lib_callback(struct mdt_library *mlib, int ifeat,
+                                        mdt_cb_feature_write_lib writelibfunc)
+{
+  struct mdt_feature *feat;
+  feat = &g_array_index(mlib->features, struct mdt_feature, ifeat - 1);
+  feat->writelibfunc = writelibfunc;
+}
+
 void mdt_feature_nbins_set(struct mdt_library *mlib, int ifeat,
                            int nbins)
 {
@@ -119,6 +127,7 @@ static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat,
   newfeat->data = data;
   newfeat->freefunc = freefunc;
   newfeat->writefunc = NULL;
+  newfeat->writelibfunc = NULL;
   return newfeat;
 }
 

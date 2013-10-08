@@ -22,7 +22,8 @@ static gboolean write_float_attribute(hid_t loc_id, const char *name,
 }
 
 static gboolean write_ifeat(hid_t group_id, const struct mdt *mdt,
-                            const struct mdt_library *mlib, int ifeat)
+                            const struct mdt_library *mlib, int ifeat,
+                            GHashTable *seen_lib_funcs)
 {
   char *group_name;
   hid_t featgroup_id;
@@ -36,6 +37,18 @@ static gboolean write_ifeat(hid_t group_id, const struct mdt *mdt,
   g_free(group_name);
   if (featgroup_id < 0) {
     return FALSE;
+  }
+
+  if (mfeat->writelibfunc
+      && !g_hash_table_lookup(seen_lib_funcs, mfeat->writelibfunc)) {
+    /* Only call each function once per file */
+    g_hash_table_insert(seen_lib_funcs, mfeat->writelibfunc,
+                        GINT_TO_POINTER(1));
+    /* Note that datasets go in the top-level group, not the per-feature
+       group */
+    if (!mfeat->writelibfunc(group_id, mfeat, mlib)) {
+      return FALSE;
+    }
   }
 
   if (mfeat->writefunc) {
@@ -56,18 +69,21 @@ static gboolean write_ifeat(hid_t group_id, const struct mdt *mdt,
 
 /** Write a single MDT library feature to file. Return TRUE on success. */
 static gboolean write_library_feature(hid_t group_id, const struct mdt *mdt,
-                                      const struct mdt_library *mlib, int nfeat)
+                                      const struct mdt_library *mlib, int nfeat,
+                                      GHashTable *seen_lib_funcs)
 {
   const struct mod_mdt_feature *feat = &mdt->base.features[nfeat];
   const struct mdt_feature *mfeat = &g_array_index(mlib->features,
                                                    struct mdt_feature,
                                                    feat->ifeat - 1);
   if (mfeat->type == MDT_FEATURE_GROUP) {
-    return write_ifeat(group_id, mdt, mlib, mfeat->u.group.ifeat1)
-           && write_ifeat(group_id, mdt, mlib, mfeat->u.group.ifeat2)
-           && write_ifeat(group_id, mdt, mlib, feat->ifeat);
+    return write_ifeat(group_id, mdt, mlib, mfeat->u.group.ifeat1,
+                       seen_lib_funcs)
+           && write_ifeat(group_id, mdt, mlib, mfeat->u.group.ifeat2,
+                          seen_lib_funcs)
+           && write_ifeat(group_id, mdt, mlib, feat->ifeat, seen_lib_funcs);
   } else {
-    return write_ifeat(group_id, mdt, mlib, feat->ifeat);
+    return write_ifeat(group_id, mdt, mlib, feat->ifeat, seen_lib_funcs);
   }
 }
 
@@ -76,6 +92,7 @@ static gboolean write_library_info(hid_t file_id, const struct mdt *mdt,
                                    const struct mdt_library *mlib)
 {
   hid_t group_id;
+  GHashTable *seen_lib_funcs;
   gboolean retval = TRUE;
   int i;
 
@@ -85,9 +102,12 @@ static gboolean write_library_info(hid_t file_id, const struct mdt *mdt,
     return FALSE;
   }
 
+  seen_lib_funcs = g_hash_table_new(NULL, NULL);
   for (i = 0; i < mdt->base.nfeat && retval; i++) {
-    retval = retval && write_library_feature(group_id, mdt, mlib, i);
+    retval = retval && write_library_feature(group_id, mdt, mlib, i,
+                                             seen_lib_funcs);
   }
+  g_hash_table_destroy(seen_lib_funcs);
 
   return retval && H5Gclose(group_id) >= 0;
 }

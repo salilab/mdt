@@ -8,6 +8,7 @@
 #include "mod_file.h"
 #include "util.h"
 #include "mdt_error.h"
+#include "mdt_hdf5.h"
 #include "mdt_atom_classes.h"
 
 /** Make a new atom class list. */
@@ -248,6 +249,71 @@ void update_mdt_feat_atclass(struct mod_mdt_libfeature *feat,
   feat->bins[atclass->nclass].symbol = g_strdup("U");
 }
 
+static gboolean write_atom_class_info(hid_t loc_id,
+                                      const struct mdt_atom_class_list *atclass)
+{
+  int i, j, k;
+  hsize_t featdim[2], typedim[2];
+  hid_t dtype;
+  gboolean retval;
+  int *ntypes, total_ntypes;
+  char **class_name, **type_name, **pt;
+
+  ntypes = g_malloc(atclass->nclass * sizeof(int));
+  class_name = g_malloc(atclass->nclass * sizeof(char *));
+
+  total_ntypes = 0;
+  for (i = 0; i < atclass->nclass; ++i) {
+    ntypes[i] = atclass->classes[i].ntypes;
+    total_ntypes += ntypes[i];
+    class_name[i] = atclass->classes[i].name;
+  }
+  type_name = g_malloc(total_ntypes * (atclass->natom + 1) * sizeof(char *));
+  typedim[0] = total_ntypes;
+  typedim[1] = atclass->natom + 1;
+  pt = type_name;
+  for (i = 0; i < atclass->nclass; ++i) {
+    struct mdt_atom_class *cls = &atclass->classes[i];
+    for (j = 0; j < cls->ntypes; ++j) {
+      struct mdt_atom_type *typ = &cls->types[j];
+      for (k = 0; k < typedim[1]; ++k) {
+        *(pt++) = typ->names[k];
+      }
+    }
+  }
+
+  featdim[0] = atclass->nclass;
+  retval = (dtype = H5Tcopy(H5T_C_S1)) >= 0
+           && H5Tset_size(dtype, H5T_VARIABLE) >= 0
+           && H5Tset_strpad(dtype, H5T_STR_NULLTERM) >= 0
+           && H5LTmake_dataset(loc_id, "class_names", 1, featdim, dtype,
+                               class_name) >= 0
+           && H5LTmake_dataset_int(loc_id, "ntypes", 1, featdim, ntypes) >= 0
+           && H5LTmake_dataset(loc_id, "type_names", 2, typedim, dtype,
+                               type_name) >= 0
+           && H5Tclose(dtype) >= 0;
+
+  g_free(ntypes);
+  g_free(class_name);
+  g_free(type_name);
+  return retval;
+}
+
+static gboolean write_atom_class_file(hid_t loc_id, const char *name,
+                                      const struct mdt_library *mlib,
+                                      const struct mdt_atom_class_list *atclass,
+                                      gboolean write_hbond, gboolean tuples)
+{
+  hid_t group_id;
+
+  group_id = H5Gcreate(loc_id, name, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  if (group_id < 0) {
+    return FALSE;
+  }
+
+  return write_atom_class_info(group_id, atclass) && H5Gclose(group_id) >= 0;
+}
+
 static gboolean read_atom_class_file(const gchar *filename,
                                      struct mdt_library *mlib,
                                      struct mdt_atom_class_list *atclass,
@@ -302,4 +368,11 @@ gboolean mdt_tuple_read(const gchar *filename, struct mdt_library *mlib,
                         GError **err)
 {
   return read_atom_class_file(filename, mlib, mlib->tupclass, FALSE, TRUE, err);
+}
+
+gboolean mdt_tuple_write(hid_t loc_id, const struct mdt_feature *feat,
+                         const struct mdt_library *mlib)
+{
+  return write_atom_class_file(loc_id, "tuples", mlib, mlib->tupclass,
+                               FALSE, TRUE);
 }

@@ -7,6 +7,7 @@
 #include "modeller.h"
 #include "mdt.h"
 #include "mdt_feature.h"
+#include "mdt_atom_classes.h"
 #include "mdt_index.h"
 
 void mdt_feature_add_needed_file(struct mdt_library *mlib, int ifeat,
@@ -372,6 +373,7 @@ int mdt_feature_tuple_add(struct mdt_library *mlib, const char *name,
                               pos2 ? MOD_MDTS_TUPLE_PAIR : MOD_MDTS_TUPLE,
                               FALSE, 0);
   g_string_free(fullname, TRUE);
+  mdt_feature_set_write_lib_callback(mlib, nfeat, mdt_tuple_write);
   return nfeat;
 }
 
@@ -388,6 +390,7 @@ int mdt_feature_tuple_pair_add(struct mdt_library *mlib, const char *name,
   feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR, TRUE, 0);
+  mdt_feature_set_write_lib_callback(mlib, nfeat, mdt_tuple_write);
   return nfeat;
 }
 

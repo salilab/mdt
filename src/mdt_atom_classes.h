@@ -9,6 +9,8 @@
 #include <glib.h>
 #include "mdt_config.h"
 #include "mdt_types.h"
+#include "mdt_feature.h"
+#include "mdt_hdf5.h"
 
 G_BEGIN_DECLS
 
@@ -63,6 +65,11 @@ gboolean mdt_hbond_read(const gchar *filename, struct mdt_library *mlib,
 MDTDLLEXPORT
 gboolean mdt_tuple_read(const gchar *filename, struct mdt_library *mlib,
                         GError **err);
+
+/** Write tuple class information to an HDF5 file; return TRUE on success. */
+MDTDLLEXPORT
+gboolean mdt_tuple_write(hid_t loc_id, const struct mdt_feature *feat,
+                         const struct mdt_library *mlib);
 
 /** Set the number of bins and the bin symbols for atom class features */
 MDTDLLLOCAL

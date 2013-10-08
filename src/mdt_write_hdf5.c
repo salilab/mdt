@@ -6,8 +6,72 @@
 #include <glib.h>
 #include "modeller.h"
 #include "mdt_hdf5.h"
+#include "mdt_feature.h"
 #include "mdt.h"
 #include "util.h"
+
+/** Write a float attribute. Return TRUE on success. */
+static gboolean write_float_attribute(hid_t loc_id, const char *name,
+                                      float value)
+{
+  hid_t attr;
+  return (attr = H5Acreate(loc_id, name, H5T_NATIVE_FLOAT, H5S_SCALAR,
+                           H5P_DEFAULT, H5P_DEFAULT)) >= 0
+         && H5Awrite(attr, H5T_NATIVE_FLOAT, &value) >= 0
+         && H5Aclose(attr) >= 0;
+}
+
+/** Write a single MDT library feature to file. Return TRUE on success. */
+static gboolean write_library_feature(hid_t group_id, const struct mdt *mdt,
+                                      const struct mdt_library *mlib, int nfeat)
+{
+  char *group_name;
+  hid_t featgroup_id;
+  /*const struct mod_mdt_libfeature *libfeat;*/
+  const struct mod_mdt_feature *feat = &mdt->base.features[nfeat];
+  const struct mdt_feature *mfeat = &g_array_index(mlib->features,
+                                                   struct mdt_feature,
+                                                   feat->ifeat - 1);
+  /*libfeat = &mlib->base.features[feat->ifeat - 1];*/
+
+  group_name = g_strdup_printf("feature%d", feat->ifeat);
+  featgroup_id = H5Gcreate(group_id, group_name, H5P_DEFAULT, H5P_DEFAULT,
+                           H5P_DEFAULT);
+  g_free(group_name);
+  if (featgroup_id < 0) {
+    return FALSE;
+  }
+
+  if (mfeat->uniform_bins) {
+    if (!write_float_attribute(featgroup_id, "inverse_bin_width",
+                               mfeat->inverse_bin_width)) {
+      return FALSE;
+    }
+  }
+
+  return H5Gclose(featgroup_id) >= 0;
+}
+
+/** Write MDT library information to file. Return TRUE on success. */
+static gboolean write_library_info(hid_t file_id, const struct mdt *mdt,
+                                   const struct mdt_library *mlib)
+{
+  hid_t group_id;
+  gboolean retval = TRUE;
+  int i;
+
+  group_id = H5Gcreate(file_id, "/library", H5P_DEFAULT, H5P_DEFAULT,
+                       H5P_DEFAULT);
+  if (group_id < 0) {
+    return FALSE;
+  }
+
+  for (i = 0; i < mdt->base.nfeat && retval; i++) {
+    retval = retval && write_library_feature(group_id, mdt, mlib, i);
+  }
+
+  return retval && H5Gclose(group_id) >= 0;
+}
 
 /** Write MDT feature names to file. Return TRUE on success. */
 static gboolean write_mdt_feature_names(hid_t file_id, char **name,
@@ -65,7 +129,8 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
     if (H5LTmake_dataset_int(file_id, "/features", 1, &featdim, ifeat) < 0
         || H5LTmake_dataset_int(file_id, "/offset", 1, &featdim, offset) < 0
         || H5LTmake_dataset_int(file_id, "/nbins", 1, &featdim, nbins) < 0
-        || write_mdt_feature_names(file_id, name, &featdim) < 0) {
+        || !write_mdt_feature_names(file_id, name, &featdim)
+        || !write_library_info(file_id, mdt, mlib)) {
       ret = -1;
     }
   }

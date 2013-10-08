@@ -8,6 +8,7 @@
 #include "../mdt_index.h"
 #include "../mdt_property.h"
 #include "../mdt_feature.h"
+#include "../mdt_hdf5.h"
 #include "../mdt_all_features.h"
 
 struct feature_data {
@@ -15,6 +16,37 @@ struct feature_data {
      corresponding bin index of the cluster feature */
   GHashTable *map;
 };
+
+struct store_cluster_data {
+  int *cluster;
+};
+
+void store_cluster(gpointer key, gpointer value, gpointer user_data)
+{
+  struct store_cluster_data *data = (struct store_cluster_data *)user_data;
+  *(data->cluster++) = GET_HASH_KEY_HIGH(key);
+  *(data->cluster++) = GET_HASH_KEY_LOW(key);
+  *(data->cluster++) = GPOINTER_TO_INT(value);
+}
+
+static gboolean writefunc(hid_t loc_id, const struct mdt_feature *feat,
+                          const struct mdt_library *mlib)
+{
+  struct store_cluster_data user_data;
+  int *cluster;
+  herr_t retval;
+  struct feature_data *feat_data = (struct feature_data *)feat->data;
+  hsize_t dims[2];
+  dims[0] = g_hash_table_size(feat_data->map);
+  dims[1] = 3;
+
+  cluster = g_malloc(dims[0] * dims[1] * sizeof(int));
+  user_data.cluster = cluster;
+  g_hash_table_foreach(feat_data->map, store_cluster, &user_data);
+  retval = H5LTmake_dataset_int(loc_id, "clusters", 2, dims, cluster);
+  g_free(cluster);
+  return retval >= 0;
+}
 
 static int getbin(int bin1, int bin2, struct mdt_properties *prop,
                   const struct mdt_feature *feat,
@@ -98,6 +130,7 @@ int mdt_feature_cluster(struct mdt_library *mlib, int ifeat1, int ifeat2,
     free_data(feat_data);
   } else {
     struct mod_mdt_libfeature *feat = &mlib->base.features[ifeat - 1];
+    mdt_feature_set_write_callback(mlib, ifeat, writefunc);
     mod_mdt_libfeature_nbins_set(feat, nbins + 1);
     for (i = 0; i < nbins; ++i) {
       g_free(feat->bins[i].symbol);

@@ -21,20 +21,16 @@ static gboolean write_float_attribute(hid_t loc_id, const char *name,
          && H5Aclose(attr) >= 0;
 }
 
-/** Write a single MDT library feature to file. Return TRUE on success. */
-static gboolean write_library_feature(hid_t group_id, const struct mdt *mdt,
-                                      const struct mdt_library *mlib, int nfeat)
+static gboolean write_ifeat(hid_t group_id, const struct mdt *mdt,
+                            const struct mdt_library *mlib, int ifeat)
 {
   char *group_name;
   hid_t featgroup_id;
-  /*const struct mod_mdt_libfeature *libfeat;*/
-  const struct mod_mdt_feature *feat = &mdt->base.features[nfeat];
   const struct mdt_feature *mfeat = &g_array_index(mlib->features,
                                                    struct mdt_feature,
-                                                   feat->ifeat - 1);
-  /*libfeat = &mlib->base.features[feat->ifeat - 1];*/
+                                                   ifeat - 1);
 
-  group_name = g_strdup_printf("feature%d", feat->ifeat);
+  group_name = g_strdup_printf("feature%d", ifeat);
   featgroup_id = H5Gcreate(group_id, group_name, H5P_DEFAULT, H5P_DEFAULT,
                            H5P_DEFAULT);
   g_free(group_name);
@@ -56,6 +52,23 @@ static gboolean write_library_feature(hid_t group_id, const struct mdt *mdt,
   }
 
   return H5Gclose(featgroup_id) >= 0;
+}
+
+/** Write a single MDT library feature to file. Return TRUE on success. */
+static gboolean write_library_feature(hid_t group_id, const struct mdt *mdt,
+                                      const struct mdt_library *mlib, int nfeat)
+{
+  const struct mod_mdt_feature *feat = &mdt->base.features[nfeat];
+  const struct mdt_feature *mfeat = &g_array_index(mlib->features,
+                                                   struct mdt_feature,
+                                                   feat->ifeat - 1);
+  if (mfeat->type == MDT_FEATURE_GROUP) {
+    return write_ifeat(group_id, mdt, mlib, mfeat->u.group.ifeat1)
+           && write_ifeat(group_id, mdt, mlib, mfeat->u.group.ifeat2)
+           && write_ifeat(group_id, mdt, mlib, feat->ifeat);
+  } else {
+    return write_ifeat(group_id, mdt, mlib, feat->ifeat);
+  }
 }
 
 /** Write MDT library information to file. Return TRUE on success. */

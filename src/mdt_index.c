@@ -36,8 +36,12 @@ int feat_to_bin(float x, const struct mdt_feature *feat)
   const struct mod_mdt_libfeature *base = feat->base;
   const struct mod_mdt_bin *bin = base->bins;
   if (feat->uniform_bins) {
-    int index = (int)((x - bin[0].rang1) * feat->inverse_bin_width);
-    if (index >= 0 && index < base->nbins - 1) {
+    float findex = (x - bin[0].rang1) * feat->inverse_bin_width;
+    int index = (int)findex;
+    /* If findex lies between 0 and -1 (but index is truncated to 0) make
+       sure we bin as undefined, not in the first bin */
+    if (index < base->nbins - 1
+        && (index > 0 || (index == 0 && findex >= 0.))) {
       return index + 1;
     }
   } else {

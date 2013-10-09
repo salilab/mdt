@@ -376,3 +376,31 @@ gboolean mdt_tuple_write(hid_t loc_id, const struct mdt_feature *feat,
   return write_atom_class_file(loc_id, "tuples", mlib, mlib->tupclass,
                                FALSE);
 }
+
+gboolean mdt_atom_class_write(hid_t loc_id, const struct mdt_feature *feat,
+                              const struct mdt_library *mlib)
+{
+  return write_atom_class_file(loc_id, "atom_classes", mlib, mlib->atclass[0],
+                               FALSE);
+}
+
+gboolean mdt_bond_class_write(hid_t loc_id, const struct mdt_feature *feat,
+                              const struct mdt_library *mlib)
+{
+  return write_atom_class_file(loc_id, "bond_classes", mlib, mlib->atclass[1],
+                               FALSE);
+}
+
+gboolean mdt_angle_class_write(hid_t loc_id, const struct mdt_feature *feat,
+                               const struct mdt_library *mlib)
+{
+  return write_atom_class_file(loc_id, "angle_classes", mlib, mlib->atclass[2],
+                               FALSE);
+}
+
+gboolean mdt_dihedral_class_write(hid_t loc_id, const struct mdt_feature *feat,
+                                  const struct mdt_library *mlib)
+{
+  return write_atom_class_file(loc_id, "dihedral_classes", mlib,
+                               mlib->atclass[3], FALSE);
+}

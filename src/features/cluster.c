@@ -72,10 +72,10 @@ static void free_data(void *data)
 static gboolean check_bin(const struct mod_mdt_libfeature *feat, int bin,
                           int nfeat, GError **err)
 {
-  if (bin < 1 || bin > feat->nbins) {
+  if (bin < 0 || bin >= feat->nbins) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
-                "Bin %d index (%d) is out of range 1-%d",
-                nfeat, bin, feat->nbins);
+                "Bin %d index (%d) is out of range 0-%d",
+                nfeat, bin, feat->nbins - 1);
     return FALSE;
   } else {
     return TRUE;
@@ -88,6 +88,10 @@ gboolean mdt_cluster_add(struct mdt_library *mlib, int ifeat,
   struct mdt_feature *mfeat;
   struct mod_mdt_libfeature *feat, *feat1, *feat2;
   struct feature_data *feat_data;
+
+  /* Note that we take bin indexes starting from 0 (for consistency with
+     the rest of the Python interface) but internally they are stored
+     starting from 1 */
 
   feat = &mlib->base.features[ifeat - 1];
   mfeat = &g_array_index(mlib->features, struct mdt_feature, ifeat - 1);
@@ -102,17 +106,17 @@ gboolean mdt_cluster_add(struct mdt_library *mlib, int ifeat,
     return FALSE;
   }
 
-  if (bin < 1 || bin > feat->nbins) {
+  if (bin < 0 || bin >= feat->nbins) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
-                "Output bin index (%d) is out of range 1-%d",
-                bin, feat->nbins);
+                "Output bin index (%d) is out of range 0-%d",
+                bin, feat->nbins - 1);
     return FALSE;
   }
 
   feat_data = (struct feature_data *)mfeat->data;
   g_hash_table_insert(feat_data->map,
-                      MAKE_HASH_KEY_ASYMMETRIC(bin1, bin2),
-                      GINT_TO_POINTER(bin));
+                      MAKE_HASH_KEY_ASYMMETRIC(bin1 + 1, bin2 + 1),
+                      GINT_TO_POINTER(bin + 1));
   return TRUE;
 }
 

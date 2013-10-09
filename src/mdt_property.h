@@ -165,7 +165,7 @@ const struct mdt_disulfide_list *property_disulfides(
  */
 #if MDT_SIZEOF_POINTER == 8
 #define MAKE_HASH_KEY_ASYMMETRIC(a, b) \
-        ((gpointer)((guint64)(guint32)a << 32 | (guint64)(guint32)b))
+        ((gpointer)((guint64)(guint32)(a) << 32 | (guint64)(guint32)(b)))
 #define GET_HASH_KEY_LOW(h) \
         ((guint32)(guint64)h)
 #define GET_HASH_KEY_HIGH(h) \
@@ -175,7 +175,7 @@ const struct mdt_disulfide_list *property_disulfides(
                : (gpointer)((guint64)(guint32)b << 32 | (guint64)(guint32)a))
 #elif MDT_SIZEOF_POINTER == 4
 #define MAKE_HASH_KEY_ASYMMETRIC(a, b) \
-        ((gpointer)((guint32)(guint16)a << 16 | (guint32)(guint16)b))
+        ((gpointer)((guint32)(guint16)(a) << 16 | (guint32)(guint16)(b)))
 #define GET_HASH_KEY_LOW(h) \
         ((guint16)(guint32)h)
 #define GET_HASH_KEY_HIGH(h) \

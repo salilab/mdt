@@ -658,7 +658,7 @@ class Cluster(Group):
 
     def add(self, child_bins, bin_index):
         """Add a single mapping from a pair of child feature bin indices into
-           this feature's bin index (all indexes start at 1). For example,
+           this feature's bin index (all indexes start at 0). For example,
            calling `add((1,2), 3)` would cause this Cluster feature to return
            bin index 3 if the child features were in bins 1 and 2 respectively.
            This method can be called multiple times (even for the same

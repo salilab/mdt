@@ -1042,7 +1042,8 @@ static void prepare_feature_for_scan(struct mdt_feature *feat)
   if (bin_width != 0.0) {
     /* If bin widths vary by less than 1%, treat as uniform */
     feat->uniform_bins = TRUE;
-    for (i = 0; feat->uniform_bins && i < feat->base->nbins; ++i, ++bin) {
+    /* Don't include the undefined bin */
+    for (i = 0; feat->uniform_bins && i < feat->base->nbins - 1; ++i, ++bin) {
       float pct_diff = (bin_width - (bin->rang2 - bin->rang1)) / bin_width;
       if (ABS(pct_diff) > 0.01) {
         feat->uniform_bins = FALSE;

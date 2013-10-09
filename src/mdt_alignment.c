@@ -1049,6 +1049,7 @@ static void prepare_feature_for_scan(struct mdt_feature *feat)
       }
     }
     if (feat->uniform_bins) {
+      feat->bin_width = bin_width;
       feat->inverse_bin_width = 1.0 / bin_width;
     }
   } else {

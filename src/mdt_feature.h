@@ -244,6 +244,8 @@ struct mdt_feature {
   gboolean periodic;
   /** TRUE during scans if the bins are of uniform width */
   gboolean uniform_bins;
+  /** If uniform bins, the bin width */
+  float bin_width;
   /** If uniform bins, the reciprocal of the bin width */
   float inverse_bin_width;
   /** The square of the largest value that can be binned during a scan */

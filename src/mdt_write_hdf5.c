@@ -27,6 +27,7 @@ static gboolean write_ifeat(hid_t group_id, const struct mdt *mdt,
 {
   char *group_name;
   hid_t featgroup_id;
+  const struct mod_mdt_libfeature *feat = &mlib->base.features[ifeat - 1];
   const struct mdt_feature *mfeat = &g_array_index(mlib->features,
                                                    struct mdt_feature,
                                                    ifeat - 1);
@@ -58,8 +59,9 @@ static gboolean write_ifeat(hid_t group_id, const struct mdt *mdt,
   }
 
   if (mfeat->uniform_bins) {
-    if (!write_float_attribute(featgroup_id, "inverse_bin_width",
-                               mfeat->inverse_bin_width)) {
+    if (!write_float_attribute(featgroup_id, "bin_width", mfeat->bin_width)
+        || !write_float_attribute(featgroup_id, "first_bin",
+                                  feat->bins[0].rang1)) {
       return FALSE;
     }
   }

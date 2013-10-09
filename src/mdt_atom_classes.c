@@ -302,7 +302,7 @@ static gboolean write_atom_class_info(hid_t loc_id,
 static gboolean write_atom_class_file(hid_t loc_id, const char *name,
                                       const struct mdt_library *mlib,
                                       const struct mdt_atom_class_list *atclass,
-                                      gboolean write_hbond, gboolean tuples)
+                                      gboolean write_hbond)
 {
   hid_t group_id;
 
@@ -374,5 +374,5 @@ gboolean mdt_tuple_write(hid_t loc_id, const struct mdt_feature *feat,
                          const struct mdt_library *mlib)
 {
   return write_atom_class_file(loc_id, "tuples", mlib, mlib->tupclass,
-                               FALSE, TRUE);
+                               FALSE);
 }

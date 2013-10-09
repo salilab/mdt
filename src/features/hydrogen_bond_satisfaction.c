@@ -10,6 +10,7 @@
 #include "../mdt_all_features.h"
 #include "../mdt_property.h"
 #include "../mdt_hydrogen_bonds.h"
+#include "../mdt_atom_classes.h"
 
 static int getbin(const struct mod_alignment *aln, int protein,
                   struct mdt_properties *prop,
@@ -28,7 +29,12 @@ static int getbin(const struct mod_alignment *aln, int protein,
 int mdt_feature_hydrogen_bond_satisfaction(struct mdt_library *mlib,
                                            int protein, GError **err)
 {
-  return mdt_feature_protein_add(mlib, "Protein hydrogen bond satisfaction",
-                                 MOD_MDTC_NONE, protein, getbin, NULL, NULL,
-                                 err);
+  int ifeat;
+  ifeat = mdt_feature_protein_add(mlib, "Protein hydrogen bond satisfaction",
+                                  MOD_MDTC_NONE, protein, getbin, NULL, NULL,
+                                  err);
+  if (ifeat >= 0) {
+    mdt_feature_set_write_lib_callback(mlib, ifeat, mdt_hbond_write);
+  }
+  return ifeat;
 }

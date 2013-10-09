@@ -10,6 +10,7 @@
 #include "../mdt_all_features.h"
 #include "../mdt_property.h"
 #include "../mdt_hydrogen_bonds.h"
+#include "../mdt_atom_classes.h"
 
 static int getbin(const struct mod_alignment *aln, int protein, int atom,
                   struct mdt_properties *prop,
@@ -35,8 +36,10 @@ static int getbin(const struct mod_alignment *aln, int protein, int atom,
 static int make_feature(struct mdt_library *mlib, gboolean pos2,
                         const char *name, int hbprop_type)
 {
-  return mdt_feature_atom_add(mlib, name, MOD_MDTC_NONE, pos2, getbin,
-                              GINT_TO_POINTER(hbprop_type), NULL);
+  int ifeat = mdt_feature_atom_add(mlib, name, MOD_MDTC_NONE, pos2, getbin,
+                                   GINT_TO_POINTER(hbprop_type), NULL);
+  mdt_feature_set_write_lib_callback(mlib, ifeat, mdt_hbond_write);
+  return ifeat;
 }
 
 int mdt_feature_hydrogen_bond_donor(struct mdt_library *mlib, gboolean pos2)

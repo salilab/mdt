@@ -250,17 +250,29 @@ void update_mdt_feat_atclass(struct mod_mdt_libfeature *feat,
 }
 
 static gboolean write_atom_class_info(hid_t loc_id,
-                                      const struct mdt_atom_class_list *atclass)
+                                      const struct mdt_atom_class_list *atclass,
+                                      gboolean write_hbond)
 {
   int i, j, k;
   hsize_t featdim[2], typedim[2];
   hid_t dtype;
   gboolean retval;
   int *ntypes, total_ntypes;
+  float *hbond = NULL;
   char **class_name, **type_name, **pt;
 
   ntypes = g_malloc(atclass->nclass * sizeof(int));
   class_name = g_malloc(atclass->nclass * sizeof(char *));
+
+  if (write_hbond) {
+    float *pt = hbond = g_malloc(atclass->nclass * 3 * sizeof(float));
+    for (i = 0; i < atclass->nclass; ++i) {
+      struct mdt_atom_class *cls = &atclass->classes[i];
+      *(pt++) = cls->hb_property[0];
+      *(pt++) = cls->hb_property[1];
+      *(pt++) = cls->hb_property[2];
+    }
+  }
 
   total_ntypes = 0;
   for (i = 0; i < atclass->nclass; ++i) {
@@ -293,6 +305,13 @@ static gboolean write_atom_class_info(hid_t loc_id,
                                type_name) >= 0
            && H5Tclose(dtype) >= 0;
 
+  if (write_hbond) {
+    featdim[1] = 3;
+    retval = retval && H5LTmake_dataset_float(loc_id, "hb_property", 2,
+                                              featdim, hbond) >= 0;
+    g_free(hbond);
+  }
+
   g_free(ntypes);
   g_free(class_name);
   g_free(type_name);
@@ -311,7 +330,8 @@ static gboolean write_atom_class_file(hid_t loc_id, const char *name,
     return FALSE;
   }
 
-  return write_atom_class_info(group_id, atclass) && H5Gclose(group_id) >= 0;
+  return write_atom_class_info(group_id, atclass, write_hbond)
+         && H5Gclose(group_id) >= 0;
 }
 
 static gboolean read_atom_class_file(const gchar *filename,
@@ -403,4 +423,10 @@ gboolean mdt_dihedral_class_write(hid_t loc_id, const struct mdt_feature *feat,
 {
   return write_atom_class_file(loc_id, "dihedral_classes", mlib,
                                mlib->atclass[3], FALSE);
+}
+
+gboolean mdt_hbond_write(hid_t loc_id, const struct mdt_feature *feat,
+                         const struct mdt_library *mlib)
+{
+  return write_atom_class_file(loc_id, "hbond", mlib, mlib->hbond, TRUE);
 }

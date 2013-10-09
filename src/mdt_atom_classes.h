@@ -91,6 +91,11 @@ MDTDLLEXPORT
 gboolean mdt_dihedral_class_write(hid_t loc_id, const struct mdt_feature *feat,
                                   const struct mdt_library *mlib);
 
+/** Write hydrogen bond information to an HDF5 file; return TRUE on success. */
+MDTDLLEXPORT
+gboolean mdt_hbond_write(hid_t loc_id, const struct mdt_feature *feat,
+                         const struct mdt_library *mlib);
+
 /** Set the number of bins and the bin symbols for atom class features */
 MDTDLLLOCAL
 void update_mdt_feat_atclass(struct mod_mdt_libfeature *feat,

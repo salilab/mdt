@@ -330,6 +330,10 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m4[0], 78.0, 0.0005)
         self.assertInTolerance(m4[1], 24.0, 0.0005)
         self.assertEqual(m4[-1], 739.0)
+        # Exercise writing of hbond information to HDF5 files:
+        for t in (m, m2, m3, m4):
+            t.write_hdf5('test.hdf5')
+            os.unlink('test.hdf5')
 
     def test_feature_radius_gyration(self):
         """Check radius of gyration feature"""
@@ -551,6 +555,9 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m2[178], 38.0, 0.0005)
         self.assertEqual(m2.shape, (289,))
         self.assertEqual(m2[-1], 0.0)
+        # Exercise writing of angle class information to HDF5 files:
+        m.write_hdf5('test.hdf5')
+        os.unlink('test.hdf5')
 
     def test_feature_distance_undefined(self):
         """Check atom-atom distance feature undefined bin"""
@@ -639,6 +646,9 @@ class FeatureTests(MDTTest):
         self.assertInTolerance(m2[145], 24.0, 0.0005)
         self.assertEqual(m2.shape, (289,))
         self.assertEqual(m2[-1], 0.0)
+        # Exercise writing of dihedral class information to HDF5 files:
+        m.write_hdf5('test.hdf5')
+        os.unlink('test.hdf5')
 
     def test_feature_doublet_type(self):
         """Check doublet type features"""

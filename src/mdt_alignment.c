@@ -1065,30 +1065,19 @@ static void prepare_feature_for_scan(struct mdt_feature *feat)
   feat->max_range_squared = max_range * max_range * 1.05;
 }
 
-static void prepare_ifeat_for_scan(struct mdt_library *mlib, int ifeat)
-{
-  struct mod_mdt_libfeature *feat = &mlib->base.features[ifeat - 1];
-  struct mdt_feature *mfeat = &g_array_index(mlib->features,
-                                             struct mdt_feature, ifeat - 1);
-  /* Make sure that base pointer is valid (it can change if features
-     are added to the library) */
-  mfeat->base = feat;
-  prepare_feature_for_scan(mfeat);
-}
-
 /** Makes sure that all features in the library are ready for a scan, by
     doing any necessary precalculation or setup. */
 static void prepare_features_for_scan(struct mdt_library *mlib)
 {
   int i;
   for (i = 0; i < mlib->base.nfeat; ++i) {
+    struct mod_mdt_libfeature *feat = &mlib->base.features[i];
     struct mdt_feature *mfeat = &g_array_index(mlib->features,
                                                struct mdt_feature, i);
-    prepare_ifeat_for_scan(mlib, i + 1);
-    if (mfeat->type == MDT_FEATURE_GROUP) {
-      prepare_ifeat_for_scan(mlib, mfeat->u.group.ifeat1);
-      prepare_ifeat_for_scan(mlib, mfeat->u.group.ifeat2);
-    }
+    /* Make sure that base pointer is valid (it can change if features
+       are added to the library) */
+    mfeat->base = feat;
+    prepare_feature_for_scan(mfeat);
   }
 }
 

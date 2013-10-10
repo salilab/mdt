@@ -7,6 +7,7 @@
 #include "../mdt_index.h"
 #include "../mdt_feature.h"
 #include "../mdt_all_features.h"
+#include "../mdt_hdf5.h"
 
 struct feature_data {
   float nmr;
@@ -28,6 +29,13 @@ static int getbin(const struct mod_alignment *aln, int protein,
   return feat_to_bin(f, feat);
 }
 
+static gboolean writefunc(hid_t loc_id, const struct mdt_feature *feat,
+                          const struct mdt_library *mlib)
+{
+  struct feature_data *feat_data = (struct feature_data *)feat->data;
+  return mdt_hdf5_write_float_attr(loc_id, "nmr", 1, &feat_data->nmr);
+}
+
 int mdt_feature_xray_resolution(struct mdt_library *mlib, int protein,
                                 float nmr, GError **err)
 {
@@ -40,6 +48,8 @@ int mdt_feature_xray_resolution(struct mdt_library *mlib, int protein,
                                   protein, getbin, feat_data, g_free, err);
   if (ifeat < 0) {
     g_free(feat_data);
+  } else {
+    mdt_feature_set_write_callback(mlib, ifeat, writefunc);
   }
   return ifeat;
 }

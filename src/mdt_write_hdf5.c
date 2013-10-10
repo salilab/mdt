@@ -10,21 +10,6 @@
 #include "mdt.h"
 #include "util.h"
 
-/** Write a float attribute. Return TRUE on success. */
-static gboolean write_float_attribute(hid_t loc_id, const char *name,
-                                      float value)
-{
-  hid_t attr, dataspace_id;
-  hsize_t dims;
-  dims = 1;
-  return (dataspace_id = H5Screate_simple(1, &dims, NULL)) >= 0
-         && (attr = H5Acreate(loc_id, name, H5T_NATIVE_FLOAT, dataspace_id,
-                              H5P_DEFAULT, H5P_DEFAULT)) >= 0
-         && H5Awrite(attr, H5T_NATIVE_FLOAT, &value) >= 0
-         && H5Aclose(attr) >= 0
-         && H5Sclose(dataspace_id) >= 0;
-}
-
 static gboolean write_ifeat(hid_t group_id, const struct mdt *mdt,
                             const struct mdt_library *mlib, int ifeat)
 {
@@ -50,9 +35,10 @@ static gboolean write_ifeat(hid_t group_id, const struct mdt *mdt,
   }
 
   if (mfeat->uniform_bins) {
-    if (!write_float_attribute(featgroup_id, "bin_width", mfeat->bin_width)
-        || !write_float_attribute(featgroup_id, "first_bin",
-                                  feat->bins[0].rang1)) {
+    if (!mdt_hdf5_write_float_attr(featgroup_id, "bin_width", 1,
+                                   &mfeat->bin_width)
+        || !mdt_hdf5_write_float_attr(featgroup_id, "first_bin", 1,
+                                      &feat->bins[0].rang1)) {
       return FALSE;
     }
   }

@@ -35,4 +35,9 @@ hid_t mdt_hdf_open(const char *filename, unsigned flags, hid_t access_plist,
 MDTDLLLOCAL
 gboolean mdt_hdf_close(hid_t file_id, struct mod_file *file_info, GError **err);
 
+/** Write a float attribute. Return TRUE on success. */
+MDTDLLLOCAL
+gboolean mdt_hdf5_write_float_attr(hid_t loc_id, const char *name,
+                                   int dim, const float *value);
+
 #endif  /*  __MDT_HDF5_H */

@@ -77,3 +77,17 @@ gboolean mdt_hdf_close(hid_t file_id, struct mod_file *file_info, GError **err)
     return TRUE;
   }
 }
+
+/** Write a float attribute. Return TRUE on success. */
+gboolean mdt_hdf5_write_float_attr(hid_t loc_id, const char *name,
+                                   int dim, const float *value)
+{
+  hid_t attr, dataspace_id;
+  hsize_t dims = dim;
+  return (dataspace_id = H5Screate_simple(1, &dims, NULL)) >= 0
+         && (attr = H5Acreate(loc_id, name, H5T_NATIVE_FLOAT, dataspace_id,
+                              H5P_DEFAULT, H5P_DEFAULT)) >= 0
+         && H5Awrite(attr, H5T_NATIVE_FLOAT, value) >= 0
+         && H5Aclose(attr) >= 0
+         && H5Sclose(dataspace_id) >= 0;
+}

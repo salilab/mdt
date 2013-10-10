@@ -27,14 +27,6 @@ void mdt_feature_set_write_callback(struct mdt_library *mlib, int ifeat,
   feat->writefunc = writefunc;
 }
 
-void mdt_feature_set_write_lib_callback(struct mdt_library *mlib, int ifeat,
-                                        mdt_cb_feature_write_lib writelibfunc)
-{
-  struct mdt_feature *feat;
-  feat = &g_array_index(mlib->features, struct mdt_feature, ifeat - 1);
-  feat->writelibfunc = writelibfunc;
-}
-
 void mdt_feature_nbins_set(struct mdt_library *mlib, int ifeat,
                            int nbins)
 {
@@ -128,7 +120,6 @@ static struct mdt_feature *add_feature(struct mdt_library *mlib, int *nfeat,
   newfeat->data = data;
   newfeat->freefunc = freefunc;
   newfeat->writefunc = NULL;
-  newfeat->writelibfunc = NULL;
   return newfeat;
 }
 
@@ -373,7 +364,6 @@ int mdt_feature_tuple_add(struct mdt_library *mlib, const char *name,
                               pos2 ? MOD_MDTS_TUPLE_PAIR : MOD_MDTS_TUPLE,
                               FALSE, 0);
   g_string_free(fullname, TRUE);
-  mdt_feature_set_write_lib_callback(mlib, nfeat, mdt_tuple_write);
   return nfeat;
 }
 
@@ -390,7 +380,6 @@ int mdt_feature_tuple_pair_add(struct mdt_library *mlib, const char *name,
   feat->getbin = getbin;
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_TUPLE_PAIR, TRUE, 0);
-  mdt_feature_set_write_lib_callback(mlib, nfeat, mdt_tuple_write);
   return nfeat;
 }
 
@@ -405,7 +394,6 @@ int mdt_feature_bond_add(struct mdt_library *mlib, const char *name,
   feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data, freefunc)->u.bond);
   feat->type = MDT_BOND_TYPE_BOND;
   feat->getbin = getbin;
-  mdt_feature_set_write_lib_callback(mlib, nfeat, mdt_bond_class_write);
 
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_BOND, FALSE, 0);
@@ -423,7 +411,6 @@ int mdt_feature_angle_add(struct mdt_library *mlib, const char *name,
   feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data, freefunc)->u.bond);
   feat->type = MDT_BOND_TYPE_ANGLE;
   feat->getbin = getbin;
-  mdt_feature_set_write_lib_callback(mlib, nfeat, mdt_angle_class_write);
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_ANGLE, FALSE, 0);
   return nfeat;
@@ -440,7 +427,6 @@ int mdt_feature_dihedral_add(struct mdt_library *mlib, const char *name,
   feat = &(add_feature(mlib, &nfeat, MDT_FEATURE_BOND, data, freefunc)->u.bond);
   feat->type = MDT_BOND_TYPE_DIHEDRAL;
   feat->getbin = getbin;
-  mdt_feature_set_write_lib_callback(mlib, nfeat, mdt_dihedral_class_write);
 
   mod_mdt_libfeature_register(&mlib->base, nfeat, name, precalc_type,
                               MOD_MDTP_A, MOD_MDTS_DIHEDRAL, FALSE, 0);

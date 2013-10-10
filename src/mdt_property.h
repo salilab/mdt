@@ -156,6 +156,12 @@ const struct mdt_disulfide_list *property_disulfides(
                                const struct mdt_library *mlib,
                                const struct mod_libraries *libs);
 
+/** Copy any write callbacks to an MDT table */
+MDTDLLLOCAL
+void mdt_property_get_write_callbacks(const struct mdt_properties *prop,
+                                      const struct mod_alignment *aln,
+                                      struct mdt *mdt);
+
 /* Pack two atom or bin indices into a pointer.
    Note  - no implementation for platforms where pointer is not 32 or 64 bits.
          - indices are first made unsigned, then padded out to the size

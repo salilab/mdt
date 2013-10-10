@@ -29,12 +29,7 @@ static int getbin(const struct mod_alignment *aln, int protein,
 int mdt_feature_hydrogen_bond_satisfaction(struct mdt_library *mlib,
                                            int protein, GError **err)
 {
-  int ifeat;
-  ifeat = mdt_feature_protein_add(mlib, "Protein hydrogen bond satisfaction",
-                                  MOD_MDTC_NONE, protein, getbin, NULL, NULL,
-                                  err);
-  if (ifeat >= 0) {
-    mdt_feature_set_write_lib_callback(mlib, ifeat, mdt_hbond_write);
-  }
-  return ifeat;
+  return mdt_feature_protein_add(mlib, "Protein hydrogen bond satisfaction",
+                                 MOD_MDTC_NONE, protein, getbin, NULL, NULL,
+                                 err);
 }

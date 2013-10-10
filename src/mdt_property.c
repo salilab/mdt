@@ -22,6 +22,8 @@ struct mdt_properties {
   struct mdt_bond_list *bonds[N_MDT_BOND_TYPES];
   /** Hash of excluded atom pairs */
   GHashTable *exclusions;
+  /** Callbacks for writing properties to HDF5 files */
+  GHashTable *write_lib_funcs;
   /** Lists of atom tuples for each atom */
   struct mdt_tuple_list *tuples;
   /** Bin indices for hydrogen bond atom type */
@@ -55,6 +57,7 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
       prop[i].bonds[j] = NULL;
     }
     prop[i].exclusions = NULL;
+    prop[i].write_lib_funcs = g_hash_table_new(NULL, NULL);
     prop[i].tuples = NULL;
     prop[i].hb_iatta = NULL;
     prop[i].hbpot = NULL;
@@ -85,6 +88,9 @@ void mdt_properties_free(struct mdt_properties *prop,
     }
     if (prop[i].exclusions) {
       g_hash_table_destroy(prop[i].exclusions);
+    }
+    if (prop[i].write_lib_funcs) {
+      g_hash_table_destroy(prop[i].write_lib_funcs);
     }
     if (prop[i].tuples) {
       for (j = 0; j < struc->cd.natm; j++) {
@@ -247,6 +253,30 @@ static int *make_atom_type(const struct mod_alignment *aln, int is,
   }
 }
 
+static void add_write_lib_callback(struct mdt_properties *prop, int is,
+                                   mdt_cb_write_lib writelibfunc)
+{
+  g_hash_table_insert(prop[is].write_lib_funcs, writelibfunc,
+                      GINT_TO_POINTER(1));
+}
+
+static void copy_callbacks(gpointer key, gpointer value, gpointer user_data)
+{
+  struct mdt *mdt = (struct mdt *)user_data;
+  mdt_cb_write_lib writelibfunc = (mdt_cb_write_lib)key;
+  mdt_set_write_lib_callback(mdt, writelibfunc);
+}
+
+void mdt_property_get_write_callbacks(const struct mdt_properties *prop,
+                                      const struct mod_alignment *aln,
+                                      struct mdt *mdt)
+{
+  int is;
+  for (is = 0; is < aln->nseq; ++is) {
+    g_hash_table_foreach(prop[is].write_lib_funcs, copy_callbacks, mdt);
+  }
+}
+
 /** Get/calculate the array of atom type bin indices */
 const int *property_iatta(const struct mod_alignment *aln, int is,
                           struct mdt_properties *prop,
@@ -255,6 +285,7 @@ const int *property_iatta(const struct mod_alignment *aln, int is,
 {
   if (!prop[is].iatta) {
     prop[is].iatta = make_atom_type(aln, is, mlib, mlib->atclass[0], libs, err);
+    add_write_lib_callback(prop, is, mdt_atom_class_write);
   }
   return prop[is].iatta;
 }
@@ -267,6 +298,7 @@ const int *property_hb_iatta(const struct mod_alignment *aln, int is,
 {
   if (!prop[is].hb_iatta) {
     prop[is].hb_iatta = make_atom_type(aln, is, mlib, mlib->hbond, libs, err);
+    add_write_lib_callback(prop, is, mdt_hbond_write);
   }
   return prop[is].hb_iatta;
 }
@@ -455,6 +487,17 @@ const struct mdt_bond_list *property_bonds(const struct mod_alignment *aln,
     prop[is].bonds[bondtype] = get_stereo(struc, seq,
                                           mlib->atclass[bondtype + 1],
                                           bondtype, libs);
+    switch(bondtype) {
+      case MDT_BOND_TYPE_BOND:
+        add_write_lib_callback(prop, is, mdt_bond_class_write);
+        break;
+      case MDT_BOND_TYPE_ANGLE:
+        add_write_lib_callback(prop, is, mdt_angle_class_write);
+        break;
+      case MDT_BOND_TYPE_DIHEDRAL:
+        add_write_lib_callback(prop, is, mdt_dihedral_class_write);
+        break;
+    }
   }
   return prop[is].bonds[bondtype];
 }
@@ -556,6 +599,7 @@ const struct mdt_tuple_list *property_tuples(const struct mod_alignment *aln,
     struct mod_sequence *seq = mod_alignment_sequence_get(aln, is);
     struct mod_structure *struc = mod_alignment_structure_get(aln, is);
     prop[is].tuples = tupclass(struc, seq, mlib->tupclass, libs);
+    add_write_lib_callback(prop, is, mdt_tuple_write);
   }
   return prop[is].tuples;
 }
@@ -573,6 +617,7 @@ const int *property_resbond_attyp(const struct mod_alignment *aln, int is,
     /* Populate the atom types (once per sequence) */
     prop[is].resbond_attyp = mdt_residue_bonds_assign_atom_types(struc, seq,
                                                &mlib->residue_bond_list, libs);
+    add_write_lib_callback(prop, is, mdt_bond_class_write);
   }
   return prop[is].resbond_attyp;
 }

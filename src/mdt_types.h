@@ -10,6 +10,7 @@
 #include "mod_mdt_type.h"
 #include "mod_types.h"
 #include "mdt_residue_bonds.h"
+#include "mdt_hdf5.h"
 
 #include <glib.h>
 
@@ -48,6 +49,8 @@ struct mdt {
   gboolean symmetric;
   /** Scan type */
   int scantype;
+  /** Callbacks for writing information used by this table to HDF5 files */
+  GHashTable *write_lib_funcs;
 };
 
 struct mdt_atom_class_list;
@@ -78,9 +81,16 @@ struct mdt_library {
   struct mdt_residue_bond_list residue_bond_list;
 };
 
+typedef gboolean (*mdt_cb_write_lib)(hid_t loc_id,
+                                     const struct mdt_library *mlib);
+
 /** Make a new mdt structure */
 MDTDLLEXPORT
 struct mdt *mdt_new(mod_mdt_bin_type bin_type);
+
+/** Register a callback function to write data used by this table to HDF5 */
+MDTDLLEXPORT
+void mdt_set_write_lib_callback(struct mdt *mdt, mdt_cb_write_lib writelibfunc);
 
 /** Free an mdt structure */
 MDTDLLEXPORT

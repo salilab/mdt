@@ -1233,6 +1233,9 @@ static gboolean mdt_source_scan(struct mdt *mdt,
     }
     break;
   }
+
+  /* Transfer any write callbacks from the properties to the MDT table */
+  mdt_property_get_write_callbacks(source->prop, source->aln, mdt);
   return TRUE;
 }
 

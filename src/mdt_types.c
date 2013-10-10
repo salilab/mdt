@@ -23,13 +23,20 @@ struct mdt *mdt_new(mod_mdt_bin_type bin_type)
   mdt->symmetric = FALSE;
   mdt->scantype = 0;
   mdt->base.bin_type = bin_type;
+  mdt->write_lib_funcs = g_hash_table_new(NULL, NULL);
   return mdt;
+}
+
+void mdt_set_write_lib_callback(struct mdt *mdt, mdt_cb_write_lib writelibfunc)
+{
+  g_hash_table_insert(mdt->write_lib_funcs, writelibfunc, GINT_TO_POINTER(1));
 }
 
 /** Free an mdt structure */
 void mdt_free(struct mdt *mdt)
 {
   mod_mdt_dealloc(&mdt->base);
+  g_hash_table_destroy(mdt->write_lib_funcs);
   g_free(mdt);
 }
 

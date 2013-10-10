@@ -488,7 +488,7 @@ class Table(TableSection):
         """Write an MDT in HDF5 format to `file`.
            Certain library information (such as the mapping from feature
            values to bin indices, and atom or tuple class information)
-           is also written to the file.
+           and information about the last scan is also written to the file.
            """
         _mdt.mdt_write_hdf5(self._modpt, self._mlib._modpt, file)
 

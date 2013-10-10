@@ -1094,6 +1094,34 @@ static const int *prepare_bond_span_range(const int bond_span_range[2],
   return bond_span_range;
 }
 
+/** Store the parameters that were used for this scan in the MDT. */
+static void set_scan_parameters(struct mdt_scan_parameters *param,
+                                const int residue_span_range[4],
+                                const int chain_span_range[4],
+                                const int bond_span_range[2],
+                                gboolean disulfide, gboolean exclude_bonds,
+                                gboolean exclude_angles,
+                                gboolean exclude_dihedrals,
+                                gboolean sympairs, gboolean symtriples)
+{
+  int i;
+  for (i = 0; i < 4; ++i) {
+    param->residue_span_range[i] = residue_span_range[i];
+  }
+  for (i = 0; i < 4; ++i) {
+    param->chain_span_range[i] = chain_span_range[i];
+  }
+  for (i = 0; i < 2; ++i) {
+    param->bond_span_range[i] = bond_span_range[i];
+  }
+  param->disulfide = disulfide;
+  param->exclude_bonds = exclude_bonds;
+  param->exclude_angles = exclude_angles;
+  param->exclude_dihedrals = exclude_dihedrals;
+  param->sympairs = sympairs;
+  param->symtriples = symtriples;
+}
+
 /** Scan all alignment positions or all alignment position pairs in the
     current alignment. If whole protein features only occur in the current
     MDT, then no positions are scanned. */
@@ -1113,6 +1141,10 @@ static gboolean mdt_source_scan(struct mdt *mdt,
                                 GError **err)
 {
   int ip1;
+
+  set_scan_parameters(&mdt->scan_params, rsrang, chain_span_range,
+                      bond_span_range, disulfide, exclude_bonds, exclude_angles,
+                      exclude_dihedrals, source->sympairs, source->symtriples);
 
   if (source->aln->nseq == 0) {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED,
@@ -1325,6 +1357,9 @@ struct mdt_source *mdt_alignment_open(struct mdt *mdt,
         source->acceptd[i] = TRUE;
       }
     }
+    mdt->scan_params.distngh = distngh;
+    mdt->scan_params.surftyp = surftyp;
+    mdt->scan_params.accessibility_type = iacc1typ;
     return source;
   }
 }

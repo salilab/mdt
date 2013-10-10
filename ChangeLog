@@ -13,8 +13,9 @@ HEAD
  - A new feature :class:`~features.Cluster` allows clustering of two features
    into a single one.
  - Certain library information (such as the mapping from feature values to
-   bin indices, and atom or tuple class information) is now written into
-   MDT files in HDF5 format by :meth:`Table.write_hdf5`.
+   bin indices, and atom or tuple class information) and information about
+   the last scan is now written into MDT files in HDF5 format by
+   :meth:`Table.write_hdf5`.
 
 MDT 5.1   09-29-2011
 ====================

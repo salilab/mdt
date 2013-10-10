@@ -31,6 +31,16 @@ typedef enum {
   MDT_DIHEDRAL_CHI5
 } mdt_dihedral_type;
 
+struct mdt_scan_parameters {
+  int residue_span_range[4];
+  int chain_span_range[4];
+  int bond_span_range[2];
+  gboolean disulfide, exclude_bonds, exclude_angles, exclude_dihedrals,
+           sympairs, symtriples;
+  float distngh;
+  int surftyp, accessibility_type;
+};
+
 /** A single MDT */
 struct mdt {
   /** Base Modeller type */
@@ -51,6 +61,8 @@ struct mdt {
   int scantype;
   /** Callbacks for writing information used by this table to HDF5 files */
   GHashTable *write_lib_funcs;
+  /** Parameters used in last scan */
+  struct mdt_scan_parameters scan_params;
 };
 
 struct mdt_atom_class_list;

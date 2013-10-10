@@ -40,4 +40,9 @@ MDTDLLLOCAL
 gboolean mdt_hdf5_write_float_attr(hid_t loc_id, const char *name,
                                    int dim, const float *value);
 
+/** Write an int attribute. Return TRUE on success. */
+MDTDLLLOCAL
+gboolean mdt_hdf5_write_int_attr(hid_t loc_id, const char *name,
+                                 int dim, const int *value);
+
 #endif  /*  __MDT_HDF5_H */

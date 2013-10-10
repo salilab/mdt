@@ -91,6 +91,40 @@ static gboolean write_library_feature(hid_t group_id, const struct mdt *mdt,
   }
 }
 
+/** Write MDT scan information to file. Return TRUE on success. */
+static gboolean write_scan_info(hid_t file_id,
+                                const struct mdt_scan_parameters *params)
+{
+  hid_t group_id;
+  return (group_id = H5Gcreate(file_id, "/scan", H5P_DEFAULT, H5P_DEFAULT,
+                               H5P_DEFAULT)) >= 0
+         && mdt_hdf5_write_int_attr(group_id, "residue_span_range", 4,
+                                    params->residue_span_range)
+         && mdt_hdf5_write_int_attr(group_id, "chain_span_range", 4,
+                                    params->chain_span_range)
+         && mdt_hdf5_write_int_attr(group_id, "bond_span_range", 2,
+                                    params->bond_span_range)
+         && mdt_hdf5_write_int_attr(group_id, "disulfide", 1,
+                                    &params->disulfide)
+         && mdt_hdf5_write_int_attr(group_id, "exclude_bonds", 1,
+                                    &params->exclude_bonds)
+         && mdt_hdf5_write_int_attr(group_id, "exclude_angles", 1,
+                                    &params->exclude_angles)
+         && mdt_hdf5_write_int_attr(group_id, "exclude_dihedrals", 1,
+                                    &params->exclude_dihedrals)
+         && mdt_hdf5_write_int_attr(group_id, "sympairs", 1,
+                                    &params->sympairs)
+         && mdt_hdf5_write_int_attr(group_id, "symtriples", 1,
+                                    &params->symtriples)
+         && mdt_hdf5_write_float_attr(group_id, "distngh", 1,
+                                      &params->distngh)
+         && mdt_hdf5_write_int_attr(group_id, "surftyp", 1,
+                                    &params->surftyp)
+         && mdt_hdf5_write_int_attr(group_id, "accessibility_type", 1,
+                                    &params->accessibility_type)
+         && H5Gclose(group_id) >= 0;
+}
+
 /** Write MDT library information to file. Return TRUE on success. */
 static gboolean write_library_info(hid_t file_id, const struct mdt *mdt,
                                    const struct mdt_library *mlib)
@@ -170,6 +204,7 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
         || H5LTmake_dataset_int(file_id, "/offset", 1, &featdim, offset) < 0
         || H5LTmake_dataset_int(file_id, "/nbins", 1, &featdim, nbins) < 0
         || !write_mdt_feature_names(file_id, name, &featdim)
+        || !write_scan_info(file_id, &mdt->scan_params)
         || !write_library_info(file_id, mdt, mlib)) {
       ret = -1;
     }

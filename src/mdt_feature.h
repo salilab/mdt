@@ -44,7 +44,6 @@ typedef gboolean (*mdt_cb_feature_write)(hid_t loc_id,
                                          const struct mdt_library *mlib);
 
 typedef gboolean (*mdt_cb_feature_write_lib)(hid_t loc_id,
-                                             const struct mdt_feature *feat,
                                              const struct mdt_library *mlib);
 
 typedef int (*mdt_cb_feature_protein)(const struct mod_alignment *aln,

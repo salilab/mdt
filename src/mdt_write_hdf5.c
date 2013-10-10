@@ -51,7 +51,7 @@ static gboolean write_ifeat(hid_t group_id, const struct mdt *mdt,
                         GINT_TO_POINTER(1));
     /* Note that datasets go in the top-level group, not the per-feature
        group */
-    if (!mfeat->writelibfunc(group_id, mfeat, mlib)) {
+    if (!mfeat->writelibfunc(group_id, mlib)) {
       return FALSE;
     }
   }

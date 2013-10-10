@@ -9,7 +9,6 @@
 #include <glib.h>
 #include "mdt_config.h"
 #include "mdt_types.h"
-#include "mdt_feature.h"
 #include "mdt_hdf5.h"
 
 G_BEGIN_DECLS
@@ -68,33 +67,27 @@ gboolean mdt_tuple_read(const gchar *filename, struct mdt_library *mlib,
 
 /** Write tuple class information to an HDF5 file; return TRUE on success. */
 MDTDLLEXPORT
-gboolean mdt_tuple_write(hid_t loc_id, const struct mdt_feature *feat,
-                         const struct mdt_library *mlib);
+gboolean mdt_tuple_write(hid_t loc_id, const struct mdt_library *mlib);
 
 /** Write atom class information to an HDF5 file; return TRUE on success. */
 MDTDLLEXPORT
-gboolean mdt_atom_class_write(hid_t loc_id, const struct mdt_feature *feat,
-                              const struct mdt_library *mlib);
+gboolean mdt_atom_class_write(hid_t loc_id, const struct mdt_library *mlib);
 
 /** Write bond class information to an HDF5 file; return TRUE on success. */
 MDTDLLEXPORT
-gboolean mdt_bond_class_write(hid_t loc_id, const struct mdt_feature *feat,
-                              const struct mdt_library *mlib);
+gboolean mdt_bond_class_write(hid_t loc_id, const struct mdt_library *mlib);
 
 /** Write angle class information to an HDF5 file; return TRUE on success. */
 MDTDLLEXPORT
-gboolean mdt_angle_class_write(hid_t loc_id, const struct mdt_feature *feat,
-                               const struct mdt_library *mlib);
+gboolean mdt_angle_class_write(hid_t loc_id, const struct mdt_library *mlib);
 
 /** Write dihedral class information to an HDF5 file; return TRUE on success. */
 MDTDLLEXPORT
-gboolean mdt_dihedral_class_write(hid_t loc_id, const struct mdt_feature *feat,
-                                  const struct mdt_library *mlib);
+gboolean mdt_dihedral_class_write(hid_t loc_id, const struct mdt_library *mlib);
 
 /** Write hydrogen bond information to an HDF5 file; return TRUE on success. */
 MDTDLLEXPORT
-gboolean mdt_hbond_write(hid_t loc_id, const struct mdt_feature *feat,
-                         const struct mdt_library *mlib);
+gboolean mdt_hbond_write(hid_t loc_id, const struct mdt_library *mlib);
 
 /** Set the number of bins and the bin symbols for atom class features */
 MDTDLLLOCAL

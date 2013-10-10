@@ -51,8 +51,8 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
 {
   struct mdt_properties *prop;
   int i, j;
-  prop = g_malloc(sizeof(struct mdt_properties) * aln->naln);
-  for (i = 0; i < aln->naln; i++) {
+  prop = g_malloc(sizeof(struct mdt_properties) * aln->nseq);
+  for (i = 0; i < aln->nseq; i++) {
     for (j = 0; j < N_MDT_BOND_TYPES; j++) {
       prop[i].bonds[j] = NULL;
     }
@@ -78,7 +78,7 @@ void mdt_properties_free(struct mdt_properties *prop,
                          const struct mod_alignment *aln)
 {
   int i, j;
-  for (i = 0; i < aln->naln; i++) {
+  for (i = 0; i < aln->nseq; i++) {
     struct mod_structure *struc = mod_alignment_structure_get(aln, i);
     for (j = 0; j < N_MDT_BOND_TYPES; j++) {
       if (prop[i].bonds[j]) {

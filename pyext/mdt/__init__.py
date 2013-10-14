@@ -484,13 +484,28 @@ class Table(TableSection):
            Mathematica."""
         _mdt.mdt_write(self._modpt, self._mlib._modpt, file, write_preamble)
 
-    def write_hdf5(self, file):
-        """Write an MDT in HDF5 format to `file`.
-           Certain library information (such as the mapping from feature
-           values to bin indices, and atom or tuple class information)
-           and information about the last scan is also written to the file.
-           """
-        _mdt.mdt_write_hdf5(self._modpt, self._mlib._modpt, file)
+    def write_hdf5(self, file, gzip=False, chunk_size=1024*1024*10):
+        """
+        Write an MDT in HDF5 format to `file`.
+        Certain library information (such as the mapping from feature
+        values to bin indices, and atom or tuple class information)
+        and information about the last scan is also written to the file.
+
+        :Parameters:
+          - `gzip`: If True, compress the table in the HDF5 file with gzip
+            using the default compresion level; if a number from 0-9, compress
+            using that gzip compression level (0=no compression, 9=most);
+            if False (the default) do not compress.
+          - `chunk_size`: when using gzip, the table must be split up into
+            chunks (otherwise it is written contiguously). This parameter
+            controls the approximate number of data points in each chunk.
+        """
+        if gzip is False:
+            gzip = -1
+        elif gzip is True:
+            gzip = 6
+        _mdt.mdt_write_hdf5(self._modpt, self._mlib._modpt, file, gzip,
+                            chunk_size)
 
     def reshape(self, features, offset, shape):
         """

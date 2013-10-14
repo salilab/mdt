@@ -165,6 +165,8 @@ class TableTests(MDTTest):
         m2 = mdt.Table(mlib, file='test.mdt')
         self.assertMDTsEqual(m, m2)
         m.write_hdf5('test.hdf5')
+        m.write_hdf5('test.hdf5', gzip=True)
+        m.write_hdf5('test.hdf5', gzip=4)
         self.assertRaises(mdt.MDTError, m.write_hdf5,
                           '/does/not/exist/foo.hdf5')
         m2 = mdt.Table(mlib, file='test.hdf5')

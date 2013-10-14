@@ -74,7 +74,8 @@ gboolean mdt_write(const struct mdt *mdt, const struct mdt_library *mlib,
 /** Write out an MDT in HDF5 format. Return TRUE on success. */
 MDTDLLEXPORT
 gboolean mdt_write_hdf5(const struct mdt *mdt, const struct mdt_library *mlib,
-                        const char *filename, GError **err);
+                        const char *filename, int gzip, int chunk_size,
+                        GError **err);
 
 /** Read in an MDT in HDF5 format. Return TRUE on success. */
 MDTDLLEXPORT

@@ -490,6 +490,13 @@ class Table(TableSection):
         Certain library information (such as the mapping from feature
         values to bin indices, and atom or tuple class information)
         and information about the last scan is also written to the file.
+        (This information will be missing or incomplete if
+        :meth:`add_alignment` hasn't first been called.)
+        Note that this information is not read back in by :meth:`read_hdf5`;
+        it is intended primarily for other programs that want to reproduce
+        the environment in which the MDT was generated as closely as possible;
+        it is intended primarily for other programs that want to reproduce
+        the environment in which the MDT was generated as closely as possible.
 
         :Parameters:
           - `gzip`: If True, compress the table in the HDF5 file with gzip

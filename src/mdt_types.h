@@ -32,6 +32,8 @@ typedef enum {
 } mdt_dihedral_type;
 
 struct mdt_scan_parameters {
+  /** True only after at least one scan has been performed */
+  gboolean scan_called;
   int residue_span_range[4];
   int chain_span_range[4];
   int bond_span_range[2];

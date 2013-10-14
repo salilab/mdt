@@ -24,6 +24,7 @@ struct mdt *mdt_new(mod_mdt_bin_type bin_type)
   mdt->scantype = 0;
   mdt->base.bin_type = bin_type;
   mdt->write_lib_funcs = g_hash_table_new(NULL, NULL);
+  mdt->scan_params.scan_called = FALSE;
   return mdt;
 }
 

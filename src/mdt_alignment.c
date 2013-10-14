@@ -1105,6 +1105,7 @@ static void set_scan_parameters(struct mdt_scan_parameters *param,
                                 gboolean sympairs, gboolean symtriples)
 {
   int i;
+  param->scan_called = TRUE;
   for (i = 0; i < 4; ++i) {
     param->residue_span_range[i] = residue_span_range[i];
   }

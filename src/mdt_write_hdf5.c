@@ -96,6 +96,10 @@ static gboolean write_scan_info(hid_t file_id,
                                 const struct mdt_scan_parameters *params)
 {
   hid_t group_id;
+  /* Don't do anything if no scan information is available */
+  if (!params->scan_called) {
+    return TRUE;
+  }
   return (group_id = H5Gcreate(file_id, "/scan", H5P_DEFAULT, H5P_DEFAULT,
                                H5P_DEFAULT)) >= 0
          && mdt_hdf5_write_int_attr(group_id, "residue_span_range", 4,

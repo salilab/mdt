@@ -243,6 +243,7 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
                                int chunk_size, GError **err)
 {
   herr_t ret = 0;
+  hsize_t featdim;
   int *ifeat, *offset, *nbins;
   char **name;
   int i;
@@ -261,7 +262,7 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
     name[i] = libfeat->name;
   }
 
-  hsize_t featdim = mdt->base.nfeat;
+  featdim = mdt->base.nfeat;
   if (!write_table(file_id, mdt, gzip, chunk_size)
       || H5LTmake_dataset_int(file_id, "/features", 1, &featdim, ifeat) < 0
       || H5LTmake_dataset_int(file_id, "/offset", 1, &featdim, offset) < 0
@@ -273,8 +274,8 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
   }
 
   if (ret >= 0) {
-    hsize_t featdim = 1;
     char is_pdf = (mdt->pdf ? 1 : 0);
+    featdim = 1;
     if (H5LTmake_dataset_int(file_id, "/n_alignments", 1, &featdim,
                              &mdt->nalns) < 0
         || H5LTmake_dataset_int(file_id, "/n_proteins", 1, &featdim,

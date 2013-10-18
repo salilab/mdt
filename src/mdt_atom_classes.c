@@ -24,7 +24,7 @@ struct mdt_atom_class_list *mdt_atom_class_list_new(int natom)
 static void mdt_atom_type_free(struct mdt_atom_type *attype, int natom)
 {
   int i;
-  for (i = 0; i < natom; i++) {
+  for (i = 0; i <= natom; i++) {
     g_free(attype->names[i]);
   }
   g_free(attype->names);

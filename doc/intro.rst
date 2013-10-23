@@ -119,7 +119,7 @@ methods which are designed to deal with PDFs such as
 :meth:`Table.smooth`, :meth:`Table.super_smooth`,
 :meth:`Table.normalize`, :meth:`Table.offset_min`, :meth:`Table.close`
 expect the dependent features to be the last features. If necessary you can
-reorder the features using :meth:`Table.integrate`.
+reorder the features using :meth:`Table.reshape` or :meth:`Table.integrate`.
 
 .. _binspec:
 

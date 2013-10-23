@@ -45,6 +45,12 @@ static void mod_mdt_copy(const struct mod_mdt *mdtin, struct mod_mdt *mdtout,
   }
 }
 
+static void insert_func(gpointer key, gpointer value, gpointer user_data)
+{
+  GHashTable *t = (GHashTable *)user_data;
+  g_hash_table_insert(t, key, value);
+}
+
 /** Make mdtout a copy of mdtin. */
 void mdt_copy(const struct mdt *mdtin, struct mdt *mdtout,
               mod_mdt_bin_type bin_type)
@@ -57,4 +63,8 @@ void mdt_copy(const struct mdt *mdtin, struct mdt *mdtout,
   mdtout->n_proteins = mdtin->n_proteins;
   mdtout->sample_size = mdtin->sample_size;
   mdtout->pdf = mdtin->pdf;
+  memcpy(&mdtout->scan_params, &mdtin->scan_params,
+         sizeof(struct mdt_scan_parameters));
+  g_hash_table_foreach(mdtin->write_lib_funcs, insert_func,
+                       mdtout->write_lib_funcs);
 }

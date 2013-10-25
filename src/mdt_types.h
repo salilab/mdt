@@ -69,6 +69,19 @@ struct mdt {
 
 struct mdt_atom_class_list;
 
+/** Function to get a property for a structure */
+typedef float * (*mdt_cb_get_property)(gpointer data,
+                                       const struct mod_alignment *aln, int is,
+                                       const struct mdt_library *mlib,
+                                       const struct mod_libraries *libs);
+
+/** Callbacks to populate a user-defined property */
+struct mdt_user_property {
+  mdt_cb_get_property get_property;
+  gpointer data;
+  GDestroyNotify freefunc;
+};
+
 /** Library of feature data used by MDTs */
 struct mdt_library {
   /** Base Modeller type */
@@ -93,6 +106,8 @@ struct mdt_library {
   char *distance_atoms[2];
   /** For each residue, number of bonds separating each pair of atoms */
   struct mdt_residue_bond_list residue_bond_list;
+  /** User-defined atomic properties (struct mdt_user_property) */
+  GArray *atom_properties;
 };
 
 typedef gboolean (*mdt_cb_write_lib)(hid_t loc_id,
@@ -117,6 +132,12 @@ struct mdt_library *mdt_library_new(struct mod_libraries *libs);
 /** Free an mdt_library structure */
 MDTDLLEXPORT
 void mdt_library_free(struct mdt_library *mlib);
+
+/** Register a user-defined atom property. Return the ID of that property. */
+MDTDLLEXPORT
+int mdt_library_add_atom_property(struct mdt_library *mlib,
+                                  mdt_cb_get_property get_property,
+                                  gpointer data, GDestroyNotify freefunc);
 
 G_END_DECLS
 

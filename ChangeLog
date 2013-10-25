@@ -12,6 +12,9 @@ HEAD
    potential file given a suitable input table.
  - A new feature :class:`~features.Cluster` allows clustering of two features
    into a single one.
+ - A new feature :class:`~features.AtomTable` takes as input a table of
+   precalculated per-atom values, and can be used to implement user-defined
+   features or to use externally-calculated properties.
  - To save space, the data for the MDT table itself can be compressed when
    writing to an HDF5 file with :meth:`Table.write_hdf5`.
  - Certain library information (such as the mapping from feature values to

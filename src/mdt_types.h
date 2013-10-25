@@ -69,7 +69,8 @@ struct mdt {
 
 struct mdt_atom_class_list;
 
-/** Function to get a property for a structure */
+/** Function to get a property for a structure; it should return a malloc'd
+    float array, which MDT will free when it is no longer needed. */
 typedef float * (*mdt_cb_get_property)(gpointer data,
                                        const struct mod_alignment *aln, int is,
                                        const struct mdt_library *mlib,
@@ -106,8 +107,8 @@ struct mdt_library {
   char *distance_atoms[2];
   /** For each residue, number of bonds separating each pair of atoms */
   struct mdt_residue_bond_list residue_bond_list;
-  /** User-defined atomic properties (struct mdt_user_property) */
-  GArray *atom_properties;
+  /** User-defined properties (struct mdt_user_property) */
+  GArray *user_properties;
 };
 
 typedef gboolean (*mdt_cb_write_lib)(hid_t loc_id,
@@ -133,9 +134,9 @@ struct mdt_library *mdt_library_new(struct mod_libraries *libs);
 MDTDLLEXPORT
 void mdt_library_free(struct mdt_library *mlib);
 
-/** Register a user-defined atom property. Return the ID of that property. */
+/** Register a user-defined property. Return the ID of that property. */
 MDTDLLEXPORT
-int mdt_library_add_atom_property(struct mdt_library *mlib,
+int mdt_library_add_user_property(struct mdt_library *mlib,
                                   mdt_cb_get_property get_property,
                                   gpointer data, GDestroyNotify freefunc);
 

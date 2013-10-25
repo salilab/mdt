@@ -65,7 +65,7 @@ struct mdt_library *mdt_library_new(struct mod_libraries *libs)
   mlib->distance_atoms[0] = g_strdup("");
   mlib->distance_atoms[1] = g_strdup("");
   mdt_residue_bond_list_init(&mlib->residue_bond_list);
-  mlib->atom_properties = g_array_new(FALSE, FALSE,
+  mlib->user_properties = g_array_new(FALSE, FALSE,
                                       sizeof(struct mdt_user_property));
   return mlib;
 }
@@ -91,11 +91,18 @@ void mdt_library_free(struct mdt_library *mlib)
   g_free(mlib->distance_atoms[0]);
   g_free(mlib->distance_atoms[1]);
   mdt_residue_bond_list_free(&mlib->residue_bond_list);
-  g_array_free(mlib->atom_properties, TRUE);
+  for (i = 0; i < mlib->user_properties->len; ++i) {
+    struct mdt_user_property *p;
+    p = &g_array_index(mlib->user_properties, struct mdt_user_property, i);
+    if (p->freefunc) {
+      p->freefunc(p->data);
+    }
+  }
+  g_array_free(mlib->user_properties, TRUE);
   g_free(mlib);
 }
 
-int mdt_library_add_atom_property(struct mdt_library *mlib,
+int mdt_library_add_user_property(struct mdt_library *mlib,
                                   mdt_cb_get_property get_property,
                                   gpointer data, GDestroyNotify freefunc)
 {
@@ -103,6 +110,6 @@ int mdt_library_add_atom_property(struct mdt_library *mlib,
   p.get_property = get_property;
   p.data = data;
   p.freefunc = freefunc;
-  g_array_append_val(mlib->atom_properties, p);
-  return mlib->atom_properties->len - 1;
+  g_array_append_val(mlib->user_properties, p);
+  return mlib->user_properties->len - 1;
 }

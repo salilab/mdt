@@ -1341,7 +1341,7 @@ struct mdt_source *mdt_alignment_open(struct mdt *mdt,
     struct mdt_source *source = g_malloc(sizeof(struct mdt_source));
     source->nseqacc = nseqacc;
     source->aln = aln;
-    source->prop = mdt_properties_new(aln);
+    source->prop = mdt_properties_new(aln, mlib);
     source->acceptd = g_malloc(sizeof(gboolean) * aln->nseq);
     source->sympairs = sympairs;
     source->symtriples = symtriples;

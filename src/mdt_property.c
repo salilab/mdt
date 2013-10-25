@@ -44,10 +44,15 @@ struct mdt_properties {
   int *resbond_attyp;
   /** Residue indices of S-S bonds */
   struct mdt_disulfide_list *disulfides;
+  /** Number of user-defined properties */
+  int n_user_properties;
+  /** User-defined properties */
+  float **user_properties;
 };
 
 /** Make a new mdt_properties structure */
-struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
+struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln,
+                                          const struct mdt_library *mlib)
 {
   struct mdt_properties *prop;
   int i, j;
@@ -69,6 +74,9 @@ struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln)
     prop[i].dstind2 = NULL;
     prop[i].resbond_attyp = NULL;
     prop[i].disulfides = NULL;
+    prop[i].n_user_properties = mlib->user_properties->len;
+    prop[i].user_properties = g_malloc0(sizeof(float *)
+                                        * prop[i].n_user_properties);
   }
   return prop;
 }
@@ -110,6 +118,10 @@ void mdt_properties_free(struct mdt_properties *prop,
     g_free(prop[i].dstind2);
     g_free(prop[i].resbond_attyp);
     g_free(prop[i].disulfides);
+    for (j = 0; j < prop[i].n_user_properties; ++j) {
+      g_free(prop[i].user_properties[j]);
+    }
+    g_free(prop[i].user_properties);
   }
   g_free(prop);
 }
@@ -663,4 +675,19 @@ const struct mdt_tuple *property_one_tuple(const struct mod_alignment *aln,
   trp = property_tuples(aln, is, prop, mlib, libs);
 
   return &trp[ia1].tuples[ibnd1];
+}
+
+const float *property_user(const struct mod_alignment *aln, int is,
+                           struct mdt_properties *prop,
+                           const struct mdt_library *mlib,
+                           const struct mod_libraries *libs, int user_index)
+{
+  if (!prop[is].user_properties[user_index]) {
+    struct mdt_user_property *p;
+    p = &g_array_index(mlib->user_properties, struct mdt_user_property,
+                       user_index);
+    prop[is].user_properties[user_index] = p->get_property(p->data, aln, is,
+                                                           mlib, libs);
+  }
+  return prop[is].user_properties[user_index];
 }

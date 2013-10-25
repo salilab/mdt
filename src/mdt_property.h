@@ -37,7 +37,8 @@ struct mdt_properties;
 
 /** Make a new mdt_properties structure */
 MDTDLLLOCAL
-struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln);
+struct mdt_properties *mdt_properties_new(const struct mod_alignment *aln,
+                                          const struct mdt_library *mlib);
 
 /** Free an mdt_properties structure */
 MDTDLLLOCAL
@@ -155,6 +156,13 @@ const struct mdt_disulfide_list *property_disulfides(
                                struct mdt_properties *prop,
                                const struct mdt_library *mlib,
                                const struct mod_libraries *libs);
+
+/** Get/calculate a user property */
+MDTDLLLOCAL
+const float *property_user(const struct mod_alignment *aln, int is,
+                           struct mdt_properties *prop,
+                           const struct mdt_library *mlib,
+                           const struct mod_libraries *libs, int user_index);
 
 /** Copy any write callbacks to an MDT table */
 MDTDLLLOCAL

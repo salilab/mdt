@@ -51,6 +51,13 @@ int mdt_feature_fractional_atom_accessibility(struct mdt_library *mlib,
 MDTDLLEXPORT
 int mdt_feature_atom_type(struct mdt_library *mlib, gboolean pos2);
 
+/** Add a table atom feature. */
+MDTDLLEXPORT
+int mdt_feature_atom_table(struct mdt_library *mlib, gboolean pos2,
+                           const char *table_name,
+                           mdt_cb_get_property get_property,
+                           gpointer data, GDestroyNotify freefunc);
+
 /** Add an atom-atom distance feature. */
 MDTDLLEXPORT
 int mdt_feature_atom_distance(struct mdt_library *mlib);

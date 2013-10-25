@@ -10,7 +10,7 @@ files = ['xray.c', 'radius_gyration.c', 'residue_accessibility.c',
          'mainchain_conformation.c', 'residue_group.c',
          'neighborhood_difference.c', 'sequence_identity.c', 'sidechain_biso.c',
          'alpha_content.c', 'gap_distance.c', 'atom_z_coordinate.c',
-         'atom_bond_separation.c', 'cluster.c']
+         'atom_bond_separation.c', 'cluster.c', 'atom_table.c']
 
 files = [File(x) for x in files]
 Return('files')

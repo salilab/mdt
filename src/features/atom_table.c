@@ -32,7 +32,7 @@ int mdt_feature_atom_table(struct mdt_library *mlib, gboolean pos2,
 
   name = g_strdup_printf("Table of atom %s", table_name);
   ifeat = mdt_feature_atom_add(mlib, name, MOD_MDTC_NONE,
-                             pos2, getbin, GINT_TO_POINTER(iprop), NULL);
+                               pos2, getbin, GINT_TO_POINTER(iprop), NULL);
   g_free(name);
   return ifeat;
 }

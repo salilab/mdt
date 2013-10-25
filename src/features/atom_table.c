@@ -17,8 +17,12 @@ static int getbin(const struct mod_alignment *aln, int protein, int atom,
                   const struct mod_libraries *libs, GError **err)
 {
   const float *userprop = property_user(aln, protein, prop, mlib, libs,
-                                        GPOINTER_TO_INT(feat->data));
-  return feat_to_bin(userprop[atom], feat);
+                                        GPOINTER_TO_INT(feat->data), err);
+  if (!userprop) {
+    return -1;
+  } else {
+    return feat_to_bin(userprop[atom], feat);
+  }
 }
 
 int mdt_feature_atom_table(struct mdt_library *mlib, gboolean pos2,

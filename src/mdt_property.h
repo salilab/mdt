@@ -157,12 +157,13 @@ const struct mdt_disulfide_list *property_disulfides(
                                const struct mdt_library *mlib,
                                const struct mod_libraries *libs);
 
-/** Get/calculate a user property */
+/** Get/calculate a user property. Return NULL on error. */
 MDTDLLLOCAL
 const float *property_user(const struct mod_alignment *aln, int is,
                            struct mdt_properties *prop,
                            const struct mdt_library *mlib,
-                           const struct mod_libraries *libs, int user_index);
+                           const struct mod_libraries *libs, int user_index,
+                           GError **err);
 
 /** Copy any write callbacks to an MDT table */
 MDTDLLLOCAL

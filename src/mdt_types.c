@@ -42,13 +42,15 @@ void mdt_free(struct mdt *mdt)
 }
 
 /** Make a new mdt_library structure */
-struct mdt_library *mdt_library_new(struct mod_libraries *libs)
+struct mdt_library *mdt_library_new(struct mod_libraries *libs,
+                                    gpointer scriptobj)
 {
   int i;
   struct mdt_library *mlib;
   mlib = g_malloc(sizeof(struct mdt_library));
   mod_mdt_library_init(&mlib->base);
   mlib->libs = libs;
+  mlib->scriptobj = scriptobj;
   mlib->hbond_cutoff = 3.5;
   mlib->special_atoms = FALSE;
   mlib->feature_added = FALSE;

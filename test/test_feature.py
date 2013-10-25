@@ -24,6 +24,43 @@ class FeatureTests(MDTTest):
         m.build_sequence('C')
         return m
 
+    def test_feature_atom_table(self):
+        """Test AtomTable feature"""
+        class UniqueError(Exception):
+            pass
+        def build_mdt(mlib, func, aln):
+            bins = mdt.uniform_bins(5, 0, 1.0)
+            f = mdt.features.AtomTable(mlib, bins, "test data", func)
+            m = mdt.Table(mlib, features=f)
+            m.add_alignment(aln)
+            return m
+        def ex_func(*args):
+            raise UniqueError()
+        def bad_type_func(*args):
+            return 42
+        def bad_val_func(*args):
+            return ['foo']*7
+        def bad_len_func(*args):
+            return [42]*3
+        def func(aln, struc, mlib, libs):
+            return [a.x for a in struc.atoms]
+        mlib = self.get_mdt_library()
+        env = self.get_environ()
+        mdl = self.build_test_model()
+        aln = modeller.alignment(env)
+        aln.append_model(mdl, atom_files='test', align_codes='test')
+
+        # Python exceptions raised in the function should be propagated
+        self.assertRaises(UniqueError, build_mdt, mlib, ex_func, aln)
+        # Catch return values that aren't sequences
+        self.assertRaises(TypeError, build_mdt, mlib, bad_type_func, aln)
+        # Catch return values that aren't sequences of floats
+        self.assertRaises(ValueError, build_mdt, mlib, bad_val_func, aln)
+        # Catch return values that are the wrong length
+        self.assertRaises(ValueError, build_mdt, mlib, bad_len_func, aln)
+        t = build_mdt(mlib, func, aln)
+        self.assertEqual([b for b in t], [2.0, 2.0, 1.0, 2.0, 0.0, 0.0])
+
     def test_feature_gap_distance(self):
         """Check distance from a gap features"""
         mlib = self.get_mdt_library()

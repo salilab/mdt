@@ -70,11 +70,13 @@ struct mdt {
 struct mdt_atom_class_list;
 
 /** Function to get a property for a structure; it should return a malloc'd
-    float array, which MDT will free when it is no longer needed. */
+    float array, which MDT will free when it is no longer needed. On error,
+    it should return NULL. */
 typedef float * (*mdt_cb_get_property)(gpointer data,
                                        const struct mod_alignment *aln, int is,
                                        const struct mdt_library *mlib,
-                                       const struct mod_libraries *libs);
+                                       const struct mod_libraries *libs,
+                                       GError **err);
 
 /** Callbacks to populate a user-defined property */
 struct mdt_user_property {
@@ -89,6 +91,8 @@ struct mdt_library {
   struct mod_mdt_library base;
   /** Modeller libraries */
   struct mod_libraries *libs;
+  /** Scripting language object */
+  gpointer scriptobj;
   /** Whether to treat disulfides and termini specially for atom types */
   gboolean special_atoms;
   /** Cutoff distance for hydrogen bonds */
@@ -128,7 +132,8 @@ void mdt_free(struct mdt *mdt);
 
 /** Make a new mdt_library structure */
 MDTDLLEXPORT
-struct mdt_library *mdt_library_new(struct mod_libraries *libs);
+struct mdt_library *mdt_library_new(struct mod_libraries *libs,
+                                    gpointer scriptobj);
 
 /** Free an mdt_library structure */
 MDTDLLEXPORT

@@ -23,7 +23,10 @@ static void handle_error(GError *err)
       break;
     }
   }
-  PyErr_SetString(py_err_type, err->message);
+  /* Don't overwrite a Python exception already raised (e.g. by a callback) */
+  if (!PyErr_Occurred()) {
+    PyErr_SetString(py_err_type, err->message);
+  }
   g_error_free(err);
 }
 #endif /* SWIGPYTHON */

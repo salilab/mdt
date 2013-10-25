@@ -504,8 +504,14 @@ class HydrogenBondCharge(Atom):
 class AtomTable(Atom):
     """A tabulated atom feature. The feature is simply a table of N
        floating-point numbers, where N is the number of atoms in the system.
-       This table is provided by a Python function, so can be used to pass in
-       features from other software."""
+       This table is provided by a Python function, so can be used to implement
+       user-defined features or to pass in features from other software.
+       A simple example to use the x coordinate as a feature::
+
+          def func(aln, struc, mlib, libs):
+              return [a.x for a in struc.atoms]
+          f = mdt.features.AtomTable(mlib, bins, "x coordinate", func)
+    """
     _setup = _mdt.mdt_feature_atom_table
 
     class _SizeCheck(object):
@@ -513,15 +519,17 @@ class AtomTable(Atom):
         def __init__(self, func):
             self.func = func
         def __call__(self, aln, iseq, mlib, libs):
-            prop = self.func(aln, iseq, mlib, libs)
+            prop = self.func(aln, aln[iseq], mlib, libs)
             if len(prop) != len(aln[iseq].atoms):
-                raise ValueError("Should return a sequence of length %d" \
+                raise ValueError("Should return a sequence of length %d "
+                                 "(number of atoms in the structure)" \
                                  % len(aln[iseq].atoms))
+            return prop
 
     def __init__(self, mlib, bins, table_name, func, pos2=False):
         """
         :Parameters:
-          - `table_name`: the name of the external feature
+          - `table_name`: the name of the feature that is tabulated
           - `func`: A Python function or other callable, which is expected
                     to return a sequence of floats, one per atom
 
@@ -529,7 +537,7 @@ class AtomTable(Atom):
         """
         _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, pos2, table_name,
-                                  _SizeCheck(func))
+                                  self._SizeCheck(func))
         self._create_bins(mlib, bins)
 
 class AtomDistance(AtomPair):

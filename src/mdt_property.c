@@ -680,14 +680,15 @@ const struct mdt_tuple *property_one_tuple(const struct mod_alignment *aln,
 const float *property_user(const struct mod_alignment *aln, int is,
                            struct mdt_properties *prop,
                            const struct mdt_library *mlib,
-                           const struct mod_libraries *libs, int user_index)
+                           const struct mod_libraries *libs, int user_index,
+                           GError **err)
 {
   if (!prop[is].user_properties[user_index]) {
     struct mdt_user_property *p;
     p = &g_array_index(mlib->user_properties, struct mdt_user_property,
                        user_index);
     prop[is].user_properties[user_index] = p->get_property(p->data, aln, is,
-                                                           mlib, libs);
+                                                           mlib, libs, err);
   }
   return prop[is].user_properties[user_index];
 }

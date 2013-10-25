@@ -13,10 +13,16 @@
 #define MDTDLLEXPORT
 #define MDTDLLLOCAL
 
+/* Pass scripting language objects to new_foo() routines as opaque pointers */
+%typemap(in) gpointer scriptobj {
+  $1 = $input;
+}
+
 %include "fortran-pointers.i"
 %include "mdt_exceptions.i"
 %include "mdt_lists.i"
 %include "mdt_glib.i"
+%include "mdt_callbacks.i"
 
 %apply double *OUTPUT { double * };
 %apply (const float VARLIST[], int N_VARLIST) { (const float dx_dy[], int n_dx_dy) };

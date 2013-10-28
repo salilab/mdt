@@ -23,6 +23,9 @@ static float *python_cb_get_property(gpointer data,
     int reslen;
     float *res = to_list_float(result, 0, &reslen, "result");
     Py_DECREF(result);
+    if (!res) {
+      g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, "Python error");
+    }
     return res;
   } else {
     g_set_error(err, MDT_ERROR, MDT_ERROR_FAILED, "Python error");

@@ -686,19 +686,17 @@ static gboolean check_bond_separation(int atom, int atomp, int res, int resp,
                           const int *resbond_attyp,
                           const struct mdt_disulfide_list *disulfides)
 {
+  int sep;
   /* Atoms in separate chains are never connected */
   if (chain != chainp) {
-    return FALSE;
+    sep = -1;
   } else {
-    int sep = mdt_get_bond_separation_same_chain(atom, atomp, res, resp, seq,
+    sep = mdt_get_bond_separation_same_chain(atom, atomp, res, resp, seq,
                                    resbond_attyp, &mlib->residue_bond_list,
                                    disulfides);
-    if (sep == -1) {
-      return FALSE;
-    } else {
-      return (sep >= bond_span_range[0] && sep <= bond_span_range[1]);
-    }
   }
+  return (sep == -1 && bond_span_range[1] < 0)
+         || (sep >= bond_span_range[0] && sep <= bond_span_range[1]);
 }
 
 /** Return TRUE iff the given atom pair is excluded */

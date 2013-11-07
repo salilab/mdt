@@ -869,6 +869,11 @@ class Table(TableSection):
             atom, while (0, 9999) will only exclude pairs of atoms that have
             no path of bonds between them (e.g. atoms in different chains or
             when at least one of the atoms is not involved in any bonds).
+            As a special case, if the maximum span is negative, no limit is
+            enforced. For example, (2, 99999) will include all atoms that have
+            a path of bonds between them except directly bonded pairs (and
+            thus exclude pairs in different chains) while (2, -1) will also
+            include inter-chain interactions.
           - `disulfide`: if True, then the `bond_span_range` considers
             disulfide bonds (defined as any pair of SG atoms in CYS residues
             less than 2.5 angstroms apart) when calculating the bond separation

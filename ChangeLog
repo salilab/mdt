@@ -21,6 +21,9 @@ HEAD
    bin indices, and atom or tuple class information) and information about
    the last scan is now written into MDT files in HDF5 format by
    :meth:`Table.write_hdf5`.
+ - The maximum value of bond_span_range can now be -1, to allow atom pairs
+   that have no path of bonds between them. This is helpful to include
+   inter-chain interactions, for example.
 
 MDT 5.1   09-29-2011
 ====================

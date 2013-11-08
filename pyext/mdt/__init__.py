@@ -503,14 +503,35 @@ class Table(TableSection):
             if False (the default) do not compress.
           - `chunk_size`: when using gzip, the table must be split up into
             chunks (otherwise it is written contiguously). This parameter
-            controls the approximate number of data points in each chunk.
+            can either be a list (the same length as the number of features)
+            defining the size of each chunk, or it can be the approximate
+            number of data points in each chunk, in which case the dimensions
+            of the chunk are chosen automatically.
         """
         if gzip is False:
             gzip = -1
         elif gzip is True:
             gzip = 6
+        if gzip >= 0 and not hasattr(chunk_size, '__len__'):
+            chunk_size = self._guess_chunk_size(self.shape, chunk_size)
         _mdt.mdt_write_hdf5(self._modpt, self._mlib._modpt, file, gzip,
                             chunk_size)
+
+    def _guess_chunk_size(self, shape, chunk_size):
+        """Determine a suitable chunk size given the total number of points"""
+        import math
+        total_size = reduce(lambda x,y: x*y, shape)
+        div = math.pow(float(total_size) / float(chunk_size),
+                       1. / float(len(shape)))
+        ret = []
+        for d in shape:
+            cd = int(float(d) / div)
+            if cd < 1:
+                cd = 1
+            elif cd > d:
+                cd = d
+            ret.append(cd)
+        return ret
 
     def reshape(self, features, offset, shape):
         """

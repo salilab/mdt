@@ -167,6 +167,9 @@ class TableTests(MDTTest):
         m.write_hdf5('test.hdf5')
         m.write_hdf5('test.hdf5', gzip=True)
         m.write_hdf5('test.hdf5', gzip=4)
+        self.assertRaises(ValueError, m.write_hdf5, 'test.hdf5',
+                          gzip=True, chunk_size=(2,3,4))
+        m.write_hdf5('test.hdf5', gzip=9, chunk_size=(4,4))
         self.assertRaises(mdt.MDTError, m.write_hdf5,
                           '/does/not/exist/foo.hdf5')
         m2 = mdt.Table(mlib, file='test.hdf5')
@@ -198,6 +201,14 @@ class TableTests(MDTTest):
             self.assertRaises(mdt.MDTError, mdt.Table, mlib, file=f)
         os.unlink('test.mdt')
         os.unlink('test.hdf5')
+
+    def test_guess_chunk_size(self):
+        """Test guess_chunk_size method"""
+        mlib = self.get_mdt_library()
+        restyp = mdt.features.ResidueType(mlib)
+        m = self.get_test_mdt(mlib, features=restyp)
+        self.assertEqual(m._guess_chunk_size([12,6,6,12,306,306], 1024*1024*10),
+                         [6,3,3,6,161,161])
 
     def test_bin_info(self):
         """Test query of bin symbol and range"""

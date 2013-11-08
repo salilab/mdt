@@ -173,30 +173,9 @@ static gboolean write_mdt_feature_names(hid_t file_id, char **name,
   }
 }
 
-/** Determine the dimensions of a single chunk. */
-static void get_chunk_dims(const hsize_t *dims, hsize_t *chunk_dims,
-                           int ndims, int chunk_size)
-{
-  int i;
-  hsize_t total_size;
-  double div;
-
-  /* First guess: assume dimensions are similar */
-  total_size = 1;
-  for (i = 0; i < ndims; i++) {
-    total_size *= dims[i];
-  }
-  div = pow((double)total_size / (double)chunk_size, 1. / (double)ndims);
-
-  for (i = 0; i < ndims; i++) {
-    chunk_dims[i] = (int)(dims[i] / div);
-    chunk_dims[i] = CLAMP(chunk_dims[i], 1, dims[i]);
-  }
-}
-
 /** Write the MDT table itself to file. Return TRUE on success. */
 static gboolean write_table(hid_t file_id, const struct mdt *mdt, int gzip,
-                            int chunk_size)
+                            const int chunk_size[], int n_chunk_size)
 {
   gboolean ret;
   hsize_t *dims, *chunk_dims = NULL;
@@ -211,10 +190,12 @@ static gboolean write_table(hid_t file_id, const struct mdt *mdt, int gzip,
 
   ret = TRUE;
   if (gzip >= 0) {
-    chunk_dims = g_malloc(mdt->base.nfeat * sizeof(hsize_t));
-    get_chunk_dims(dims, chunk_dims, mdt->base.nfeat, chunk_size);
+    chunk_dims = g_malloc(n_chunk_size * sizeof(hsize_t));
+    for (i = 0; i < n_chunk_size; ++i) {
+      chunk_dims[i] = chunk_size[i];
+    }
     ret = (prop_id = H5Pcreate(H5P_DATASET_CREATE)) >= 0
-          && H5Pset_chunk(prop_id, mdt->base.nfeat, chunk_dims) >= 0
+          && H5Pset_chunk(prop_id, n_chunk_size, chunk_dims) >= 0
           && H5Pset_deflate(prop_id, gzip) >= 0;
   } else {
     prop_id = H5P_DEFAULT;
@@ -240,7 +221,8 @@ static gboolean write_table(hid_t file_id, const struct mdt *mdt, int gzip,
 /** Write MDT data to an HDF5 file. Return TRUE on success. */
 static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
                                const struct mdt_library *mlib, int gzip,
-                               int chunk_size, GError **err)
+                               const int chunk_size[], int n_chunk_size,
+                               GError **err)
 {
   herr_t ret = 0;
   hsize_t featdim;
@@ -263,7 +245,7 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
   }
 
   featdim = mdt->base.nfeat;
-  if (!write_table(file_id, mdt, gzip, chunk_size)
+  if (!write_table(file_id, mdt, gzip, chunk_size, n_chunk_size)
       || H5LTmake_dataset_int(file_id, "/features", 1, &featdim, ifeat) < 0
       || H5LTmake_dataset_int(file_id, "/offset", 1, &featdim, offset) < 0
       || H5LTmake_dataset_int(file_id, "/nbins", 1, &featdim, nbins) < 0
@@ -303,15 +285,23 @@ static gboolean write_mdt_data(hid_t file_id, const struct mdt *mdt,
 
 /** Write out an MDT in HDF5 format. Return TRUE on success. */
 gboolean mdt_write_hdf5(const struct mdt *mdt, const struct mdt_library *mlib,
-                        const char *filename, int gzip, int chunk_size,
-                        GError **err)
+                        const char *filename, int gzip, const int chunk_size[],
+                        int n_chunk_size, GError **err)
 {
   hid_t file_id;
   struct mod_file file_info;
 
+  if (gzip >= 0 && n_chunk_size != mdt->base.nfeat) {
+    g_set_error(err, MDT_ERROR, MDT_ERROR_VALUE,
+                "Chunk size rank (%d) does not match that of the table (%d)",
+                n_chunk_size, mdt->base.nfeat);
+    return FALSE;
+  }
+
   file_id = mdt_hdf_create(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT,
                            &file_info, err);
-  if (file_id < 0 || !write_mdt_data(file_id, mdt, mlib, gzip, chunk_size, err)
+  if (file_id < 0 || !write_mdt_data(file_id, mdt, mlib, gzip,
+                                     chunk_size, n_chunk_size, err)
       || !mdt_hdf_close(file_id, &file_info, err)) {
     return FALSE;
   } else {

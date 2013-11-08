@@ -30,6 +30,7 @@
 %apply (const int VARLIST[], int N_VARLIST) { (const int offset[], int n_offset) };
 %apply (const int VARLIST[], int N_VARLIST) { (const int shape[], int n_shape) };
 %apply (const int VARLIST[], int N_VARLIST) { (const int indices[], int n_indices) };
+%apply (const int VARLIST[], int N_VARLIST) { (const int chunk_size[], int n_chunk_size) };
 
 %include "../src/mdt.h"
 %include "../src/mdt_alignment.h"

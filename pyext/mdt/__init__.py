@@ -494,8 +494,6 @@ class Table(TableSection):
         :meth:`add_alignment` hasn't first been called.)
         Note that this information is not read back in by :meth:`read_hdf5`;
         it is intended primarily for other programs that want to reproduce
-        the environment in which the MDT was generated as closely as possible;
-        it is intended primarily for other programs that want to reproduce
         the environment in which the MDT was generated as closely as possible.
 
         :Parameters:

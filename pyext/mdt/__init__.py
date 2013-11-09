@@ -520,7 +520,9 @@ class Table(TableSection):
     def _guess_chunk_size(self, shape, chunk_size):
         """Determine a suitable chunk size given the total number of points"""
         import math
-        total_size = reduce(lambda x,y: x*y, shape)
+        total_size = 1
+        for d in shape:
+            total_size *= d
         div = math.pow(float(total_size) / float(chunk_size),
                        1. / float(len(shape)))
         ret = []

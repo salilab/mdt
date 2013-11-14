@@ -695,8 +695,11 @@ static gboolean check_bond_separation(int atom, int atomp, int res, int resp,
                                    resbond_attyp, &mlib->residue_bond_list,
                                    disulfides);
   }
-  return (sep == -1 && bond_span_range[1] < 0)
-         || (sep >= bond_span_range[0] && sep <= bond_span_range[1]);
+  if (bond_span_range[1] < 0) {
+    return sep == -1 || sep >= bond_span_range[0];
+  } else {
+    return sep >= bond_span_range[0] && sep <= bond_span_range[1];
+  }
 }
 
 /** Return TRUE iff the given atom pair is excluded */

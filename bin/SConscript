@@ -19,7 +19,7 @@ def builder_script_file(target, source, env):
 
 env.Append(BUILDERS = {'ScriptFile': Builder(action=builder_script_file)})
 
-if not env['wine'] and env['PLATFORM'] == 'win32':
+if not env['wine'] and not env['wine64'] and env['PLATFORM'] == 'win32':
     bin = File('mdtpy.bat')
 else:
     bin = env.ScriptFile("mdtpy.sh",

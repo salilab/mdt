@@ -37,8 +37,17 @@ class WineEnvironment(Environment):
     """Environment to build Windows binaries under Linux, by running the
        MSVC compiler (cl) and linker (link) through wine, using the w32cc
        and w32link shell scripts"""
-    def __init__(self, platform='win32', CC='w32cc', LINK='w32link', path=None,
-                 **kw):
+    def __init__(self, x64=False, platform='win32', CC=None, LINK=None,
+                 path=None, **kw):
+        self.x64 = x64
+        if x64:
+            bitprefix = 'w64'
+        else:
+            bitprefix = 'w32'
+        if CC is None:
+            CC = '%scc' % bitprefix
+        if LINK is None:
+            LINK = '%slink' % bitprefix
         if sys.platform != 'linux2':
             print "ERROR: Wine is supported only on Linux systems"
             Exit(1)
@@ -52,26 +61,40 @@ class WineEnvironment(Environment):
         self['PSPAWN'] = posix_env['PSPAWN']
         self['SPAWN'] = posix_env['SPAWN']
         self['SHELL'] = posix_env['SHELL']
-        self['PYTHON'] = self.get('python', 'w32python')
+        if x64:
+            self['PYTHON'] = self.get('python', 'w64python')
+        else:
+            self['PYTHON'] = self.get('python', 'w32python')
         self['PATHSEP'] = ';'
         # Use / rather than \ path separator:
-        self['LINKCOM'] = self['LINKCOM'].replace('.windows', '')
+        try:
+            self['LINKCOM'] = self['LINKCOM'].replace('.windows', '')
+        except AttributeError:
+            self['LINKCOM'] = '$LINK $LINKFLAGS /OUT:$TARGET $_LIBDIRFLAGS $_LIBFLAGS $_PDB $SOURCES'
 
     def _fix_scons_msvc_detect(self):
         """Ensure that MSVC auto-detection finds tools on Wine builds"""
-        def _wine_read_reg(value):
+        def _wine_read_reg32(value):
             return '/usr/lib/w32comp/Program Files/' + \
                    'Microsoft Visual Studio 10.0'
+        def _wine_read_reg64(value):
+            return '/usr/lib/w64comp/Program Files/' + \
+                   'Microsoft Visual Studio 11.0'
         try:
             import SCons.Tool.MSCommon.common
         except ImportError:
             return # Older versions of scons don't have this module
-        SCons.Tool.MSCommon.common.read_reg = _wine_read_reg
+        if self.x64:
+            SCons.Tool.MSCommon.common.read_reg = _wine_read_reg64
+        else:
+            SCons.Tool.MSCommon.common.read_reg = _wine_read_reg32
 
 def _get_python_include(env):
     """Get the directory containing Python.h"""
     if env['pythoninclude']:
         return env['pythoninclude']
+    elif env['wine64']:
+        return '/usr/lib/w64comp/w64python/2.6/include/'
     elif env['wine']:
         return '/usr/lib/w32comp/w32python/2.6/include/'
     else:
@@ -159,7 +182,7 @@ def parse_modeller_dirs(context, modeller, exetype):
     include = ['%s/src/include' % modeller,
                '%s/src/include/%s' % (modeller, exetype)]
     platform = context.env['PLATFORM']
-    if exetype == 'i386-w32':
+    if exetype in ('i386-w32', 'x86_64-w64'):
         libpath = ['%s/src/main' % modeller]
         if not os.path.exists(libpath[0]):
             libpath = ['%s/bin' % modeller]
@@ -277,8 +300,12 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     if env.get('path') is not None:
         path = env['path'] + os.path.pathsep + path
 
-    if env['wine']:
-        env = WineEnvironment(variables=variables, path=path, *args, **kw)
+    if env['wine64']:
+        env = WineEnvironment(x64=True,
+                              variables=variables, path=path, *args, **kw)
+    elif env['wine']:
+        env = WineEnvironment(x64=False,
+                              variables=variables, path=path, *args, **kw)
     else:
         env = Environment(variables=variables,
                           ENV = {'PATH':path}, *args, **kw)
@@ -293,7 +320,7 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     subst.TOOL_SUBST(env)
     env.AddMethod(c_coverage.CCoverageTester)
 
-    if env['PLATFORM'] == 'win32' or env['wine']:
+    if env['PLATFORM'] == 'win32' or env['wine'] or env['wine64']:
         env['SHLIBPREFIX'] = env['LIBLINKPREFIX'] = env['LIBPREFIX'] = 'lib'
         env['WINDOWSEXPPREFIX'] = 'lib'
         env['LIBSUFFIX'] = '.lib'
@@ -302,7 +329,7 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         env.Append(CFLAGS="/MD")
         env.Append(CXXFLAGS="/MD /GR /GX")
 
-    if env['PLATFORM'] == 'win32' and not env['wine']:
+    if env['PLATFORM'] == 'win32' and not env['wine'] and not env['wine64']:
         env['DEVNULL'] = 'nul'
         # 'python' typically isn't in the path on Windows systems
         env['PYTHON'] = sys.executable
@@ -469,13 +496,16 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
     # import library (.lib file):
     e['no_import_lib'] = 1
     platform = e['PLATFORM']
-    if e['wine']:
+    if e['wine'] or e['wine64']:
         # Have to set SHLIBSUFFIX and PREFIX on Windows otherwise the
         # mslink tool complains
         e['SHLIBPREFIX'] = ''
         e['LDMODULESUFFIX'] = e['SHLIBSUFFIX'] = '.pyd'
         # Directory containing python26.lib:
-        e.Append(LIBPATH=['/usr/lib/w32comp/w32python/2.6/lib/'])
+        if e['wine64']:
+            e.Append(LIBPATH=['/usr/lib/w64comp/w64python/2.6/lib/'])
+        else:
+            e.Append(LIBPATH=['/usr/lib/w32comp/w32python/2.6/lib/'])
     else:
         if platform == 'aix':
             # Make sure compilers are in the PATH, so that Python's script for
@@ -576,11 +606,14 @@ def add_common_variables(vars, package):
                              'no'))
     vars.Add('python', "Python interpreter to use to run unit tests "
              "(if unspecified, 'python' is used on regular builds, "
-             "'w32python' if wine=True)", None)
+             "'w64python' if wine64=True, 'w32python' if wine=True)", None)
     vars.Add(PackageVariable('modeller', 'Location of the MODELLER package',
                              'no'))
     vars.Add(BoolVariable('wine',
-                          'Build using MS Windows tools via Wine emulation',
+                          'Build using 32bit Windows tools via Wine emulation',
+                          False))
+    vars.Add(BoolVariable('wine64',
+                          'Build using 64bit Windows tools via Wine emulation',
                           False))
     vars.Add(BoolVariable('release',
                           'Disable most runtime checks (e.g. for releases)',

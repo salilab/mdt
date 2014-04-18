@@ -7,7 +7,8 @@ e.MergeFlags(e['MODELLER'])
 e.MergeFlags(e['GLIB'])
 
 # Check for NumPy support:
-if not e.GetOption('clean') and not e.GetOption('help'):
+if not e.GetOption('clean') and not e.GetOption('help') \
+   and not e['wine'] and not e['wine64']:
     print "Checking for numpy...",
     try:
         import numpy

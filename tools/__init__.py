@@ -521,6 +521,7 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
         # Don't require stack protector stuff on Linux, as this adds a
         # requirement for glibc-2.4:
         if opt:
+            opt = opt.replace("-fstack-protector-strong", "")
             opt = opt.replace("-fstack-protector", "")
         # Remove options that don't work with C++ code:
         if cplusplus and opt:

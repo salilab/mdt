@@ -4,6 +4,7 @@
  */
 
 #include <stdlib.h>
+#include <math.h>
 #include "modeller.h"
 #include "mdt.h"
 
@@ -19,7 +20,7 @@ void mdt_inverse_transform(struct mod_mdt *mdt, float offset,
 
   for (i = 0; i < mdt->nelems; i++) {
     double binval = mod_mdt_bin_get(mdt, i);
-    if (abs(binval) < divisor) {
+    if (fabs(binval) < divisor) {
       mod_mdt_bin_set(mdt, i, undefined);
     } else {
       mod_mdt_bin_set(mdt, i, offset + multiplier / binval);

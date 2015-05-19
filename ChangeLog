@@ -1,5 +1,5 @@
-HEAD
-====
+MDT 5.3   05-19-2015
+====================
 
  - A new function :func:`write_statpot` can generate a Modeller statistical
    potential file given a suitable input table.

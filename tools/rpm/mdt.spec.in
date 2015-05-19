@@ -9,9 +9,9 @@ Vendor:        Andrej Sali
 URL:           http://www.salilab.org/mdt/
 Source0:       %{name}-%{version}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
-BuildRequires: modeller >= 9.9, glib2-devel >= 2.2.0
+BuildRequires: modeller >= 9.13, glib2-devel >= 2.2.0
 BuildRequires: python-devel, python-sphinx
-Requires:      modeller >= 9.9
+Requires:      modeller >= 9.13
 
 %description
 MDT prepares a raw frequency table, given information from MODELLER alignments

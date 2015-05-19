@@ -701,7 +701,7 @@ class Cluster(Group):
            calling `add((1,2), 3)` would cause this Cluster feature to return
            bin index 3 if the child features were in bins 1 and 2 respectively.
            This method can be called multiple times (even for the same
-           `bin_index` to add additional mappings from child bin indices
+           `bin_index`) to add additional mappings from child bin indices
            to bin index. If no mapping from a given pair of child indices is
            present, the undefined bin index is returned."""
         _mdt.mdt_cluster_add(self._mlib._modpt, self._ifeat, child_bins[0],

@@ -179,6 +179,8 @@ Each feature takes some common arguments:
 
 .. autoclass:: HydrogenBondCharge
 
+.. autoclass:: AtomTable
+
 .. _atom_pair_features:
 
 Atom pair features
@@ -254,3 +256,16 @@ See :ref:`protein_features` for a description of the common arguments.
 .. autoclass:: Angle
 
 .. autoclass:: Dihedral
+
+Group features
+--------------
+
+These features are used to make combinations of other features.
+Each feature takes some common arguments:
+
+ * *mlib*: the :class:`mdt.Library` to create the feature in.
+ * *feat1*: an existing feature object that will be included in this group.
+ * *feat2*: another existing feature object to include.
+ * *nbins*: the number of bins in this feature.
+
+.. autoclass:: Cluster

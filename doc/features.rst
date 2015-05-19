@@ -269,3 +269,5 @@ Each feature takes some common arguments:
  * *nbins*: the number of bins in this feature.
 
 .. autoclass:: Cluster
+   :members:
+

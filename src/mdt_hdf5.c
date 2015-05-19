@@ -1,6 +1,6 @@
 /** \file mdt_hdf5.c      Functions to handle HDF5 files.
  *
- *             Part of MDT, Copyright(c) 1989-2013 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
  */
 
 #include <glib.h>

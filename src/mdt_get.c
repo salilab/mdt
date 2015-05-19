@@ -1,6 +1,6 @@
 /** \file mdt_get.c        Functions to get elements from MDTs.
  *
- *             Part of MDT, Copyright(c) 1989-2013 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
  */
 
 #include "mdt.h"

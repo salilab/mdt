@@ -5,7 +5,7 @@ scripts just like any other Python script. Alternatively, you can use the
 bin/mdtpy.sh script to run MDT directly from the build directory. Simply
 run it before your regular Python invocation (e.g. "bin/mdtpy.sh python foo.py")
 
-MDT is Copyright 1989-2013 Andrej Sali
+MDT is Copyright 1989-2015 Andrej Sali
 
    MDT is free software: you can redistribute it and/or modify
    it under the terms of version 2 of the GNU General Public License

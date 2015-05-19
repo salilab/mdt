@@ -1,6 +1,6 @@
 /** \file mdt_reshape.c    Functions to reshape MDTs.
  *
- *             Part of MDT, Copyright(c) 1989-2013 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
  */
 
 #include <stdlib.h>

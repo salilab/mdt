@@ -1,6 +1,6 @@
 /** \file atom_type.c  Modeller atom type feature.
  *
- *             Part of MDT, Copyright(c) 1989-2013 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
  */
 
 #include "modeller.h"

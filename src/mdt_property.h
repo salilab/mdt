@@ -1,7 +1,7 @@
 /** \file mdt_property.h  Functions to precalculate protein properties used
  *                        to calculate MDT indices.
  *
- *             Part of MDT, Copyright(c) 1989-2013 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
  */
 
 #ifndef __MDT_PROPERTY_H

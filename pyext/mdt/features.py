@@ -1,7 +1,7 @@
 """
    MDT features.
 
-   Copyright 1989-2013 Andrej Sali.
+   Copyright 1989-2015 Andrej Sali.
 
    MDT is free software: you can redistribute it and/or modify
    it under the terms of version 2 of the GNU General Public License

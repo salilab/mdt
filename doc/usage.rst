@@ -19,12 +19,11 @@ any regular Python script with a command similar to::
 
    python foo.py
 
-In the Sali lab, MDT is built as part of the nightly build system, and is
-installed with MODELLER in `/salilab/diva1/home/modeller`. Thus, you can
-run an MDT script :file:`foo.py` just like any regular Python script with
-a command similar to::
+In the Sali lab, MDT is built as part of the nightly build system at the
+same time as MODELLER. Thus you can set up your system to run MDT scripts
+by running::
 
-   /salilab/diva1/home/modeller/modpy.sh python foo.py
+   module load modeller
 
 .. _compilation:
 

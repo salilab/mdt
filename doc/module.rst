@@ -65,6 +65,8 @@ Utility functions
 
 .. autofunction:: write_2dsplinelib
 
+.. autofunction:: write_statpot
+
 Bin storage types
 -----------------
 

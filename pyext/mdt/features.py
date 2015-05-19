@@ -422,7 +422,7 @@ class NeighborhoodDifference(AlignedResidue):
        scores (from a residue-residue scoring matrix) of all aligned residues
        where the residue in the first sequence is within a cutoff distance
        of the scanned residue. (This cutoff is set by the distngh argument to
-       :class:`mdt.Table.add_alignment`.)"""
+       :meth:`mdt.Table.add_alignment`.)"""
     _setup = _mdt.mdt_feature_neighborhood_difference
 
 class GapDistance(AlignedResidue):

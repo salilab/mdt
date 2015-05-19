@@ -18,7 +18,7 @@ Each feature takes some common arguments:
  * *protein*: the protein index on which to evaluate the feature
    from each group of proteins (individual protein, pairs, triples)
    selected from the alignment (0 for the first, 1 for the second, 2 for
-   the third). See :meth:`Table.add_alignment` for more details.
+   the third). See :meth:`mdt.Table.add_alignment` for more details.
 
 .. autoclass:: XRayResolution
 
@@ -42,7 +42,7 @@ Each feature takes some common arguments:
  * *bins*: list of bins (see :ref:`binspec`).
  * *protein1* and *protein2*: the indexes of proteins in each group of
    proteins selected from the alignment to evaluate the feature on; each can
-   range from 0 to 2 inclusive. See :meth:`Table.add_alignment` for more
+   range from 0 to 2 inclusive. See :meth:`mdt.Table.add_alignment` for more
    details.
 
 .. autoclass:: SequenceIdentity

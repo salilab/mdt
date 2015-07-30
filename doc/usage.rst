@@ -25,6 +25,24 @@ by running::
 
    module load modeller
 
+.. _homebrew:
+
+Using a Homebrew package
+------------------------
+
+If you are using a Mac, the easiest way to install MDT is to first install
+`homebrew <http://brew.sh>`_ (if you don't have it already) and then
+get MDT by running in a terminal window::
+
+    brew tap salilab/salilab; brew install mdt
+
+If you don't already have Modeller installed, you can get it by running
+`brew install modeller` before you install MDT.
+
+Add `--with-python3` to the end of each `brew install` command if you also
+want to use Python 3.
+
+
 .. _compilation:
 
 Compilation from source code

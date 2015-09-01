@@ -1,0 +1,35 @@
+cmake_minimum_required(VERSION 2.8)
+project(MDT)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules)
+
+include(GNUInstallDirs)
+
+include(FindHDF5)
+find_package(HDF5 1.8)
+if (!HDF5_FOUND)
+  message(FATAL_ERROR "HDF5 is required")
+else()
+  set(EXTRA_LIBS ${EXTRA_LIBS} ${HDF5_LIBRARIES})
+  include_directories(${HDF5_INCLUDE_DIRS})
+endif()
+
+include(${PROJECT_SOURCE_DIR}/cmake_modules/FindGLIB.cmake)
+find_package(GLIB)
+if (!GLIB_FOUND)
+  message(FATAL_ERROR "GLib is required")
+else()
+  set(EXTRA_LIBS ${EXTRA_LIBS} ${GLIB_LIBRARIES})
+  include_directories(${GLIB_INCLUDE_DIRS})
+endif()
+
+include(${PROJECT_SOURCE_DIR}/cmake_modules/FindMODELLER.cmake)
+find_package(MODELLER)
+if (!MODELLER_FOUND)
+  message(FATAL_ERROR "MODELLER is required")
+else()
+  set(EXTRA_LIBS ${EXTRA_LIBS} ${MODELLER_LIBRARIES})
+  include_directories(${MODELLER_INCLUDE_DIRS})
+endif()
+
+add_subdirectory(src)

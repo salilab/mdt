@@ -15,8 +15,7 @@ if (NOT DEFINED CMAKE_INSTALL_PYTHONDIR)
   set(CMAKE_INSTALL_PYTHONDIR "${CMAKE_INSTALL_LIBDIR}/python/site_packages")
 endif()
 
-include(FindHDF5)
-find_package(HDF5 1.8 REQUIRED)
+find_package(HDF5 1.8 REQUIRED COMPONENTS C HL)
 set(EXTRA_LIBS ${EXTRA_LIBS} ${HDF5_LIBRARIES})
 include_directories(${HDF5_INCLUDE_DIRS})
 

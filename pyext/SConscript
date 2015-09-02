@@ -24,12 +24,13 @@ if not e.GetOption('clean') and not e.GetOption('help') \
 
 e.Append(LIBPATH=['../src'])
 e.Append(LIBS=['mdt'])
-e.Append(CPPPATH=['src'])
+e.Append(CPPPATH=['../src'])
+e.Append(SWIGPATH=['../src'])
 
 # Build the Python extension from SWIG interface file:
 pyso = e.LoadableModule('_mdt', 'mdt.i',
                         SWIGFLAGS='-python -noproxy ' + \
-                                  '-nodefaultctor -nodefaultdtor -Isrc')
+                                  '-nodefaultctor -nodefaultdtor')
 
 # Subdirectories containing pure Python files:
 Export('e')

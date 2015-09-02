@@ -1,4 +1,4 @@
-%module _mdt
+%module mdt
 %include "typemaps.i"
 
 %{

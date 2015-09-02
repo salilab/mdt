@@ -22,14 +22,14 @@ include_directories(BEFORE "${PROJECT_SOURCE_DIR}/src")
 
 FILE(GLOB SWIG_INCLUDES "${PROJECT_SOURCE_DIR}/swig/*.i")
 
-SET(CMAKE_SWIG_FLAGS "-noproxy" "-nodefaultctor" "-nodefaultdtor")
-SWIG_ADD_MODULE(mdt python mdt.i)
+SET(CMAKE_SWIG_FLAGS "-nodefaultctor" "-nodefaultdtor")
+SET(SWIG_MODULE_mdt_EXTRA_DEPS ${SWIG_INCLUDES})
+
+SWIG_ADD_MODULE(mdt PYTHON mdt.i)
 
 if(APPLE)
   set_target_properties("${SWIG_MODULE_mdt_REAL_NAME}" PROPERTIES LINK_FLAGS "-flat_namespace -undefined suppress")
 endif(APPLE)
-
-SET(SWIG_MODULE_mdt_EXTRA_DEPS ${SWIG_INCLUDES})
 
 # Don't link in libpython (that prevents the extension from being used in
 # later compatible versions of Python), except on Windows where all DLL

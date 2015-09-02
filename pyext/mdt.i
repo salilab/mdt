@@ -3,9 +3,9 @@
 
 %{
 #include <glib.h>
-#include "../src/mdt.h"
-#include "../src/mdt_feature.h"
-#include "../src/mdt_all_features.h"
+#include "mdt.h"
+#include "mdt_feature.h"
+#include "mdt_all_features.h"
 #include "modeller.h"
 %}
 
@@ -32,9 +32,9 @@
 %apply (const int VARLIST[], int N_VARLIST) { (const int indices[], int n_indices) };
 %apply (const int VARLIST[], int N_VARLIST) { (const int chunk_size[], int n_chunk_size) };
 
-%include "../src/mdt.h"
-%include "../src/mdt_alignment.h"
-%include "../src/mdt_all_features.h"
+%include "mdt.h"
+%include "mdt_alignment.h"
+%include "mdt_all_features.h"
 
 /* Wrap MDT types */
 %include "mdt_type.i"

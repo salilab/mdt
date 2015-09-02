@@ -4,6 +4,12 @@ include(${SWIG_USE_FILE})
 find_package(PythonInterp 2.4 REQUIRED)
 find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
 
+find_package(NumPy)
+if(NUMPY_FOUND)
+  include_directories(${NUMPY_INCLUDE_DIRS})
+  add_definitions("-DMDT_WITH_NUMPY")
+endif()
+
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
 include_directories(BEFORE "${PROJECT_SOURCE_DIR}/src")
 

@@ -32,3 +32,12 @@ set(MODELLER_INCLUDE_DIRS ${MODELLER_INCLUDE_DIR} ${MODELLER_ARCH_INCLUDE_DIR})
 include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(MODELLER REQUIRED_VARS MODELLER_INCLUDE_DIRS
                 MODELLER_LIBRARIES ${ADDITIONAL_REQUIRED_VARS})
+
+# Get all -L flags found by pkg-config; on the Mac at least we can't
+# link against Modeller successfully unless we add these.
+set(MODELLER_LDFLAGS "")
+foreach(flag ${PC_MODELLER_LDFLAGS})
+  if(${flag} MATCHES "^-L")
+    list(APPEND MODELLER_LIBRARIES ${flag})
+  endif()
+endforeach()

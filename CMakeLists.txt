@@ -37,3 +37,4 @@ endif()
 
 add_subdirectory(src)
 add_subdirectory(pyext)
+add_subdirectory(data)

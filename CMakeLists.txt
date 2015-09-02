@@ -13,12 +13,10 @@ find_package(HDF5 1.8 REQUIRED)
 set(EXTRA_LIBS ${EXTRA_LIBS} ${HDF5_LIBRARIES})
 include_directories(${HDF5_INCLUDE_DIRS})
 
-include(${PROJECT_SOURCE_DIR}/cmake_modules/FindGLIB.cmake)
 find_package(GLIB REQUIRED)
 set(EXTRA_LIBS ${EXTRA_LIBS} ${GLIB_LIBRARIES})
 include_directories(${GLIB_INCLUDE_DIRS})
 
-include(${PROJECT_SOURCE_DIR}/cmake_modules/FindMODELLER.cmake)
 find_package(MODELLER REQUIRED)
 set(EXTRA_LIBS ${EXTRA_LIBS} ${MODELLER_LIBRARIES})
 include_directories(${MODELLER_INCLUDE_DIRS})

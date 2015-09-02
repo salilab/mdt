@@ -5,6 +5,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules)
 
 set(MDT_VERSION "SVN")
 
+# Use @rpath on Mac by default
+if(POLICY CMP0042)
+cmake_policy(SET CMP0042 NEW)
+endif(POLICY CMP0042)
+
 include(GNUInstallDirs)
 if (NOT DEFINED CMAKE_INSTALL_PYTHONDIR)
   set(CMAKE_INSTALL_PYTHONDIR "${CMAKE_INSTALL_LIBDIR}/python/site_packages")

@@ -3,6 +3,8 @@ project(MDT)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules)
 
+set(MDT_VERSION "SVN")
+
 include(GNUInstallDirs)
 if (NOT DEFINED CMAKE_INSTALL_PYTHONDIR)
   set(CMAKE_INSTALL_PYTHONDIR "${CMAKE_INSTALL_LIBDIR}/python/site_packages")

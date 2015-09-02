@@ -1,21 +1,8 @@
 find_package(SWIG 1.3.40 REQUIRED)
 include(${SWIG_USE_FILE})
 
-if(NOT DEFINED PYTHON_INCLUDE_DIRS)
-  execute_process(COMMAND python -c "import sys; print(sys.executable)"
-                  WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-                  OUTPUT_VARIABLE python_full_path
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND python -c "import sys; print('%d.%d.%d' % sys.version_info[:3])"
-                  WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-                  OUTPUT_VARIABLE python_full_version
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-  string(REGEX REPLACE "^([0-9]+\\.[0-9]+).*" "\\1" python_version
-         "${python_full_version}")
-  message(STATUS "Python binary is " ${python_full_path} " (version " ${python_full_version} ")")
-
-  FIND_PACKAGE(PythonLibs ${python_full_version} EXACT REQUIRED)
-endif()
+find_package(PythonInterp 2.4 REQUIRED)
+find_package(PythonLibs ${PYTHON_VERSION_STRING} EXACT REQUIRED)
 
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
 include_directories(BEFORE "${PROJECT_SOURCE_DIR}/src")

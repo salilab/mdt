@@ -1,6 +1,7 @@
 import unittest
 from mdt_test import MDTTest
 import mdt
+import mdt.features
 
 class SuperSmoothTests(MDTTest):
 

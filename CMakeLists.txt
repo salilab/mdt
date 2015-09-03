@@ -10,6 +10,8 @@ if(POLICY CMP0042)
 cmake_policy(SET CMP0042 NEW)
 endif(POLICY CMP0042)
 
+enable_testing()
+
 include(GNUInstallDirs)
 if (NOT DEFINED CMAKE_INSTALL_PYTHONDIR)
   set(CMAKE_INSTALL_PYTHONDIR "${CMAKE_INSTALL_LIBDIR}/python/site_packages")
@@ -30,3 +32,4 @@ include_directories(${MODELLER_INCLUDE_DIRS})
 add_subdirectory(src)
 add_subdirectory(pyext)
 add_subdirectory(data)
+add_subdirectory(test)

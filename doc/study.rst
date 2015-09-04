@@ -121,7 +121,7 @@ where the :meth:`Table.write_asgl`
 method writes out an ASGL script and the MDT data in a form suitable for
 plotting (which we then execute with ASGL using Python's
 :meth:`os.system` method). This gives an
-`impact of resolution plot <pdf/impact-of-resolution.pdf>`_.
+:download:`impact of resolution plot <html/pdf/impact-of-resolution.pdf>`.
 
 
 .. _chembonds:
@@ -142,7 +142,7 @@ length. The contents of the MDT table are then plotted with ASGL as follows:
 .. literalinclude:: ../constr2005/bonds/asgl.py
    :language: python
 
-giving `a set of bond plots <pdf/bonds.pdf>`_. Notice that
+giving :download:`a set of bond plots <html/pdf/bonds.pdf>`. Notice that
 here we use the :meth:`Table.reshape` method,
 which can reshape a table by reordering the features, and/or reducing the bin
 ranges (offset or shape) of these features. In this case we don't change the
@@ -197,7 +197,7 @@ The contents of the MDT table are then plotted with ASGL as follows:
 .. literalinclude:: ../constr2005/angles/asgl.py
    :language: python
 
-giving `a set of angle plots <pdf/angles.pdf>`_.
+giving :download:`a set of angle plots <html/pdf/angles.pdf>`.
 
 The situation is similar to that for the chemical bonds, except that there are
 also four cases of bi-modal (as opposed to mono-modal) distributions:
@@ -229,7 +229,7 @@ The contents of the MDT table are then plotted with ASGL as follows:
 .. literalinclude:: ../constr2005/impropers/asgl.py
    :language: python
 
-giving `a set of improper plots <pdf/impropers.pdf>`_.
+giving :download:`a set of improper plots <html/pdf/impropers.pdf>`.
 
 The final MODELLER MDT library is produced with:
 
@@ -254,7 +254,7 @@ and
 .. literalinclude:: ../constr2005/chi1/impact-of-resolution/asgl.py
    :language: python
 
-giving `this output <pdf/chi1-impact.pdf>`_
+giving :download:`this output <html/pdf/chi1-impact.pdf>`
 which clearly shows that X-ray structures at resolution of at least 2.0 Å
 are just fine. X-ray structures above that resolution and NMR structures
 (whose resolution is set artificially to 0.45 Å for the purposes of MDT
@@ -273,7 +273,7 @@ and the contents then plotted with ASGL as follows:
 .. literalinclude:: ../constr2005/chi1/asgl.py
    :language: python
 
-giving `a set of χ1 plots <pdf/chi1.pdf>`_.
+giving :download:`a set of χ1 plots <html/pdf/chi1.pdf>`.
 
 The weights, means, and standard deviations of the Gaussians were obtained
 by least-squares fitting with ASGL (with the script below) and are manually
@@ -300,7 +300,7 @@ The contents of the MDT table are then plotted with ASGL as follows:
 .. literalinclude:: ../constr2005/chi2/asgl.py
    :language: python
 
-giving `a set of χ2 plots <pdf/chi2.pdf>`_.
+giving :download:`a set of χ2 plots <html/pdf/chi2.pdf>`.
 
 The final MODELLER MDT library is produced with:
 
@@ -334,8 +334,8 @@ The contents of the MDT table are then plotted with ASGL as follows:
 .. literalinclude:: ../constr2005/chi3/asgl.py
    :language: python
 
-giving `a set of χ3 plots <pdf/chi3.pdf>`_. The final MODELLER MDT library is
-produced with:
+giving :download:`a set of χ3 plots <html/pdf/chi3.pdf>`.
+The final MODELLER MDT library is produced with:
 
 .. literalinclude:: ../constr2005/chi3/modlib.py
    :language: python
@@ -359,8 +359,8 @@ The contents of the MDT table are then plotted with ASGL as follows:
 .. literalinclude:: ../constr2005/chi4/asgl.py
    :language: python
 
-giving `a set of χ4 plots <pdf/chi4.pdf>`_. The final MODELLER MDT library is
-produced with:
+giving :download:`a set of χ4 plots <html/pdf/chi4.pdf>`.
+The final MODELLER MDT library is produced with:
 
 .. literalinclude:: ../constr2005/chi4/modlib.py
    :language: python
@@ -384,8 +384,8 @@ The contents of the MDT table are then plotted with ASGL as follows:
 .. literalinclude:: ../constr2005/phi/asgl.py
    :language: python
 
-giving `a set of Φ plots <pdf/phi.pdf>`_. The final MODELLER MDT library
-is produced with:
+giving :download:`a set of Φ plots <html/pdf/phi.pdf>`.
+The final MODELLER MDT library is produced with:
 
 .. literalinclude:: ../constr2005/phi/modlib.py
    :language: python
@@ -409,8 +409,8 @@ The contents of the MDT table are then plotted with ASGL as follows:
 .. literalinclude:: ../constr2005/psi/asgl.py
    :language: python
 
-giving `a set of Ψ plots <pdf/psi.pdf>`_. The final MODELLER MDT library
-is produced with:
+giving :download:`a set of Ψ plots <html/pdf/psi.pdf>`.
+The final MODELLER MDT library is produced with:
 
 .. literalinclude:: ../constr2005/psi/modlib.py
    :language: python
@@ -440,12 +440,13 @@ distributions with finer sampling of 0.5°:
 .. literalinclude:: ../constr2005/omega/make-mdt.py
    :language: python
 
-The `distribution in raw form <pdf/omega.pdf>`_ is then plotted with:
+The :download:`distribution in raw form <html/pdf/omega.pdf>`
+is then plotted with:
 
 .. literalinclude:: ../constr2005/omega/asgl.py
    :language: python
 
-and `in logarithmic form <pdf/omega-log.pdf>`_ with:
+and :download:`in logarithmic form <html/pdf/omega-log.pdf>` with:
 
 .. literalinclude:: ../constr2005/omega/asgl-log.py
    :language: python
@@ -481,7 +482,7 @@ The contents of the MDT table are then plotted with ASGL as follows:
 .. literalinclude:: ../constr2005/omega/weights/asgl.py
    :language: python
 
-giving `an omega weights plot <pdf/omega-weights.pdf>`_.
+giving :download:`an omega weights plot <html/pdf/omega-weights.pdf>`.
 
 The library :file:`omega.py` is edited manually to replace the
 means and standard deviations with `179.8  0.0   2.3  2.3`.
@@ -507,7 +508,7 @@ They are plotted with
 .. literalinclude:: ../constr2005/phipsi/asgl.py
    :language: python
 
-giving `a set of Φ/Ψ plots <pdf/phipsi.pdf>`_.
+giving :download:`a set of Φ/Ψ plots <html/pdf/phipsi.pdf>`.
 
 The distributions are clearly not 2D Gaussian functions and need to be
 approximated by 2D cubic splines. Exploring and visualizing various smoothing

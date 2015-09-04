@@ -12,7 +12,7 @@ Sample studies with MDT
 Introduction
 ------------
 
-.. note::
+.. todo::
 
    Should have plots of raw data histograms superposed on the
    final restraints in all cases.

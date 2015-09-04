@@ -1,0 +1,3 @@
+This directory simply contains mock Python files for MDT dependencies
+(Modeller, _mdt extension) so that the docs can 'import mdt' without having
+to actually have all the dependencies present.

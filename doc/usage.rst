@@ -25,13 +25,22 @@ by running::
 
    module load modeller
 
+.. _anaconda:
+
+Using with Anaconda Python
+--------------------------
+
+There is an MDT package available for `Anaconda Python <https://store.continuum.io/cshop/anaconda/>`_ for Mac and Linux.
+To install it, simply run::
+
+    conda install -c salilab mdt
+
 .. _homebrew:
 
 Using a Homebrew package
 ------------------------
 
-If you are using a Mac, the easiest way to install MDT is to first install
-`homebrew <http://brew.sh>`_ (if you don't have it already) and then
+If you are using a Mac with `homebrew <http://brew.sh>`_ you can
 get MDT by running in a terminal window::
 
     brew tap salilab/salilab; brew install mdt

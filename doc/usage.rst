@@ -48,12 +48,9 @@ want to use Python 3.
 Compilation from source code
 ----------------------------
 
-The MDT source code can be downloaded from the MDT website. In the Sali lab,
-you can get the current MDT code by running the following::
+The MDT source code can be downloaded from
+`GitHub <https://github.com/salilab/mdt/>`_.
 
-   svn co https://svn.salilab.org/impmod/trunk/mdt mdt
-
-Unpack the source code and change into the newly-created MDT subdirectory.
 Install dependent packages needed for MDT: MODELLER, glib, SWIG,
 pkg-config, and HDF5:
 

@@ -499,8 +499,8 @@ Mainchain dihedral angles Φ and Ψ
 The initial runs in :file:`run1` explored Ramachandran maps
 extracted from different representative sets of structures (e.g., clustered by
 40% sequence identity) and stratification by the crystallographic residue
-Biso as well as resolution and residue type. We ended up with the sample
-and stratification described above.
+B\ :sub:`iso` as well as resolution and residue type. We ended up with
+the sample and stratification described above.
 
 The 2D histograms *p(Φ, Ψ | R)* are derived with:
 

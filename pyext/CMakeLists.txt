@@ -12,6 +12,7 @@ endif()
 
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
 include_directories(BEFORE "${PROJECT_SOURCE_DIR}/src")
+include_directories(BEFORE "${CMAKE_BINARY_DIR}/src")
 
 FILE(GLOB SWIG_INCLUDES "*.i")
 

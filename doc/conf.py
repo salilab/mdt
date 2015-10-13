@@ -19,7 +19,11 @@ def get_version():
         for line in fh:
             m = r.match(line)
             if m:
-                return m.group(1)
+                ver = m.group(1)
+                if ver == 'git':
+                    return 'latest'
+                else:
+                    return ver
     raise ValueError("Cannot find version string")
 
 # If your extensions are in another directory, add it here. If the directory

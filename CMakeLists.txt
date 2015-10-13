@@ -3,7 +3,7 @@ project(MDT)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake_modules)
 
-set(MDT_VERSION "SVN")
+set(MDT_VERSION "git")
 
 # Use @rpath on Mac by default
 if(POLICY CMP0042)

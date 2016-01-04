@@ -1,6 +1,6 @@
 /** \file mdt_log_transform.c  Functions to transform MDTs.
  *
- *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
  */
 
 #include <stdlib.h>

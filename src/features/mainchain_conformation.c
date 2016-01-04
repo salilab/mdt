@@ -1,6 +1,6 @@
 /** \file mainchain_conformation.c  Ramachandran mainchain conformation feature.
  *
- *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
  */
 
 #include "modeller.h"

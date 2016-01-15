@@ -47,7 +47,7 @@ def __get_version_info(version):
         return tuple([int(x) for x in version.split('.')])
     except ValueError:
         return version
-version = _mdt.mdt_version_get()
+__version__ = version = _mdt.mdt_version_get()
 version_info = __get_version_info(version)
 
 def _prepare_bond_span(bond_span):

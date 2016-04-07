@@ -454,7 +454,7 @@ int mdt_get_bond_separation_same_chain(int atom1, int atom2, int res1,
                                                        res1, ss->res2,
                                                        seq, attyp, bondlist)
              + mdt_get_bond_separation_same_chain_noss(ss->atom1, atom2,
-                                                       ss->res2, res2,
+                                                       ss->res1, res2,
                                                        seq, attyp, bondlist);
         if (bd < bonddist) {
           bonddist=bd;

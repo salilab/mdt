@@ -1,4 +1,4 @@
-[![docs](https://readthedocs.org/projects/mdt/badge/)](https://salilab.org/mdt/doc/) [![nightly build](https://salilab.org/nightly/stat/?s=mdt&t=build)](https://salilab.org/nightly/mdt/) [![python coverage](https://salilab.org/nightly/stat/?s=mdt&t=python)](https://salilab.org/nightly/mdt/logs/coverage/python/) [![C coverage](https://salilab.org/nightly/stat/?s=mdt&t=c)](https://salilab.org/nightly/mdt/logs/coverage/c/)
+[![docs](https://readthedocs.org/projects/mdt/badge/)](https://salilab.org/mdt/doc/) [![nightly build](https://salilab.org/nightly/stat/?s=mdt&t=build)](https://salilab.org/nightly/mdt/) [![python coverage](https://salilab.org/nightly/stat/?s=mdt&t=python)](https://salilab.org/nightly/mdt/logs/coverage/python/) [![C coverage](https://salilab.org/nightly/stat/?s=mdt&t=c)](https://salilab.org/nightly/mdt/logs/coverage/c/) [![Coverity scan](https://img.shields.io/coverity/scan/8502.svg)](https://scan.coverity.com/projects/salilab-mdt)
 
 MDT prepares a raw frequency table, given information from MODELLER alignments
 and/or PDB files. More precisely, MDT uses a sample of sequences, structures,

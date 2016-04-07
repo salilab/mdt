@@ -179,7 +179,7 @@ static void atmclass_disulfide(const int iss[], int nss,
   iatmr1 = mod_int1_pt(&struc->cd.iatmr1);
   for (i = 0; i < nss; i++) {
     int ir1;
-    for (ir1 = 0; ir1 < 2; i++) {
+    for (ir1 = 0; ir1 < 2; ir1++) {
       int iatm, istart, iend, ir = iss[i * 2 + ir1];
       istart = iatmr1[ir - 1] - 1;
       if (ir < seq->nres) {

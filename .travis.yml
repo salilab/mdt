@@ -4,19 +4,22 @@ python:
   - 2.7
   - 3.5
 install:
-  - wget $LICENSE_URL -O mod-license
+  - wget -q $LICENSE_URL -O mod-license >& /dev/null
   - sudo apt-get -qq update
   - sudo apt-get install -y libhdf5-serial-dev swig
   - wget http://salilab.org/modeller/9.17/modeller_9.17-1_amd64.deb
   - KEY_MODELLER=`cat mod-license` sudo dpkg -i modeller_9.17-1_amd64.deb
   - ln -sf /usr/lib/python$TRAVIS_PYTHON_VERSION/dist-packages/_modeller.so $HOME/virtualenv/*/lib/*/site-packages/
   - ln -sf /usr/lib/python$TRAVIS_PYTHON_VERSION/dist-packages/modeller $HOME/virtualenv/*/lib/*/site-packages/
+  - ls $HOME/virtualenv/*/lib/*/site-packages/
+  - ls -l $HOME/virtualenv/*/lib/*/site-packages/
 script:
   - mkdir build
   - cd build
   - cmake ..
   - make
+  - ln -sf __mdt.so pyext/_mdt.so
   - ctest --output-on-failure
 env:
   global:
-    secure: tuddXKC9b8NwvquR9uJTp3sCezeNiP8sSoHaPnZkF/nC6loUpM3VP4sh5llIbL7RDvI36VbYoAIz3/nQarpSKrQgfNMropE7QVKquL46unA0saJdWIEB4xzE5l34uD46peW/SnZvWBHHgUskA7udGQ/OBHJMRIjNJe4fOV/+vQRQ9WrvsBUavaVK881zqC05Ff7PheXKhwQRpjStwB1Xs9P8Wnhfse9AYQ4N2pQTfxUUGNDPIjxQ7J29pDlroJBxSuNaucyrZzL2RqqE1coXaRixR/LkHQ5Q8Bl6RGJBiDjDKy0+nZClmjr5ag/Cg2eX/B0IL/psmtSaoQlM0CwdgOFELFrhvpHG/jkzQeX9euQq9IarUtqMx6rHUxF8I0GwHEwjcbzhpLiw8ld1VfnyfrQe5nzrlvdDNIyJy/VH749l3XDTP6umSIDz6ka2E9T/U53/KKfrh3MLVhY4vrfNaOQzD2pyFS1zvNm6QoAnae7zh7XOedrFnVNyArj3H7lxDszYgXa/am+ykgxWBW5yDzy7hWH8EiCMFre1BlhJnSkEktBz6Q4y/YyJ41dEZny7lAfD9Ul0J9pKyj8jwiL4GYc02gOXjVDvU6Cea8OzJfcg6KCWper1wwYl8K0/qkW1HMwbRjdcRjHSnStWI/gc5IGHfi+IV8A8eLZnNTcrFG8=
+    secure: "b/cP+uy/Ay0r3bvUlxHWug3vzoSJuGPhZ24/5m53YvNEoLn/N+x/9ijpIvM1lonLy7d1tVLazKZku3VxxNwlS4wq+Q83LmfOF3kCq/I7pQ0DdSz5Jk7uamQLtTH6Bq86iofBWIrF7PzeE6mZA3ZGvS60A6Zu43zRaGXjFGw5DamO4Sku7c94L+Gus0b9ljP7EGSONOZhwJZf0KKvuhIjjANN9mZ9ZgOC+wvaQ9oJKkb02Pz/fXE0lDxmy5WQYh17oz251Rw/7FxajMqgnTUrqIClUSeN4Xw0xMwtMdrXL/xK7xdUbS24yhjwpqnrzscdwfVSaL0tWxOAwKNjROEM8gM7ze0z3NStAZBAuhRTAKjq9xcZS+ozAEWJzKKS463XZYjuigHIyMUUm0+q/OQj7xEaJyg6Sr2zwOPTcP4EjaBhCNCZ69YJ4+gJ17bUbNwQQMYWehVU6NNqE+Jq4jR8T2jxKGJ0J8OqbDCrCF6JMgmHgiWnjApBKR3WAwSUK7Sr2bHZPHmT8zlGw+oTyFTGKfStqOOUjq9QXn3pm++4CBko9KoBt1NP7KNJDblWXxd6lqwgLLDzdwmpNI8T6prFV4avsacnLHdjBFt/mKy009KtJlvHxLEpmpD2LX4PelGoiyXd4fbjjOQKjZsyxPD8xlcwVHXhi0yMlyqQuYLCP0U="

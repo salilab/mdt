@@ -11,11 +11,12 @@ install:
   - KEY_MODELLER=`cat mod-license` sudo dpkg -i modeller_9.17-1_amd64.deb
   - ln -sf /usr/lib/python$TRAVIS_PYTHON_VERSION/dist-packages/_modeller.so $(dirname $(which python))/../lib/*/site-packages/
   - ln -sf /usr/lib/python$TRAVIS_PYTHON_VERSION/dist-packages/modeller $(dirname $(which python))/../lib/*/site-packages/
-  - ls -l $(dirname $(which python))/../*
+  - ls -l $(dirname $(which python))/../include/*
+  - ls -l $(dirname $(which python))/../lib/*
 script:
   - mkdir build
   - cd build
-  - cmake .. -DPYTHON_INCLUDE_DIR=$(dirname $(which python))/../include/ -DPYTHON_LIBRARY=$(dirname $(which python))/../lib/*.so
+  - cmake .. -DPYTHON_INCLUDE_DIR=$(dirname $(which python))/../include/* -DPYTHON_LIBRARY=$(dirname $(which python))/../lib/*/*.so
   - make
   - ln -sf __mdt.so pyext/_mdt.so
   - ctest --output-on-failure

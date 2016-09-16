@@ -203,8 +203,8 @@ static gboolean write_table(hid_t file_id, const struct mdt *mdt, int gzip,
 
   ret = ret
         && (space_id = H5Screate_simple(mdt->base.nfeat, dims, NULL)) >= 0
-        && (set_id = H5Dcreate(file_id, "/mdt", type_id, space_id, H5P_DEFAULT,
-                               prop_id, H5P_DEFAULT)) >= 0
+        && (set_id = H5Dcreate2(file_id, "/mdt", type_id, space_id, H5P_DEFAULT,
+                                prop_id, H5P_DEFAULT)) >= 0
         && H5Dwrite(set_id, type_id, H5S_ALL, H5S_ALL, H5P_DEFAULT,
                     mdt->base.bindata) >= 0
         && H5Dclose(set_id) >= 0

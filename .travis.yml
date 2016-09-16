@@ -4,8 +4,7 @@ python:
   - 2.7
   - 3.5
 install:
-# Get a Modeller license key for Travis and put in mod-license file
-  - secure: ADZ8ad6/OXAUQmvzfcUyf/iRc6R9NTSddXuM5M5d5w7Ebv1LaHG1bauwZqw71KJufwwcLJOCEDbZigSZnaEpo5anCBCYk7iumJuG2peOw42RBXxs/AjWjp571OEovtwr3KfQ1yAFqR8xNwpjLkRPO3+PMeWZeIe7c0nr8C2MCXXwix7KlUsOQrbO78TRZj7UCcg34sp6PdE0u68Lq7Z7x18Y9e1sYy/ao/E+/MfteLZ+MorLqxf50Yb7mTbaM8n5m13ZtnTweotpDrpRQLLuB/0aPbHSv9CnmlGoOoOOyPA+VuUNSxkTPvVprJKM9scHQ5YTRnbCH41JAHOtBxk3z7xDqWZ7U+Ub7lroXO6bExDmYFOAsVZO/fUYOHDbMB5uZI8H6E3cx1NjJ+z/HD5igJ4TghKQadlYO+abaaXPxmM/b8d2RBr2+a/6FWJs+URezP67DHuA6MYSHF6WaPWwf29hj7ZZWD7aX0PWTCBl94LBC4zrGcttoCjivMc7m6L00beN5WkYiGGv2QdKIWbhUFVU3/HMBqCjAZp/9ou0JnqD5m63/pOEJLwxqahxW4YP149H+kh2tTx1rmMFIhrKPX9Xvon9m+d5BugzajkiT5shzJ9+O2uHyhkQrO8tTsFuxwLSsypUsu39kWuShrBTt2efDPWjSuIjgJtS8LVyZAE=
+  - wget $LICENSE_URL -O mod-license
   - sudo apt-get -qq update
   - sudo apt-get install -y libhdf5-serial-dev swig
   - wget http://salilab.org/modeller/9.17/modeller_9.17-1_amd64.deb
@@ -16,3 +15,6 @@ script:
   - cmake ..
   - make
   - ctest --output-on-failure
+env:
+  global:
+    secure: tuddXKC9b8NwvquR9uJTp3sCezeNiP8sSoHaPnZkF/nC6loUpM3VP4sh5llIbL7RDvI36VbYoAIz3/nQarpSKrQgfNMropE7QVKquL46unA0saJdWIEB4xzE5l34uD46peW/SnZvWBHHgUskA7udGQ/OBHJMRIjNJe4fOV/+vQRQ9WrvsBUavaVK881zqC05Ff7PheXKhwQRpjStwB1Xs9P8Wnhfse9AYQ4N2pQTfxUUGNDPIjxQ7J29pDlroJBxSuNaucyrZzL2RqqE1coXaRixR/LkHQ5Q8Bl6RGJBiDjDKy0+nZClmjr5ag/Cg2eX/B0IL/psmtSaoQlM0CwdgOFELFrhvpHG/jkzQeX9euQq9IarUtqMx6rHUxF8I0GwHEwjcbzhpLiw8ld1VfnyfrQe5nzrlvdDNIyJy/VH749l3XDTP6umSIDz6ka2E9T/U53/KKfrh3MLVhY4vrfNaOQzD2pyFS1zvNm6QoAnae7zh7XOedrFnVNyArj3H7lxDszYgXa/am+ykgxWBW5yDzy7hWH8EiCMFre1BlhJnSkEktBz6Q4y/YyJ41dEZny7lAfD9Ul0J9pKyj8jwiL4GYc02gOXjVDvU6Cea8OzJfcg6KCWper1wwYl8K0/qkW1HMwbRjdcRjHSnStWI/gc5IGHfi+IV8A8eLZnNTcrFG8=

@@ -325,7 +325,7 @@ static gboolean write_atom_class_file(hid_t loc_id, const char *name,
 {
   hid_t group_id;
 
-  group_id = H5Gcreate(loc_id, name, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  group_id = H5Gcreate2(loc_id, name, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   if (group_id < 0) {
     return FALSE;
   }

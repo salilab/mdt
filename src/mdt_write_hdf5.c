@@ -22,8 +22,8 @@ static gboolean write_ifeat(hid_t group_id, const struct mdt *mdt,
                                                    ifeat - 1);
 
   group_name = g_strdup_printf("feature%d", ifeat);
-  featgroup_id = H5Gcreate(group_id, group_name, H5P_DEFAULT, H5P_DEFAULT,
-                           H5P_DEFAULT);
+  featgroup_id = H5Gcreate2(group_id, group_name, H5P_DEFAULT, H5P_DEFAULT,
+                            H5P_DEFAULT);
   g_free(group_name);
   if (featgroup_id < 0) {
     return FALSE;
@@ -101,8 +101,8 @@ static gboolean write_scan_info(hid_t file_id,
   if (!params->scan_called) {
     return TRUE;
   }
-  return (group_id = H5Gcreate(file_id, "/scan", H5P_DEFAULT, H5P_DEFAULT,
-                               H5P_DEFAULT)) >= 0
+  return (group_id = H5Gcreate2(file_id, "/scan", H5P_DEFAULT, H5P_DEFAULT,
+                                H5P_DEFAULT)) >= 0
          && mdt_hdf5_write_int_attr(group_id, "residue_span_range", 4,
                                     params->residue_span_range)
          && mdt_hdf5_write_int_attr(group_id, "chain_span_range", 4,
@@ -138,8 +138,8 @@ static gboolean write_library_info(hid_t file_id, const struct mdt *mdt,
   gboolean retval = TRUE;
   int i;
 
-  group_id = H5Gcreate(file_id, "/library", H5P_DEFAULT, H5P_DEFAULT,
-                       H5P_DEFAULT);
+  group_id = H5Gcreate2(file_id, "/library", H5P_DEFAULT, H5P_DEFAULT,
+                        H5P_DEFAULT);
   if (group_id < 0) {
     return FALSE;
   }

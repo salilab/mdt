@@ -4,6 +4,8 @@ python:
   - 2.7
   - 3.5
 install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libhdf5-serial-dev
   - wget http://salilab.org/modeller/9.17/modeller_9.17-1_amd64.deb
   - sudo dpkg -i modeller_9.17-1_amd64.deb
 script:

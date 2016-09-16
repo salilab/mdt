@@ -10,7 +10,7 @@
 #include "mdt_error.h"
 
 /** Walk the HDF5 error stack, and get the topmost error */
-static herr_t errwalkfunc(unsigned n, const H5E_error_t *err_desc, void *data)
+static herr_t errwalkfunc(unsigned n, const H5E_error2_t *err_desc, void *data)
 {
   GError **err = (GError **)data;
   if (n == 0) {

@@ -9,8 +9,8 @@ install:
   - sudo apt-get install -y libhdf5-serial-dev swig
   - wget http://salilab.org/modeller/9.17/modeller_9.17-1_amd64.deb
   - KEY_MODELLER=`cat mod-license` sudo dpkg -i modeller_9.17-1_amd64.deb
-  - ln -sf /usr/lib/python$TRAVIS_PYTHON_VERSION/dist-packages/_modeller.so `which python`/../lib/*/site-packages/
-  - ln -sf /usr/lib/python$TRAVIS_PYTHON_VERSION/dist-packages/modeller `which python`/../lib/*/site-packages/
+  - ln -sf /usr/lib/python$TRAVIS_PYTHON_VERSION/dist-packages/_modeller.so $(dirname $(which python))/../lib/*/site-packages/
+  - ln -sf /usr/lib/python$TRAVIS_PYTHON_VERSION/dist-packages/modeller $(dirname $(which python))/../lib/*/site-packages/
 script:
   - mkdir build
   - cd build

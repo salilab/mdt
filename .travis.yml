@@ -25,9 +25,10 @@ script:
   - mkdir build
   - cd build
   - ../tools/coverage/setup.py
+  - PYTHON_EXE=$(which python)
   - PYTHON_INC=$(echo $(dirname $(which python))/../include/*/)
   - PYTHON_LIB=$(echo /opt/python/${TRAVIS_PYTHON_VERSION}.*/lib/libpython${TRAVIS_PYTHON_VERSION}*.so)
-  - PYTHONPATH=`pwd`/coverage cmake .. -DCMAKE_BUILD_TYPE=Debug -DPYTHON_INCLUDE_DIR=$PYTHON_INC -DPYTHON_LIBRARY=$PYTHON_LIB -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage"
+  - PYTHONPATH=`pwd`/coverage cmake .. -DCMAKE_BUILD_TYPE=Debug -DPYTHON_EXECUTABLE=$PYTHON_EXE -DPYTHON_INCLUDE_DIR=$PYTHON_INC -DPYTHON_LIBRARY=$PYTHON_LIB -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage"
   - rm ../src/mdt_config.h
   - make
   - ctest --output-on-failure

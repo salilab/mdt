@@ -23,6 +23,6 @@ scripts just like any other Python script. Alternatively, you can use the
 run it before your regular Python invocation
 (e.g. "`bin/mdtpy.sh python foo.py`")
 
-MDT is Copyright 1989-2016 Andrej Sali, and available under the terms of
+MDT is Copyright 1989-2017 Andrej Sali, and available under the terms of
 version 2 of the GNU General Public License as published by the
 Free Software Foundation.

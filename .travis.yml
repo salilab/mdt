@@ -4,21 +4,11 @@ language: python
 python:
   - 2.6
   - 2.7
-  - 3.5
+  - 3.6
 install:
   - wget -q $LICENSE_URL -O mod-license >& /dev/null
-  - sudo apt-get -qq update
-  - sudo apt-get install -y swig
-  - wget http://salilab.org/modeller/9.17/modeller_9.17-1_amd64.deb
-  - KEY_MODELLER=`cat mod-license` sudo dpkg -i modeller_9.17-1_amd64.deb
-  - ln -sf /usr/lib/python$TRAVIS_PYTHON_VERSION/dist-packages/_modeller.so $(dirname $(which python))/../lib/*/site-packages/
-  - ln -sf /usr/lib/python$TRAVIS_PYTHON_VERSION/dist-packages/modeller $(dirname $(which python))/../lib/*/site-packages/
-  - wget http://salilab.org/modeller/downloads/hdf5-1.8.16-headers-64bit-ubuntu.tar.gz
-  - tar -xzf hdf5-1.8.16-headers-64bit-ubuntu.tar.gz && mv hdf5-1.8.16-headers-64bit-ubuntu hdf5-inc
+  - tools/travis/install_deps.sh $TRAVIS_PYTHON_VERSION `pwd`/mod-license 
   - export CMAKE_INCLUDE_PATH=`pwd`/hdf5-inc
-  - mkdir hdf5-libs
-  - ln -sf /usr/lib/modeller9.17/lib/x86_64-intel8/libhdf5_hl.so.10 hdf5-libs/libhdf5_hl.so
-  - ln -sf /usr/lib/modeller9.17/lib/x86_64-intel8/libhdf5.so.10 hdf5-libs/libhdf5.so
   - export CMAKE_LIBRARY_PATH=`pwd`/hdf5-libs
   - pip install coverage
 script:

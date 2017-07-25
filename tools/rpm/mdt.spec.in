@@ -6,7 +6,7 @@ Summary:       Protein structure analysis
 Group:         Applications/Engineering
 Packager:      Ben Webb <ben@salilab.org>
 Vendor:        Andrej Sali
-URL:           http://www.salilab.org/mdt/
+URL:           https://salilab.org/mdt/
 Source0:       %{name}-%{version}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 BuildRequires: modeller >= 9.13, glib2-devel >= 2.2.0

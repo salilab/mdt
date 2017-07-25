@@ -10,7 +10,7 @@ URL:           https://salilab.org/mdt/
 Source0:       %{name}-%{version}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 BuildRequires: modeller >= 9.15, glib2-devel >= 2.2.0
-BuildRequires: python-devel, python-sphinx
+BuildRequires: python-devel, python-sphinx, scons, hdf5-devel, swig
 Requires:      modeller >= 9.15
 
 %description

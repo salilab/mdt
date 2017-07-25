@@ -1,5 +1,8 @@
 HEAD
 ====
+
+MDT 5.4   05-25-2017
+====================
  - Development is now open and hosted at GitHub.
  - Experimental cmake build support.
  - Installation packages now available for Homebrew

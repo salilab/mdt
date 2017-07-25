@@ -25,17 +25,41 @@ by running::
 
    module load modeller
 
+.. _anaconda:
+
+Using with Anaconda Python
+--------------------------
+
+There is an MDT package available for `Anaconda Python <https://store.continuum.io/cshop/anaconda/>`_ for Mac and Linux.
+To install it, simply run::
+
+    conda install -c salilab mdt
+
+.. _homebrew:
+
+Using a Homebrew package
+------------------------
+
+If you are using a Mac with `homebrew <http://brew.sh>`_ you can
+get MDT by running in a terminal window::
+
+    brew tap salilab/salilab; brew install mdt
+
+If you don't already have Modeller installed, you can get it by running
+`brew install modeller` before you install MDT.
+
+Add `--with-python3` to the end of each `brew install` command if you also
+want to use Python 3.
+
+
 .. _compilation:
 
 Compilation from source code
 ----------------------------
 
-The MDT source code can be downloaded from the MDT website. In the Sali lab,
-you can get the current MDT code by running the following::
+The MDT source code can be downloaded from
+`GitHub <https://github.com/salilab/mdt/>`_.
 
-   svn co https://svn.salilab.org/impmod/trunk/mdt mdt
-
-Unpack the source code and change into the newly-created MDT subdirectory.
 Install dependent packages needed for MDT: MODELLER, glib, SWIG,
 pkg-config, and HDF5:
 

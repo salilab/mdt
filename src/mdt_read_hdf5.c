@@ -1,6 +1,6 @@
 /** \file mdt_read_hdf5.c   Functions to read MDTs from binary (HDF5) files.
  *
- *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
  */
 
 #include <glib.h>

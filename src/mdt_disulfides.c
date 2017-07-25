@@ -1,6 +1,6 @@
 /** \file mdt_disulfides.c    Functions to handle disulfide bridges.
  *
- *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
  */
 
 #include <glib.h>

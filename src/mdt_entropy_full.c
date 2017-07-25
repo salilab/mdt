@@ -1,6 +1,6 @@
 /** \file mdt_entropy_full.c  Functions to calculate entropy of an MDT.
  *
- *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
  */
 
 #include <stdlib.h>

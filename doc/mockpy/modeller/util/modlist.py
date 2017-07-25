@@ -1,0 +1,1 @@
+class FixList(object): pass

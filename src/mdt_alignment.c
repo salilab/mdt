@@ -1,6 +1,6 @@
 /** \file mdt_alignment.c      Functions to add alignment data to MDTs.
  *
- *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
  */
 
 #include <stdlib.h>
@@ -185,8 +185,8 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
         mean[i] = angle0witherr(ia1, ia1p, tuple2->iata[0], s, &std[i],
                                 errorscale/2);
         periodic[i]=180;
-        if (std[i]>180/numofstd)
-          std[i]=180/numofstd;
+        if (std[i] > (int)(180/numofstd))
+          std[i] = (int)(180/numofstd);
         break;
       case '2':
         tuple1 = property_one_tuple(source->aln, is1, source->prop, mlib,
@@ -194,8 +194,8 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
         mean[i] = angle0witherr(tuple1->iata[0], ia1, ia1p, s, &std[i],
                                 errorscale/2);
         periodic[i]=180;
-        if (std[i]>180/numofstd)
-          std[i]=180/numofstd;
+        if (std[i] > (int)(180/numofstd))
+          std[i] = (int)(180/numofstd);
         break;
       case 'r':
         tuple1 = property_one_tuple(source->aln, is1, source->prop, mlib,
@@ -205,8 +205,8 @@ static gboolean update_mdt_witherr(gboolean *outrange, int is1, int ip1,
         mean[i] = dihedral0witherr(tuple1->iata[0], ia1, ia1p, tuple2->iata[0],
                                    s, &std[i], errorscale/2);
         periodic[i]=360;
-        if (std[i]>360/numofstd)
-          std[i]=360/numofstd;
+        if (std[i] > (int)(360/numofstd))
+          std[i] = (int)(360/numofstd);
         break;
       }
       witherr[i]=1;

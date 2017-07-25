@@ -1,3 +1,11 @@
+MDT 5.4   05-25-2017
+====================
+ - Development is now open and hosted at GitHub.
+ - Experimental cmake build support.
+ - Installation packages now available for Homebrew
+   ("brew tap salilab/salilab; brew install mdt") and
+   Anaconda Python ("conda install -c salilab mdt").
+
 MDT 5.3   05-19-2015
 ====================
 

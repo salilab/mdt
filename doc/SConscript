@@ -2,16 +2,12 @@ import os.path
 
 Import('env')
 
-conf = env.SubstFile("conf.py", "conf.py.in")
-
 bin = File('#/bin/mdtpy.sh')
 sphinx = env.Sphinx("html/index.html",
                     (bin, Glob('*.rst'), Dir('#/python/mdt/')))
-env.Depends(sphinx, [conf, '../ChangeLog'])
+env.Depends(sphinx, ["conf.py", '../ChangeLog'])
 
 docdir = env['destdir'] + env['docdir']
 env.SphinxInstall(os.path.join(docdir, 'index.html'), sphinx)
 env.Install(docdir, source='../COPYING')
 env.Alias('docinstall', docdir)
-
-env.SConscript('html/pdf/SConscript')

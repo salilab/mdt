@@ -12,7 +12,7 @@ env = MyEnvironment(variables=vars, require_modeller=True,
                     toolpath=["tools"])
 
 # Version number
-env['MDT_VERSION'] = '5.3'
+env['MDT_VERSION'] = '5.4'
 
 Help(vars.GenerateHelpText(env))
 

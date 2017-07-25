@@ -22,6 +22,7 @@ class TableTests(MDTTest):
     def test_version(self):
         """Check version number"""
         self.assert_(len(mdt.version) > 0)
+        self.assert_(len(mdt.__version__) > 0)
         self.assert_(len(mdt.version_info) > 0)
 
     def test_add(self):

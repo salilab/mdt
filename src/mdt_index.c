@@ -1,6 +1,6 @@
 /** \file mdt_index.c  Functions to calculate MDT indices.
  *
- *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
  */
 
 #include <string.h>

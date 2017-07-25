@@ -1,6 +1,6 @@
 /** \file mdt_write_asgl.c    Functions to write input files for ASGL.
  *
- *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
  */
 
 #include <stdlib.h>
@@ -114,7 +114,6 @@ static void appasgl(FILE *fp, const struct mod_mdt *mdt,
               nbinx);
     }
     fprintf(fp, "SET WORLD_WINDOW 0 0 %5d %5d\n", nbinx + 1, nbiny + 1);
-    ifeat = mdt->features[mdt->nfeat - 2].ifeat - 1;
     fputs("SET Y_LABELS", fp);
     for (i = 0; i < nbiny; i += every_y_numbered) {
       char *symb = get_mdt_symb(mdt, mlib, mdt->nfeat - 2, i, y_decimal);
@@ -136,7 +135,6 @@ static void appasgl(FILE *fp, const struct mod_mdt *mdt,
   fputs(text, fp);
   fputs("\n", fp);
 
-  ifeat = mdt->features[mdt->nfeat - 1].ifeat - 1;
   fputs("SET X_LABELS", fp);
   for (i = 0; i < nbinx; i += every_x_numbered) {
     char *symb = get_mdt_symb(mdt, mlib, mdt->nfeat - 1, i, x_decimal);

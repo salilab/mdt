@@ -1,6 +1,6 @@
 /** \file tuple_distance.c     Tuple-tuple non-bonded distance feature.
  *
- *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
  */
 
 #include "modeller.h"

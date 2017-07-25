@@ -1,6 +1,6 @@
 /** \file gap_distance.c  Distance to a gap features.
  *
- *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
  */
 
 #include "modeller.h"

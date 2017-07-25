@@ -74,10 +74,10 @@ class WineEnvironment(Environment):
 
     def _fix_scons_msvc_detect(self):
         """Ensure that MSVC auto-detection finds tools on Wine builds"""
-        def _wine_read_reg32(value):
+        def _wine_read_reg32(value, hkroot=None):
             return '/usr/lib/w32comp/Program Files/' + \
                    'Microsoft Visual Studio 10.0'
-        def _wine_read_reg64(value):
+        def _wine_read_reg64(value, hkroot=None):
             return '/usr/lib/w64comp/Program Files/' + \
                    'Microsoft Visual Studio 11.0'
         try:

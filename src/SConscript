@@ -19,7 +19,7 @@ if sys.platform == 'aix5':
 if e['PLATFORM'] == 'win32':
     e.Append(SHLINKFLAGS=['hdf5.lib', 'hdf5_hl.lib'])
     # Necessary to link correctly with HDF5 DLLs:
-    e.Append(CPPDEFINES=['WIN32'])
+    e.Append(CPPDEFINES=['WIN32', 'H5_BUILT_AS_DYNAMIC_LIB'])
 
 # Generate version file
 e.SubstFile('mdt_version.c', 'mdt_version.c.in')

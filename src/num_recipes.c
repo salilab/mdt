@@ -1,6 +1,6 @@
 /** \file num_recipes.c    Numerical functions, largely from Numerical Recipes.
  *
- *             Part of MDT, Copyright(c) 1989-2015 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
  */
 
 #include <assert.h>

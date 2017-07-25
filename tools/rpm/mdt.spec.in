@@ -1,6 +1,6 @@
 Name:          mdt
 Version:       @MDT_VERSION@
-Release:       1
+Release:       1%{?dist}
 License:       GPLv2
 Summary:       Protein structure analysis
 Group:         Applications/Engineering

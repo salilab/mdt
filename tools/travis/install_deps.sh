@@ -9,8 +9,8 @@ fi
 
 python_version=$1
 modeller_license_file=$2
-MODELLER_VERSION=9.18
-HDF5_VERSION=1.8.17
+MODELLER_VERSION=9.19
+HDF5_VERSION=1.8.18
 HDF5_SOVER=10
 
 sudo apt-get -qq update

@@ -10,7 +10,7 @@ import sizeof_check
 from SCons.Script import *
 
 __all__ = ["add_common_variables", "MyEnvironment", "get_pyext_environment",
-           "get_sharedlib_environment", "invalidate_environment", "embed"]
+           "get_sharedlib_environment", "invalidate_environment"]
 
 import SCons
 _SWIGScanner = SCons.Scanner.ClassicCPP(

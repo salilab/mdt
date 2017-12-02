@@ -1,5 +1,6 @@
 """Utility functions used by all IMP modules"""
 
+from __future__ import print_function
 import os.path
 import re
 import sys
@@ -49,7 +50,7 @@ class WineEnvironment(Environment):
         if LINK is None:
             LINK = '%slink' % bitprefix
         if sys.platform != 'linux2':
-            print "ERROR: Wine is supported only on Linux systems"
+            print("ERROR: Wine is supported only on Linux systems")
             Exit(1)
         self._fix_scons_msvc_detect()
 
@@ -149,9 +150,9 @@ def CheckGlib2(context):
                          human_name='GLib2', env_key='GLIB'):
         return True
     else:
-        print "GLib2 and pkg-config are required to install this software."
-        print "Install the glib2-devel and pkg-config (or similar) packages,"
-        print "or download the GLib2 sourcecode from www.gtk.org"
+        print("GLib2 and pkg-config are required to install this software.")
+        print("Install the glib2-devel and pkg-config (or similar) packages,")
+        print("or download the GLib2 sourcecode from www.gtk.org")
         Exit(1)
 
 def check_modeller_python(context):
@@ -252,7 +253,7 @@ def CheckModeller(context):
     modbin = os.path.join(moddir, files[-1])
     try:
         p = MyPopen(modbin + " -")
-        print >> p.stdin, "print 'EXE type: ', info.exe_type"
+        print("print 'EXE type: ', info.exe_type", file=p.stdin)
         p.stdin.close()
     except IOError, e:
         context.Result("could not run MODELLER script %s: %s" % (modbin, e))
@@ -281,13 +282,13 @@ def _modeller_check_failed(require_modeller):
           "  set the directory where Modeller is installed\n" + \
           "  (run 'scons -h' for help.)"
 
-    print
+    print()
     if require_modeller:
-        print "ERROR: MODELLER is required to build this package\n\n" + msg
+        print("ERROR: MODELLER is required to build this package\n\n" + msg)
         Exit(1)
     else:
-        print "  MODELLER was not found: build will continue but some"
-        print "  functionality will be missing.\n\n" + msg
+        print("  MODELLER was not found: build will continue but some")
+        print("  functionality will be missing.\n\n" + msg)
 
 
 def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
@@ -349,7 +350,7 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         else:
             env.Append(CCFLAGS="-Wall -Werror -g -O3")
     elif env.get('coverage', False):
-        print "ERROR: C coverage testing currently only works with gcc"
+        print("ERROR: C coverage testing currently only works with gcc")
         Exit(1)
     _add_release_flags(env)
 
@@ -385,11 +386,11 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         # Look for the hdf5.h header file. todo: make sure its version
         # matches that of the HDF5 libraries included with Modeller.
         if not conf.CheckCHeader('hdf5.h'):
-            print "HDF5 is required to build this package. Make sure you have"
-            print "the same version that MODELLER is built with (check the"
-            print "Modeller changelog). If it is installed already, set the"
-            print "scons 'includepath' option to the directory containing"
-            print "the hdf5.h header file."
+            print("HDF5 is required to build this package. Make sure you have")
+            print("the same version that MODELLER is built with (check the")
+            print("Modeller changelog). If it is installed already, set the")
+            print("scons 'includepath' option to the directory containing")
+            print("the hdf5.h header file.")
             Exit(1)
 
         # Check explicitly for False, since all checks will return Null if
@@ -463,17 +464,17 @@ path='/opt/local/bin'
     try:
         v = [int(x) for x in version.split(".")]
     except ValueError:
-        print failmsg % (needversion_str,
-                         "it could not be found on your system")
+        print(failmsg % (needversion_str,
+                         "it could not be found on your system"))
         Exit(1)
     if v >= needversion:
-        print "Checking for SWIG >= %s: %s found" \
-              % (needversion_str, ".".join([str(x) for x in v]))
+        print("Checking for SWIG >= %s: %s found" \
+              % (needversion_str, ".".join([str(x) for x in v])))
         return
     else:
-        print failmsg % (needversion_str,
+        print(failmsg % (needversion_str,
                          "only an older version (%s) " % version + \
-                         "was found on your system")
+                         "was found on your system"))
         Exit(1)
 
 def get_pyext_environment(env, mod_prefix, cplusplus=False):

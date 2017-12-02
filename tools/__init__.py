@@ -4,9 +4,9 @@ from __future__ import print_function
 import os.path
 import re
 import sys
-import subst
-import c_coverage
-import sizeof_check
+from . import subst
+from . import c_coverage
+from . import sizeof_check
 from SCons.Script import *
 
 __all__ = ["add_common_variables", "MyEnvironment", "get_pyext_environment",
@@ -25,7 +25,8 @@ try:
     import subprocess
     def MyPopen(cmd):
         return subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                universal_newlines=True)
 except ImportError:
     class MyPopen(object):
         def __init__(self, cmd):
@@ -132,7 +133,7 @@ def check_pkgconfig(context, pkgconfig_name, human_name, env_key):
     try:
         flags = context.env.ParseFlags('!pkg-config --cflags --libs ' \
                                        + pkgconfig_name)
-    except OSError, detail:
+    except OSError as detail:
         context.Result("failed: %s" % str(detail))
         return False
     context.env[env_key] = flags
@@ -159,14 +160,14 @@ def check_modeller_python(context):
     context.Message("Checking for MODELLER in Python path...")
     try:
         import modeller
-    except ImportError, e:
+    except ImportError as e:
         context.Result("not found (specify installation path with 'modeller' "
                        "scons option): %s" % str(e))
         return False
     try:
         exetype = modeller.info.exe_type
         bindir = modeller.info.bindir
-    except AttributeError, e:
+    except AttributeError as e:
         context.Result("'import modeller' succeeded, but the package does "
                        "not appear to be MODELLER; perhaps a 'modeller.py' "
                        "file in the current directory?")
@@ -240,7 +241,7 @@ def CheckModeller(context):
     moddir = "%s/bin" % modeller
     try:
         files = os.listdir(moddir)
-    except OSError, e:
+    except OSError as e:
         context.Result("could not find MODELLER directory %s: %s" % (moddir, e))
         return False
     files.sort()
@@ -255,7 +256,7 @@ def CheckModeller(context):
         p = MyPopen(modbin + " -")
         print("print 'EXE type: ', info.exe_type", file=p.stdin)
         p.stdin.close()
-    except IOError, e:
+    except IOError as e:
         context.Result("could not run MODELLER script %s: %s" % (modbin, e))
         return False
     err = p.stderr.read()
@@ -368,7 +369,7 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         # Find locally-installed libraries in /usr/local (e.g. for SWIG)
         env['ENV']['LD_LIBRARY_PATH'] = '/usr/local/lib'
     # Make Modeller exetype variable available:
-    if os.environ.has_key('EXECUTABLE_TYPESVN'):
+    if 'EXECUTABLE_TYPESVN' in os.environ:
         env['ENV']['EXECUTABLE_TYPESVN'] = os.environ['EXECUTABLE_TYPESVN']
     # Set empty variables in case checks fail or are not run (e.g. clean)
     env['MODELLER_MODPY'] = ''

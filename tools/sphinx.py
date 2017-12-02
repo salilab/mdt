@@ -1,5 +1,6 @@
 # Simple Sphinx tool and builder.
 
+from __future__ import print_function
 import os
 from SCons.Script import *
 
@@ -12,7 +13,7 @@ def _action_sphinx(target, source, env):
                               sourcedir, outdir)
     ret = env.Execute(app)
     if not ret:
-        print "Build finished. The HTML pages are in " + outdir
+        print("Build finished. The HTML pages are in " + outdir)
     return ret
 
 def generate(env):

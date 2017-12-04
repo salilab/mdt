@@ -50,7 +50,7 @@ class WineEnvironment(Environment):
             CC = '%scc' % bitprefix
         if LINK is None:
             LINK = '%slink' % bitprefix
-        if sys.platform != 'linux2':
+        if not sys.platform.startswith('linux'):
             print("ERROR: Wine is supported only on Linux systems")
             Exit(1)
         self._fix_scons_msvc_detect()
@@ -575,7 +575,7 @@ def invalidate_environment(env, fail_builder):
 def add_common_variables(vars, package):
     """Add common variables to an SCons Variables object."""
     libdir = '${prefix}/lib'
-    if hasattr(os, 'uname') and sys.platform == 'linux2' \
+    if hasattr(os, 'uname') and sys.platform.startswith('linux') \
        and os.uname()[-1] == 'x86_64':
         # Install in /usr/lib64 rather than /usr/lib on x86_64 Linux boxes
         libdir += '64'

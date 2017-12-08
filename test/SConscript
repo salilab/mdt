@@ -16,7 +16,7 @@ def builder_unit_test(target, source, env):
     app = "%s %s %s %s-v > %s" % (source[1].abspath, e['PYTHON'],
                                   source[0], opts, e['DEVNULL'])
     if c.Execute(app) == 0:
-        file(str(target[0]), 'w').write('PASSED\n')
+        open(str(target[0]), 'w').write('PASSED\n')
     else:
         sys.stdout.write("unit tests FAILED\n")
         return 1

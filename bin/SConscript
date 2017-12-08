@@ -2,17 +2,17 @@ Import('env')
 
 # Custom builder to generate file:
 def builder_script_file(target, source, env):
-    infile = file(source[0].abspath, 'r')
-    outfile = file(target[0].abspath, 'w')
+    infile = open(source[0].abspath, 'rb')
+    outfile = open(target[0].abspath, 'wb')
     for line in infile:
-        line = line.rstrip('\r\n')
-        if line.endswith("@TOPDIR@"):
-            line = "TOPDIR=" + source[1].get_contents()
-        elif line.endswith("@MODPY@"):
-            line = "MODPY=" + source[2].get_contents()
-        elif line.endswith("@PATHSEP@"):
-            line = "PATHSEP=\"" + source[3].get_contents() + "\""
-        print >> outfile, line
+        line = line.rstrip(b'\r\n')
+        if line.endswith(b"@TOPDIR@"):
+            line = b"TOPDIR=" + source[1].get_contents()
+        elif line.endswith(b"@MODPY@"):
+            line = b"MODPY=" + source[2].get_contents()
+        elif line.endswith(b"@PATHSEP@"):
+            line = b"PATHSEP=\"" + source[3].get_contents() + b"\""
+        outfile.write(line + b"\n")
     outfile.close()
     infile.close()
     # 1877 = octal 0755

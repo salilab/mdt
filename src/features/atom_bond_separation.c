@@ -1,6 +1,6 @@
 /** \file atom_bond_separation.c     Atom-atom bond separation feature.
  *
- *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2018 Andrej Sali
  */
 
 #include "modeller.h"

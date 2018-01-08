@@ -1,6 +1,6 @@
 /** \file mdt.h            Functions to handle MDTs.
  *
- *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2018 Andrej Sali
  */
 
 #ifndef __MDT_MDT_H

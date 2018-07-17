@@ -338,7 +338,7 @@ class Table(TableSection):
        Individual elements from the table can be accessed in standard Python
        fashion, e.g. ::
 
-         >>> import mdt
+         >>> import mdt.features
          >>> import modeller
          >>> env = modeller.environ()
          >>> mlib = mdt.Library(env)

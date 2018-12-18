@@ -1,10 +1,10 @@
 sudo: required
-dist: trusty
+dist: xenial
 language: python
 python:
-  - 2.6
   - 2.7
   - 3.6
+  - 3.7
 install:
   - wget -q $LICENSE_URL -O mod-license >& /dev/null
   - tools/travis/install_deps.sh $TRAVIS_PYTHON_VERSION `pwd`/mod-license 

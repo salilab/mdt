@@ -109,14 +109,14 @@ class FeatureTests(MDTTest):
         mdl.build_sequence('A')
         aln = modeller.alignment(env)
         aln.append_model(mdl, align_codes='test')
-        s = aln[0]
+        chain = aln[0].chains[0]
         # Mainchain atom Biso should be ignored:
         for mainchain in ('N:1', 'C:1', 'O:1', 'OXT:1', 'CA:1'):
-            s.atoms[mainchain].biso = 1000
+            chain.atoms[mainchain].biso = 1000
         for (biso, bin) in ((22, 2), (32, 3), # Map regular values to bins
                             (0, -1), # Zero Biso should be "undefined"
                             (1, 3)): # Biso < 2 is multiplied by 4pi^2
-            s.atoms['CB:1'].biso = biso
+            chain.atoms['CB:1'].biso = biso
             m = mdt.Table(mlib, features=sidechain_biso)
             m.add_alignment(aln)
             self.assertEqual(m.shape, (6,))
@@ -947,10 +947,11 @@ class FeatureTests(MDTTest):
     def test_dihedral_diff_periodic(self):
         """Make sure that dihedral difference features are periodic"""
         def set_omega(mdl, angle):
-            ca = mdl.atoms['CA:1']
-            c = mdl.atoms['C:1']
-            n2 = mdl.atoms['N:2']
-            ca2 = mdl.atoms['CA:2']
+            chain = mdl.chains[0]
+            ca = chain.atoms['CA:1']
+            c = chain.atoms['C:1']
+            n2 = chain.atoms['N:2']
+            ca2 = chain.atoms['CA:2']
             n2.x = n2.y = n2.z = 0.0
             c.x = -2.0
             c.y = c.z = 0.0

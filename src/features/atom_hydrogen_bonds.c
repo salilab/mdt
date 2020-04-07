@@ -1,6 +1,6 @@
 /** \file atom_hydrogen_bonds.c  Atom hydrogen bond features.
  *
- *             Part of MDT, Copyright(c) 1989-2018 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
  */
 
 #include "modeller.h"

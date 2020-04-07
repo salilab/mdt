@@ -1,6 +1,6 @@
 /** \file mdt_hydrogen_bonds.h    Functions for handling hydrogen bonds
  *
- *             Part of MDT, Copyright(c) 1989-2018 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
  */
 
 #ifndef __MDT_HBOND_H

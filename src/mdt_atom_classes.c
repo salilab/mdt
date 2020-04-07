@@ -1,6 +1,6 @@
 /** \file mdt_atom_classes.c   Functions to handle atom classes.
  *
- *             Part of MDT, Copyright(c) 1989-2018 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
  */
 
 #include <stdio.h>

@@ -1,6 +1,6 @@
 /** \file mdt_read.c       Functions to read MDTs from text files.
  *
- *             Part of MDT, Copyright(c) 1989-2018 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
  */
 
 #include <glib.h>

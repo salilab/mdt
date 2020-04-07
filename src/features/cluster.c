@@ -1,6 +1,6 @@
 /** \file cluster.c     Cluster feature.
  *
- *             Part of MDT, Copyright(c) 1989-2018 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
  */
 
 #include "modeller.h"

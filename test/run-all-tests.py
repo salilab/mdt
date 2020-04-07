@@ -59,7 +59,11 @@ class RunAllTests(unittest.TestProgram):
             self.cov.use_cache(False)
             print("\nPython coverage report\n", file=sys.stderr)
 
-            self.cov.file_locator.relative_dir = self.topdir + '/'
+            # Don't show full paths in coverage output
+            if hasattr(coverage.files, 'RELATIVE_DIR'):
+                coverage.files.RELATIVE_DIR = self.topdir + '/'
+            else:
+                self.cov.file_locator.relative_dir = self.topdir + '/'
             self.cov.report(self.mods, file=sys.stderr)
             html = self.opts.html_coverage
             if html:

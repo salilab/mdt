@@ -3,7 +3,7 @@
 """
    MDT, a module for protein structure analysis.
 
-   Copyright 1989-2016 Andrej Sali.
+   Copyright 1989-2020 Andrej Sali.
 
    MDT is free software: you can redistribute it and/or modify
    it under the terms of version 2 of the GNU General Public License
@@ -338,7 +338,7 @@ class Table(TableSection):
        Individual elements from the table can be accessed in standard Python
        fashion, e.g. ::
 
-         >>> import mdt
+         >>> import mdt.features
          >>> import modeller
          >>> env = modeller.environ()
          >>> mlib = mdt.Library(env)

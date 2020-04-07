@@ -1,17 +1,17 @@
 Name:          mdt
 Version:       @MDT_VERSION@
-Release:       1
+Release:       1%{?dist}
 License:       GPLv2
 Summary:       Protein structure analysis
 Group:         Applications/Engineering
 Packager:      Ben Webb <ben@salilab.org>
 Vendor:        Andrej Sali
-URL:           http://www.salilab.org/mdt/
+URL:           https://salilab.org/mdt/
 Source0:       %{name}-%{version}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
-BuildRequires: modeller >= 9.13, glib2-devel >= 2.2.0
-BuildRequires: python-devel, python-sphinx
-Requires:      modeller >= 9.13
+BuildRequires: modeller >= 9.15, glib2-devel >= 2.2.0
+BuildRequires: python-devel, python-sphinx, scons, hdf5-devel, swig
+Requires:      modeller >= 9.15
 
 %description
 MDT prepares a raw frequency table, given information from MODELLER alignments
@@ -56,6 +56,9 @@ scons destdir=${RPM_BUILD_ROOT} docdir=/usr/share/doc/%{name}-%{version} \
 /usr/share/mdt
 
 %changelog
+* Tue Jul 25 2017 Ben Webb <ben@salilab.org>   5.4-1
+- Update to new release.
+
 * Tue May 19 2015 Ben Webb <ben@salilab.org>   5.3-1
 - Update to new release.
 

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 Import('env', 'get_pyext_environment')
 
@@ -9,18 +10,18 @@ e.MergeFlags(e['GLIB'])
 # Check for NumPy support:
 if not e.GetOption('clean') and not e.GetOption('help') \
    and not e['wine'] and not e['wine64']:
-    print "Checking for numpy...",
+    print("Checking for numpy...", end='')
     try:
         import numpy
         path = os.path.join(numpy.__path__[0], 'core', 'include')
         if os.path.exists(path):
             e.Append(CPPDEFINES=[('MDT_WITH_NUMPY', 1)])
-            print "found in " + path
+            print("found in " + path)
             e.Append(CPPPATH=[path])
         else:
-            print "module found, but no headers"
+            print("module found, but no headers")
     except ImportError:
-        print "not found"
+        print("not found")
 
 e.Append(LIBPATH=['../src'])
 e.Append(LIBS=['mdt'])

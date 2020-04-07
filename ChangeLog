@@ -1,3 +1,7 @@
+MDT 5.5   04-07-2020
+====================
+ - Add more Python 3 support to the build system.
+
 MDT 5.4   05-25-2017
 ====================
  - Development is now open and hosted at GitHub.

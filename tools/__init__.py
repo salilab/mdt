@@ -1,15 +1,16 @@
 """Utility functions used by all IMP modules"""
 
+from __future__ import print_function
 import os.path
 import re
 import sys
-import subst
-import c_coverage
-import sizeof_check
+from . import subst
+from . import c_coverage
+from . import sizeof_check
 from SCons.Script import *
 
 __all__ = ["add_common_variables", "MyEnvironment", "get_pyext_environment",
-           "get_sharedlib_environment", "invalidate_environment", "embed"]
+           "get_sharedlib_environment", "invalidate_environment"]
 
 import SCons
 _SWIGScanner = SCons.Scanner.ClassicCPP(
@@ -24,7 +25,8 @@ try:
     import subprocess
     def MyPopen(cmd):
         return subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                universal_newlines=True)
 except ImportError:
     class MyPopen(object):
         def __init__(self, cmd):
@@ -48,8 +50,8 @@ class WineEnvironment(Environment):
             CC = '%scc' % bitprefix
         if LINK is None:
             LINK = '%slink' % bitprefix
-        if sys.platform != 'linux2':
-            print "ERROR: Wine is supported only on Linux systems"
+        if not sys.platform.startswith('linux'):
+            print("ERROR: Wine is supported only on Linux systems")
             Exit(1)
         self._fix_scons_msvc_detect()
 
@@ -94,9 +96,9 @@ def _get_python_include(env):
     if env['pythoninclude']:
         return env['pythoninclude']
     elif env['wine64']:
-        return '/usr/lib/w64comp/w64python/2.6/include/'
+        return '/usr/lib/w64comp/w64python/2.7/include/'
     elif env['wine']:
-        return '/usr/lib/w32comp/w32python/2.6/include/'
+        return '/usr/lib/w32comp/w32python/2.7/include/'
     else:
         import distutils.sysconfig
         return distutils.sysconfig.get_python_inc()
@@ -131,7 +133,7 @@ def check_pkgconfig(context, pkgconfig_name, human_name, env_key):
     try:
         flags = context.env.ParseFlags('!pkg-config --cflags --libs ' \
                                        + pkgconfig_name)
-    except OSError, detail:
+    except OSError as detail:
         context.Result("failed: %s" % str(detail))
         return False
     context.env[env_key] = flags
@@ -149,23 +151,23 @@ def CheckGlib2(context):
                          human_name='GLib2', env_key='GLIB'):
         return True
     else:
-        print "GLib2 and pkg-config are required to install this software."
-        print "Install the glib2-devel and pkg-config (or similar) packages,"
-        print "or download the GLib2 sourcecode from www.gtk.org"
+        print("GLib2 and pkg-config are required to install this software.")
+        print("Install the glib2-devel and pkg-config (or similar) packages,")
+        print("or download the GLib2 sourcecode from www.gtk.org")
         Exit(1)
 
 def check_modeller_python(context):
     context.Message("Checking for MODELLER in Python path...")
     try:
         import modeller
-    except ImportError, e:
+    except ImportError as e:
         context.Result("not found (specify installation path with 'modeller' "
                        "scons option): %s" % str(e))
         return False
     try:
         exetype = modeller.info.exe_type
         bindir = modeller.info.bindir
-    except AttributeError, e:
+    except AttributeError as e:
         context.Result("'import modeller' succeeded, but the package does "
                        "not appear to be MODELLER; perhaps a 'modeller.py' "
                        "file in the current directory?")
@@ -239,7 +241,7 @@ def CheckModeller(context):
     moddir = "%s/bin" % modeller
     try:
         files = os.listdir(moddir)
-    except OSError, e:
+    except OSError as e:
         context.Result("could not find MODELLER directory %s: %s" % (moddir, e))
         return False
     files.sort()
@@ -252,9 +254,9 @@ def CheckModeller(context):
     modbin = os.path.join(moddir, files[-1])
     try:
         p = MyPopen(modbin + " -")
-        print >> p.stdin, "print 'EXE type: ', info.exe_type"
+        print("print 'EXE type: ', info.exe_type", file=p.stdin)
         p.stdin.close()
-    except IOError, e:
+    except IOError as e:
         context.Result("could not run MODELLER script %s: %s" % (modbin, e))
         return False
     err = p.stderr.read()
@@ -281,13 +283,13 @@ def _modeller_check_failed(require_modeller):
           "  set the directory where Modeller is installed\n" + \
           "  (run 'scons -h' for help.)"
 
-    print
+    print()
     if require_modeller:
-        print "ERROR: MODELLER is required to build this package\n\n" + msg
+        print("ERROR: MODELLER is required to build this package\n\n" + msg)
         Exit(1)
     else:
-        print "  MODELLER was not found: build will continue but some"
-        print "  functionality will be missing.\n\n" + msg
+        print("  MODELLER was not found: build will continue but some")
+        print("  functionality will be missing.\n\n" + msg)
 
 
 def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
@@ -349,7 +351,7 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         else:
             env.Append(CCFLAGS="-Wall -Werror -g -O3")
     elif env.get('coverage', False):
-        print "ERROR: C coverage testing currently only works with gcc"
+        print("ERROR: C coverage testing currently only works with gcc")
         Exit(1)
     _add_release_flags(env)
 
@@ -367,7 +369,7 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         # Find locally-installed libraries in /usr/local (e.g. for SWIG)
         env['ENV']['LD_LIBRARY_PATH'] = '/usr/local/lib'
     # Make Modeller exetype variable available:
-    if os.environ.has_key('EXECUTABLE_TYPESVN'):
+    if 'EXECUTABLE_TYPESVN' in os.environ:
         env['ENV']['EXECUTABLE_TYPESVN'] = os.environ['EXECUTABLE_TYPESVN']
     # Set empty variables in case checks fail or are not run (e.g. clean)
     env['MODELLER_MODPY'] = ''
@@ -385,11 +387,11 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
         # Look for the hdf5.h header file. todo: make sure its version
         # matches that of the HDF5 libraries included with Modeller.
         if not conf.CheckCHeader('hdf5.h'):
-            print "HDF5 is required to build this package. Make sure you have"
-            print "the same version that MODELLER is built with (check the"
-            print "Modeller changelog). If it is installed already, set the"
-            print "scons 'includepath' option to the directory containing"
-            print "the hdf5.h header file."
+            print("HDF5 is required to build this package. Make sure you have")
+            print("the same version that MODELLER is built with (check the")
+            print("Modeller changelog). If it is installed already, set the")
+            print("scons 'includepath' option to the directory containing")
+            print("the hdf5.h header file.")
             Exit(1)
 
         # Check explicitly for False, since all checks will return Null if
@@ -463,17 +465,17 @@ path='/opt/local/bin'
     try:
         v = [int(x) for x in version.split(".")]
     except ValueError:
-        print failmsg % (needversion_str,
-                         "it could not be found on your system")
+        print(failmsg % (needversion_str,
+                         "it could not be found on your system"))
         Exit(1)
     if v >= needversion:
-        print "Checking for SWIG >= %s: %s found" \
-              % (needversion_str, ".".join([str(x) for x in v]))
+        print("Checking for SWIG >= %s: %s found" \
+              % (needversion_str, ".".join([str(x) for x in v])))
         return
     else:
-        print failmsg % (needversion_str,
+        print(failmsg % (needversion_str,
                          "only an older version (%s) " % version + \
-                         "was found on your system")
+                         "was found on your system"))
         Exit(1)
 
 def get_pyext_environment(env, mod_prefix, cplusplus=False):
@@ -501,11 +503,11 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
         # mslink tool complains
         e['SHLIBPREFIX'] = ''
         e['LDMODULESUFFIX'] = e['SHLIBSUFFIX'] = '.pyd'
-        # Directory containing python26.lib:
+        # Directory containing python27.lib:
         if e['wine64']:
-            e.Append(LIBPATH=['/usr/lib/w64comp/w64python/2.6/lib/'])
+            e.Append(LIBPATH=['/usr/lib/w64comp/w64python/2.7/lib/'])
         else:
-            e.Append(LIBPATH=['/usr/lib/w32comp/w32python/2.6/lib/'])
+            e.Append(LIBPATH=['/usr/lib/w32comp/w32python/2.7/lib/'])
     else:
         if platform == 'aix':
             # Make sure compilers are in the PATH, so that Python's script for
@@ -573,7 +575,7 @@ def invalidate_environment(env, fail_builder):
 def add_common_variables(vars, package):
     """Add common variables to an SCons Variables object."""
     libdir = '${prefix}/lib'
-    if hasattr(os, 'uname') and sys.platform == 'linux2' \
+    if hasattr(os, 'uname') and sys.platform.startswith('linux') \
        and os.uname()[-1] == 'x86_64':
         # Install in /usr/lib64 rather than /usr/lib on x86_64 Linux boxes
         libdir += '64'

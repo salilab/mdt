@@ -1,6 +1,6 @@
 /** \file mdt_atom_classes.h  Functions to handle atom classes.
  *
- *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
  */
 
 #ifndef __MDT_ATOMCLASS_H

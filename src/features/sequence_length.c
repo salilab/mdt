@@ -1,6 +1,6 @@
 /** \file sequence_length.c     Protein sequence length feature.
  *
- *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
  */
 
 #include "modeller.h"

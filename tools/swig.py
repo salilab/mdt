@@ -11,6 +11,8 @@ scons and still populate SWIGVERSION.
 
 """
 
+from __future__ import print_function
+
 #
 # Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 The SCons Foundation
 #
@@ -38,6 +40,7 @@ __revision__ = "src/engine/SCons/Tool/swig.py 3266 2008/08/12 07:31:01 knight"
 
 import os.path
 import re
+import sys
 
 import SCons.Action
 import SCons.Defaults
@@ -62,6 +65,8 @@ def _get_swig_version(env):
         out = pipe.stdout.read()
     else:
         out = os.popen(env['SWIG'] + ' -version').read()
+    if sys.version_info[0] >= 3 and isinstance(out, bytes):
+        out = out.decode()
     match = re.search(r'SWIG Version\s+(\S+)\s*$', out, re.MULTILINE)
     if match:
         return match.group(1)

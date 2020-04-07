@@ -1,6 +1,6 @@
 /** \file mdt_all_features.h    Functions to set up all types of feature.
  *
- *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
  */
 
 #ifndef __MDT_ALL_FEATURES_H

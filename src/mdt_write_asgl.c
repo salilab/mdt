@@ -1,6 +1,6 @@
 /** \file mdt_write_asgl.c    Functions to write input files for ASGL.
  *
- *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
  */
 
 #include <stdlib.h>

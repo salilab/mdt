@@ -1,6 +1,6 @@
 /** \file average_residue_accessibility.c Average residue accessibility feature.
  *
- *             Part of MDT, Copyright(c) 1989-2016 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
  */
 
 #include "modeller.h"

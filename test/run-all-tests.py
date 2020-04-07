@@ -1,3 +1,4 @@
+from __future__ import print_function
 import unittest, sys, os, re
 from optparse import OptionParser
 import glob
@@ -56,7 +57,7 @@ class RunAllTests(unittest.TestProgram):
             self.cov.stop()
             self.cov.combine()
             self.cov.use_cache(False)
-            print >> sys.stderr, "\nPython coverage report\n"
+            print("\nPython coverage report\n", file=sys.stderr)
 
             self.cov.file_locator.relative_dir = self.topdir + '/'
             self.cov.report(self.mods, file=sys.stderr)

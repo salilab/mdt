@@ -1,3 +1,4 @@
+from __future__ import print_function
 import modeller
 import mdt
 import mdt.features
@@ -21,5 +22,5 @@ aln.append_model(mdl, align_codes='5fd1', atom_files='5fd1')
 table.add_alignment(aln)
 
 # Print out the MDT by treating it as a Python list
-print "Distribution of residue types:"
-print [bin for bin in table]
+print("Distribution of residue types:")
+print([bin for bin in table])

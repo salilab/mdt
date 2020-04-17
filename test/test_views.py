@@ -45,11 +45,11 @@ class ViewTests(MDTTest):
             return
         self.assertEqual(m.shape, a.shape)
         m[3][2] = 1000.
-        self.assertInTolerance(a[3][2], 1000., 1e-2)
+        self.assertAlmostEqual(a[3][2], 1000., delta=1e-2)
         # numpy array view should be writeable
         self.assertEqual(a.flags.writeable, True)
         a[4][1] = 2000.
-        self.assertInTolerance(m[4][1], 2000., 1e-2)
+        delta=self.assertAlmostEqual(m[4][1], 2000., delta=1e-2)
 
     def test_view_no_own(self):
         """Check that views do not own data"""

@@ -78,7 +78,7 @@ class SuperSmoothTests(MDTTest):
         # Where no data, m2==even distribution:
         for i in range(2,22):
             for a in m2[i]:
-                self.assertInTolerance(a, 1.0 / 22.0, 1e-5)
+                self.assertAlmostEqual(a, 1.0 / 22.0, delta=1e-5)
 
     def test_simple_smooth(self):
         """Test smoothing of a simple input distribution"""
@@ -96,19 +96,19 @@ class SuperSmoothTests(MDTTest):
         # First row should be a combination of the apriori (level1) distribution
         # and the data (1,0,0,0...):
         w1, w2 = self._get_weights(1.0, 22, 1.0)
-        self.assertInTolerance(m2[0,0], w1 * lev1[0] + w2 * 1.0, 1e-5)
+        self.assertAlmostEqual(m2[0,0], w1 * lev1[0] + w2 * 1.0, delta=1e-5)
         for i in range(1,22):
-            self.assertInTolerance(m2[0,i], w1 * lev1[i], 1e-5)
+            self.assertAlmostEqual(m2[0,i], w1 * lev1[i], delta=1e-5)
         # Same deal for second row, using data (0,1,1,0,0,0...):
         w1, w2 = self._get_weights(1.0, 22, 2.0)
         for i in (1,2):
-            self.assertInTolerance(m2[1,i], w1 * lev1[i] + w2 * 0.5, 1e-5)
+            self.assertAlmostEqual(m2[1,i], w1 * lev1[i] + w2 * 0.5, delta=1e-5)
         for i in list(range(3,22)) + [0]:
-            self.assertInTolerance(m2[1,i], w1 * lev1[i], 1e-5)
+            self.assertAlmostEqual(m2[1,i], w1 * lev1[i], delta=1e-5)
         # Every other row is just the level1 data:
         for i in range(2,22):
             for j in range(22):
-                self.assertInTolerance(m2[i,j], lev1[j], 1e-5)
+                self.assertAlmostEqual(m2[i,j], lev1[j], delta=1e-5)
 
 if __name__ == '__main__':
     unittest.main()

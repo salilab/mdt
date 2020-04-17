@@ -787,7 +787,7 @@ class TableTests(MDTTest):
         m1.reshape(dist,[0],[-1])
         m1.add_alignment(aln, residue_span_range=(-999, -1, 1, 999))
         self.assertEqual(m1[29],10014.0)
-        self.assertInTolerance(m1[28], 9758.5, 0.6)
+        self.assertAlmostEqual(m1[28], 9758.5, delta=0.6)
 
     def test_sum(self):
         """Check that sum of each row sums to that of the whole table"""
@@ -944,15 +944,15 @@ class TableTests(MDTTest):
 
         periodic, dx, x1, x2 = mdt._get_splinerange(t.features[0])
         self.assertEqual(periodic, 0)
-        self.assertInTolerance(dx, 0.011, 1e-3)
-        self.assertInTolerance(x1, 0.005, 1e-3)
-        self.assertInTolerance(x2, 3.136, 1e-3)
+        self.assertAlmostEqual(dx, 0.011, delta=1e-3)
+        self.assertAlmostEqual(x1, 0.005, delta=1e-3)
+        self.assertAlmostEqual(x2, 3.136, delta=1e-3)
 
         periodic, dx, x1, x2 = mdt._get_splinerange(t.features[1])
         self.assertEqual(periodic, 1)
-        self.assertInTolerance(dx, 17.453, 1e-3)
-        self.assertInTolerance(x1, 0.0, 1e-3)
-        self.assertInTolerance(x2, 17.453, 1e-3)
+        self.assertAlmostEqual(dx, 17.453, delta=1e-3)
+        self.assertAlmostEqual(x1, 0.0, delta=1e-3)
+        self.assertAlmostEqual(x2, 17.453, delta=1e-3)
 
     def test_pass_cutoffs(self):
         """Test _pass_cutoffs utility function"""
@@ -989,10 +989,10 @@ class TableTests(MDTTest):
         m1 = mdt.Table(mlib, features=dbldist)
         m1.add_alignment_witherr(aln, residue_span_range=(-999, -1, 1, 999),
                                  errorscale=0.1)
-        self.assertInTolerance(m1.sum(), 1475.91, 0.01)
-        self.assertInTolerance(m1[29], 22.00, 0.5)
-        self.assertInTolerance(m1[25], 38.00, 0.5)
-        self.assertInTolerance(m1[0], 0.00, 1.0)
+        self.assertAlmostEqual(m1.sum(), 1475.91, delta=0.01)
+        self.assertAlmostEqual(m1[29], 22.00, delta=0.5)
+        self.assertAlmostEqual(m1[25], 38.00, delta=0.5)
+        self.assertAlmostEqual(m1[0], 0.00, delta=1.0)
 
     def test_triple_protein_scan(self):
         """Test scan of triples of proteins"""
@@ -1014,14 +1014,14 @@ class TableTests(MDTTest):
         for (sym,size) in ((False, 6.0), (True, 3.0)):
             t = mdt.Table(mlib, features=(f1,f2,f3))
             t.add_alignment(a, symtriples=sym)
-            self.assertInTolerance(t.sample_size, size, 1e-6)
+            self.assertAlmostEqual(t.sample_size, size, delta=1e-6)
 
         # When feature only covers some of the proteins, triplet scan does
         # not occur.
         for sym in (True, False):
             t = mdt.Table(mlib, features=f3)
             t.add_alignment(a, symtriples=sym)
-            self.assertInTolerance(t.sample_size, 3.0, 1e-6)
+            self.assertAlmostEqual(t.sample_size, 3.0, delta=1e-6)
 
         # Exercise residue pair features in combination with triplet scans
         ri = mdt.features.ResidueIndexDifference(mlib,
@@ -1029,7 +1029,7 @@ class TableTests(MDTTest):
                                                  protein=2)
         t = mdt.Table(mlib, features=(f1,f2,ri))
         t.add_alignment(a, symtriples=sym)
-        self.assertInTolerance(t.sample_size, 12, 1e-6)
+        self.assertAlmostEqual(t.sample_size, 12, delta=1e-6)
 
     def test_bond_span_range_disulfide(self):
         """Test bond_span_range argument with disulfides"""

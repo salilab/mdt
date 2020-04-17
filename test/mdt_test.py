@@ -66,4 +66,4 @@ class MDTTest(ModellerTest):
     def assertSectionNormalized(self, section):
         """Make sure that a table section is normalized"""
         sum = section.sum()
-        self.assertInTolerance(sum, 1.0, 1e-5)
+        self.assertAlmostEqual(sum, 1.0, delta=1e-5)

@@ -9,9 +9,10 @@ fi
 
 python_version=$1
 modeller_license_file=$2
-MODELLER_VERSION=9.21
-HDF5_VERSION=1.8.20
-HDF5_SOVER=10
+MODELLER_VERSION=9.24
+HDF5_VERSION=1.10.5
+HDF5_SOVER=103
+HDF5_HL_SOVER=100
 
 sudo apt-get -qq update
 sudo apt-get install -y swig bc
@@ -41,5 +42,5 @@ tar -xzf hdf5-${HDF5_VERSION}-headers-64bit-ubuntu.tar.gz && mv hdf5-${HDF5_VERS
 
 # Make .so symlinks for each .so.{ver} HDF5 library
 mkdir hdf5-libs
-ln -sf /usr/lib/modeller${MODELLER_VERSION}/lib/x86_64-intel8/libhdf5_hl.so.${HDF5_SOVER} hdf5-libs/libhdf5_hl.so
+ln -sf /usr/lib/modeller${MODELLER_VERSION}/lib/x86_64-intel8/libhdf5_hl.so.${HDF5_HL_SOVER} hdf5-libs/libhdf5_hl.so
 ln -sf /usr/lib/modeller${MODELLER_VERSION}/lib/x86_64-intel8/libhdf5.so.${HDF5_SOVER} hdf5-libs/libhdf5.so

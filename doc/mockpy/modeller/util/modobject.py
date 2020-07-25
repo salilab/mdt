@@ -1,2 +1,2 @@
-class modobject(object):
+class ModObject(object):
     pass

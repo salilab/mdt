@@ -26,6 +26,6 @@
 +_add_pyext_to_path()
 +
 +
- from modeller.util.modobject import modobject
- from modeller.util import modlist
- # Import _modeller after modeller itself, since the latter modifies the search
+ try:
+     from modeller.util.modobject import ModObject
+ except ImportError:

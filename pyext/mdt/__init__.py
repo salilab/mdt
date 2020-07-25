@@ -28,7 +28,10 @@ __all__ = ['MDTError', 'FileFormatError', 'TableSection', 'Table', 'Library',
            'write_improperlib', 'write_splinelib', 'uniform_bins',
            'write_statpot']
 
-from modeller.util.modobject import modobject
+try:
+    from modeller.util.modobject import ModObject
+except ImportError:
+    from modeller.util.modobject import modobject as ModObject
 from modeller.util import modlist
 # Import _modeller after modeller itself, since the latter modifies the search
 # path for the former:
@@ -77,7 +80,7 @@ Int8 = _BinType(_mdt.MOD_MDTB_INT8)
 #: 8-bit unsigned integer bin storage (range 0 to 255)
 UnsignedInt8 = _BinType(_mdt.MOD_MDTB_UINT8)
 
-class Library(modobject):
+class Library(ModObject):
     """
     Library data used in the construction and use of MDTs.
 
@@ -231,7 +234,7 @@ class HydrogenBondClasses(BondClasses):
         return _mdt.mdt_hbond_read(filename, self._mlib._modpt)
 
 
-class TableSection(modobject):
+class TableSection(ModObject):
     """A section of a multi-dimensional table. You should not create
        TableSection objects directly, but rather by indexing a :class:`Table`
        object, as a TableSection is just a 'view' into an existing table.

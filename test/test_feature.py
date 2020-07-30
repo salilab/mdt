@@ -754,6 +754,8 @@ class FeatureTests(MDTTest):
         self.assertAlmostEqual(m1[1,1], 2.0, delta=1e-5)
         self.assertAlmostEqual(m1[1,2], 2.0, delta=1e-5)
         self.assertAlmostEqual(m1.sample_size, 70.0, delta=1e-5)
+        m1.write_hdf5('testcluster.hdf5')
+        os.unlink('testcluster.hdf5')
 
         m2 = mdt.Table(mlib, features=c)
         m2.add_alignment(a)

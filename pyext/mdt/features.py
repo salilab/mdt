@@ -364,7 +364,7 @@ class ResidueGroup(ResidueFixedBins):
                                   pos2, residue_grouping, mlib._env.libs.modpt)
 
 class SidechainBiso(Residue):
-    """
+    r"""
     Residue average sidechain |Biso|. A zero average |Biso| is treated as
     undefined. If the average of these values over the whole protein is less
     than 2, each residue's value is multiplied by 4 |pi| :sup:`2`.

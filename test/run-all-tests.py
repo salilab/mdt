@@ -78,7 +78,7 @@ class RunAllTests(unittest.TestProgram):
 def regressionTest():
     path = os.path.abspath(os.path.dirname(sys.argv[0]))
     files = os.listdir(path)
-    test = re.compile("^test_.*\.py$", re.IGNORECASE)
+    test = re.compile(r"^test_.*\.py$", re.IGNORECASE)
     files = filter(test.search, files)
     modnames = [os.path.splitext(f)[0] for f in files]
 

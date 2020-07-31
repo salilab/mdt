@@ -21,9 +21,9 @@ class TableTests(MDTTest):
 
     def test_version(self):
         """Check version number"""
-        self.assert_(len(mdt.version) > 0)
-        self.assert_(len(mdt.__version__) > 0)
-        self.assert_(len(mdt.version_info) > 0)
+        self.assertGreater(len(mdt.version), 0)
+        self.assertGreater(len(mdt.__version__), 0)
+        self.assertGreater(len(mdt.version_info), 0)
 
     def test_add(self):
         """Check adding MDTs"""
@@ -116,34 +116,44 @@ class TableTests(MDTTest):
 
 """
 
-        open('bad.mdt', 'w').write("%-37s: garbage\n" % "Number of alignments")
+        with open('bad.mdt', 'w') as fh:
+            fh.write("%-37s: garbage\n" % "Number of alignments")
         self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
 
-        open('bad.mdt', 'w').write("%-37s: garbage\n" % "Sample size")
+        with open('bad.mdt', 'w') as fh:
+            fh.write("%-37s: garbage\n" % "Sample size")
         self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
 
-        open('bad.mdt', 'w').write("  #  FEATURE NBINS NAME\ngarbage\n")
+        with open('bad.mdt', 'w') as fh:
+            fh.write("  #  FEATURE NBINS NAME\ngarbage\n")
         self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
 
-        open('bad.mdt', 'w').write(feat + "  # ISTART   IEND\n")
+        with open('bad.mdt', 'w') as fh:
+            fh.write(feat + "  # ISTART   IEND\n")
         self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
 
-        open('bad.mdt', 'w').write(feat + "  # ISTART   IEND\ngarbage\n")
+        with open('bad.mdt', 'w') as fh:
+            fh.write(feat + "  # ISTART   IEND\ngarbage\n")
         self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
 
-        open('bad.mdt', 'w').write(feat + "MDT TABLE START: garbage\n")
+        with open('bad.mdt', 'w') as fh:
+            fh.write(feat + "MDT TABLE START: garbage\n")
         self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
 
-        open('bad.mdt', 'w').write(feat + "MDT TABLE START:       1\n")
+        with open('bad.mdt', 'w') as fh:
+            fh.write(feat + "MDT TABLE START:       1\n")
         self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
 
-        open('bad.mdt', 'w').write(feat + "MDT TABLE START:       1\ngarbage\n")
+        with open('bad.mdt', 'w') as fh:
+            fh.write(feat + "MDT TABLE START:       1\ngarbage\n")
         self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
 
-        open('bad.mdt', 'w').write(feat + "MDT TABLE START:       1\n1.0\n")
+        with open('bad.mdt', 'w') as fh:
+            fh.write(feat + "MDT TABLE START:       1\n1.0\n")
         self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
 
-        open('bad.mdt', 'w').write(feat + "MDT TABLE START:       1\n1.0\nf\n")
+        with open('bad.mdt', 'w') as fh:
+            fh.write(feat + "MDT TABLE START:       1\n1.0\nf\n")
         self.assertRaises(mdt.FileFormatError, mdt.Table, mlib, file='bad.mdt')
 
         os.unlink('bad.mdt')
@@ -878,15 +888,13 @@ class TableTests(MDTTest):
         m.write_asgl(asglroot=root, plots_per_page=8, dimensions=1,
                      plot_position=1, every_x_numbered=999, text="test text",
                      x_decimal=0)
-        f = open(root+'.top', 'r')
-        self.assertEqual(len(f.readlines()), 486)
-        del f
+        with open(root+'.top', 'r') as f:
+            self.assertEqual(len(f.readlines()), 486)
         os.unlink(root+'.top')
         for n in range(1,23):
             fname = '%s.%d' % (root, n)
-            f = open(fname, 'r')
-            self.assertEqual(len(f.readlines()), 22)
-            del f
+            with open(fname, 'r') as f:
+                self.assertEqual(len(f.readlines()), 22)
             os.unlink(fname)
 
     def test_bin_type(self):

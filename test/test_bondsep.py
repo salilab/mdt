@@ -54,7 +54,8 @@ class BondSeparationFeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         mlib.atom_classes.read('${LIB}/atmcls-mf.lib')
         # Make dummy bond class library that does not connect C and CA atoms
-        open('dummy.lib', 'w').write("""
+        with open('dummy.lib', 'w') as fh:
+            fh.write("""
 BNDGRP 'ALA:CB:CA'
   BOND 'ALA' 'CB' 'CA'
 BNDGRP 'ALA:N:CA'
@@ -91,7 +92,8 @@ BNDGRP 'ALA:O:C'
         mlib = self.get_mdt_library()
         mlib.atom_classes.read('${LIB}/atmcls-mf.lib')
         # Make dummy bond class library that does not connect C and CA atoms
-        open('dummy.lib', 'w').write("""
+        with open('dummy.lib', 'w') as fh:
+            fh.write("""
 BNDGRP 'ALA:CB:CA'
   BOND 'ALA' 'CB' 'CA'
 BNDGRP 'ALA:N:CA'

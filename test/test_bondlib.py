@@ -29,10 +29,12 @@ class BondLibTests(MDTTest):
         bondlen = mdt.features.BondLength(mlib,
                                       bins=mdt.uniform_bins(200, 1.0, 0.005))
         m = self.get_test_mdt(mlib, [bondtype, bondlen])
-        mdt.write_bondlib(open('test.out', 'w'), m)
+        with open('test.out', 'w') as fh:
+            mdt.write_bondlib(fh, m)
 
         # Make sure that valid Python code was produced
-        code = compile(open('test.out').read(), 'test.out', 'exec')
+        with open('test.out') as fh:
+            code = compile(fh.read(), 'test.out', 'exec')
         os.unlink('test.out')
 
     def test_bad_bin_name_write_bondlib(self):
@@ -54,10 +56,12 @@ class BondLibTests(MDTTest):
         angtype = mdt.features.AngleType(mlib)
         ang = mdt.features.Angle(mlib, bins=mdt.uniform_bins(180, 0.0, 2.0))
         m = self.get_test_mdt(mlib, [angtype, ang])
-        mdt.write_anglelib(open('test.out', 'w'), m)
+        with open('test.out', 'w') as fh:
+            mdt.write_anglelib(fh, m)
 
         # Make sure that valid Python code was produced
-        code = compile(open('test.out').read(), 'test.out', 'exec')
+        with open('test.out') as fh:
+            code = compile(fh.read(), 'test.out', 'exec')
         os.unlink('test.out')
 
     def test_write_improperlib(self):
@@ -68,10 +72,12 @@ class BondLibTests(MDTTest):
         angtype = mdt.features.DihedralType(mlib)
         ang = mdt.features.Dihedral(mlib, bins=mdt.uniform_bins(180, 0.0, 2.0))
         m = self.get_test_mdt(mlib, [angtype, ang])
-        mdt.write_improperlib(open('test.out', 'w'), m)
+        with open('test.out', 'w') as fh:
+            mdt.write_improperlib(fh, m)
 
         # Make sure that valid Python code was produced
-        code = compile(open('test.out').read(), 'test.out', 'exec')
+        with open('test.out') as fh:
+            code = compile(fh.read(), 'test.out', 'exec')
         os.unlink('test.out')
 
     def test_write_splinelib(self):
@@ -82,10 +88,12 @@ class BondLibTests(MDTTest):
         ang = mdt.features.Chi1Dihedral(mlib,
                                         bins=mdt.uniform_bins(180, -180.0, 4.0))
         m = self.get_test_mdt(mlib, [restype, ang])
-        mdt.write_splinelib(open('test.out', 'w'), m, 'chi1')
+        with open('test.out', 'w') as fh:
+            mdt.write_splinelib(fh, m, 'chi1')
 
         # Make sure that valid Python code was produced
-        code = compile(open('test.out').read(), 'test.out', 'exec')
+        with open('test.out') as fh:
+            code = compile(fh.read(), 'test.out', 'exec')
         os.unlink('test.out')
 
     def test_write_2dsplinelib(self):
@@ -98,10 +106,12 @@ class BondLibTests(MDTTest):
         psi = mdt.features.PsiDihedral(mlib,
                                        bins=mdt.uniform_bins(18, -180.0, 40.0))
         m = self.get_test_mdt(mlib, [restype, phi, psi])
-        mdt.write_2dsplinelib(open('test.out', 'w'), m)
+        with open('test.out', 'w') as fh:
+            mdt.write_2dsplinelib(fh, m)
 
         # Make sure that valid Python code was produced
-        code = compile(open('test.out').read(), 'test.out', 'exec')
+        with open('test.out') as fh:
+            code = compile(fh.read(), 'test.out', 'exec')
         os.unlink('test.out')
 
     def test_write_statpot(self):
@@ -116,9 +126,11 @@ class BondLibTests(MDTTest):
         m = mdt.Table(mlib, features=(d,a1,a2))
         # Remove undefined bin
         m = m.reshape((d,a1,a2), m.offset, (-1, -1, -1))
-        mdt.write_statpot(open('test.out', 'w'), m)
+        with open('test.out', 'w') as fh:
+            mdt.write_statpot(fh, m)
         # Check size of file
-        lines = open('test.out').readlines()
+        with open('test.out') as fh:
+            lines = fh.readlines()
         self.assertEqual(len(lines), 7)
         self.assertEqual(len(lines[-1].split()), 21)
         # Make sure Modeller can read the file

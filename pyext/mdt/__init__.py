@@ -565,7 +565,7 @@ class Table(TableSection):
         return mdtout
 
     def smooth(self, dimensions, weight):
-        """
+        r"""
         Smooth the MDT with a uniform prior. The MDT is treated either as a
         histogram (if `dimensions` = 1) or a 2D density (`dimensions` = 2)
         of dependent features (the last 1 or 2 features in the table)
@@ -660,7 +660,7 @@ class Table(TableSection):
         return mdtout
 
     def exp_transform(self, offset, expoffset, multiplier, power):
-        """
+        r"""
         Apply an exponential transform to the MDT.
         Each element in the new MDT, *b*, is obtained from the original
         MDT element *a*, using the following relation:
@@ -674,7 +674,7 @@ class Table(TableSection):
         return mdtout
 
     def log_transform(self, offset, multiplier, undefined=0.):
-        """
+        r"""
         Apply a log transform to the MDT.
         Each element in the new MDT, *b*, is obtained from the original
         MDT element *a*, using the following relation:
@@ -689,7 +689,7 @@ class Table(TableSection):
         return mdtout
 
     def linear_transform(self, offset, multiplier):
-        """
+        r"""
         Apply a linear transform to the MDT.
         Each element in the new MDT, *b*, is obtained from the original
         MDT element *a*, using the following relation:
@@ -751,7 +751,7 @@ class Table(TableSection):
         return _mdt.mdt_entropy_full(self._basept, self._mlib._modpt)
 
     def entropy_hx(self):
-        """
+        r"""
         The MDT is integrated to get a 1D histogram, then normalized by
         the sum of the bin values. Finally, entropy is calculated as
         Σ\ :sub:`i` -p\ :sub:`i` ln p\ :sub:`i`

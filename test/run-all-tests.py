@@ -56,7 +56,8 @@ class RunAllTests(unittest.TestProgram):
         if coverage:
             self.cov.stop()
             self.cov.combine()
-            self.cov.use_cache(False)
+            if hasattr(self.cov, 'use_cache'):
+                self.cov.use_cache(False)
             print("\nPython coverage report\n", file=sys.stderr)
 
             # Don't show full paths in coverage output

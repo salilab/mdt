@@ -52,8 +52,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'MDT'
-copyright = u'1989-2020, Andrej Sali, Ben Webb'
+project = 'MDT'
+copyright = '1989-2020, Andrej Sali, Ben Webb'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -190,8 +190,8 @@ htmlhelp_basename = 'MDTdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'MDT.tex', ur'MDT Documentation',
-   ur'Dave Eramian, Ben Webb, Ursula Pieper', 'manual'),
+  ('index', 'MDT.tex', 'MDT Documentation',
+   'Dave Eramian, Ben Webb, Ursula Pieper', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

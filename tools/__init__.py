@@ -226,7 +226,7 @@ def parse_modeller_dirs(context, modeller, exetype):
 def CheckModeller(context):
     """Find Modeller include and library directories"""
     modeller = context.env['modeller']
-    if (modeller is False or modeller is 0) \
+    if (modeller is False or modeller == 0) \
        and (check_pkgconfig(context, pkgconfig_name='modeller',
                             human_name='MODELLER', env_key='MODELLER') \
             or check_modeller_python(context)):
@@ -234,7 +234,7 @@ def CheckModeller(context):
         context.env['MODELLER_MODPY'] = ''
         return True
     context.Message("Checking for MODELLER using 'modeller' scons option...")
-    if modeller is False or modeller is 0:
+    if modeller is False or modeller == 0:
         context.Result("not found")
         return False
     # Find MODELLER script

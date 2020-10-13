@@ -90,6 +90,12 @@ class WineEnvironment(Environment):
             SCons.Tool.MSCommon.common.read_reg = _wine_read_reg64
         else:
             SCons.Tool.MSCommon.common.read_reg = _wine_read_reg32
+        # Clear cache to force detection of MSVC again
+        try:
+            import SCons.Tool.MSCommon.vc
+        except ImportError:
+            return
+        setattr(SCons.Tool.MSCommon.vc, '__INSTALLED_VCS_RUN', None)
 
 def _get_python_include(env):
     """Get the directory containing Python.h"""

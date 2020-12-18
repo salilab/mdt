@@ -10,6 +10,16 @@ if(POLICY CMP0042)
 cmake_policy(SET CMP0042 NEW)
 endif(POLICY CMP0042)
 
+# Use consistent SWIG target names across all supported cmake versions
+if(POLICY CMP0078)
+  cmake_policy(SET CMP0078 OLD)
+endif(POLICY CMP0078)
+
+# Quiet warning about UseSWIG honoring SWIG_MODULE_NAME (which we don't use)
+if(POLICY CMP0086)
+  cmake_policy(SET CMP0086 NEW)
+endif(POLICY CMP0086)
+
 enable_testing()
 
 include(GNUInstallDirs)

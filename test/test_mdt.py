@@ -1,11 +1,11 @@
 import unittest
-from modeller import *
+from modeller import alignment, model
 from mdt_test import MDTTest
 import mdt
 import mdt.features
 import math
 import os
-import sys
+
 
 class TableTests(MDTTest):
 
@@ -32,15 +32,15 @@ class TableTests(MDTTest):
         xray0 = mdt.features.XRayResolution(mlib, bins, protein=0)
         xray1 = mdt.features.XRayResolution(mlib, bins, protein=1)
         m1 = mdt.Table(mlib, features=xray0)
-        for (n, val) in enumerate((1,2,3,4)):
+        for (n, val) in enumerate((1, 2, 3, 4)):
             m1[n] = val
         m2 = mdt.Table(mlib, features=xray0)
-        for (n, val) in enumerate((10,20,30,40)):
+        for (n, val) in enumerate((10, 20, 30, 40)):
             m2[n] = val
         m3 = m1 + m2
         m1 += m2
         self.assertMDTsEqual(m1, m3)
-        for (n, val) in enumerate((11,22,33,44)):
+        for (n, val) in enumerate((11, 22, 33, 44)):
             self.assertEqual(m3[n], val)
         # Cannot add if numbers of features are different
         badmdt = mdt.Table(mlib, features=(xray0, xray1))
@@ -64,11 +64,11 @@ class TableTests(MDTTest):
         mlib2 = self.get_mdt_library()
         restyp1 = mdt.features.ResidueType(mlib1, protein=0)
         restyp2 = mdt.features.ResidueType(mlib2, protein=1)
-        m = mdt.Table(mlib1, features=restyp1)
-        m = mdt.Table(mlib2, features=restyp2)
+        _ = mdt.Table(mlib1, features=restyp1)
+        _ = mdt.Table(mlib2, features=restyp2)
         for mlib in (mlib1, mlib2):
             self.assertRaises(ValueError, mdt.Table, mlib,
-                              features=(restyp1,restyp2))
+                              features=(restyp1, restyp2))
 
     def test_make_outrange(self):
         """Check handling of out-of-range features in mdt.make()"""
@@ -81,10 +81,9 @@ class TableTests(MDTTest):
 
     def test_make_shape(self):
         """Test Table.make() with shape"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         restyp = mdt.features.ResidueType(mlib)
-        for shape in [[0,0], [-22], [23]]:
+        for shape in [[0, 0], [-22], [23]]:
             self.assertRaises(ValueError, mdt.Table, mlib, features=restyp,
                               shape=shape)
         for shape in [[], [0], [22]]:
@@ -97,7 +96,6 @@ class TableTests(MDTTest):
 
     def test_clear(self):
         """Check Table.clear()"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         restyp = mdt.features.ResidueType(mlib)
         t = mdt.Table(mlib, features=restyp)
@@ -107,9 +105,8 @@ class TableTests(MDTTest):
 
     def test_bad_read(self):
         """Check error handling in Table.read()"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
-        restyp = mdt.features.ResidueType(mlib)
+        _ = mdt.features.ResidueType(mlib)
         feat = """
   #  FEATURE NBINS NAME
   1        1    22 Residue type of protein 0
@@ -164,7 +161,7 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
-        m = mdt.Table(mlib, features=(restyp0,restyp1))
+        m = mdt.Table(mlib, features=(restyp0, restyp1))
         aln = alignment(env)
         aln.append_sequence('AFVVTDNCIKCKYTDCVEVXPVDCFYEG')
         aln.append_sequence('CVEVCPVDCFYEGAFVVTDNCIKCKYTX')
@@ -179,8 +176,8 @@ class TableTests(MDTTest):
         m.write_hdf5('test.hdf5', gzip=True)
         m.write_hdf5('test.hdf5', gzip=4)
         self.assertRaises(ValueError, m.write_hdf5, 'test.hdf5',
-                          gzip=True, chunk_size=(2,3,4))
-        m.write_hdf5('test.hdf5', gzip=9, chunk_size=(4,4))
+                          gzip=True, chunk_size=(2, 3, 4))
+        m.write_hdf5('test.hdf5', gzip=9, chunk_size=(4, 4))
         self.assertRaises(mdt.MDTError, m.write_hdf5,
                           '/does/not/exist/foo.hdf5')
         m2 = mdt.Table(mlib, file='test.hdf5')
@@ -189,7 +186,7 @@ class TableTests(MDTTest):
         # Trying to read an HDF5 file in text format should fail gracefully:
         self.assertRaises(mdt.MDTError, m2.read, 'test.hdf5')
         # Same problem should occur starting with a non-empty MDT:
-        m2 = mdt.Table(mlib, features=(restyp0,restyp1))
+        m2 = mdt.Table(mlib, features=(restyp0, restyp1))
         self.assertRaises(mdt.MDTError, m2.read, 'test.hdf5')
         os.unlink('test.hdf5')
 
@@ -218,8 +215,9 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         restyp = mdt.features.ResidueType(mlib)
         m = self.get_test_mdt(mlib, features=restyp)
-        self.assertEqual(m._guess_chunk_size([12,6,6,12,306,306], 1024*1024*10),
-                         [6,3,3,6,161,161])
+        self.assertEqual(m._guess_chunk_size([12, 6, 6, 12, 306, 306],
+                                             1024 * 1024 * 10),
+                         [6, 3, 3, 6, 161, 161])
 
     def test_bin_info(self):
         """Test query of bin symbol and range"""
@@ -239,23 +237,22 @@ class TableTests(MDTTest):
 
     def test_set(self):
         """Test set of MDT data"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
-        m = mdt.Table(mlib, features=(restyp0,restyp1))
+        m = mdt.Table(mlib, features=(restyp0, restyp1))
         # Make sure that index checks work:
-        self.assertRaises(ValueError, m.__setitem__, [0,22,10], 0.0)
-        self.assertRaises(IndexError, m.__setitem__, [0,22], 0.0)
-        self.assertRaises(IndexError, m.__setitem__, [22,0], 0.0)
+        self.assertRaises(ValueError, m.__setitem__, [0, 22, 10], 0.0)
+        self.assertRaises(IndexError, m.__setitem__, [0, 22], 0.0)
+        self.assertRaises(IndexError, m.__setitem__, [22, 0], 0.0)
         # Cannot set a section
         self.assertRaises(ValueError, m.__setitem__, [0], [0.0])
         for i in range(0, 22):
             for j in range(0, 22):
                 val = 1.0 + i * 40.0 + j   # Some value different for each i,j
-                self.assertEqual(m[i,j], 0.0)
-                m[i,j] = val
-                self.assertEqual(m[i,j], val)
+                self.assertEqual(m[i, j], 0.0)
+                m[i, j] = val
+                self.assertEqual(m[i, j], val)
 
     def test_empty_aln(self):
         """Make sure that adding an empty alignment works OK"""
@@ -263,7 +260,7 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         restyp = mdt.features.ResidueType(mlib)
         bondtype = mdt.features.BondType(mlib)
-        m = mdt.Table(mlib, features=(restyp,bondtype))
+        m = mdt.Table(mlib, features=(restyp, bondtype))
         aln = alignment(env)
         self.assertRaises(mdt.MDTError, m.add_alignment, aln)
 
@@ -287,8 +284,8 @@ class TableTests(MDTTest):
 
         # Now do the same test on individually-queried indices:
         source = m.open_alignment(aln)
-        bins = [ source.index(restyp, 0, n, 0, n, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                              0, 0) - 1 for n in range(len(seq)) ]
+        bins = [source.index(restyp, 0, n, 0, n, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                             0, 0) - 1 for n in range(len(seq))]
         bin_dist = [bins.count(n) for n in range(22)]
         self.assertEqual(bin_dist, known_dist)
 
@@ -302,8 +299,8 @@ class TableTests(MDTTest):
         aln = alignment(env, file='test/data/tiny.ali')
         mlib = self.get_mdt_library()
         mlib.tuple_classes.read('data/dblcls.lib')
-        tuple_dist = mdt.features.TupleDistance(mlib,
-                                          bins=mdt.uniform_bins(49, 2.0, 0.2))
+        tuple_dist = mdt.features.TupleDistance(
+            mlib, bins=mdt.uniform_bins(49, 2.0, 0.2))
         # All residue-residue pairs should be out of range, so this MDT should
         # end up empty:
         m = mdt.Table(mlib, features=tuple_dist)
@@ -335,22 +332,22 @@ class TableTests(MDTTest):
         dist = mdt.features.AtomDistance(mlib,
                                          bins=mdt.uniform_bins(49, 0.0, 0.2))
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+        m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999),
                         exclude_bonds=False)
         self.assertEqual(m.sample_size, 10)
         # 3 bonds (N-CA, O-C, C-CA) should be excluded in Gly
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+        m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999),
                         exclude_bonds=True)
         self.assertEqual(m.sample_size, 7)
         # A further 2 angles (CA-C-O, N-CA-C) should be excluded in Gly
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+        m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999),
                         exclude_bonds=True, exclude_angles=True)
         self.assertEqual(m.sample_size, 5)
         # No improper dihedrals
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+        m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999),
                         exclude_bonds=True, exclude_angles=True,
                         exclude_dihedrals=True)
         self.assertEqual(m.sample_size, 5)
@@ -360,11 +357,11 @@ class TableTests(MDTTest):
         aln = alignment(env)
         aln.append_model(mdl, align_codes='test')
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999))
+        m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))
         self.assertEqual(m.sample_size, 36)
         # One dihedral (C:CA:+N:O) in Gly-Gly should be excluded
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+        m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999),
                         exclude_dihedrals=True)
         self.assertEqual(m.sample_size, 35)
 
@@ -381,14 +378,14 @@ class TableTests(MDTTest):
         mlib.angle_classes.read('data/anggrp.lib')
         mlib.dihedral_classes.read('data/impgrp.lib')
         dist = mdt.features.TupleDistance(mlib,
-                                         bins=mdt.uniform_bins(49, 0.0, 0.2))
+                                          bins=mdt.uniform_bins(49, 0.0, 0.2))
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+        m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999),
                         exclude_bonds=False)
         self.assertEqual(m.sample_size, 38)
         # Exclusions should cut number of sample points
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, residue_span_range=(-9999,0,0,9999),
+        m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999),
                         exclude_bonds=True, exclude_angles=True)
         self.assertEqual(m.sample_size, 20)
 
@@ -401,8 +398,8 @@ class TableTests(MDTTest):
         aln.append_model(mdl, align_codes='test')
         mlib = self.get_mdt_library()
         mlib.tuple_classes.read('data/dblcls.lib')
-        tuple_dist = mdt.features.TupleDistance(mlib,
-                                          bins=mdt.uniform_bins(49, 2.0, 0.2))
+        tuple_dist = mdt.features.TupleDistance(
+            mlib, bins=mdt.uniform_bins(49, 2.0, 0.2))
         # All chain differences should be out of range, so this MDT should
         # end up empty:
         m = mdt.Table(mlib, features=tuple_dist)
@@ -430,18 +427,18 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         mlib.bond_classes.read('data/bndgrp.lib')
         mlib.tuple_classes.read('data/trpcls.lib')
-        typ = mdt.features.TupleType(mlib)
-        typ2 = mdt.features.TupleType(mlib, pos2=True)
+        _ = mdt.features.TupleType(mlib)
+        _ = mdt.features.TupleType(mlib, pos2=True)
         dist = mdt.features.TupleDistance(mlib,
                                           bins=mdt.uniform_bins(9, 2.0, 0.2))
 
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, residue_span_range=(0,0,0,0))
+        m.add_alignment(aln, residue_span_range=(0, 0, 0, 0))
         self.assertEqual(m.sample_size, 10.0)
 
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, bond_span_range=(1,1),
-                        residue_span_range=(0,0,0,0))
+        m.add_alignment(aln, bond_span_range=(1, 1),
+                        residue_span_range=(0, 0, 0, 0))
         # Bond span should restrict interactions to 6
         # (C:CA:CB-CA:C:O, CA:C:O-N:CA:C, CA:C:O-N:CA:CB, and the reverse)
         self.assertEqual(m.sample_size, 6.0)
@@ -462,20 +459,20 @@ class TableTests(MDTTest):
         # that bond library does not include OXT so C-OXT interaction is
         # excluded
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, bond_span_range=(1,1),
-                        residue_span_range=(0,0,0,0))
+        m.add_alignment(aln, bond_span_range=(1, 1),
+                        residue_span_range=(0, 0, 0, 0))
         self.assertEqual(m.sample_size, 4.0)
 
         # Only 2 dihedrals (N-CA-C-O, O-C-CA-CB)
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, bond_span_range=(3,3),
-                        residue_span_range=(0,0,0,0))
+        m.add_alignment(aln, bond_span_range=(3, 3),
+                        residue_span_range=(0, 0, 0, 0))
         self.assertEqual(m.sample_size, 2.0)
 
         # 4 bonds, 4 angles and 2 dihedrals: 10 in total
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, bond_span_range=(1,3),
-                        residue_span_range=(0,0,0,0))
+        m.add_alignment(aln, bond_span_range=(1, 3),
+                        residue_span_range=(0, 0, 0, 0))
         self.assertEqual(m.sample_size, 10.0)
 
         # Check for bonds between residues (just the N-C bond here)
@@ -486,11 +483,11 @@ class TableTests(MDTTest):
 
         # Force a non-symmetric scan (to check handling of bond separation
         # regardless of which order atom indices are in)
-        diff = mdt.features.ResidueIndexDifference(mlib,
-                                      bins=mdt.uniform_bins(21, -10, 1))
-        m = mdt.Table(mlib, features=(dist,diff))
-        m.add_alignment(aln, bond_span_range=(0,1),
-                        residue_span_range=(-10,-1,1,10))
+        diff = mdt.features.ResidueIndexDifference(
+            mlib, bins=mdt.uniform_bins(21, -10, 1))
+        m = mdt.Table(mlib, features=(dist, diff))
+        m.add_alignment(aln, bond_span_range=(0, 1),
+                        residue_span_range=(-10, -1, 1, 10))
         self.assertEqual(m.sample_size, 2.0)
 
         # Bonds never span chains
@@ -499,8 +496,8 @@ class TableTests(MDTTest):
         aln = alignment(env)
         aln.append_model(mdl, align_codes='test')
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, bond_span_range=(0,99999),
-                        residue_span_range=(-10,-1,1,10))
+        m.add_alignment(aln, bond_span_range=(0, 99999),
+                        residue_span_range=(-10, -1, 1, 10))
         self.assertEqual(m.sample_size, 0.0)
 
     def test_sources(self):
@@ -525,10 +522,10 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         atmdist = mdt.features.AtomDistance(mlib,
                                             bins=mdt.uniform_bins(60, 0, 0.5))
-        resdist = mdt.features.ResidueDistance(mlib, protein=1,
-                                               bins=mdt.uniform_bins(7, 0, 2.0))
+        resdist = mdt.features.ResidueDistance(
+            mlib, protein=1, bins=mdt.uniform_bins(7, 0, 2.0))
         self.assertRaises(ValueError, self.get_test_mdt, mlib,
-                          features=(resdist,atmdist))
+                          features=(resdist, atmdist))
 
     def test_integrate(self):
         """Make sure MDT integration works"""
@@ -540,7 +537,7 @@ class TableTests(MDTTest):
                                          mdt.uniform_bins(36, -180, 10))
         m1 = mdt.Table(mlib, features=restyp0)
         m2 = mdt.Table(mlib, features=restyp1)
-        mboth = mdt.Table(mlib, features=(restyp0,restyp1))
+        mboth = mdt.Table(mlib, features=(restyp0, restyp1))
         seq1 = "AFVVTDNCIK"
         seq2 = "DCVEVCPVDC"
         aln = alignment(env)
@@ -550,7 +547,7 @@ class TableTests(MDTTest):
             m.add_alignment(aln)
 
         # Number of features must be correct:
-        for features in ((), (restyp0,restyp1), (restyp0,restyp1,chi1)):
+        for features in ((), (restyp0, restyp1), (restyp0, restyp1, chi1)):
             self.assertRaises(ValueError, mboth.integrate, features=features)
         # Features must exist in input MDT:
         self.assertRaises(ValueError, mboth.integrate, features=chi1)
@@ -565,12 +562,12 @@ class TableTests(MDTTest):
         restyp = mdt.features.ResidueType(mlib)
         chi1 = mdt.features.Chi1Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
-        m = self.get_test_mdt(mlib, features=(restyp,chi1))
+        m = self.get_test_mdt(mlib, features=(restyp, chi1))
         # Check against ENTROPY_MDT_HX value for this system in MDT:
         self.assertAlmostEqual(m.entropy_hx(), 2.7048, places=3)
 
         # Empty table should give an error
-        empty = mdt.Table(mlib, features=(restyp,chi1))
+        empty = mdt.Table(mlib, features=(restyp, chi1))
         self.assertRaises(mdt.MDTError, empty.entropy_hx)
 
     def test_entropy_full(self):
@@ -579,11 +576,11 @@ class TableTests(MDTTest):
         restyp = mdt.features.ResidueType(mlib)
         chi1 = mdt.features.Chi1Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
-        m = self.get_test_mdt(mlib, features=(restyp,chi1))
+        m = self.get_test_mdt(mlib, features=(restyp, chi1))
         m.entropy_full()
 
         # Empty table should give an error
-        empty = mdt.Table(mlib, features=(restyp,chi1))
+        empty = mdt.Table(mlib, features=(restyp, chi1))
         self.assertRaises(mdt.MDTError, empty.entropy_full)
 
     def test_exp_transform(self):
@@ -592,7 +589,7 @@ class TableTests(MDTTest):
         restyp = mdt.features.ResidueType(mlib)
         phi = mdt.features.PhiDihedral(mlib,
                                        mdt.uniform_bins(36, -180, 10))
-        m = self.get_test_mdt(mlib, features=(restyp,phi))
+        m = self.get_test_mdt(mlib, features=(restyp, phi))
         offset = 1.
         expoffset = 0.1
         multiplier = 0.8
@@ -609,7 +606,7 @@ class TableTests(MDTTest):
         restyp = mdt.features.ResidueType(mlib)
         phi = mdt.features.PhiDihedral(mlib,
                                        mdt.uniform_bins(36, -180, 10))
-        m = self.get_test_mdt(mlib, features=(restyp,phi))
+        m = self.get_test_mdt(mlib, features=(restyp, phi))
         offset = 0.0
         multiplier = 0.7
         undefined = 500.0
@@ -629,7 +626,7 @@ class TableTests(MDTTest):
         restyp = mdt.features.ResidueType(mlib)
         chi1 = mdt.features.Chi1Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
-        m = self.get_test_mdt(mlib, features=(restyp,chi1))
+        m = self.get_test_mdt(mlib, features=(restyp, chi1))
         offset = -1.3
         multiplier = 0.8
         m2 = m.linear_transform(offset, multiplier)
@@ -644,7 +641,7 @@ class TableTests(MDTTest):
         restyp = mdt.features.ResidueType(mlib)
         phi = mdt.features.PhiDihedral(mlib,
                                        mdt.uniform_bins(36, -180, 10))
-        m = self.get_test_mdt(mlib, features=(restyp,phi))
+        m = self.get_test_mdt(mlib, features=(restyp, phi))
         offset = 0.0
         multiplier = 0.8
         undefined = 300.0
@@ -662,7 +659,7 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
-        m = self.get_test_mdt(mlib, features=(restyp0,restyp1))
+        m = self.get_test_mdt(mlib, features=(restyp0, restyp1))
         # Get a better range of values in our starting MDT
         m = m.log_transform(0.0, 0.7, 10.0)
         # Only 1D or 2D offsets should be allowed
@@ -674,10 +671,10 @@ class TableTests(MDTTest):
         for x in range(nx):
             minval = 1e9
             for y in range(ny):
-                minval = min(minval, m[x,y])
+                minval = min(minval, m[x, y])
             minminval = min(minminval, minval)
             for y in range(ny):
-                self.assertAlmostEqual(m[x,y] - minval, m2[x,y], places=3)
+                self.assertAlmostEqual(m[x, y] - minval, m2[x, y], places=3)
         m2 = m.offset_min(dimensions=2)
         inds = []
         while self.roll_inds(inds, m.shape, m.offset):
@@ -688,7 +685,7 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
-        m = self.get_test_mdt(mlib, features=(restyp0,restyp1))
+        m = self.get_test_mdt(mlib, features=(restyp0, restyp1))
         # Get a better range of values in our starting MDT
         m = m.log_transform(0.0, 0.7, 10.0)
         # Only 1D or 2D should be allowed
@@ -697,23 +694,22 @@ class TableTests(MDTTest):
         nx, ny = m.shape
         m2 = m.close(dimensions=1)
         for x in range(nx):
-            self.assertEqual(m2[x,0], m2[x,ny-1])
+            self.assertEqual(m2[x, 0], m2[x, ny-1])
         m2 = m.close(dimensions=2)
-        self.assertEqual(m2[0,0], m2[0,ny-1])
-        self.assertEqual(m2[0,0], m2[nx-1,0])
-        self.assertEqual(m2[0,0], m2[nx-1,ny-1])
+        self.assertEqual(m2[0, 0], m2[0, ny - 1])
+        self.assertEqual(m2[0, 0], m2[nx - 1, 0])
+        self.assertEqual(m2[0, 0], m2[nx - 1, ny - 1])
         for x in range(nx):
-            self.assertEqual(m2[x,0], m2[x,ny-1])
+            self.assertEqual(m2[x, 0], m2[x, ny - 1])
         for y in range(ny):
-            self.assertEqual(m2[0,y], m2[nx-1,y])
+            self.assertEqual(m2[0, y], m2[nx - 1, y])
 
     def test_smooth(self):
         """Check for correctness of smoothing"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
-        m = mdt.Table(mlib, features=(restyp0,restyp1))
+        m = mdt.Table(mlib, features=(restyp0, restyp1))
         # Dimensions must be 1 or 2:
         for dim in (0, 3):
             self.assertRaises(ValueError, m.smooth, dim, 1.0)
@@ -721,19 +717,20 @@ class TableTests(MDTTest):
         m2 = m.smooth(2, 1.0)
         inds = []
         while self.roll_inds(inds, m.shape, m.offset):
-            self.assertAlmostEqual(1./484., m2[inds], places=3)
+            self.assertAlmostEqual(1. / 484., m2[inds], places=3)
         m2 = m.smooth(1, 1.0)
         inds = []
         while self.roll_inds(inds, m.shape, m.offset):
-            self.assertAlmostEqual(1./22., m2[inds], places=3)
+            self.assertAlmostEqual(1. / 22., m2[inds], places=3)
 
     def test_save_reshape(self):
         """Check that we can correctly load and save reshaped MDTs"""
         mlib = self.get_mdt_library()
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
-        m = self.get_test_mdt(mlib, features=(restyp0,restyp1))
-        m = m.reshape(features=(restyp0,restyp1), offset=(4,2), shape=(11,10))
+        m = self.get_test_mdt(mlib, features=(restyp0, restyp1))
+        m = m.reshape(features=(restyp0, restyp1), offset=(4, 2),
+                      shape=(11, 10))
         m.write('test.mdt')
         m.write_hdf5('test.hdf5')
         m2 = mdt.Table(mlib, 'test.mdt')
@@ -750,40 +747,43 @@ class TableTests(MDTTest):
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
         chi1 = mdt.features.Chi1Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
-        m = self.get_test_mdt(mlib, features=(restyp0,restyp1))
-        m2 = self.get_test_mdt(mlib, features=(restyp1,restyp0))
+        m = self.get_test_mdt(mlib, features=(restyp0, restyp1))
+        m2 = self.get_test_mdt(mlib, features=(restyp1, restyp0))
         # New features must be a subset of the old
-        for features in ((chi1,restyp0), (restyp1,restyp0,restyp0)):
+        for features in ((chi1, restyp0), (restyp1, restyp0, restyp0)):
             self.assertRaises(ValueError, m.reshape, features=features,
-                              offset=m.offset, shape=(22,22))
-        m3 = m.reshape(features=(restyp1,restyp0), offset=m.offset,
-                       shape=(22,22))
+                              offset=m.offset, shape=(22, 22))
+        m3 = m.reshape(features=(restyp1, restyp0), offset=m.offset,
+                       shape=(22, 22))
         self.assertMDTsEqual(m2, m3)
-        m3 = m.reshape(features=(restyp0,restyp1), offset=(0,0), shape=m.shape)
+        m3 = m.reshape(features=(restyp0, restyp1), offset=(0, 0),
+                       shape=m.shape)
         self.assertMDTsEqual(m, m3)
-        m3 = m.reshape(features=(restyp0,restyp1), offset=(4,2), shape=(11,10))
+        m3 = m.reshape(features=(restyp0, restyp1), offset=(4, 2),
+                       shape=(11, 10))
         # Reshaping to same offset and shape should be a no-op
-        m4 = m3.reshape(features=(restyp0,restyp1), offset=(4,2), shape=(11,10))
-        self.assertEqual(m3.shape, (11,10))
-        self.assertEqual(m3.offset, (4,2))
+        m4 = m3.reshape(features=(restyp0, restyp1), offset=(4, 2),
+                        shape=(11, 10))
+        self.assertEqual(m3.shape, (11, 10))
+        self.assertEqual(m3.offset, (4, 2))
         inds = []
         while self.roll_inds(inds, m3.shape, m3.offset):
             self.assertAlmostEqual(m[inds], m3[inds], places=3)
             self.assertAlmostEqual(m[inds], m4[inds], places=3)
         # Offset cannot be less than old
-        for offset in [(3,2), (4,1)]:
+        for offset in [(3, 2), (4, 1)]:
             self.assertRaises(IndexError, m3.reshape,
-                              features=(restyp0,restyp1), offset=offset,
-                              shape=(1,1))
+                              features=(restyp0, restyp1), offset=offset,
+                              shape=(1, 1))
         # Negative shape (old end+shape) must result in at least size 1
-        for shape in [(-11,10), (11,-10)]:
+        for shape in [(-11, 10), (11, -10)]:
             self.assertRaises(IndexError, m3.reshape,
-                              features=(restyp0,restyp1), offset=(4,2),
+                              features=(restyp0, restyp1), offset=(4, 2),
                               shape=shape)
         # Shape cannot be larger than old
-        for shape in [(12,10), (11,11)]:
+        for shape in [(12, 10), (11, 11)]:
             self.assertRaises(IndexError, m3.reshape,
-                              features=(restyp0,restyp1), offset=(4,2),
+                              features=(restyp0, restyp1), offset=(4, 2),
                               shape=shape)
 
     def test_reshape_distancemdt(self):
@@ -792,11 +792,12 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         dist = mdt.features.AtomDistance(mlib,
                                          bins=mdt.uniform_bins(30, 0, 0.5))
-        aln = alignment(env, file='test/data/alignment.ali', align_codes='5fd1')
+        aln = alignment(env, file='test/data/alignment.ali',
+                        align_codes='5fd1')
         m1 = mdt.Table(mlib, features=dist)
-        m1.reshape(dist,[0],[-1])
+        m1.reshape(dist, [0], [-1])
         m1.add_alignment(aln, residue_span_range=(-999, -1, 1, 999))
-        self.assertEqual(m1[29],10014.0)
+        self.assertEqual(m1[29], 10014.0)
         self.assertAlmostEqual(m1[28], 9758.5, delta=0.6)
 
     def test_sum(self):
@@ -804,7 +805,7 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
-        m = self.get_test_mdt(mlib, features=(restyp0,restyp1))
+        m = self.get_test_mdt(mlib, features=(restyp0, restyp1))
         sum = m.sum()
         rowsum = 0.
         for i in range(len(m.features[0].bins)):
@@ -816,7 +817,7 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
-        m = self.get_test_mdt(mlib, features=(restyp0,restyp1))
+        m = self.get_test_mdt(mlib, features=(restyp0, restyp1))
         nbins = len(m.features[0].bins)
         rowentr = [m[i].entropy() for i in range(nbins)]
         known_rowentr = [1.908535, 0.578325, 1.229918, 1.559581,
@@ -833,7 +834,7 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
-        m = self.get_test_mdt(mlib, features=(restyp0,restyp1))
+        m = self.get_test_mdt(mlib, features=(restyp0, restyp1))
         mean_stdev = [m[i].mean_stdev() for i in range(3)]
         known = [[9.357142, 8.131571],
                  [3.264705, 4.492207],
@@ -847,7 +848,7 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
-        m = mdt.Table(mlib, features=(restyp0,restyp1))
+        m = mdt.Table(mlib, features=(restyp0, restyp1))
         # Dimensions must be 1 or 2:
         for dim in (0, 3):
             self.assertRaises(ValueError, m.normalize, dimensions=dim,
@@ -858,17 +859,19 @@ class TableTests(MDTTest):
                           to_zero=False, to_pdf=True)
 
         # A normalized empty MDT should be the prior, i.e. 1/nbin:
-        m2 = m.normalize(dimensions=2, dx_dy=(1,1), to_zero=False, to_pdf=True)
+        m2 = m.normalize(dimensions=2, dx_dy=(1, 1), to_zero=False,
+                         to_pdf=True)
         inds = []
         while self.roll_inds(inds, m.shape, m.offset):
-            self.assertAlmostEqual(1./484., m2[inds], places=3)
+            self.assertAlmostEqual(1. / 484., m2[inds], places=3)
         m2 = m.normalize(dimensions=1, dx_dy=1, to_zero=False, to_pdf=True)
         inds = []
         while self.roll_inds(inds, m.shape, m.offset):
-            self.assertAlmostEqual(1./22., m2[inds], places=3)
+            self.assertAlmostEqual(1. / 22., m2[inds], places=3)
 
         # A normalized empty MDT should be empty if to_zero=True
-        m2 = m.normalize(dimensions=2, dx_dy=(1,1), to_zero=True, to_pdf=False)
+        m2 = m.normalize(dimensions=2, dx_dy=(1, 1), to_zero=True,
+                         to_pdf=False)
         self.assertEqual(m.pdf, 0)
         self.assertEqual(m2.pdf, 1)
         self.assertMDTsEqual(m, m2, check_pdf=False)
@@ -878,7 +881,7 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
-        m = self.get_test_mdt(mlib, features=(restyp0,restyp1))
+        m = self.get_test_mdt(mlib, features=(restyp0, restyp1))
         root = 'asgl1-a'
         for dim in (0, 3):
             self.assertRaises(ValueError, m.write_asgl, dimensions=dim,
@@ -891,7 +894,7 @@ class TableTests(MDTTest):
         with open(root+'.top', 'r') as f:
             self.assertEqual(len(f.readlines()), 486)
         os.unlink(root+'.top')
-        for n in range(1,23):
+        for n in range(1, 23):
             fname = '%s.%d' % (root, n)
             with open(fname, 'r') as f:
                 self.assertEqual(len(f.readlines()), 22)
@@ -923,14 +926,12 @@ class TableTests(MDTTest):
 
     def test_copy_bad_bin_type(self):
         """Table.copy() should complain if given a bad bin type"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         m = mdt.Table(mlib, features=mdt.features.ResidueType(mlib))
         self.assertRaises(TypeError, m.copy, bin_type='garbage')
 
     def test_features_to_ifeat(self):
         """Test Table._features_to_ifeat method"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         f = mdt.features.ResidueType(mlib)
         m = mdt.Table(mlib, features=f)
@@ -941,14 +942,13 @@ class TableTests(MDTTest):
 
     def test_get_splinerange(self):
         """Test _get_splinerange utility function"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         angle = mdt.features.Angle(mlib,
                                    bins=mdt.uniform_bins(288, 0.0, 0.625))
         dih = mdt.features.Dihedral(mlib,
                                     bins=mdt.uniform_bins(1, -500, 1000))
-        t = mdt.Table(mlib, features=[angle,dih])
-        t = t.reshape(features=[angle,dih], offset=[0,0], shape=[-1,-1])
+        t = mdt.Table(mlib, features=[angle, dih])
+        t = t.reshape(features=[angle, dih], offset=[0, 0], shape=[-1, -1])
 
         periodic, dx, x1, x2 = mdt._get_splinerange(t.features[0])
         self.assertEqual(periodic, 0)
@@ -968,22 +968,29 @@ class TableTests(MDTTest):
             def __init__(self, sum, entropy):
                 self._sum = sum
                 self._entropy = entropy
+
             def sum(self):
                 return self._sum
+
             def entropy(self):
                 return self._entropy
+
         class DummyBin(object):
             symbol = 'symbol'
         dummy_table = [DummySection(10.0, 20.0)]
         dummy_bin = DummyBin()
-        self.assertEqual(mdt._pass_cutoffs(dummy_table, 0, dummy_bin,
-                              density_cutoff=None, entropy_cutoff=None), True)
-        self.assertEqual(mdt._pass_cutoffs(dummy_table, 0, dummy_bin,
-                              density_cutoff=10.1, entropy_cutoff=None), False)
-        self.assertEqual(mdt._pass_cutoffs(dummy_table, 0, dummy_bin,
-                              density_cutoff=None, entropy_cutoff=19.9), False)
-        self.assertEqual(mdt._pass_cutoffs(dummy_table, 0, dummy_bin,
-                              density_cutoff=9.9, entropy_cutoff=20.1), True)
+        self.assertEqual(mdt._pass_cutoffs(
+            dummy_table, 0, dummy_bin, density_cutoff=None,
+            entropy_cutoff=None), True)
+        self.assertEqual(mdt._pass_cutoffs(
+            dummy_table, 0, dummy_bin, density_cutoff=10.1,
+            entropy_cutoff=None), False)
+        self.assertEqual(mdt._pass_cutoffs(
+            dummy_table, 0, dummy_bin, density_cutoff=None,
+            entropy_cutoff=19.9), False)
+        self.assertEqual(mdt._pass_cutoffs(
+            dummy_table, 0, dummy_bin, density_cutoff=9.9,
+            entropy_cutoff=20.1), True)
 
     def test_mdt_witherr(self):
         """Test the calculation of mdt with error"""
@@ -1019,8 +1026,8 @@ class TableTests(MDTTest):
 
         # When we have features that cover proteins 0,1,2, triple scan should
         # be forced; different number of samples for symmetric/non-symmetric
-        for (sym,size) in ((False, 6.0), (True, 3.0)):
-            t = mdt.Table(mlib, features=(f1,f2,f3))
+        for (sym, size) in ((False, 6.0), (True, 3.0)):
+            t = mdt.Table(mlib, features=(f1, f2, f3))
             t.add_alignment(a, symtriples=sym)
             self.assertAlmostEqual(t.sample_size, size, delta=1e-6)
 
@@ -1035,7 +1042,7 @@ class TableTests(MDTTest):
         ri = mdt.features.ResidueIndexDifference(mlib,
                                                  mdt.uniform_bins(5, 0, 1.0),
                                                  protein=2)
-        t = mdt.Table(mlib, features=(f1,f2,ri))
+        t = mdt.Table(mlib, features=(f1, f2, ri))
         t.add_alignment(a, symtriples=sym)
         self.assertAlmostEqual(t.sample_size, 12, delta=1e-6)
 
@@ -1052,22 +1059,25 @@ class TableTests(MDTTest):
                                          bins=mdt.uniform_bins(60, 0, 0.5))
         # Four disulfide bond in this structure
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, bond_span_range=(1,1),
-                        residue_span_range=(-9999,0,0,9999))
+        m.add_alignment(aln, bond_span_range=(1, 1),
+                        residue_span_range=(-9999, 0, 0, 9999))
 
         m2 = mdt.Table(mlib, features=dist)
-        m2.add_alignment(aln, bond_span_range=(1,1),
-                        residue_span_range=(-9999,0,0,9999), disulfide=True)
+        m2.add_alignment(aln, bond_span_range=(1, 1),
+                         residue_span_range=(-9999, 0, 0, 9999),
+                         disulfide=True)
         self.assertEqual(m2.sample_size-m.sample_size, 4.0)
 
         m = mdt.Table(mlib, features=dist)
-        m.add_alignment(aln, bond_span_range=(3,3),
-                        residue_span_range=(-9999,0,0,9999))
+        m.add_alignment(aln, bond_span_range=(3, 3),
+                        residue_span_range=(-9999, 0, 0, 9999))
 
         m2 = mdt.Table(mlib, features=dist)
-        m2.add_alignment(aln, bond_span_range=(3,3),
-                        residue_span_range=(-9999,0,0,9999), disulfide=True)
+        m2.add_alignment(aln, bond_span_range=(3, 3),
+                         residue_span_range=(-9999, 0, 0, 9999),
+                         disulfide=True)
         self.assertEqual(m2.sample_size-m.sample_size, 12.0)
+
 
 if __name__ == '__main__':
     unittest.main()

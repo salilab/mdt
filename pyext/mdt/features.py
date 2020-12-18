@@ -20,6 +20,7 @@ __docformat__ = "restructuredtext"
 
 import _mdt
 
+
 class _Base(object):
     """Base class for all features."""
 
@@ -241,28 +242,34 @@ class XRayResolution(Protein):
     resolutions while still separating NMR from X-ray structures.
     """
     _setup = _mdt.mdt_feature_xray_resolution
+
     def __init__(self, mlib, bins, protein=0, nmr=0.45):
         _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein, nmr)
         self._create_bins(mlib, bins)
+
 
 class RadiusOfGyration(Protein):
     """Protein radius of gyration in angstroms. The calculation of the center
        of mass used for this feature is not mass weighted."""
     _setup = _mdt.mdt_feature_radius_of_gyration
 
+
 class SequenceLength(Protein):
     """Protein sequence length (number of residues)."""
     _setup = _mdt.mdt_feature_sequence_length
+
 
 class ResidueType(ResidueFixedBins):
     """Residue type (20 standard amino acids, gap, undefined)."""
     _setup = _mdt.mdt_feature_residue_type
 
+
 class ResidueAccessibility(Residue):
     """Residue solvent accessibility. This is derived from the atomic solvent
        accessibility; see :class:`AtomAccessibility`."""
     _setup = _mdt.mdt_feature_residue_accessibility
+
 
 class Chi1Dihedral(Residue):
     """Residue chi1 dihedral angle, from -180 to 180 degrees.
@@ -270,11 +277,13 @@ class Chi1Dihedral(Residue):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_chi1_dihedral
 
+
 class Chi2Dihedral(Residue):
     """Residue chi2 dihedral angle, from -180 to 180 degrees.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_chi2_dihedral
+
 
 class Chi3Dihedral(Residue):
     """Residue chi3 dihedral angle, from -180 to 180 degrees.
@@ -282,11 +291,13 @@ class Chi3Dihedral(Residue):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_chi3_dihedral
 
+
 class Chi4Dihedral(Residue):
     """Residue chi4 dihedral angle, from -180 to 180 degrees.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_chi4_dihedral
+
 
 class PhiDihedral(Residue):
     """Residue phi dihedral angle, from -180 to 180 degrees.
@@ -294,11 +305,13 @@ class PhiDihedral(Residue):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_phi_dihedral
 
+
 class PsiDihedral(Residue):
     """Residue psi dihedral angle, from -180 to 180 degrees.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_psi_dihedral
+
 
 class OmegaDihedral(Residue):
     """Residue omega dihedral angle, from -180 to 180 degrees.
@@ -306,43 +319,53 @@ class OmegaDihedral(Residue):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_omega_dihedral
 
+
 class AlphaDihedral(Residue):
     """Residue alpha dihedral angle, from -180 to 180 degrees.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_alpha_dihedral
 
+
 class Chi1Class(ResidueFixedBins):
     """Residue chi1 dihedral class."""
     _setup = _mdt.mdt_feature_chi1_class
+
 
 class Chi2Class(ResidueFixedBins):
     """Residue chi2 dihedral class."""
     _setup = _mdt.mdt_feature_chi2_class
 
+
 class Chi3Class(ResidueFixedBins):
     """Residue chi3 dihedral class."""
     _setup = _mdt.mdt_feature_chi3_class
+
 
 class Chi4Class(ResidueFixedBins):
     """Residue chi4 dihedral class."""
     _setup = _mdt.mdt_feature_chi4_class
 
+
 class Chi5Class(ResidueFixedBins):
     """Residue chi5 dihedral class."""
     _setup = _mdt.mdt_feature_chi5_class
+
 
 class PhiClass(ResidueFixedBins):
     """Residue phi dihedral class."""
     _setup = _mdt.mdt_feature_phi_class
 
+
 class PsiClass(ResidueFixedBins):
     """Residue psi dihedral class."""
     _setup = _mdt.mdt_feature_psi_class
 
+
 class OmegaClass(ResidueFixedBins):
     """Residue omega dihedral class."""
     _setup = _mdt.mdt_feature_omega_class
+
 
 class MainchainConformation(ResidueFixedBins):
     """Residue mainchain conformation (Ramachandran) class.
@@ -354,6 +377,7 @@ class MainchainConformation(ResidueFixedBins):
        E (extended conformation)."""
     _setup = _mdt.mdt_feature_mainchain_conformation
 
+
 class ResidueGroup(ResidueFixedBins):
     """Residue group."""
     _setup = _mdt.mdt_feature_residue_group
@@ -362,6 +386,7 @@ class ResidueGroup(ResidueFixedBins):
         _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, protein, delta, align_delta,
                                   pos2, residue_grouping, mlib._env.libs.modpt)
+
 
 class SidechainBiso(Residue):
     r"""
@@ -374,6 +399,7 @@ class SidechainBiso(Residue):
     """
     _setup = _mdt.mdt_feature_sidechain_biso
 
+
 class ResidueDistance(ResiduePair):
     """Distance between a pair of residues. This is defined as the distance
        between the 'special' atoms in each residue. The type of this special
@@ -383,10 +409,12 @@ class ResidueDistance(ResiduePair):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_residue_distance
 
+
 class AverageResidueAccessibility(ResiduePair):
     """Average solvent accessibility of a pair of residues.
        See :class:`ResidueAccessibility`."""
     _setup = _mdt.mdt_feature_average_residue_accessibility
+
 
 class ResidueIndexDifference(ResiduePair):
     """Difference in sequence index between a pair of residues. This can
@@ -399,11 +427,13 @@ class ResidueIndexDifference(ResiduePair):
         self._create_bins(mlib, bins)
     _setup = _mdt.mdt_feature_residue_index_difference
 
+
 class PhiDihedralDifference(AlignedResidue):
     """Difference in phi dihedral between a pair of aligned residues.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_phi_dihedral_difference
+
 
 class PsiDihedralDifference(AlignedResidue):
     """Difference in psi dihedral between a pair of aligned residues.
@@ -411,11 +441,13 @@ class PsiDihedralDifference(AlignedResidue):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_psi_dihedral_difference
 
+
 class OmegaDihedralDifference(AlignedResidue):
     """Difference in omega dihedral between a pair of aligned residues.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_omega_dihedral_difference
+
 
 class NeighborhoodDifference(AlignedResidue):
     """Residue neighborhood difference. This is the average of the distance
@@ -425,11 +457,14 @@ class NeighborhoodDifference(AlignedResidue):
        :meth:`mdt.Table.add_alignment`.)"""
     _setup = _mdt.mdt_feature_neighborhood_difference
 
+
 class GapDistance(AlignedResidue):
-    """Distance, in alignment positions, to the nearest gap. Note that positions       which are gapped in both sequences are ignored for the purposes of this
-       calculation (a 'gap' is defined as a gap in one sequence aligned with a
-       residue in the other)."""
+    """Distance, in alignment positions, to the nearest gap. Note that
+       positions which are gapped in both sequences are ignored for the
+       purposes of this calculation (a 'gap' is defined as a gap in one
+       sequence aligned with a residue in the other)."""
     _setup = _mdt.mdt_feature_gap_distance
+
 
 class ResidueDistanceDifference(AlignedResiduePair):
     """Distance between two residues in the second protein, minus the distance
@@ -439,15 +474,18 @@ class ResidueDistanceDifference(AlignedResiduePair):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_residue_distance_difference
 
+
 class AverageNeighborhoodDifference(AlignedResiduePair):
     """Average residue neighborhood difference for a pair of alignment
        positions. See :class:`NeighborhoodDifference`."""
     _setup = _mdt.mdt_feature_average_neighborhood_difference
 
+
 class AverageGapDistance(AlignedResiduePair):
     """Average distance to a gap from a pair of alignment positions.
        See :class:`GapDistance`."""
     _setup = _mdt.mdt_feature_average_gap_distance
+
 
 class AtomAccessibility(Atom):
     """Atom solvent accessibility. This is calculated by the PSA algorithm,
@@ -457,11 +495,13 @@ class AtomAccessibility(Atom):
        coordinates are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_atom_accessibility
 
+
 class AtomZCoordinate(Atom):
     """Atom Z-coordinate. No orientation of the structure is performed.
        The feature is considered undefined if the coordinate is equal
        to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_z_coordinate
+
 
 class FractionalAtomAccessibility(Atom):
     """Fractional atom solvent accessibility, from 0 to 1. This is the atom
@@ -471,10 +511,12 @@ class FractionalAtomAccessibility(Atom):
        coordinates are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_fractional_atom_accessibility
 
+
 class AtomType(AtomFixedBins):
     """Type of an atom, as classified by the atom class file.
        See :attr:`mdt.Library.atom_classes`."""
     _setup = _mdt.mdt_feature_atom_type
+
 
 class HydrogenBondDonor(Atom):
     """Number of hydrogen bond donors. It is defined as the sum, over all atoms
@@ -485,6 +527,7 @@ class HydrogenBondDonor(Atom):
        coordinates are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_hydrogen_bond_donor
 
+
 class HydrogenBondAcceptor(Atom):
     """Number of hydrogen bond acceptors. It is defined as the sum, over all
        atoms within hbond_cutoff (see :class:`mdt.Library`) of the atom,
@@ -494,12 +537,14 @@ class HydrogenBondAcceptor(Atom):
        coordinates are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_hydrogen_bond_acceptor
 
+
 class HydrogenBondCharge(Atom):
     """Hydrogen bond charge. It is defined as the sum, over all
        atoms within hbond_cutoff (see :class:`mdt.Library`) of the atom,
        of their charges as defined in the hydrogen bond file (see
        :attr:`mdt.Library.hbond_classes`)."""
     _setup = _mdt.mdt_feature_hydrogen_bond_charge
+
 
 class AtomTable(Atom):
     """A tabulated atom feature. The feature is simply a table of N
@@ -518,11 +563,12 @@ class AtomTable(Atom):
         """Make sure the function returns a sequence of the right length"""
         def __init__(self, func):
             self.func = func
+
         def __call__(self, aln, iseq, mlib, libs):
             prop = self.func(aln, aln[iseq], mlib, libs)
             if len(prop) != len(aln[iseq].atoms):
                 raise ValueError("Should return a sequence of length %d "
-                                 "(number of atoms in the structure)" \
+                                 "(number of atoms in the structure)"
                                  % len(aln[iseq].atoms))
             return prop
 
@@ -540,11 +586,13 @@ class AtomTable(Atom):
                                   self._SizeCheck(func))
         self._create_bins(mlib, bins)
 
+
 class AtomDistance(AtomPair):
     """Distance in angstroms between a pair of atoms.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_atom_distance
+
 
 class AtomBondSeparation(AtomPair):
     """Number of bonds between a pair of atoms.
@@ -557,17 +605,19 @@ class AtomBondSeparation(AtomPair):
        Atoms in different chains, or atoms of types not referenced in the bond
        class file, are not connected. If disulfide is set to True, disulfide
        bridges are also considered (if two residues have SG atoms within 2.5
-       angstroms, they are counted as bonded). If disulfide is set to False (the
-       default) any disulfide bridges are ignored. Either way, no account is
-       taken of patches and other modifications such as terminal oxygens
+       angstroms, they are counted as bonded). If disulfide is set to False
+       (the default) any disulfide bridges are ignored. Either way, no account
+       is taken of patches and other modifications such as terminal oxygens
        (unless bonds to OXT are explicitly listed in the bond class file).
        If a pair of atoms is not connected it is placed in the 'undefined'
        bin."""
     _setup = _mdt.mdt_feature_atom_bond_separation
+
     def __init__(self, mlib, bins, disulfide=False):
         _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, disulfide)
         self._create_bins(mlib, bins)
+
 
 class HydrogenBondSatisfaction(Protein):
     """Hydrogen bond satisfaction index for a protein. This is the average
@@ -577,11 +627,13 @@ class HydrogenBondSatisfaction(Protein):
        :attr:`mdt.Library.hbond_classes`)."""
     _setup = _mdt.mdt_feature_hydrogen_bond_satisfaction
 
+
 class AlphaContent(Protein):
     """Alpha content of the protein. This is simply the fraction, between 0
        and 1, of residues in the first mainchain conformation class
        (see :class:`MainchainConformation`)."""
     _setup = _mdt.mdt_feature_alpha_content
+
 
 class SequenceIdentity(ProteinPair):
     """Fractional sequence identity, between 0 and 1, between two sequences.
@@ -589,16 +641,19 @@ class SequenceIdentity(ProteinPair):
        of the shorter sequence."""
     _setup = _mdt.mdt_feature_sequence_identity
 
+
 class TupleType(TupleFixedBins):
     """Type of an atom tuple, as classified by the tuple class file.
        See :attr:`mdt.Library.tuple_classes`."""
     _setup = _mdt.mdt_feature_tuple_type
+
 
 class TupleDistance(TuplePair):
     """Distance in angstroms between the first atom in each of two tuples
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_distance
+
 
 class TupleAngle1(TuplePair):
     """Angle (0-180) between the first atom in the first tuple, the first atom
@@ -607,12 +662,14 @@ class TupleAngle1(TuplePair):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_angle1
 
+
 class TupleAngle2(TuplePair):
     """Angle (0-180) between the second atom in the first tuple, the first atom
        in the first tuple, and the first atom in the second tuple.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_angle2
+
 
 class TupleDihedral1(TuplePair):
     """Dihedral (-180-180) between the second atom in the first tuple, the
@@ -622,6 +679,7 @@ class TupleDihedral1(TuplePair):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_dihedral1
 
+
 class TupleDihedral2(TuplePair):
     """Dihedral (-180-180) between the third atom in the first tuple, the
        second atom in the first tuple, the first atom in the first tuple, and
@@ -629,6 +687,7 @@ class TupleDihedral2(TuplePair):
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_dihedral2
+
 
 class TupleDihedral3(TuplePair):
     """Dihedral (-180-180) between the first atom in the first tuple, the
@@ -638,20 +697,24 @@ class TupleDihedral3(TuplePair):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_tuple_dihedral3
 
+
 class BondType(ChemicalBondFixedBins):
     """Type of a bond, as classified by the bond class file.
        See :attr:`mdt.Library.bond_classes`."""
     _setup = _mdt.mdt_feature_bond_type
+
 
 class AngleType(ChemicalBondFixedBins):
     """Type of an angle, as classified by the angle class file.
        See :attr:`mdt.Library.angle_classes`."""
     _setup = _mdt.mdt_feature_angle_type
 
+
 class DihedralType(ChemicalBondFixedBins):
     """Type of a dihedral, as classified by the dihedral class file.
        See :attr:`mdt.Library.dihedral_classes`."""
     _setup = _mdt.mdt_feature_dihedral_type
+
 
 class BondLength(ChemicalBond):
     """Length of a bond in angstroms. See :attr:`mdt.Library.bond_classes`.
@@ -659,17 +722,20 @@ class BondLength(ChemicalBond):
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_bond_length
 
+
 class Angle(ChemicalBond):
     """Angle (0-180). See :attr:`mdt.Library.angle_classes`.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_angle
 
+
 class Dihedral(ChemicalBond):
     """Dihedral angle (-180-180). See :attr:`mdt.Library.dihedral_classes`.
        The feature is considered undefined if any of the atom coordinates
        are equal to the Modeller 'undefined' value (-999.0)."""
     _setup = _mdt.mdt_feature_dihedral
+
 
 class Group(_Base):
     """A feature that groups other features."""
@@ -687,6 +753,7 @@ class Group(_Base):
         _Base.__init__(self, mlib)
         self._ifeat = self._setup(mlib._modpt, feat1._get_ifeat(mlib),
                                   feat2._get_ifeat(mlib), nbins)
+
 
 class Cluster(Group):
     """Cluster feature. When evaluated, it evaluates the two other features

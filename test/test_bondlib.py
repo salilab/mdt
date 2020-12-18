@@ -6,6 +6,7 @@ import mdt.features
 import os
 import sys
 
+
 class BondLibTests(MDTTest):
 
     def get_test_mdt(self, mlib, features):
@@ -26,15 +27,15 @@ class BondLibTests(MDTTest):
         mlib.bond_classes.read('data/bndgrp.lib')
 
         bondtype = mdt.features.BondType(mlib)
-        bondlen = mdt.features.BondLength(mlib,
-                                      bins=mdt.uniform_bins(200, 1.0, 0.005))
+        bondlen = mdt.features.BondLength(
+            mlib, bins=mdt.uniform_bins(200, 1.0, 0.005))
         m = self.get_test_mdt(mlib, [bondtype, bondlen])
         with open('test.out', 'w') as fh:
             mdt.write_bondlib(fh, m)
 
         # Make sure that valid Python code was produced
         with open('test.out') as fh:
-            code = compile(fh.read(), 'test.out', 'exec')
+            _ = compile(fh.read(), 'test.out', 'exec')
         os.unlink('test.out')
 
     def test_bad_bin_name_write_bondlib(self):
@@ -61,7 +62,7 @@ class BondLibTests(MDTTest):
 
         # Make sure that valid Python code was produced
         with open('test.out') as fh:
-            code = compile(fh.read(), 'test.out', 'exec')
+            _ = compile(fh.read(), 'test.out', 'exec')
         os.unlink('test.out')
 
     def test_write_improperlib(self):
@@ -77,7 +78,7 @@ class BondLibTests(MDTTest):
 
         # Make sure that valid Python code was produced
         with open('test.out') as fh:
-            code = compile(fh.read(), 'test.out', 'exec')
+            _ = compile(fh.read(), 'test.out', 'exec')
         os.unlink('test.out')
 
     def test_write_splinelib(self):
@@ -85,15 +86,15 @@ class BondLibTests(MDTTest):
         mlib = self.get_mdt_library()
 
         restype = mdt.features.ResidueType(mlib)
-        ang = mdt.features.Chi1Dihedral(mlib,
-                                        bins=mdt.uniform_bins(180, -180.0, 4.0))
+        ang = mdt.features.Chi1Dihedral(
+            mlib, bins=mdt.uniform_bins(180, -180.0, 4.0))
         m = self.get_test_mdt(mlib, [restype, ang])
         with open('test.out', 'w') as fh:
             mdt.write_splinelib(fh, m, 'chi1')
 
         # Make sure that valid Python code was produced
         with open('test.out') as fh:
-            code = compile(fh.read(), 'test.out', 'exec')
+            _ = compile(fh.read(), 'test.out', 'exec')
         os.unlink('test.out')
 
     def test_write_2dsplinelib(self):
@@ -111,7 +112,7 @@ class BondLibTests(MDTTest):
 
         # Make sure that valid Python code was produced
         with open('test.out') as fh:
-            code = compile(fh.read(), 'test.out', 'exec')
+            _ = compile(fh.read(), 'test.out', 'exec')
         os.unlink('test.out')
 
     def test_write_statpot(self):
@@ -123,9 +124,9 @@ class BondLibTests(MDTTest):
         d = mdt.features.AtomDistance(mlib, bins=mdt.uniform_bins(5, 0, 0.5))
         a1 = mdt.features.AtomType(mlib)
         a2 = mdt.features.AtomType(mlib, pos2=True)
-        m = mdt.Table(mlib, features=(d,a1,a2))
+        m = mdt.Table(mlib, features=(d, a1, a2))
         # Remove undefined bin
-        m = m.reshape((d,a1,a2), m.offset, (-1, -1, -1))
+        m = m.reshape((d, a1, a2), m.offset, (-1, -1, -1))
         with open('test.out', 'w') as fh:
             mdt.write_statpot(fh, m)
         # Check size of file
@@ -134,9 +135,10 @@ class BondLibTests(MDTTest):
         self.assertEqual(len(lines), 7)
         self.assertEqual(len(lines[-1].split()), 21)
         # Make sure Modeller can read the file
-        g = modeller.group_restraints(env, 'test/data/atmcls-tiny.lib',
+        _ = modeller.group_restraints(env, 'test/data/atmcls-tiny.lib',
                                       'test.out')
         os.unlink('test.out')
+
 
 if __name__ == '__main__':
     unittest.main()

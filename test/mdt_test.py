@@ -1,4 +1,3 @@
-import unittest
 from modeller.test import ModellerTest
 import modeller
 import mdt
@@ -6,6 +5,7 @@ import sys
 
 if sys.version_info[0] >= 3:
     from functools import reduce
+
 
 class MDTTest(ModellerTest):
 
@@ -48,7 +48,7 @@ class MDTTest(ModellerTest):
         while self.roll_inds(inds, mdt1.shape, mdt1.offset):
             npoints += 1
             self.assertAlmostEqual(mdt1[inds], mdt2[inds], places=3)
-        self.assertEqual(npoints, reduce(lambda x,y: x*y, shape))
+        self.assertEqual(npoints, reduce(lambda x, y: x*y, shape))
 
     def assertMDTsEqual(self, mdt1, mdt2, check_pdf=True):
         """Make sure that two MDTs are equal"""

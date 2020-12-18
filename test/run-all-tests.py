@@ -1,5 +1,8 @@
 from __future__ import print_function
-import unittest, sys, os, re
+import unittest
+import sys
+import os
+import re
 from optparse import OptionParser
 import glob
 
@@ -24,6 +27,7 @@ try:
                     return doc_first_line
                 else:
                     return str(test)
+
         def _makeResult(self):
             return self._TestResult(self.stream, self.descriptions,
                                     self.verbosity)
@@ -83,8 +87,10 @@ def regressionTest():
     modnames = [os.path.splitext(f)[0] for f in files]
 
     modobjs = [__import__(m) for m in modnames]
-    tests = [unittest.defaultTestLoader.loadTestsFromModule(o) for o in modobjs]
+    tests = [unittest.defaultTestLoader.loadTestsFromModule(o)
+             for o in modobjs]
     return unittest.TestSuite(tests)
+
 
 def parse_options():
     parser = OptionParser()
@@ -94,6 +100,7 @@ def parse_options():
                       default=None,
                       help="directory to write HTML coverage info into")
     return parser.parse_args()
+
 
 if __name__ == "__main__":
     opts, args = parse_options()

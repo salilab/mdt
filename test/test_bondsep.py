@@ -5,6 +5,7 @@ import mdt.features
 import modeller
 import os
 
+
 class BondSeparationFeatureTests(MDTTest):
 
     def build_mdt_from_sequence(self, mlib, features, seq, **keys):
@@ -29,10 +30,10 @@ class BondSeparationFeatureTests(MDTTest):
     def test_chain_span(self):
         """Atom pairs spanning chains should not be connected"""
         mlib = self.get_all_libraries()
-        bsep = mdt.features.AtomBondSeparation(mlib,
-                                        bins=mdt.uniform_bins(20, 0, 1.0))
+        bsep = mdt.features.AtomBondSeparation(
+            mlib, bins=mdt.uniform_bins(20, 0, 1.0))
         m = self.build_mdt_from_sequence(mlib, bsep, 'C/C',
-                                         residue_span_range=(-999,-1,1,999))
+                                         residue_span_range=(-999, -1, 1, 999))
         # All atom pairs should be undefined, since chains are not connected
         self.assertEqual(m.sample_size, 49.0)
         self.assertEqual(m[-1], 49.0)
@@ -40,13 +41,14 @@ class BondSeparationFeatureTests(MDTTest):
     def test_unknown_atom_type(self):
         """Atoms of unknown type should count as undefined"""
         mlib = self.get_all_libraries()
-        bsep = mdt.features.AtomBondSeparation(mlib,
-                                 bins=mdt.uniform_bins(10, -1000, 1000.0))
+        bsep = mdt.features.AtomBondSeparation(
+            mlib, bins=mdt.uniform_bins(10, -1000, 1000.0))
         m = self.build_mdt_from_sequence(mlib, bsep, 'C',
-                                         residue_span_range=(0,0,0,0))
-        # The OXT atom is not referenced in the bond library, so bond separation
-        # to any of the other 6 atoms should count as undefined (even though
-        # the raw "distance" of -1 would otherwise fall in the first bin)
+                                         residue_span_range=(0, 0, 0, 0))
+        # The OXT atom is not referenced in the bond library, so bond
+        # separation to any of the other 6 atoms should count as undefined
+        # (even though the raw "distance" of -1 would otherwise fall in the
+        # first bin)
         self.assertEqual(m[-1], 6.0)
 
     def test_unconnected_internal(self):
@@ -67,10 +69,10 @@ BNDGRP 'ALA:O:C'
 
         attyp1 = mdt.features.AtomType(mlib)
         attyp2 = mdt.features.AtomType(mlib, pos2=True)
-        bsep = mdt.features.AtomBondSeparation(mlib,
-                                        bins=mdt.uniform_bins(20, 0, 1.0))
-        m = self.build_mdt_from_sequence(mlib, [attyp1, attyp2, bsep],
-                        'A', residue_span_range=(0,0,0,0))
+        bsep = mdt.features.AtomBondSeparation(
+            mlib, bins=mdt.uniform_bins(20, 0, 1.0))
+        m = self.build_mdt_from_sequence(
+            mlib, [attyp1, attyp2, bsep], 'A', residue_span_range=(0, 0, 0, 0))
         atom_types = {}
         for n, b in enumerate(m.features[0].bins):
             atom_types[b.symbol] = n
@@ -105,10 +107,11 @@ BNDGRP 'ALA:O:C'
 
         attyp1 = mdt.features.AtomType(mlib)
         attyp2 = mdt.features.AtomType(mlib, pos2=True)
-        bsep = mdt.features.AtomBondSeparation(mlib,
-                                        bins=mdt.uniform_bins(20, 0, 1.0))
-        m = self.build_mdt_from_sequence(mlib, [attyp1, attyp2, bsep],
-                        'AA', residue_span_range=(-1,-1,1,1))
+        bsep = mdt.features.AtomBondSeparation(
+            mlib, bins=mdt.uniform_bins(20, 0, 1.0))
+        m = self.build_mdt_from_sequence(
+            mlib, [attyp1, attyp2, bsep], 'AA',
+            residue_span_range=(-1, -1, 1, 1))
         atom_types = {}
         for n, b in enumerate(m.features[0].bins):
             atom_types[b.symbol] = n
@@ -133,10 +136,11 @@ BNDGRP 'ALA:O:C'
         mlib = self.get_all_libraries()
         attyp1 = mdt.features.AtomType(mlib)
         attyp2 = mdt.features.AtomType(mlib, pos2=True)
-        bsep = mdt.features.AtomBondSeparation(mlib,
-                                        bins=mdt.uniform_bins(20, 0, 1.0))
-        m = self.build_mdt_from_sequence(mlib, [attyp1, attyp2, bsep],
-                        'ARNDCQEHFWY', residue_span_range=(0,0,0,0))
+        bsep = mdt.features.AtomBondSeparation(
+            mlib, bins=mdt.uniform_bins(20, 0, 1.0))
+        m = self.build_mdt_from_sequence(
+            mlib, [attyp1, attyp2, bsep], 'ARNDCQEHFWY',
+            residue_span_range=(0, 0, 0, 0))
         atom_types = {}
         for n, b in enumerate(m.features[0].bins):
             atom_types[b.symbol] = n
@@ -179,10 +183,11 @@ BNDGRP 'ALA:O:C'
         mlib = self.get_all_libraries()
         attyp1 = mdt.features.AtomType(mlib)
         attyp2 = mdt.features.AtomType(mlib, pos2=True)
-        bsep = mdt.features.AtomBondSeparation(mlib,
-                                        bins=mdt.uniform_bins(20, 0, 1.0))
-        m = self.build_mdt_from_sequence(mlib, [attyp1, attyp2, bsep],
-                        'ARN', residue_span_range=(-999,-1,1,999))
+        bsep = mdt.features.AtomBondSeparation(
+            mlib, bins=mdt.uniform_bins(20, 0, 1.0))
+        m = self.build_mdt_from_sequence(
+            mlib, [attyp1, attyp2, bsep], 'ARN',
+            residue_span_range=(-999, -1, 1, 999))
         atom_types = {}
         for n, b in enumerate(m.features[0].bins):
             atom_types[b.symbol] = n
@@ -204,11 +209,10 @@ BNDGRP 'ALA:O:C'
     def test_disulfide(self):
         """Test handling of disulfide bonds"""
         mlib = self.get_all_libraries()
-        bsep = mdt.features.AtomBondSeparation(mlib,
-                                        bins=mdt.uniform_bins(20, 0, 1.0))
-        bsep_ss = mdt.features.AtomBondSeparation(mlib,
-                                        bins=mdt.uniform_bins(20, 0, 1.0),
-                                        disulfide=True)
+        bsep = mdt.features.AtomBondSeparation(
+            mlib, bins=mdt.uniform_bins(20, 0, 1.0))
+        bsep_ss = mdt.features.AtomBondSeparation(
+            mlib, bins=mdt.uniform_bins(20, 0, 1.0), disulfide=True)
         env = self.get_environ()
         mdl = modeller.model(env)
         mdl.build_sequence('CC')
@@ -224,11 +228,12 @@ BNDGRP 'ALA:O:C'
             a = modeller.alignment(env)
             a.append_model(mdl, atom_files='test', align_codes='test')
             m = mdt.Table(mlib, features=bsep)
-            m.add_alignment(a, residue_span_range=(-999,0,0,999))
+            m.add_alignment(a, residue_span_range=(-999, 0, 0, 999))
             self.assertEqual(m[1], 11.0)
             m2 = mdt.Table(mlib, features=bsep_ss)
-            m2.add_alignment(a, residue_span_range=(-999,0,0,999))
+            m2.add_alignment(a, residue_span_range=(-999, 0, 0, 999))
             self.assertEqual(m2[1], num)
+
 
 if __name__ == '__main__':
     unittest.main()

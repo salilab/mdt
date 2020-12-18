@@ -6,6 +6,7 @@ import modeller
 import os
 import math
 
+
 class FeatureTests(MDTTest):
 
     def build_mdt_from_model(self, mlib, features, mdl, **keys):
@@ -28,20 +29,26 @@ class FeatureTests(MDTTest):
         """Test AtomTable feature"""
         class UniqueError(Exception):
             pass
+
         def build_mdt(mlib, func, aln):
             bins = mdt.uniform_bins(5, 0, 1.0)
             f = mdt.features.AtomTable(mlib, bins, "test data", func)
             m = mdt.Table(mlib, features=f)
             m.add_alignment(aln)
             return m
+
         def ex_func(*args):
             raise UniqueError()
+
         def bad_type_func(*args):
             return 42
+
         def bad_val_func(*args):
             return ['foo']*7
+
         def bad_len_func(*args):
             return [42]*3
+
         def func(aln, struc, mlib, libs):
             return [a.x for a in struc.atoms]
         mlib = self.get_mdt_library()
@@ -103,8 +110,8 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         self.assertRaises(ValueError, mdt.features.SidechainBiso, mlib,
                           bins=mdt.uniform_bins(5, 0, 10), protein=3)
-        sidechain_biso = mdt.features.SidechainBiso(mlib,
-                                               bins=mdt.uniform_bins(5, 0, 10))
+        sidechain_biso = mdt.features.SidechainBiso(
+            mlib, bins=mdt.uniform_bins(5, 0, 10))
         mdl = modeller.model(env)
         mdl.build_sequence('A')
         aln = modeller.alignment(env)
@@ -113,9 +120,9 @@ class FeatureTests(MDTTest):
         # Mainchain atom Biso should be ignored:
         for mainchain in ('N:1', 'C:1', 'O:1', 'OXT:1', 'CA:1'):
             chain.atoms[mainchain].biso = 1000
-        for (biso, bin) in ((22, 2), (32, 3), # Map regular values to bins
-                            (0, -1), # Zero Biso should be "undefined"
-                            (1, 3)): # Biso < 2 is multiplied by 4pi^2
+        for (biso, bin) in ((22, 2), (32, 3),  # Map regular values to bins
+                            (0, -1),  # Zero Biso should be "undefined"
+                            (1, 3)):  # Biso < 2 is multiplied by 4pi^2
             chain.atoms['CB:1'].biso = biso
             m = mdt.Table(mlib, features=sidechain_biso)
             m.add_alignment(aln)
@@ -148,20 +155,21 @@ class FeatureTests(MDTTest):
         aln.append_sequence("AFVVTDNCIKXCKYTDCVEVCPVDCFYEG")
         aln.append_sequence("DNCIKXCCYCDCVEPCPVDCFGEGAFVVT")
         mlib = self.get_mdt_library()
-        self.assertRaises(ValueError, mdt.features.ResidueType, mlib, protein=3)
+        self.assertRaises(ValueError, mdt.features.ResidueType, mlib,
+                          protein=3)
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
         restyp0_del3 = mdt.features.ResidueType(mlib, protein=0, delta=3)
         restyp1_del3 = mdt.features.ResidueType(mlib, protein=1, delta=3)
 
-        m1 = mdt.Table(mlib, features=(restyp0,restyp1))
+        m1 = mdt.Table(mlib, features=(restyp0, restyp1))
         m1.add_alignment(aln)
 
         # When deltai=j != 0, offset MDTs should not match the original:
-        m2 = mdt.Table(mlib, features=(restyp0_del3,restyp1_del3))
+        m2 = mdt.Table(mlib, features=(restyp0_del3, restyp1_del3))
         m2.add_alignment(aln)
 
-        self.assertAlmostEqual(m2[0,2], 0.0, delta=0.0005)
+        self.assertAlmostEqual(m2[0, 2], 0.0, delta=0.0005)
 
     def test_feature_residue_distance(self):
         """Check residue-residue distance feature"""
@@ -178,8 +186,8 @@ class FeatureTests(MDTTest):
         """Check residue-residue distance difference feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        ddist = mdt.features.ResidueDistanceDifference(mlib,
-                                          bins=mdt.uniform_bins(20, -10, 1))
+        ddist = mdt.features.ResidueDistanceDifference(
+            mlib, bins=mdt.uniform_bins(20, -10, 1))
         aln = modeller.alignment(env, file='test/data/struc-struc.ali')
         m = mdt.Table(mlib, features=ddist)
         m.add_alignment(aln)
@@ -206,7 +214,7 @@ class FeatureTests(MDTTest):
         """Check residue neighborhood difference features"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        bins=mdt.uniform_bins(9, 0, 0.2)
+        bins = mdt.uniform_bins(9, 0, 0.2)
         ndif = mdt.features.NeighborhoodDifference(mlib, bins)
         avndif = mdt.features.AverageNeighborhoodDifference(mlib, bins)
         aln = modeller.alignment(env, file='test/data/struc-struc.ali')
@@ -233,7 +241,6 @@ class FeatureTests(MDTTest):
 
     def test_feature_resgrp(self):
         """Check residue group feature"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         mnch = mdt.features.ResidueGroup(mlib, residue_grouping=0)
         hydro = mdt.features.ResidueGroup(mlib, residue_grouping=1)
@@ -347,8 +354,8 @@ class FeatureTests(MDTTest):
                                                   mdt.uniform_bins(7, 1., 1.))
         totchg = mdt.features.HydrogenBondCharge(mlib,
                                                  mdt.uniform_bins(9, 1., 1.))
-        satisf = mdt.features.HydrogenBondSatisfaction(mlib,
-                                                 mdt.uniform_bins(100, 0., 10.))
+        satisf = mdt.features.HydrogenBondSatisfaction(
+            mlib, mdt.uniform_bins(100, 0., 10.))
         self.assertRaises(mdt.MDTError, mlib.hbond_classes.read,
                           'data/atmcls-hbda.lib')
         m = mdt.Table(mlib, features=donor)
@@ -390,7 +397,6 @@ class FeatureTests(MDTTest):
 
     def test_feature_seqlen(self):
         """Check sequence length feature"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         seqlen = mdt.features.SequenceLength(mlib,
                                              bins=mdt.uniform_bins(49, 0, 5))
@@ -408,7 +414,7 @@ class FeatureTests(MDTTest):
         xray0 = mdt.features.XRayResolution(mlib, bins, protein=0)
         xray0_nmr = mdt.features.XRayResolution(mlib, bins, protein=0, nmr=1.0)
         xray1 = mdt.features.XRayResolution(mlib, bins, protein=1)
-        xray2 = mdt.features.XRayResolution(mlib, bins, protein=2)
+        _ = mdt.features.XRayResolution(mlib, bins, protein=2)
         # Check valid range for protein argument
         for p in (-1, 3):
             self.assertRaises(ValueError, mdt.features.XRayResolution,
@@ -502,8 +508,8 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         bins = mdt.uniform_bins(30, 0.0, 5.0)
         resacc = mdt.features.ResidueAccessibility(mlib, bins)
-        avresacc = mdt.features.AverageResidueAccessibility(mlib,
-                                             bins=mdt.uniform_bins(10, 0, 15))
+        avresacc = mdt.features.AverageResidueAccessibility(
+            mlib, bins=mdt.uniform_bins(10, 0, 15))
         m = self.get_test_mdt(mlib, features=resacc)
         self.assertEqual(m.shape, (31,))
         self.assertAlmostEqual(m[0], 24.0, delta=1.0005)
@@ -520,10 +526,10 @@ class FeatureTests(MDTTest):
         """Test the residue index difference feature"""
         env = self.get_environ()
         mlib = self.get_mdt_library()
-        diff = mdt.features.ResidueIndexDifference(mlib,
-                                              bins=mdt.uniform_bins(21, -10, 1))
-        absdiff = mdt.features.ResidueIndexDifference(mlib, absolute=True,
-                                              bins=mdt.uniform_bins(21, -10, 1))
+        diff = mdt.features.ResidueIndexDifference(
+            mlib, bins=mdt.uniform_bins(21, -10, 1))
+        absdiff = mdt.features.ResidueIndexDifference(
+            mlib, absolute=True, bins=mdt.uniform_bins(21, -10, 1))
         aln = modeller.alignment(env, file='test/data/alignment.ali',
                                  align_codes='5fd1')
         m1 = mdt.Table(mlib, features=diff)
@@ -539,7 +545,8 @@ class FeatureTests(MDTTest):
             self.assertEqual(m[9], 0.)
             self.assertEqual(m[10], 0.)
             self.assertEqual(m[11], 0.)
-        # Non-absolute feature should have other bins symmetrically distributed:
+        # Non-absolute feature should have other bins
+        # symmetrically distributed:
         for i in range(9):
             self.assertEqual(m1[i], m[-2 - i])
         # Absolute feature should have no negative values:
@@ -552,8 +559,8 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         mlib.bond_classes.read('data/bndgrp.lib')
         bondtype = mdt.features.BondType(mlib)
-        bondlen = mdt.features.BondLength(mlib,
-                                      bins=mdt.uniform_bins(200, 1.0, 0.005))
+        bondlen = mdt.features.BondLength(
+            mlib, bins=mdt.uniform_bins(200, 1.0, 0.005))
         self.assertRaises(mdt.MDTError, mlib.bond_classes.read,
                           'data/bndgrp.lib')
         m = mdt.Table(mlib, features=bondtype)
@@ -603,62 +610,59 @@ class FeatureTests(MDTTest):
 
     def test_feature_distance_undefined(self):
         """Check atom-atom distance feature undefined bin"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         dist = mdt.features.AtomDistance(mlib,
                                          bins=mdt.uniform_bins(1, -1000, 2000))
         mdl = self.build_test_model()
         m = self.build_mdt_from_model(mlib, dist, mdl,
-                                      residue_span_range=(-99999,0,0,99999))
+                                      residue_span_range=(-99999, 0, 0, 99999))
         self.assertEqual(m.shape, (2,))
         self.assertEqual(m[0], 21.0)
         self.assertEqual(m[1], 0.0)
         # If any coordinate is undefined, the distance is
         modeller.selection(mdl.atoms[0]).unbuild()
         m = self.build_mdt_from_model(mlib, dist, mdl,
-                                      residue_span_range=(-99999,0,0,99999))
+                                      residue_span_range=(-99999, 0, 0, 99999))
         self.assertEqual(m.shape, (2,))
         self.assertEqual(m[0], 15.0)
         self.assertEqual(m[1], 6.0)
 
     def test_feature_angle_undefined(self):
         """Check angle feature undefined bin"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.angle_classes.read('data/anggrp.lib')
         angle = mdt.features.Angle(mlib,
                                    bins=mdt.uniform_bins(1, -500, 1000))
         mdl = self.build_test_model()
         m = self.build_mdt_from_model(mlib, angle, mdl,
-                                      residue_span_range=(-99999,0,0,99999))
+                                      residue_span_range=(-99999, 0, 0, 99999))
         self.assertEqual(m.shape, (2,))
         self.assertEqual(m[0], 5.0)
         self.assertEqual(m[1], 0.0)
         # If any coordinate is undefined, the angle is
         modeller.selection(mdl.atoms[0]).unbuild()
         m = self.build_mdt_from_model(mlib, angle, mdl,
-                                      residue_span_range=(-99999,0,0,99999))
+                                      residue_span_range=(-99999, 0, 0, 99999))
         self.assertEqual(m.shape, (2,))
         self.assertEqual(m[0], 3.0)
         self.assertEqual(m[1], 2.0)
 
     def test_feature_dihedral_undefined(self):
         """Check dihedral feature undefined bin"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.dihedral_classes.read('data/impgrp.lib')
         dih = mdt.features.Dihedral(mlib,
                                     bins=mdt.uniform_bins(1, -500, 1000))
         mdl = self.build_test_model()
         m = self.build_mdt_from_model(mlib, dih, mdl,
-                                      residue_span_range=(-99999,0,0,99999))
+                                      residue_span_range=(-99999, 0, 0, 99999))
         self.assertEqual(m.shape, (2,))
         self.assertEqual(m[0], 1.0)
         self.assertEqual(m[1], 0.0)
         # If any coordinate is undefined, the dihedral is
         modeller.selection(mdl.atoms[0]).unbuild()
         m = self.build_mdt_from_model(mlib, dih, mdl,
-                                      residue_span_range=(-99999,0,0,99999))
+                                      residue_span_range=(-99999, 0, 0, 99999))
         self.assertEqual(m.shape, (2,))
         self.assertEqual(m[0], 0.0)
         self.assertEqual(m[1], 1.0)
@@ -669,8 +673,8 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         mlib.dihedral_classes.read('data/impgrp.lib')
         dihedtype = mdt.features.DihedralType(mlib)
-        dihedral = mdt.features.Dihedral(mlib,
-                                         bins=mdt.uniform_bins(288, -180, 1.25))
+        dihedral = mdt.features.Dihedral(
+            mlib, bins=mdt.uniform_bins(288, -180, 1.25))
         self.assertRaises(mdt.MDTError, mlib.dihedral_classes.read,
                           'data/impgrp.lib')
         m = mdt.Table(mlib, features=dihedtype)
@@ -697,10 +701,10 @@ class FeatureTests(MDTTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
         mlib.tuple_classes.read('data/dblcls.lib')
-        tuple_angle2 = mdt.features.TupleAngle2(mlib,
-                                            bins=mdt.uniform_bins(6, 0, 30.0))
-        tuple_dihed1 = mdt.features.TupleDihedral1(mlib,
-                                          bins=mdt.uniform_bins(6, -180, 60.0))
+        tuple_angle2 = mdt.features.TupleAngle2(
+            mlib, bins=mdt.uniform_bins(6, 0, 30.0))
+        tuple_dihed1 = mdt.features.TupleDihedral1(
+            mlib, bins=mdt.uniform_bins(6, -180, 60.0))
         self.assertRaises(mdt.MDTError, mlib.tuple_classes.read,
                           'data/dblcls.lib')
         # These features only work on atom triplets:
@@ -741,23 +745,23 @@ class FeatureTests(MDTTest):
         t1 = mdt.features.TupleType(mlib)
         t2 = mdt.features.TupleType(mlib, pos2=True)
         c = mdt.features.Cluster(mlib, t1, t2, nbins=5)
-        c.add((0,0), 0)
-        c.add((1,1), 0)
-        c.add((1,2), 1)
-        self.assertRaises(ValueError, c.add, (19,2), 1)
-        self.assertRaises(ValueError, c.add, (1,29), 1)
-        self.assertRaises(ValueError, c.add, (1,2), 6)
+        c.add((0, 0), 0)
+        c.add((1, 1), 0)
+        c.add((1, 2), 1)
+        self.assertRaises(ValueError, c.add, (19, 2), 1)
+        self.assertRaises(ValueError, c.add, (1, 29), 1)
+        self.assertRaises(ValueError, c.add, (1, 2), 6)
 
         mdl = modeller.model(env)
         mdl.build_sequence('AAACAAACSAA')
         a = modeller.alignment(env)
         a.append_model(mdl, align_codes='test')
 
-        m1 = mdt.Table(mlib, features=(t1,t2))
+        m1 = mdt.Table(mlib, features=(t1, t2))
         m1.add_alignment(a)
-        self.assertAlmostEqual(m1[0,0], 24.0, delta=1e-5)
-        self.assertAlmostEqual(m1[1,1], 2.0, delta=1e-5)
-        self.assertAlmostEqual(m1[1,2], 2.0, delta=1e-5)
+        self.assertAlmostEqual(m1[0, 0], 24.0, delta=1e-5)
+        self.assertAlmostEqual(m1[1, 1], 2.0, delta=1e-5)
+        self.assertAlmostEqual(m1[1, 2], 2.0, delta=1e-5)
         self.assertAlmostEqual(m1.sample_size, 70.0, delta=1e-5)
 
         m2 = mdt.Table(mlib, features=c)
@@ -781,16 +785,16 @@ class FeatureTests(MDTTest):
         mlib.tuple_classes.read('data/trpcls.lib')
         tuple_type = mdt.features.TupleType(mlib)
         tuple_type2 = mdt.features.TupleType(mlib, pos2=True)
-        tuple_dist = mdt.features.TupleDistance(mlib,
-                                            bins=mdt.uniform_bins(9, 2.0, 0.2))
-        tuple_angle1 = mdt.features.TupleAngle1(mlib,
-                                            bins=mdt.uniform_bins(6, 0, 30.0))
-        tuple_dihed1 = mdt.features.TupleDihedral1(mlib,
-                                          bins=mdt.uniform_bins(6, -180, 60.0))
-        tuple_dihed2 = mdt.features.TupleDihedral2(mlib,
-                                          bins=mdt.uniform_bins(6, -180, 60.0))
-        tuple_dihed3 = mdt.features.TupleDihedral3(mlib,
-                                          bins=mdt.uniform_bins(6, -180, 60.0))
+        tuple_dist = mdt.features.TupleDistance(
+            mlib, bins=mdt.uniform_bins(9, 2.0, 0.2))
+        tuple_angle1 = mdt.features.TupleAngle1(
+            mlib, bins=mdt.uniform_bins(6, 0, 30.0))
+        tuple_dihed1 = mdt.features.TupleDihedral1(
+            mlib, bins=mdt.uniform_bins(6, -180, 60.0))
+        tuple_dihed2 = mdt.features.TupleDihedral2(
+            mlib, bins=mdt.uniform_bins(6, -180, 60.0))
+        tuple_dihed3 = mdt.features.TupleDihedral3(
+            mlib, bins=mdt.uniform_bins(6, -180, 60.0))
         self.assertRaises(mdt.MDTError, mlib.tuple_classes.read,
                           'data/trpcls.lib')
         m1 = mdt.Table(mlib, features=tuple_type)
@@ -911,8 +915,8 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         phi = mdt.features.PhiDihedral(mlib,
                                        mdt.uniform_bins(36, -180, 10))
-        phidiff = mdt.features.PhiDihedralDifference(mlib,
-                                       mdt.uniform_bins(36, -180, 10))
+        phidiff = mdt.features.PhiDihedralDifference(
+            mlib, mdt.uniform_bins(36, -180, 10))
         phiclass = mdt.features.PhiClass(mlib)
         m = self.get_test_mdt(mlib, features=phi)
         self.assertEqual(m.shape, (37,))
@@ -934,8 +938,8 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         psi = mdt.features.PsiDihedral(mlib,
                                        mdt.uniform_bins(36, -180, 10))
-        psidiff = mdt.features.PsiDihedralDifference(mlib,
-                                       mdt.uniform_bins(36, -180, 10))
+        psidiff = mdt.features.PsiDihedralDifference(
+            mlib, mdt.uniform_bins(36, -180, 10))
         psiclass = mdt.features.PsiClass(mlib)
         m = self.get_test_mdt(mlib, features=psi)
         self.assertEqual(m.shape, (37,))
@@ -972,8 +976,8 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         # Make bins start at slightly less than -180, to allow for floating
         # point rounding
-        omegadiff = mdt.features.OmegaDihedralDifference(mlib,
-                                       mdt.uniform_bins(36, -180.01, 10))
+        omegadiff = mdt.features.OmegaDihedralDifference(
+            mlib, mdt.uniform_bins(36, -180.01, 10))
         # Note that difference must be shortest around the circle, so
         # 100.0 - (-100.0) is not 200 degrees but -160 degrees
         for dih1, dih2, expected in ((80.0, 80.0, 0.0),
@@ -1002,8 +1006,8 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         omega = mdt.features.OmegaDihedral(mlib,
                                            mdt.uniform_bins(36, -180, 10))
-        omegadiff = mdt.features.OmegaDihedralDifference(mlib,
-                                       mdt.uniform_bins(36, -180, 10))
+        omegadiff = mdt.features.OmegaDihedralDifference(
+            mlib, mdt.uniform_bins(36, -180, 10))
         omegaclass = mdt.features.OmegaClass(mlib)
         m = self.get_test_mdt(mlib, features=omega)
         self.assertEqual(m.shape, (37,))
@@ -1044,7 +1048,6 @@ class FeatureTests(MDTTest):
 
     def test_symmetric(self):
         """Test symmetric/asymmetric residue pair features"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         bins = mdt.uniform_bins(10, 0, 1.0)
         dist = mdt.features.ResidueDistance(mlib, bins)
@@ -1065,12 +1068,11 @@ class FeatureTests(MDTTest):
         for (a, b, symm) in ((sym_features[0], sym_features[1], True),
                              (asym_features[0], asym_features[1], False),
                              (sym_features[0], asym_features[0], False)):
-            m = mdt.Table(mlib, features=(a,b))
+            m = mdt.Table(mlib, features=(a, b))
             self.assertEqual(m.symmetric, symm)
 
     def test_abstract(self):
         """Should not be able to instantiate abstract features"""
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         bins = mdt.uniform_bins(10, 0, 1.0)
         for feat in [mdt.features.Protein, mdt.features.ProteinPair,
@@ -1090,14 +1092,15 @@ class FeatureTests(MDTTest):
         class DummyTuple(mdt.features.Tuple):
             def _setup(self, mlib, pos2):
                 return "dummy ifeat"
+
             def _create_bins(self, mlib, bins):
                 self.bins_created = bins
-        env = self.get_environ()
         mlib = self.get_mdt_library()
         bins = mdt.uniform_bins(10, 0, 1.0)
         f = DummyTuple(mlib, bins)
         self.assertEqual(f._ifeat, 'dummy ifeat')
         self.assertEqual(f.bins_created, bins)
+
 
 if __name__ == '__main__':
     unittest.main()

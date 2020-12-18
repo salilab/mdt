@@ -36,5 +36,5 @@ jobs:
         rm ../src/mdt_config.h
         make
         cd ..
-        PYTHONPATH=build:$PYTHONPATH py.test --cov=pyext --cov-branch --cov-report=xml -v test
+        PYTHONPATH=build/coverage:build/pyext:pyext:$PYTHONPATH py.test --cov=pyext --cov-branch --cov-report=xml -v test
     - uses: codecov/codecov-action@v1

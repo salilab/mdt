@@ -29,7 +29,7 @@ jobs:
         export CMAKE_LIBRARY_PATH=`pwd`/hdf5-libs
         PYTHON_EXE=$(which python)
         PYTHON_INC=$(echo $(dirname $(which python))/../include/*/)
-        PYTHON_LIB=$(which python))/../lib/libpython${{ matrix.python-version }}*.so
+        PYTHON_LIB=$(which python)/../lib/libpython${{ matrix.python-version }}*.so
         echo ${pythonLocation}
         echo $PYTHON_EXE $PYTHON_INC $PYTHON_LIB
         find ${pythonLocation}

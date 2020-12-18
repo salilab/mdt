@@ -1,0 +1,36 @@
+name: build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04]
+        python-version: [2.7, 3.7, 3.8, 3.9]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      env:
+        KEY_MODELLER: ${{ secrets.KEY_MODELLER }}
+      run: |
+        tools/travis/install_deps.sh ${{ matrix.python-version }}
+    - name: Test
+      run: |
+        export CMAKE_INCLUDE_PATH=`pwd`/hdf5-inc
+        export CMAKE_LIBRARY_PATH=`pwd`/hdf5-libs
+        mkdir build && cd build
+        ../tools/coverage/setup.py
+        PYTHONPATH=`pwd`/coverage cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage"
+        rm ../src/mdt_config.h
+        make
+        ctest --output-on-failure
+    - uses: codecov/codecov-action@v1

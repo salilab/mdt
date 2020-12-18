@@ -1,5 +1,5 @@
 [![docs](https://readthedocs.org/projects/mdt/badge/)](https://salilab.org/mdt/doc/)
-[![Build Status](https://api.travis-ci.org/salilab/mdt.svg?branch=develop)](https://travis-ci.org/salilab/mdt)
+[![Build Status](https://github.com/salilab/mdt/workflows/build/badge.svg?branch=develop)](https://github.com/salilab/mdt/actions?query=workflow%3Abuild)
 [![codecov](https://codecov.io/gh/salilab/mdt/branch/develop/graph/badge.svg)](https://codecov.io/gh/salilab/mdt)
 [![Coverity scan](https://img.shields.io/coverity/scan/8502.svg)](https://scan.coverity.com/projects/salilab-mdt)
 

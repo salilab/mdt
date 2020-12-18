@@ -29,10 +29,7 @@ jobs:
         export CMAKE_LIBRARY_PATH=`pwd`/hdf5-libs
         PYTHON_EXE=$(which python)
         PYTHON_INC=$(echo $(dirname $(which python))/../include/*/)
-        PYTHON_LIB=$(which python)/../lib/libpython${{ matrix.python-version }}*.so
-        echo ${pythonLocation}
-        echo $PYTHON_EXE $PYTHON_INC $PYTHON_LIB
-        find ${pythonLocation}
+        PYTHON_LIB=$(echo $(which python)/../lib/libpython${{ matrix.python-version }}*.so)
         mkdir build && cd build
         ../tools/coverage/setup.py
         PYTHONPATH=`pwd`/coverage cmake .. -DCMAKE_BUILD_TYPE=Debug -DPYTHON_EXECUTABLE=$PYTHON_EXE -DPYTHON_INCLUDE_DIR=$PYTHON_INC -DPYTHON_LIBRARY=$PYTHON_LIB -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage"

@@ -38,5 +38,5 @@ jobs:
         ctest --output-on-failure
     - name: Collect coverage and send to codecov
       run: |
-        (cd coverage && coverage combine && mv .coverage ..)
+        (cd build/coverage && coverage combine && mv .coverage ..)
         bash <(curl -s https://codecov.io/bash)

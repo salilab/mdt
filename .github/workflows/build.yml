@@ -35,8 +35,6 @@ jobs:
         PYTHONPATH=`pwd`/coverage cmake .. -DCMAKE_BUILD_TYPE=Debug -DPYTHON_EXECUTABLE=$PYTHON_EXE -DPYTHON_INCLUDE_DIR=$PYTHON_INC -DPYTHON_LIBRARY=$PYTHON_LIB -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage"
         rm ../src/mdt_config.h
         make
-        ctest --output-on-failure
-    - name: Collect coverage and send to codecov
-      run: |
-        (cd build/coverage && coverage combine && mv .coverage ..)
-        bash <(curl -s https://codecov.io/bash)
+        cd ..
+        PYTHONPATH=build:$PYTHONPATH py.test --cov=pyext --cov-branch --cov-report=xml -v test
+    - uses: codecov/codecov-action@v1

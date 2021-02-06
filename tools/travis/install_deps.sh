@@ -8,8 +8,8 @@ if [ $# -ne 1 ]; then
 fi
 
 python_version=$1
-MODELLER_VERSION=9.25
-HDF5_VERSION=1.10.5
+MODELLER_VERSION=10.0
+HDF5_VERSION=1.10.6
 HDF5_SOVER=103
 HDF5_HL_SOVER=100
 
@@ -25,9 +25,6 @@ sudo --preserve-env=KEY_MODELLER dpkg -i modeller_${MODELLER_VERSION}-1_amd64.de
 # Modeller installs for system Python, so link its Python packages into the
 # virtualenv Python path
 export PYTHON=`pip show coverage |grep Location|cut -b11-`
-# Modeller 9.25 doesn't support Python 3.9 but the 3.8 extension
-# should work
-if [ "${python_version}" = "3.9" ]; then python_version=3.8; fi
 ln -sf /usr/lib/python${python_version}/dist-packages/_modeller.so ${PYTHON}
 ln -sf /usr/lib/python${python_version}/dist-packages/modeller ${PYTHON}
 

@@ -18,7 +18,7 @@ class MDTTest(ModellerTest):
         """Build a simple test MDT"""
         env = self.get_environ()
         m = mdt.Table(mlib, features=features)
-        aln = modeller.alignment(env, file='test/data/alignment.ali')
+        aln = modeller.Alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         return m
 

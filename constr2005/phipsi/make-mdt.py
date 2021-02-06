@@ -4,7 +4,7 @@ import mdt.features
 
 # See ../bonds/make_mdt.py for additional comments
 
-env = environ()
+env = Environ()
 log.minimal()
 env.io.atom_files_directory = ['/salilab/park2/database/pdb/divided/']
 
@@ -16,7 +16,7 @@ phi = mdt.features.PhiDihedral(mlib, bins=mdt.uniform_bins(72, -180, 5.0))
 
 m = mdt.Table(mlib, features=(xray, restyp, psi, phi))
 
-a = alignment(env)
+a = Alignment(env)
 f = modfile.File('../cluster-PDB/pdb_60.pir', 'r')
 while a.read_one(f):
     m.add_alignment(a)

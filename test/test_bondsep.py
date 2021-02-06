@@ -11,11 +11,11 @@ class BondSeparationFeatureTests(MDTTest):
     def build_mdt_from_sequence(self, mlib, features, seq, **keys):
         """Build a simple test MDT for a given sequence"""
         env = self.get_environ()
-        mdl = modeller.model(env)
+        mdl = modeller.Model(env)
         mdl.build_sequence(seq)
 
         m = mdt.Table(mlib, features=features)
-        a = modeller.alignment(env)
+        a = modeller.Alignment(env)
         a.append_model(mdl, atom_files='test', align_codes='test')
         m.add_alignment(a, **keys)
         return m
@@ -214,7 +214,7 @@ BNDGRP 'ALA:O:C'
         bsep_ss = mdt.features.AtomBondSeparation(
             mlib, bins=mdt.uniform_bins(20, 0, 1.0), disulfide=True)
         env = self.get_environ()
-        mdl = modeller.model(env)
+        mdl = modeller.Model(env)
         mdl.build_sequence('CC')
         # When SG-SG distance is small enough, an extra bond
         # (separation feature = 1) should be detected, but only with
@@ -225,7 +225,7 @@ BNDGRP 'ALA:O:C'
             sg1.x = sg1.y = sg1.z = 0.
             sg2.x = sg2.y = 0.
             sg2.z = dist
-            a = modeller.alignment(env)
+            a = modeller.Alignment(env)
             a.append_model(mdl, atom_files='test', align_codes='test')
             m = mdt.Table(mlib, features=bsep)
             m.add_alignment(a, residue_span_range=(-999, 0, 0, 999))

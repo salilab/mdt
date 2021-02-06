@@ -1,5 +1,5 @@
 import unittest
-from modeller import alignment, model
+from modeller import Alignment, Model
 from mdt_test import MDTTest
 import mdt
 import mdt.features
@@ -162,7 +162,7 @@ class TableTests(MDTTest):
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
         m = mdt.Table(mlib, features=(restyp0, restyp1))
-        aln = alignment(env)
+        aln = Alignment(env)
         aln.append_sequence('AFVVTDNCIKCKYTDCVEVXPVDCFYEG')
         aln.append_sequence('CVEVCPVDCFYEGAFVVTDNCIKCKYTX')
         m.add_alignment(aln)
@@ -261,7 +261,7 @@ class TableTests(MDTTest):
         restyp = mdt.features.ResidueType(mlib)
         bondtype = mdt.features.BondType(mlib)
         m = mdt.Table(mlib, features=(restyp, bondtype))
-        aln = alignment(env)
+        aln = Alignment(env)
         self.assertRaises(mdt.MDTError, m.add_alignment, aln)
 
     def test_1d_mdt(self):
@@ -270,7 +270,7 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         restyp = mdt.features.ResidueType(mlib)
         m = mdt.Table(mlib, features=restyp)
-        aln = alignment(env)
+        aln = Alignment(env)
         seq = "AFVVTDNCIKXCKYTDCVEVCPVDCFYEG"
         aln.append_sequence(seq)
         # Get known counts of all residue types (including undefined)
@@ -296,7 +296,7 @@ class TableTests(MDTTest):
     def test_residue_span_range(self):
         """Test residue_span_range argument"""
         env = self.get_environ()
-        aln = alignment(env, file='test/data/tiny.ali')
+        aln = Alignment(env, file='test/data/tiny.ali')
         mlib = self.get_mdt_library()
         mlib.tuple_classes.read('data/dblcls.lib')
         tuple_dist = mdt.features.TupleDistance(
@@ -321,9 +321,9 @@ class TableTests(MDTTest):
     def test_atom_pair_exclusions(self):
         """Test exclusion of atom pairs from atom pair features"""
         env = self.get_environ()
-        mdl = model(env)
+        mdl = Model(env)
         mdl.build_sequence('G')
-        aln = alignment(env)
+        aln = Alignment(env)
         aln.append_model(mdl, align_codes='test')
         mlib = self.get_mdt_library()
         mlib.bond_classes.read('data/bndgrp.lib')
@@ -352,9 +352,9 @@ class TableTests(MDTTest):
                         exclude_dihedrals=True)
         self.assertEqual(m.sample_size, 5)
 
-        mdl = model(env)
+        mdl = Model(env)
         mdl.build_sequence('GG')
-        aln = alignment(env)
+        aln = Alignment(env)
         aln.append_model(mdl, align_codes='test')
         m = mdt.Table(mlib, features=dist)
         m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))
@@ -368,9 +368,9 @@ class TableTests(MDTTest):
     def test_atom_tuple_pair_exclusions(self):
         """Test exclusion of atom pairs from atom tuple pair features"""
         env = self.get_environ()
-        mdl = model(env)
+        mdl = Model(env)
         mdl.build_sequence('GG')
-        aln = alignment(env)
+        aln = Alignment(env)
         aln.append_model(mdl, align_codes='test')
         mlib = self.get_mdt_library()
         mlib.tuple_classes.read('data/trpcls.lib')
@@ -392,9 +392,9 @@ class TableTests(MDTTest):
     def test_chain_span_range(self):
         """Test chain_span_range argument"""
         env = self.get_environ()
-        mdl = model(env)
+        mdl = Model(env)
         mdl.build_sequence('G/G')
-        aln = alignment(env)
+        aln = Alignment(env)
         aln.append_model(mdl, align_codes='test')
         mlib = self.get_mdt_library()
         mlib.tuple_classes.read('data/dblcls.lib')
@@ -420,9 +420,9 @@ class TableTests(MDTTest):
     def test_tuple_pair_bond_span_range(self):
         """Test bond_span_range with tuple pair scan"""
         env = self.get_environ()
-        mdl = model(env)
+        mdl = Model(env)
         mdl.build_sequence('A')
-        aln = alignment(env)
+        aln = Alignment(env)
         aln.append_model(mdl, align_codes='test')
         mlib = self.get_mdt_library()
         mlib.bond_classes.read('data/bndgrp.lib')
@@ -446,9 +446,9 @@ class TableTests(MDTTest):
     def test_bond_span_range(self):
         """Test bond_span_range argument"""
         env = self.get_environ()
-        mdl = model(env)
+        mdl = Model(env)
         mdl.build_sequence('A')
-        aln = alignment(env)
+        aln = Alignment(env)
         aln.append_model(mdl, align_codes='test')
         mlib = self.get_mdt_library()
         mlib.bond_classes.read('data/bndgrp.lib')
@@ -476,9 +476,9 @@ class TableTests(MDTTest):
         self.assertEqual(m.sample_size, 10.0)
 
         # Check for bonds between residues (just the N-C bond here)
-        mdl = model(env)
+        mdl = Model(env)
         mdl.build_sequence('AA')
-        aln = alignment(env)
+        aln = Alignment(env)
         aln.append_model(mdl, align_codes='test')
 
         # Force a non-symmetric scan (to check handling of bond separation
@@ -491,9 +491,9 @@ class TableTests(MDTTest):
         self.assertEqual(m.sample_size, 2.0)
 
         # Bonds never span chains
-        mdl = model(env)
+        mdl = Model(env)
         mdl.build_sequence('A/A')
-        aln = alignment(env)
+        aln = Alignment(env)
         aln.append_model(mdl, align_codes='test')
         m = mdt.Table(mlib, features=dist)
         m.add_alignment(aln, bond_span_range=(0, 99999),
@@ -508,10 +508,10 @@ class TableTests(MDTTest):
                                          bins=mdt.uniform_bins(60, 0, 0.5))
         m1 = mdt.Table(mlib, features=dist)
         m2 = mdt.Table(mlib, features=dist)
-        a1 = alignment(env, file='test/data/tiny.ali', align_codes='5fd1')
+        a1 = Alignment(env, file='test/data/tiny.ali', align_codes='5fd1')
         m1.add_alignment(a1)
-        mdl = model(env, file='test/data/5fd1.atm', model_segment=('1:', '6:'))
-        a2 = alignment(env)
+        mdl = Model(env, file='test/data/5fd1.atm', model_segment=('1:', '6:'))
+        a2 = Alignment(env)
         # Atom file 'foo' does not exist; all data should be taken from mdl
         a2.append_model(mdl, align_codes='foo', atom_files='foo')
         m2.add_alignment(a2)
@@ -540,7 +540,7 @@ class TableTests(MDTTest):
         mboth = mdt.Table(mlib, features=(restyp0, restyp1))
         seq1 = "AFVVTDNCIK"
         seq2 = "DCVEVCPVDC"
-        aln = alignment(env)
+        aln = Alignment(env)
         aln.append_sequence(seq1)
         aln.append_sequence(seq2)
         for m in (m1, m2, mboth):
@@ -792,7 +792,7 @@ class TableTests(MDTTest):
         mlib = self.get_mdt_library()
         dist = mdt.features.AtomDistance(mlib,
                                          bins=mdt.uniform_bins(30, 0, 0.5))
-        aln = alignment(env, file='test/data/alignment.ali',
+        aln = Alignment(env, file='test/data/alignment.ali',
                         align_codes='5fd1')
         m1 = mdt.Table(mlib, features=dist)
         m1.reshape(dist, [0], [-1])
@@ -907,7 +907,7 @@ class TableTests(MDTTest):
         restyp0 = mdt.features.ResidueType(mlib, protein=0)
         restyp1 = mdt.features.ResidueType(mlib, protein=1)
         features = (restyp0, restyp1)
-        aln = alignment(env, file='test/data/alignment.ali')
+        aln = Alignment(env, file='test/data/alignment.ali')
         # bin_type must be a valid MDT BinType
         self.assertRaises(TypeError, mdt.Table, mlib, features=features,
                           bin_type='garbage')
@@ -999,7 +999,7 @@ class TableTests(MDTTest):
         mlib.tuple_classes.read('data/dblcls.lib')
         dbldist = mdt.features.TupleDistance(mlib,
                                              bins=mdt.uniform_bins(30, 0, 0.5))
-        aln = alignment(env, file='test/data/tiny.ali',
+        aln = Alignment(env, file='test/data/tiny.ali',
                         align_codes='5fd1')
         m1 = mdt.Table(mlib, features=dbldist)
         m1.add_alignment_witherr(aln, residue_span_range=(-999, -1, 1, 999),
@@ -1014,7 +1014,7 @@ class TableTests(MDTTest):
         env = self.get_environ()
         mlib = self.get_mdt_library()
 
-        a = alignment(env, file='test/data/resol.ali',
+        a = Alignment(env, file='test/data/resol.ali',
                       align_codes=('bin1', 'bin2', 'undef2'))
 
         f1 = mdt.features.XRayResolution(mlib, mdt.uniform_bins(5, 0, 1.0),
@@ -1049,9 +1049,9 @@ class TableTests(MDTTest):
     def test_bond_span_range_disulfide(self):
         """Test bond_span_range argument with disulfides"""
         env = self.get_environ()
-        mdl = model(env)
+        mdl = Model(env)
         mdl.read('1HEL.pdb')
-        aln = alignment(env)
+        aln = Alignment(env)
         aln.append_model(mdl, align_codes='test')
         mlib = self.get_mdt_library()
         mlib.bond_classes.read('data/bndgrp.lib')

@@ -4,7 +4,7 @@ import mdt
 import mdt.features
 
 # Setup of Modeller and MDT system
-env = modeller.environ()
+env = modeller.Environ()
 mlib = mdt.Library(env)
 
 # Creation of feature types
@@ -14,8 +14,8 @@ restyp = mdt.features.ResidueType(mlib)
 table = mdt.Table(mlib, features=restyp)
 
 # Read in a PDB file and make an alignment of just this one structure
-mdl = modeller.model(env, file='5fd1')
-aln = modeller.alignment(env)
+mdl = modeller.Model(env, file='5fd1')
+aln = modeller.Alignment(env)
 aln.append_model(mdl, align_codes='5fd1', atom_files='5fd1')
 
 # Collect MDT statistics for this alignment

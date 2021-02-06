@@ -11,11 +11,11 @@ class BondLibTests(MDTTest):
 
     def get_test_mdt(self, mlib, features):
         env = self.get_environ()
-        mdl = modeller.model(env)
+        mdl = modeller.Model(env)
         mdl.build_sequence('C')
 
         m = mdt.Table(mlib, features=features)
-        a = modeller.alignment(env)
+        a = modeller.Alignment(env)
         a.append_model(mdl, atom_files='test', align_codes='test')
         m.add_alignment(a)
         m = m.reshape(features, [0] * len(features), [-1] * len(features))
@@ -135,8 +135,8 @@ class BondLibTests(MDTTest):
         self.assertEqual(len(lines), 7)
         self.assertEqual(len(lines[-1].split()), 21)
         # Make sure Modeller can read the file
-        _ = modeller.group_restraints(env, 'test/data/atmcls-tiny.lib',
-                                      'test.out')
+        _ = modeller.GroupRestraints(env, 'test/data/atmcls-tiny.lib',
+                                     'test.out')
         os.unlink('test.out')
 
 

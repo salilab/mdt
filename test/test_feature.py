@@ -13,7 +13,7 @@ class FeatureTests(MDTTest):
         """Build a simple test MDT for a given model"""
         env = self.get_environ()
         m = mdt.Table(mlib, features=features)
-        a = modeller.alignment(env)
+        a = modeller.Alignment(env)
         a.append_model(mdl, atom_files='test', align_codes='test')
         m.add_alignment(a, **keys)
         return m
@@ -21,7 +21,7 @@ class FeatureTests(MDTTest):
     def build_test_model(self):
         """Build a simple test model"""
         env = self.get_environ()
-        m = modeller.model(env)
+        m = modeller.Model(env)
         m.build_sequence('C')
         return m
 
@@ -54,7 +54,7 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         env = self.get_environ()
         mdl = self.build_test_model()
-        aln = modeller.alignment(env)
+        aln = modeller.Alignment(env)
         aln.append_model(mdl, atom_files='test', align_codes='test')
 
         # Python exceptions raised in the function should be propagated
@@ -97,7 +97,7 @@ class FeatureTests(MDTTest):
                                           bins=mdt.uniform_bins(10, 0, 0.1))
         for (alnfile, bin) in (('tiny.ali', 0), ('alignment.ali', 5)):
             m = mdt.Table(mlib, features=alpha)
-            a = modeller.alignment(env,
+            a = modeller.Alignment(env,
                                    file=os.path.join('test', 'data', alnfile))
             m.add_alignment(a)
             self.assertEqual(m.shape, (11,))
@@ -112,9 +112,9 @@ class FeatureTests(MDTTest):
                           bins=mdt.uniform_bins(5, 0, 10), protein=3)
         sidechain_biso = mdt.features.SidechainBiso(
             mlib, bins=mdt.uniform_bins(5, 0, 10))
-        mdl = modeller.model(env)
+        mdl = modeller.Model(env)
         mdl.build_sequence('A')
-        aln = modeller.alignment(env)
+        aln = modeller.Alignment(env)
         aln.append_model(mdl, align_codes='test')
         chain = aln[0].chains[0]
         # Mainchain atom Biso should be ignored:
@@ -139,7 +139,7 @@ class FeatureTests(MDTTest):
                                             bins=mdt.uniform_bins(5, 0, 0.250))
         for (seq, id) in (('GGG', 0), ('AFV', 100), ('A--', 100),
                           ('AV-', 50)):
-            aln = modeller.alignment(env)
+            aln = modeller.Alignment(env)
             aln.append_sequence('AFV')
             aln.append_sequence(seq)
             m = mdt.Table(mlib, features=sid)
@@ -151,7 +151,7 @@ class FeatureTests(MDTTest):
     def test_delta(self):
         """Test residue type at delta features"""
         env = self.get_environ()
-        aln = modeller.alignment(env)
+        aln = modeller.Alignment(env)
         aln.append_sequence("AFVVTDNCIKXCKYTDCVEVCPVDCFYEG")
         aln.append_sequence("DNCIKXCCYCDCVEPCPVDCFGEGAFVVT")
         mlib = self.get_mdt_library()
@@ -177,7 +177,7 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         dist = mdt.features.ResidueDistance(mlib,
                                             bins=mdt.uniform_bins(7, 0, 2.0))
-        aln = modeller.alignment(env, file='test/data/tiny.ali')
+        aln = modeller.Alignment(env, file='test/data/tiny.ali')
         m = mdt.Table(mlib, features=dist)
         m.add_alignment(aln)
         self.assertEqual([b for b in m], [0, 0, 0, 8, 2, 4, 4, 2])
@@ -188,7 +188,7 @@ class FeatureTests(MDTTest):
         mlib = self.get_mdt_library()
         ddist = mdt.features.ResidueDistanceDifference(
             mlib, bins=mdt.uniform_bins(20, -10, 1))
-        aln = modeller.alignment(env, file='test/data/struc-struc.ali')
+        aln = modeller.Alignment(env, file='test/data/struc-struc.ali')
         m = mdt.Table(mlib, features=ddist)
         m.add_alignment(aln)
         self.assertEqual(m[9], 20)
@@ -217,7 +217,7 @@ class FeatureTests(MDTTest):
         bins = mdt.uniform_bins(9, 0, 0.2)
         ndif = mdt.features.NeighborhoodDifference(mlib, bins)
         avndif = mdt.features.AverageNeighborhoodDifference(mlib, bins)
-        aln = modeller.alignment(env, file='test/data/struc-struc.ali')
+        aln = modeller.Alignment(env, file='test/data/struc-struc.ali')
         m = mdt.Table(mlib, features=ndif)
         m.add_alignment(aln)
         self.assertEqual([b for b in m], [4, 6, 2] + [0]*7)
@@ -232,7 +232,7 @@ class FeatureTests(MDTTest):
         self.assertRaises(ValueError, mdt.features.MainchainConformation,
                           mlib, protein=3)
         conf = mdt.features.MainchainConformation(mlib)
-        aln = modeller.alignment(env, file='test/data/tiny.ali')
+        aln = modeller.Alignment(env, file='test/data/tiny.ali')
         m = mdt.Table(mlib, features=conf)
         m.add_alignment(aln)
         self.assertEqual([b.symbol for b in m.features[0].bins],
@@ -260,7 +260,7 @@ class FeatureTests(MDTTest):
         mlib = mdt.Library(env, special_atoms=True)
         mlib.atom_classes.read('${LIB}/atmcls-melo.lib')
         attyp = mdt.features.AtomType(mlib)
-        aln = modeller.alignment(env, file='test/data/tiny.ali')
+        aln = modeller.Alignment(env, file='test/data/tiny.ali')
         m = mdt.Table(mlib, features=attyp)
         m.add_alignment(aln)
         self.assertAlmostEqual(m[0], 6.0, delta=0.0005)
@@ -276,7 +276,7 @@ class FeatureTests(MDTTest):
         attyp2 = mdt.features.AtomType(mlib, pos2=True)
         self.assertRaises(mdt.MDTError, mlib.atom_classes.read,
                           '${LIB}/atmcls-melo.lib')
-        aln = modeller.alignment(env, file='test/data/tiny.ali')
+        aln = modeller.Alignment(env, file='test/data/tiny.ali')
         m = mdt.Table(mlib, features=attyp)
         m.add_alignment(aln)
         self.assertAlmostEqual(m[0], 6.0, delta=0.0005)
@@ -329,7 +329,7 @@ class FeatureTests(MDTTest):
     def test_feature_hbond_undef(self):
         """Check hydrogen bond features undefined bin"""
         mdl = self.build_test_model()
-        modeller.selection(mdl).unbuild()
+        modeller.Selection(mdl).unbuild()
         mlib = self.get_mdt_library()
         mlib.hbond_classes.read('data/atmcls-hbda.lib')
         bins = mdt.uniform_bins(1, -20000, 40000)
@@ -362,7 +362,7 @@ class FeatureTests(MDTTest):
         m2 = mdt.Table(mlib, features=accep)
         m3 = mdt.Table(mlib, features=satisf)
         m4 = mdt.Table(mlib, features=totchg)
-        aln = modeller.alignment(env, file='test/data/alignment.ali')
+        aln = modeller.Alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         m2.add_alignment(aln)
         m3.add_alignment(aln)
@@ -429,7 +429,7 @@ class FeatureTests(MDTTest):
                                   ('bin1', xray0, 1), ('bin2', xray0, 2),
                                   ('undef1', xray0, 3), ('undef2', xray0, 3)):
             m = mdt.Table(mlib, features=feat)
-            aln = modeller.alignment(env, file='test/data/resol.ali',
+            aln = modeller.Alignment(env, file='test/data/resol.ali',
                                      align_codes=code)
             m.add_alignment(aln)
             self.assertEqual(m[bin], 1.0)
@@ -437,7 +437,7 @@ class FeatureTests(MDTTest):
     def test_feature_atmacc_undef(self):
         """Check atom accessibility features undefined bin"""
         mdl = self.build_test_model()
-        modeller.selection(mdl).unbuild()
+        modeller.Selection(mdl).unbuild()
         mlib = self.get_mdt_library()
         bins = mdt.uniform_bins(1, -20000, 40000)
 
@@ -495,7 +495,7 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[0], 7.0)
         self.assertEqual(m[1], 0.0)
         # Make one z-coordinate undefined
-        modeller.selection(mdl.atoms[0]).unbuild()
+        modeller.Selection(mdl.atoms[0]).unbuild()
         m = self.build_mdt_from_model(mlib, z, mdl)
         self.assertEqual(m.shape, (2,))
         self.assertEqual(m[0], 6.0)
@@ -530,7 +530,7 @@ class FeatureTests(MDTTest):
             mlib, bins=mdt.uniform_bins(21, -10, 1))
         absdiff = mdt.features.ResidueIndexDifference(
             mlib, absolute=True, bins=mdt.uniform_bins(21, -10, 1))
-        aln = modeller.alignment(env, file='test/data/alignment.ali',
+        aln = modeller.Alignment(env, file='test/data/alignment.ali',
                                  align_codes='5fd1')
         m1 = mdt.Table(mlib, features=diff)
         m2 = mdt.Table(mlib, features=absdiff)
@@ -565,7 +565,7 @@ class FeatureTests(MDTTest):
                           'data/bndgrp.lib')
         m = mdt.Table(mlib, features=bondtype)
         m2 = mdt.Table(mlib, features=bondlen)
-        aln = modeller.alignment(env, file='test/data/alignment.ali')
+        aln = modeller.Alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         m2.add_alignment(aln)
         self.assertAlmostEqual(m[0], 7.0, delta=0.0005)
@@ -591,7 +591,7 @@ class FeatureTests(MDTTest):
                           'data/anggrp.lib')
         m = mdt.Table(mlib, features=angletype)
         m2 = mdt.Table(mlib, features=angle)
-        aln = modeller.alignment(env, file='test/data/alignment.ali')
+        aln = modeller.Alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         m2.add_alignment(aln)
         self.assertAlmostEqual(m[0], 7.0, delta=0.0005)
@@ -620,7 +620,7 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[0], 21.0)
         self.assertEqual(m[1], 0.0)
         # If any coordinate is undefined, the distance is
-        modeller.selection(mdl.atoms[0]).unbuild()
+        modeller.Selection(mdl.atoms[0]).unbuild()
         m = self.build_mdt_from_model(mlib, dist, mdl,
                                       residue_span_range=(-99999, 0, 0, 99999))
         self.assertEqual(m.shape, (2,))
@@ -640,7 +640,7 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[0], 5.0)
         self.assertEqual(m[1], 0.0)
         # If any coordinate is undefined, the angle is
-        modeller.selection(mdl.atoms[0]).unbuild()
+        modeller.Selection(mdl.atoms[0]).unbuild()
         m = self.build_mdt_from_model(mlib, angle, mdl,
                                       residue_span_range=(-99999, 0, 0, 99999))
         self.assertEqual(m.shape, (2,))
@@ -660,7 +660,7 @@ class FeatureTests(MDTTest):
         self.assertEqual(m[0], 1.0)
         self.assertEqual(m[1], 0.0)
         # If any coordinate is undefined, the dihedral is
-        modeller.selection(mdl.atoms[0]).unbuild()
+        modeller.Selection(mdl.atoms[0]).unbuild()
         m = self.build_mdt_from_model(mlib, dih, mdl,
                                       residue_span_range=(-99999, 0, 0, 99999))
         self.assertEqual(m.shape, (2,))
@@ -679,7 +679,7 @@ class FeatureTests(MDTTest):
                           'data/impgrp.lib')
         m = mdt.Table(mlib, features=dihedtype)
         m2 = mdt.Table(mlib, features=dihedral)
-        aln = modeller.alignment(env, file='test/data/alignment.ali')
+        aln = modeller.Alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         m2.add_alignment(aln)
         self.assertAlmostEqual(m[0], 7.0, delta=0.0005)
@@ -713,7 +713,7 @@ class FeatureTests(MDTTest):
                               bins=mdt.uniform_bins(6, -180, 60.0))
         m1 = mdt.Table(mlib, features=tuple_angle2)
         m2 = mdt.Table(mlib, features=tuple_dihed1)
-        aln = modeller.alignment(env, file='test/data/tiny.ali')
+        aln = modeller.Alignment(env, file='test/data/tiny.ali')
         for m in (m1, m2):
             m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))
         self.assertEqual(m1.shape, (7,))
@@ -729,9 +729,9 @@ class FeatureTests(MDTTest):
         feat = mdt.features.TupleType(mlib)
         m = mdt.Table(mlib, features=feat)
 
-        mdl = modeller.model(env)
+        mdl = modeller.Model(env)
         mdl.build_sequence('AAACAAACSAA')
-        a = modeller.alignment(env)
+        a = modeller.Alignment(env)
         a.append_model(mdl, align_codes='test')
 
         m.add_alignment(a)
@@ -752,9 +752,9 @@ class FeatureTests(MDTTest):
         self.assertRaises(ValueError, c.add, (1, 29), 1)
         self.assertRaises(ValueError, c.add, (1, 2), 6)
 
-        mdl = modeller.model(env)
+        mdl = modeller.Model(env)
         mdl.build_sequence('AAACAAACSAA')
-        a = modeller.alignment(env)
+        a = modeller.Alignment(env)
         a.append_model(mdl, align_codes='test')
 
         m1 = mdt.Table(mlib, features=(t1, t2))
@@ -804,7 +804,7 @@ class FeatureTests(MDTTest):
         m5 = mdt.Table(mlib, features=tuple_dihed1)
         m6 = mdt.Table(mlib, features=tuple_dihed2)
         m7 = mdt.Table(mlib, features=tuple_dihed3)
-        aln = modeller.alignment(env, file='test/data/tiny.ali')
+        aln = modeller.Alignment(env, file='test/data/tiny.ali')
         for m in (m1, m2, m3, m4, m5, m6, m7):
             m.add_alignment(aln, residue_span_range=(-9999, 0, 0, 9999))
         self.assertAlmostEqual(m1[0], 1.0, delta=0.0005)
@@ -926,7 +926,7 @@ class FeatureTests(MDTTest):
         m = self.get_test_mdt(mlib, features=phiclass)
         self.assertEqual([b for b in m], [62, 9, 34, 1])
         m = mdt.Table(mlib, features=phidiff)
-        a = modeller.alignment(env, file='test/data/struc-struc.ali')
+        a = modeller.Alignment(env, file='test/data/struc-struc.ali')
         m.add_alignment(a)
         self.assertEqual(m[18], 2)
         self.assertEqual(m[19], 3)
@@ -949,7 +949,7 @@ class FeatureTests(MDTTest):
         m = self.get_test_mdt(mlib, features=psiclass)
         self.assertEqual([b for b in m], [47, 23, 35, 1])
         m = mdt.Table(mlib, features=psidiff)
-        a = modeller.alignment(env, file='test/data/struc-struc.ali')
+        a = modeller.Alignment(env, file='test/data/struc-struc.ali')
         m.add_alignment(a)
         self.assertEqual(m[19], 2)
         self.assertEqual(m[20], 1)
@@ -986,9 +986,9 @@ class FeatureTests(MDTTest):
                                      (-100.0, 100.0, -160.0),
                                      (100.0, -100.0, 160.0)):
             m = mdt.Table(mlib, features=omegadiff)
-            a = modeller.alignment(env)
+            a = modeller.Alignment(env)
             for d in dih1, dih2:
-                mdl = modeller.model(env)
+                mdl = modeller.Model(env)
                 mdl.build_sequence('CC')
                 set_omega(mdl, d)
                 a.append_model(mdl, atom_files='test', align_codes='test')
@@ -1017,7 +1017,7 @@ class FeatureTests(MDTTest):
         m = self.get_test_mdt(mlib, features=omegaclass)
         self.assertEqual([b for b in m], [105, 0, 0, 1])
         m = mdt.Table(mlib, features=omegadiff)
-        a = modeller.alignment(env, file='test/data/struc-struc.ali')
+        a = modeller.Alignment(env, file='test/data/struc-struc.ali')
         m.add_alignment(a)
         self.assertEqual(m[17], 5)
         self.assertEqual(m[18], 5)

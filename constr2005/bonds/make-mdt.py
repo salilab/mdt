@@ -2,7 +2,7 @@ from modeller import *
 import mdt
 import mdt.features
 
-env = environ()
+env = Environ()
 log.minimal()
 env.io.atom_files_directory = ['/salilab/park2/database/pdb/divided/']
 
@@ -20,7 +20,7 @@ bond_length = mdt.features.BondLength(mlib,
 m = mdt.Table(mlib, features=(xray, bond_type, bond_length))
 
 # make the MDT table using the pdb_60 sample chains:
-a = alignment(env)
+a = Alignment(env)
 f = modfile.File('../cluster-PDB/pdb_60.pir', 'r')
 while a.read_one(f):
     m.add_alignment(a)

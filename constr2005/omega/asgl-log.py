@@ -3,7 +3,7 @@ import os
 import mdt
 import mdt.features
 
-env = environ()
+env = Environ()
 mlib = mdt.Library(env)
 xray = mdt.features.XRayResolution(mlib, bins=[(0.51, 2.001, 'High res(2.0A)')])
 restyp_1 = mdt.features.ResidueType(mlib, delta=1)

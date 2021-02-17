@@ -17,7 +17,7 @@ variety of Linux (this will first require you to install the Modeller RPM).
 Then you should simply be able to run an MDT script :file:`foo.py` just like
 any regular Python script with a command similar to::
 
-   python foo.py
+   python3 foo.py
 
 In the Sali lab, MDT is built as part of the nightly build system at the
 same time as MODELLER. Thus you can set up your system to run MDT scripts
@@ -48,10 +48,6 @@ get MDT by running in a terminal window::
 If you don't already have Modeller installed, you can get it by running
 `brew install modeller` before you install MDT.
 
-Add `--with-python3` to the end of each `brew install` command if you also
-want to use Python 3.
-
-
 .. _compilation:
 
 Compilation from source code
@@ -61,7 +57,7 @@ The MDT source code can be downloaded from
 `GitHub <https://github.com/salilab/mdt/>`_.
 
 Install dependent packages needed for MDT: MODELLER, glib, SWIG,
-pkg-config, and HDF5:
+pkg-config, Python, and HDF5:
 
 * MODELLER 9.15 or later is required.
 * glib 2.4 or later is required. It is available as pre-built packages for most
@@ -69,12 +65,13 @@ pkg-config, and HDF5:
 * SWIG 1.3.39 or later is required.
 * Unfortunately HDF5 only works if you use the exact same version that is
   used by MODELLER. See the MODELLER ChangeLog for the version to use.
+* Python 2.7, or any version of Python 3, is required.
 
 To compile, run `scons` in the same directory (and optionally `scons test`)
 to build (and test) MDT. This will produce a script :file:`bin/mdtpy.sh`
 which can be used to run an MDT Python script :file:`foo.py`::
 
-   bin/mdtpy.sh python foo.py
+   bin/mdtpy.sh python3 foo.py
 
 .. note::
    If you didn't use the RPM or Debian package to install Modeller then you

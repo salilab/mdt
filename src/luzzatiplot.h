@@ -1,6 +1,6 @@
 /** \file luzzatiplot.h       Estimate error from R-factor using Luzzati plots.
  *
- *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2021 Andrej Sali
  */
 
 #ifndef __MDT_LUZZATI_PLOT_H

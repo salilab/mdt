@@ -1,6 +1,6 @@
 /** \file mdt_make.c       Functions to make new MDTs.
  *
- *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2021 Andrej Sali
  */
 
 #include <glib.h>

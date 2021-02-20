@@ -215,7 +215,7 @@ def parse_modeller_dirs(context, modeller, exetype):
                            "Windows MODELLER binary")
             return False
         libs = ["modeller", "saxs"]
-    if exetype in ('mac10v4-xlf', 'mac10v4-gnu', 'mac11-arm64'):
+    if exetype in ('mac10v4-xlf', 'mac10v4-gnu', 'mac11arm64-gnu'):
         libs += ["hdf5", "hdf5_hl"]
     elif exetype in ('mac10v4-intel', 'mac10v4-intel64'):
         libs += ["hdf5", "hdf5_hl", "imf", "svml", "ifcore", "irc"]

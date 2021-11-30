@@ -2,3 +2,4 @@
 *.os
 .sconf_temp
 .sconsign.dblite
+.DS_Store

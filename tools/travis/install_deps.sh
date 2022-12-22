@@ -15,7 +15,7 @@ HDF5_HL_SOVER=100
 
 sudo apt-get -qq update
 sudo apt-get install -y swig bc
-pip install coverage pytest-cov 'pytest-flake8<1.1'
+pip install coverage pytest-cov pytest flake8
 
 # Install Modeller
 modeller_url=https://salilab.org/modeller/${MODELLER_VERSION}

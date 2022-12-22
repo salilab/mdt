@@ -37,5 +37,5 @@ jobs:
         make
         cd ..
         PYTHONPATH=build/coverage:build/pyext:pyext:$PYTHONPATH py.test --cov=pyext --cov-branch --cov-report=xml -v test
-        flake8 --exclude=constr2005/,doc/,examples=/,tools/,config.py .
+        flake8 --exclude=constr2005/,doc/,examples=/,tools/,sitecustomize.py,config.py .
     - uses: codecov/codecov-action@v1

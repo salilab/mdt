@@ -19,11 +19,8 @@ import SCons.Errors
 # Do the substitution
 def _subst_file(target, source, env, pattern, replace):
     # Read file
-    f = open(source, "rU")
-    try:
+    with open(source, "r") as f:
         contents = f.read()
-    finally:
-        f.close()
 
     # Substitute, make sure result is a string
     def subfn(mo):
@@ -35,20 +32,14 @@ def _subst_file(target, source, env, pattern, replace):
     contents = re.sub(pattern, subfn, contents)
 
     # Write file
-    f = open(target, "wt")
-    try:
+    with open(target, "w") as f:
         f.write(contents)
-    finally:
-        f.close()
 
 # Determine which keys are used
 def _subst_keys(source, pattern):
     # Read file
-    f = open(source, "rU")
-    try:
+    with open(source, "r") as f:
         contents = f.read()
-    finally:
-        f.close()
 
     # Determine keys
     keys = []

@@ -522,8 +522,8 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
             e['ENV']['PATH'] += ':/usr/vac/bin'
         from distutils.sysconfig import get_config_vars
         vars = get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS', 'LDSHARED',
-                               'SO')
-        (cc, cxx, opt, basecflags, ldshared, so) = vars
+                               'SO', 'EXT_SUFFIX')
+        (cc, cxx, opt, basecflags, ldshared, so, ext_suffix) = vars
         # distutils on AIX can get confused if AIX C but GNU C++ is installed:
         if platform == 'aix' and cxx == '':
             cxx = 'g++'
@@ -539,8 +539,9 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
             e.Replace(CC=cc)
         if cxx:
             e.Replace(CXX=cxx)
-        if so:
-            e.Replace(LDMODULESUFFIX=so)
+        # SO appears to have been replaced by EXT_SUFFIX in Python 3.11
+        if so or ext_suffix:
+            e.Replace(LDMODULESUFFIX=so or ext_suffix)
         if basecflags or opt:
             e.Replace(CPPFLAGS=basecflags.split() + opt.split())
 

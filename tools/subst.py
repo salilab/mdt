@@ -115,7 +115,7 @@ def _subst_emitter(target, source, env):
 # Replace @key@ with the value of that key, and @@ with a single @
 ##############################################################################
 
-_SubstFile_pattern = "@(?P<key>\w*?)@"
+_SubstFile_pattern = r"@(?P<key>\w*?)@"
 def _SubstFile_replace(env, mo):
     key = mo.group("key")
     if not key:
@@ -152,7 +152,7 @@ def SubstFile(env, target, source):
 # other defines that you do not desire to be replaced.
 ##############################################################################
 
-_SubstHeader_pattern = "(?m)^(?P<space>\\s*?)(?P<type>#define|#undef)\\s+?@(?P<key>\w+?)@(?P<ending>.*?)$"
+_SubstHeader_pattern = r"(?m)^(?P<space>\\s*?)(?P<type>#define|#undef)\\s+?@(?P<key>\w+?)@(?P<ending>.*?)$"
 def _SubstHeader_replace(env, mo):
     space = mo.group("space")
     type = mo.group("type")

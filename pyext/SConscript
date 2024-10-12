@@ -7,14 +7,20 @@ e = get_pyext_environment(env, 'mdt')
 e.MergeFlags(e['MODELLER'])
 e.MergeFlags(e['GLIB'])
 
+def _get_numpy_include_path():
+    for subdir in ('core', '_core'):
+        path = os.path.join(numpy.__path__[0], subdir, 'include')
+        if os.path.exists(path):
+            return path
+
 # Check for NumPy support:
 if not e.GetOption('clean') and not e.GetOption('help') \
    and not e['wine'] and not e['wine64']:
     print("Checking for numpy...", end='')
     try:
         import numpy
-        path = os.path.join(numpy.__path__[0], 'core', 'include')
-        if os.path.exists(path):
+        path = _get_numpy_include_path()
+        if path:
             e.Append(CPPDEFINES=[('MDT_WITH_NUMPY', 1)])
             print("found in " + path)
             e.Append(CPPPATH=[path])

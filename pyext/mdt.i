@@ -131,7 +131,12 @@ PyObject *get_numpy(struct mdt *mdt, PyObject *mdt_pyobj)
   /* Ensure that the mdt.Table is kept around as long as the numpy object
      is alive. */
   Py_INCREF(mdt_pyobj);
-  PyArray_BASE(obj) = mdt_pyobj;
+  if (PyArray_SetBaseObject((PyArrayObject *)obj, mdt_pyobj) != 0) {
+    Py_DECREF(mdt_pyobj);
+    Py_DECREF(obj);
+    g_free(dims);
+    return NULL;
+  }
 
   g_free(dims);
   return obj;

@@ -520,7 +520,7 @@ class Table(TableSection):
 
         :Parameters:
           - `gzip`: If True, compress the table in the HDF5 file with gzip
-            using the default compresion level; if a number from 0-9, compress
+            using the default compression level; if a number from 0-9, compress
             using that gzip compression level (0=no compression, 9=most);
             if False (the default) do not compress.
           - `chunk_size`: when using gzip, the table must be split up into

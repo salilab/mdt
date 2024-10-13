@@ -209,7 +209,7 @@ def DoxyEmitter(source, target, env):
             else:
                 targets.append(dir)
 
-    # add the tag file if neccessary:
+    # add the tag file if necessary:
     tagfile = data.get("GENERATE_TAGFILE", "")
     if tagfile != "":
         if not os.path.isabs(tagfile):

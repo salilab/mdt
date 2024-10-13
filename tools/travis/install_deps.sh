@@ -21,6 +21,10 @@ pip install coverage pytest-cov pytest flake8
 modeller_url=https://salilab.org/modeller/${MODELLER_VERSION}
 wget ${modeller_url}/modeller_${MODELLER_VERSION}-1_amd64.deb
 sudo --preserve-env=KEY_MODELLER dpkg -i modeller_${MODELLER_VERSION}-1_amd64.deb
+# Modeller 10.5 only supports up to Python 3.12, but 3.13 should also work
+sudo mkdir -p /usr/lib/python3.13/dist-packages/
+sudo ln -sf /usr/lib/modeller${MODELLER_VERSION}/lib/x86_64-intel8/python3.3/_modeller.so /usr/lib/python3.13/dist-packages/
+sudo ln -sf /usr/lib/modeller${MODELLER_VERSION}/modlib/modeller /usr/lib/python3.13/dist-packages/
 
 # Modeller installs for system Python, so link its Python packages into the
 # virtualenv Python path

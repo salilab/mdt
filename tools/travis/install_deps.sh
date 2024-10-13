@@ -14,7 +14,7 @@ HDF5_SOVER=103
 HDF5_HL_SOVER=100
 
 sudo apt-get -qq update
-sudo apt-get install -y swig bc
+sudo apt-get install -y swig bc libglib2.0-dev
 pip install coverage pytest-cov pytest flake8
 
 # Install Modeller

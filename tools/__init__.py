@@ -564,7 +564,7 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
         # Default link flags on OS X don't work for us:
         if platform == 'darwin':
             e.Replace(LDMODULEFLAGS= \
-                      '$LINKFLAGS -bundle -flat_namespace -undefined suppress')
+                      '$LINKFLAGS -bundle -undefined dynamic_lookup')
         # Don't set link flags on Linux, as that would negate our GNU_HASH check
         elif system() != "Linux" and ldshared:
             e['LDMODULEFLAGS'] = []

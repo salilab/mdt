@@ -27,7 +27,7 @@ ELSE()
 ENDIF()
 
 if(APPLE)
-  set_target_properties("${SWIG_MODULE__mdt_REAL_NAME}" PROPERTIES LINK_FLAGS "-flat_namespace -undefined suppress")
+  set_target_properties("${SWIG_MODULE__mdt_REAL_NAME}" PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
 endif(APPLE)
 
 # Don't link in libpython (that prevents the extension from being used in

@@ -236,20 +236,17 @@ def generate(env):
 
     import SCons.Builder
     doxyfile_builder = SCons.Builder.Builder(
-       action = "cd ${SOURCE.dir}  &&  ${DOXYGEN} ${SOURCE.file}",
-       emitter = DoxyEmitter,
-       target_factory = env.fs.Entry,
-       single_source = True,
-       source_scanner =  doxyfile_scanner,
+       action="cd ${SOURCE.dir}  &&  ${DOXYGEN} ${SOURCE.file}",
+       emitter=DoxyEmitter,
+       target_factory=env.fs.Entry,
+       single_source=True,
+       source_scanner=doxyfile_scanner,
     )
 
-    env.Append(BUILDERS = {
-       'Doxygen': doxyfile_builder,
-    })
+    env.Append(BUILDERS={'Doxygen': doxyfile_builder,})
 
-    env.AppendUnique(
-       DOXYGEN = 'doxygen',
-    )
+    env.AppendUnique(DOXYGEN='doxygen',)
+
 
 def exists(env):
     """

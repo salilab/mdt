@@ -14,7 +14,7 @@
 import sys, os, re
 
 def get_version():
-    r = re.compile('set\(MDT_VERSION\s+"(\S+)"\)')
+    r = re.compile(r'set\(MDT_VERSION\s+"(\S+)"\)')
     with open('../CMakeLists.txt') as fh:
         for line in fh:
             m = r.match(line)

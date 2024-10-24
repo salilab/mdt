@@ -1,7 +1,7 @@
 # Simple Epydoc tool and builder.
 
 import os
-from SCons.Script import *
+
 
 # Build epydoc documentation:
 def _action_epydoc(target, source, env):
@@ -11,18 +11,20 @@ def _action_epydoc(target, source, env):
                                  ' '.join([x.path for x in source[1:]]))
     return env.Execute(app)
 
+
 def generate(env):
     """Add builders and construction variables for the epydoc tool."""
     import SCons.Builder
     builder = SCons.Builder.Builder(action=_action_epydoc)
     # Use Unix 'install' rather than env.InstallAs(), due to scons bug #1751
-    install = SCons.Builder.Builder(action="install -d ${TARGET.dir} && " + \
+    install = SCons.Builder.Builder(action="install -d ${TARGET.dir} && " +
                                     "install ${SOURCE.dir}/* ${TARGET.dir}")
-    env.Append(BUILDERS = {'Epydoc': builder, 'EpydocInstall':install})
+    env.Append(BUILDERS={'Epydoc': builder, 'EpydocInstall': install})
 
     env.AppendUnique(EPYDOC='/usr/bin/epydoc')
-    env.AppendUnique(EPYDOC_OPTS="--inheritance grouped --no-private " + \
+    env.AppendUnique(EPYDOC_OPTS="--inheritance grouped --no-private " +
                                  "--no-frames --html")
+
 
 def exists(env):
     """Make sure epydoc tools exist."""

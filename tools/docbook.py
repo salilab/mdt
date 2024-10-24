@@ -17,7 +17,7 @@ def action_docbook(target, source, env):
 def emit_docbook(target, source, env):
     # Pull out all files included by the first source (should really parse XML
     # instead of this regex)
-    ent_re = re.compile('<!ENTITY\s+\S+\s+SYSTEM\s+\"(\S+)\">')
+    ent_re = re.compile(r'<!ENTITY\s+\S+\s+SYSTEM\s+\"(\S+)\">')
     sourcedir = os.path.dirname(source[0].abspath)
     for line in file(source[0].abspath, 'r'):
         m = ent_re.search(line)

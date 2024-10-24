@@ -8,7 +8,7 @@ import re
 def check_c_file(filename, errors):
     """Check each modified C file to make sure it adheres to the standards"""
     fh = file(filename, "r")
-    srch = re.compile('\s+$')
+    srch = re.compile(r'\s+$')
     blank = False
     for (num, line) in enumerate(fh):
         line = line.rstrip('\r\n')

@@ -150,7 +150,7 @@ gboolean mdt_setup(struct mdt *mdt, const struct mdt_library *mlib,
 MDTDLLLOCAL
 hid_t mdt_get_hdf5_type(const struct mod_mdt *mdt);
 
-#ifdef WIN32
+#if defined(WIN32) && (!defined(_MSC_VER) || _MSC_VER <= 1800)
 /** Our local implementation of the error function */
 MDTDLLLOCAL
 double erf(double x);

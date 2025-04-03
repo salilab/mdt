@@ -76,25 +76,23 @@ class WineEnvironment(Environment):
 
     def _fix_scons_msvc_detect(self):
         """Ensure that MSVC auto-detection finds tools on Wine builds"""
-        def _wine_read_reg32(value, hkroot=None):
-            return '/usr/lib/w32comp/Program Files/' + \
-                   'Microsoft Visual Studio/2017'
-        def _wine_read_reg64(value, hkroot=None):
-            return '/usr/lib/w64comp/Program Files/' + \
-                   'Microsoft Visual Studio/2017'
-        try:
-            import SCons.Tool.MSCommon.common
-        except ImportError:
-            return # Older versions of scons don't have this module
-        if self.x64:
-            SCons.Tool.MSCommon.common.read_reg = _wine_read_reg64
-        else:
-            SCons.Tool.MSCommon.common.read_reg = _wine_read_reg32
-        # Clear cache to force detection of MSVC again
+        def _vswhere_32(msvc_version):
+            if msvc_version == '14.1':
+                return '/usr/lib/w32comp/Program Files/' + \
+                       'Microsoft Visual Studio/2017/Community/VC'
+        def _vswhere_64(msvc_version):
+            if msvc_version == '14.1':
+                return '/usr/lib/w64comp/Program Files/' + \
+                       'Microsoft Visual Studio/2017/Community/VC'
         try:
             import SCons.Tool.MSCommon.vc
         except ImportError:
-            return
+            return # Older versions of scons don't have this module
+        if self.x64:
+            SCons.Tool.MSCommon.vc.find_vc_pdir_vswhere = _vswhere_64
+        else:
+            SCons.Tool.MSCommon.vc.find_vc_pdir_vswhere = _vswhere_32
+        # Clear cache to force detection of MSVC again
         setattr(SCons.Tool.MSCommon.vc, '__INSTALLED_VCS_RUN', None)
 
 def _get_python_include(env):
@@ -314,7 +312,8 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
                               variables=variables, path=path, *args, **kw)
     elif env['wine']:
         env = WineEnvironment(x64=False,
-                              variables=variables, path=path, *args, **kw)
+                              variables=variables, path=path, HOST_ARCH="x86",
+                              *args, **kw)
     else:
         env = Environment(variables=variables,
                           ENV = {'PATH':path}, *args, **kw)

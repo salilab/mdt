@@ -377,6 +377,9 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     # Make Modeller exetype variable available:
     if 'EXECUTABLE_TYPESVN' in os.environ:
         env['ENV']['EXECUTABLE_TYPESVN'] = os.environ['EXECUTABLE_TYPESVN']
+    # Propagate WINE DLL overrides:
+    if 'WINEDLLOVERRIDES' in os.environ:
+        env['ENV']['WINEDLLOVERRIDES'] = os.environ['WINEDLLOVERRIDES']
     # Set empty variables in case checks fail or are not run (e.g. clean)
     env['MODELLER_MODPY'] = ''
     env['MODELLER'] = {}

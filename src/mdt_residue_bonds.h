@@ -1,6 +1,6 @@
 /** \file mdt_residue_bonds.h    Functions to calculate residue bond separation.
  *
- *             Part of MDT, Copyright(c) 1989-2021 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2025 Andrej Sali
  */
 
 #ifndef __MDT_RESIDUE_BONDS_H

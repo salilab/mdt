@@ -1,6 +1,6 @@
 /** \file mdt_entropy_hx.c  Functions to calculate entropy of dependent variable
  *
- *             Part of MDT, Copyright(c) 1989-2021 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2025 Andrej Sali
  */
 
 #include <stdlib.h>

@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'MDT'
-copyright = '1989-2021, Andrej Sali, Ben Webb'
+copyright = '1989-2025, Andrej Sali, Ben Webb'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

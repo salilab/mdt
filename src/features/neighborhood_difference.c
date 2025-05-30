@@ -1,6 +1,6 @@
 /** \file neighborhood_difference.c  Neighborhood difference features.
  *
- *             Part of MDT, Copyright(c) 1989-2021 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2025 Andrej Sali
  */
 
 #include "modeller.h"

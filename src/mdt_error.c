@@ -1,6 +1,6 @@
 /** \file mdt_error.c      MDT error handling functions
  *
- *             Part of MDT, Copyright(c) 1989-2021 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2025 Andrej Sali
  */
 
 #include <glib.h>

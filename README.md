@@ -1,4 +1,4 @@
-[![docs](https://readthedocs.org/projects/mdt/badge/)](https://salilab.org/mdt/doc/)
+[![docs](https://readthedocs.org/projects/mdt/badge/)](https://mdt.readthedocs.io/)
 [![Build Status](https://github.com/salilab/mdt/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/salilab/mdt/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/salilab/mdt/branch/develop/graph/badge.svg)](https://codecov.io/gh/salilab/mdt)
 [![Coverity scan](https://img.shields.io/coverity/scan/8502.svg)](https://scan.coverity.com/projects/salilab-mdt)

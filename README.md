@@ -15,14 +15,34 @@ with triple alignments, too. All the needed features *a, b, c, ..., d*
 are calculated automatically from the sequences, alignments, and/or PDB files.
 The feature bins are defined by the user when each feature is created.
 
-To build MDT, simply type `scons` in this directory. To run it, use
-`scons install` to install it (you may need to set command line options to
-install files in the correct locations - see `scons -h`) and then run MDT
+MDT is Copyright 1989-2025 Andrej Sali, and available under the terms of
+version 2 of the GNU General Public License as published by the
+Free Software Foundation.
+
+# Installation
+
+If you are using [Anaconda Python](https://www.anaconda.com/) on Linux or a
+Mac, install with
+
+```
+conda config --add channels salilab
+conda install salilab::mdt
+```
+
+On a Mac with [Homebrew](https://brew.sh/), install with
+
+```
+brew tap salilab/salilab; brew install salilab/salilab/mdt
+```
+
+Note that MDT uses [MODELLER](https://salilab.org/modeller/) to read and
+process protein structures and alignments, so you will also need a
+[MODELLER license key](https://salilab.org/modeller/registration.html).
+
+To build MDT from source code, simply type `scons` in this directory. To run
+it, use `scons install` to install it (you may need to set command line options
+to install files in the correct locations - see `scons -h`) and then run MDT
 scripts just like any other Python script. Alternatively, you can use the
 `bin/mdtpy.sh` script to run MDT directly from the build directory. Simply
 run it before your regular Python invocation
 (e.g. "`bin/mdtpy.sh python foo.py`")
-
-MDT is Copyright 1989-2025 Andrej Sali, and available under the terms of
-version 2 of the GNU General Public License as published by the
-Free Software Foundation.

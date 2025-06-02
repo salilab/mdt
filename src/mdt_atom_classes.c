@@ -1,6 +1,6 @@
 /** \file mdt_atom_classes.c   Functions to handle atom classes.
  *
- *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2025 Andrej Sali
  */
 
 #include <stdio.h>
@@ -178,13 +178,23 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
   if (tuples) {
     sym[0] = "DBLGRP";
     sym[1] = "TRPGRP";
+#if GLIB_CHECK_VERSION(2,20,0)
+    g_scanner_scope_add_symbol(scanner, 0, sym[0], GINT_TO_POINTER(2));
+    g_scanner_scope_add_symbol(scanner, 0, sym[1], GINT_TO_POINTER(3));
+#else
     g_scanner_add_symbol(scanner, sym[0], GINT_TO_POINTER(2));
     g_scanner_add_symbol(scanner, sym[1], GINT_TO_POINTER(3));
+#endif
   } else {
     sym[0] = grpnames[atclass->natom - 1];
     sym[1] = atnames[atclass->natom - 1];
+#if GLIB_CHECK_VERSION(2,20,0)
+    g_scanner_scope_add_symbol(scanner, 0, sym[0], GINT_TO_POINTER(0));
+    g_scanner_scope_add_symbol(scanner, 0, sym[1], GINT_TO_POINTER(1));
+#else
     g_scanner_add_symbol(scanner, sym[0], GINT_TO_POINTER(0));
     g_scanner_add_symbol(scanner, sym[1], GINT_TO_POINTER(1));
+#endif
   }
   scanner->input_name = filename;
   scanner->config->int_2_float = TRUE;
@@ -202,8 +212,13 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
       case 2:
       case 3:
         atclass->natom = symb;
+#if GLIB_CHECK_VERSION(2,20,0)
+        g_scanner_scope_remove_symbol(scanner, 0, sym[0]);
+        g_scanner_scope_remove_symbol(scanner, 0, sym[1]);
+#else
         g_scanner_remove_symbol(scanner, sym[0]);
         g_scanner_remove_symbol(scanner, sym[1]);
+#endif
         if (symb == 2) {
           sym[0] = "DBLGRP";
           sym[1] = "DOUBLET";
@@ -211,8 +226,13 @@ static gboolean scan_atom_classes_file(const char *filename, const char *text,
           sym[0] = "TRPGRP";
           sym[1] = "TRIPLET";
         }
+#if GLIB_CHECK_VERSION(2,20,0)
+        g_scanner_scope_add_symbol(scanner, 0,  sym[0], GINT_TO_POINTER(0));
+        g_scanner_scope_add_symbol(scanner, 0, sym[1], GINT_TO_POINTER(1));
+#else
         g_scanner_add_symbol(scanner, sym[0], GINT_TO_POINTER(0));
         g_scanner_add_symbol(scanner, sym[1], GINT_TO_POINTER(1));
+#endif
         retval = read_atmgrp(scanner, classes, &types, read_hbond, err);
       }
     } else {

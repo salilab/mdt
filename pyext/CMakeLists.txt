@@ -19,10 +19,15 @@ FILE(GLOB SWIG_INCLUDES "*.i")
 SET(CMAKE_SWIG_FLAGS "-nodefaultctor" "-nodefaultdtor" "-noproxy")
 SET(SWIG_MODULE__mdt_EXTRA_DEPS ${SWIG_INCLUDES})
 
-SWIG_ADD_MODULE(_mdt PYTHON mdt.i)
+# cmake 3.8 replaced SWIG_ADD_MODULE with SWIG_ADD_LIBRARY
+IF (COMMAND SWIG_ADD_LIBRARY)
+  SWIG_ADD_LIBRARY(_mdt LANGUAGE python TYPE MODULE SOURCES mdt.i)
+ELSE()
+  SWIG_ADD_MODULE(_mdt PYTHON mdt.i)
+ENDIF()
 
 if(APPLE)
-  set_target_properties("${SWIG_MODULE__mdt_REAL_NAME}" PROPERTIES LINK_FLAGS "-flat_namespace -undefined suppress")
+  set_target_properties("${SWIG_MODULE__mdt_REAL_NAME}" PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
 endif(APPLE)
 
 # Don't link in libpython (that prevents the extension from being used in

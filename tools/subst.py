@@ -9,7 +9,7 @@
 ##############################################################################
 import re
 
-from SCons.Script import *
+from SCons.Script import Depends, Builder
 import SCons.Errors
 
 
@@ -19,11 +19,8 @@ import SCons.Errors
 # Do the substitution
 def _subst_file(target, source, env, pattern, replace):
     # Read file
-    f = open(source, "rU")
-    try:
+    with open(source, "r") as f:
         contents = f.read()
-    finally:
-        f.close()
 
     # Substitute, make sure result is a string
     def subfn(mo):
@@ -35,23 +32,19 @@ def _subst_file(target, source, env, pattern, replace):
     contents = re.sub(pattern, subfn, contents)
 
     # Write file
-    f = open(target, "wt")
-    try:
+    with open(target, "w") as f:
         f.write(contents)
-    finally:
-        f.close()
+
 
 # Determine which keys are used
 def _subst_keys(source, pattern):
     # Read file
-    f = open(source, "rU")
-    try:
+    with open(source, "r") as f:
         contents = f.read()
-    finally:
-        f.close()
 
     # Determine keys
     keys = []
+
     def subfn(mo):
         key = mo.group("key")
         if key:
@@ -61,6 +54,7 @@ def _subst_keys(source, pattern):
     re.sub(pattern, subfn, contents)
 
     return keys
+
 
 # Get the value of a key as a string, or None if it is not in the environment
 def _subst_value(env, key):
@@ -89,12 +83,14 @@ def _subst_action(target, source, env):
 
     return 0
 
+
 # Builder message
 def _subst_message(target, source, env):
     items = ["Substituting vars from %s to %s" % (s, t)
              for (t, s) in zip(target, source)]
 
     return "\n".join(items)
+
 
 # Builder dependency emitter
 def _subst_emitter(target, source, env):
@@ -112,7 +108,7 @@ def _subst_emitter(target, source, env):
         d = dict()
         for key in keys:
             value = _subst_value(env, key)
-            if not value is None:
+            if value is not None:
                 d[key] = value
 
         # Only the current target depends on this dictionary
@@ -124,7 +120,9 @@ def _subst_emitter(target, source, env):
 # Replace @key@ with the value of that key, and @@ with a single @
 ##############################################################################
 
-_SubstFile_pattern = "@(?P<key>\w*?)@"
+_SubstFile_pattern = r"@(?P<key>\w*?)@"
+
+
 def _SubstFile_replace(env, mo):
     key = mo.group("key")
     if not key:
@@ -134,6 +132,7 @@ def _SubstFile_replace(env, mo):
     if value is None:
         raise SCons.Errors.UserError("Error: key %s does not exist" % key)
     return value
+
 
 def SubstFile(env, target, source):
     return env.SubstGeneric(target,
@@ -161,7 +160,9 @@ def SubstFile(env, target, source):
 # other defines that you do not desire to be replaced.
 ##############################################################################
 
-_SubstHeader_pattern = "(?m)^(?P<space>\\s*?)(?P<type>#define|#undef)\\s+?@(?P<key>\w+?)@(?P<ending>.*?)$"
+_SubstHeader_pattern = r"(?m)^(?P<space>\\s*?)(?P<type>#define|#undef)\\s+?@(?P<key>\w+?)@(?P<ending>.*?)$"
+
+
 def _SubstHeader_replace(env, mo):
     space = mo.group("space")
     type = mo.group("type")
@@ -169,7 +170,7 @@ def _SubstHeader_replace(env, mo):
     ending = mo.group("ending")
 
     value = _subst_value(env, key)
-    if not value is None:
+    if value is not None:
         # If found it is always #define key value
         return "%s#define %s %s" % (space, key, value)
 
@@ -185,6 +186,7 @@ def _SubstHeader_replace(env, mo):
 
     # It was #undef
     return "%s#undef %s" % (space, key)
+
 
 def SubstHeader(env, target, source):
     return env.SubstGeneric(target,

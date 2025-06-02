@@ -76,20 +76,24 @@ class WineEnvironment(Environment):
 
     def _fix_scons_msvc_detect(self):
         """Ensure that MSVC auto-detection finds tools on Wine builds"""
-        def _wine_read_reg32(value, hkroot=None):
-            return '/usr/lib/w32comp/Program Files/' + \
-                   'Microsoft Visual Studio 10.0'
-        def _wine_read_reg64(value, hkroot=None):
-            return '/usr/lib/w64comp/Program Files/' + \
-                   'Microsoft Visual Studio 11.0'
+        def _vswhere_32(msvc_version):
+            if msvc_version == '14.1':
+                return '/usr/lib/w32comp/Program Files/' + \
+                       'Microsoft Visual Studio/2017/Community/VC'
+        def _vswhere_64(msvc_version):
+            if msvc_version == '14.1':
+                return '/usr/lib/w64comp/Program Files/' + \
+                       'Microsoft Visual Studio/2017/Community/VC'
         try:
-            import SCons.Tool.MSCommon.common
+            import SCons.Tool.MSCommon.vc
         except ImportError:
             return # Older versions of scons don't have this module
         if self.x64:
-            SCons.Tool.MSCommon.common.read_reg = _wine_read_reg64
+            SCons.Tool.MSCommon.vc.find_vc_pdir_vswhere = _vswhere_64
         else:
-            SCons.Tool.MSCommon.common.read_reg = _wine_read_reg32
+            SCons.Tool.MSCommon.vc.find_vc_pdir_vswhere = _vswhere_32
+        # Clear cache to force detection of MSVC again
+        setattr(SCons.Tool.MSCommon.vc, '__INSTALLED_VCS_RUN', None)
 
 def _get_python_include(env):
     """Get the directory containing Python.h"""
@@ -209,7 +213,8 @@ def parse_modeller_dirs(context, modeller, exetype):
                            "Windows MODELLER binary")
             return False
         libs = ["modeller", "saxs"]
-    if exetype in ('mac10v4-xlf', 'mac10v4-gnu'):
+    if exetype in ('mac10v4-xlf', 'mac10v4-gnu', 'mac11arm64-gnu',
+                   'mac12arm64-gnu'):
         libs += ["hdf5", "hdf5_hl"]
     elif exetype in ('mac10v4-intel', 'mac10v4-intel64'):
         libs += ["hdf5", "hdf5_hl", "imf", "svml", "ifcore", "irc"]
@@ -226,7 +231,7 @@ def parse_modeller_dirs(context, modeller, exetype):
 def CheckModeller(context):
     """Find Modeller include and library directories"""
     modeller = context.env['modeller']
-    if (modeller is False or modeller is 0) \
+    if (modeller is False or modeller == 0) \
        and (check_pkgconfig(context, pkgconfig_name='modeller',
                             human_name='MODELLER', env_key='MODELLER') \
             or check_modeller_python(context)):
@@ -234,7 +239,7 @@ def CheckModeller(context):
         context.env['MODELLER_MODPY'] = ''
         return True
     context.Message("Checking for MODELLER using 'modeller' scons option...")
-    if modeller is False or modeller is 0:
+    if modeller is False or modeller == 0:
         context.Result("not found")
         return False
     # Find MODELLER script
@@ -245,7 +250,7 @@ def CheckModeller(context):
         context.Result("could not find MODELLER directory %s: %s" % (moddir, e))
         return False
     files.sort()
-    r = re.compile('mod(SVN|\d+[v.]\d+)(\.exe)?$')
+    r = re.compile(r'mod(SVN|\d+[v.]\d+)(\.exe)?$')
     files = [f for f in files if r.match(f)]
     if len(files) == 0:
         context.Result("could not find MODELLER script in %s" % moddir)
@@ -307,7 +312,8 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
                               variables=variables, path=path, *args, **kw)
     elif env['wine']:
         env = WineEnvironment(x64=False,
-                              variables=variables, path=path, *args, **kw)
+                              variables=variables, path=path, HOST_ARCH="x86",
+                              *args, **kw)
     else:
         env = Environment(variables=variables,
                           ENV = {'PATH':path}, *args, **kw)
@@ -371,6 +377,9 @@ def MyEnvironment(variables=None, require_modeller=True, *args, **kw):
     # Make Modeller exetype variable available:
     if 'EXECUTABLE_TYPESVN' in os.environ:
         env['ENV']['EXECUTABLE_TYPESVN'] = os.environ['EXECUTABLE_TYPESVN']
+    # Propagate WINE DLL overrides:
+    if 'WINEDLLOVERRIDES' in os.environ:
+        env['ENV']['WINEDLLOVERRIDES'] = os.environ['WINEDLLOVERRIDES']
     # Set empty variables in case checks fail or are not run (e.g. clean)
     env['MODELLER_MODPY'] = ''
     env['MODELLER'] = {}
@@ -515,8 +524,8 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
             e['ENV']['PATH'] += ':/usr/vac/bin'
         from distutils.sysconfig import get_config_vars
         vars = get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS', 'LDSHARED',
-                               'SO')
-        (cc, cxx, opt, basecflags, ldshared, so) = vars
+                               'SO', 'EXT_SUFFIX')
+        (cc, cxx, opt, basecflags, ldshared, so, ext_suffix) = vars
         # distutils on AIX can get confused if AIX C but GNU C++ is installed:
         if platform == 'aix' and cxx == '':
             cxx = 'g++'
@@ -532,8 +541,9 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
             e.Replace(CC=cc)
         if cxx:
             e.Replace(CXX=cxx)
-        if so:
-            e.Replace(LDMODULESUFFIX=so)
+        # SO appears to have been replaced by EXT_SUFFIX in Python 3.11
+        if so or ext_suffix:
+            e.Replace(LDMODULESUFFIX=so or ext_suffix)
         if basecflags or opt:
             e.Replace(CPPFLAGS=basecflags.split() + opt.split())
 
@@ -556,7 +566,7 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
         # Default link flags on OS X don't work for us:
         if platform == 'darwin':
             e.Replace(LDMODULEFLAGS= \
-                      '$LINKFLAGS -bundle -flat_namespace -undefined suppress')
+                      '$LINKFLAGS -bundle -undefined dynamic_lookup')
         # Don't set link flags on Linux, as that would negate our GNU_HASH check
         elif system() != "Linux" and ldshared:
             e['LDMODULEFLAGS'] = []

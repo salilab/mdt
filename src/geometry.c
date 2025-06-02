@@ -1,6 +1,6 @@
 /** \file geometry.h           Functions for calculating distances and angles.
  *
- *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2025 Andrej Sali
  */
 
 #include <glib.h>
@@ -162,7 +162,7 @@ float dist0witherr(int ia1, int ia1p, const struct mod_structure *struc,
   z = mod_float1_pt(&struc->cd.z);
   biso = mod_float1_pt(&struc->cd.biso);
   /* The errors on the positions of atoms are calculated by scale down
-     the root mean squre dveition of the atom, given by Biso/4*pi^2=Biso/79.
+     the root mean square deviation of the atom, given by Biso/4*pi^2=Biso/79.
      The scale, defined by errorscale, is calculated by assuming the atom with
      the largest Biso has the error defined by R-factor, X-ray resolution and
      the luzzati plot. */
@@ -172,7 +172,7 @@ float dist0witherr(int ia1, int ia1p, const struct mod_structure *struc,
   yd = y[ia1] - y[ia1p];
   zd = z[ia1]- z[ia1p];
   /* The error for the distance is calculated using the standard error
-     propogation procedure shown below.*/
+     propagation procedure shown below.*/
   *std=sqrt(e1+e1p)*errorscale;
   return sqrt(xd * xd + yd * yd + zd * zd);
 }
@@ -195,7 +195,7 @@ float angle0witherr(int ia1, int ia2, int ia3,
   e1=biso[ia1]*errorscale;
   e2=biso[ia2]*errorscale;
   e3=biso[ia3]*errorscale;
-  /* The diff(andle,x1) is calculated numeriacally by changing the x1
+  /* The diff(angle,x1) is calculated numerically by changing the x1
      to x1-0.1*e1(the error on x1) */
   d1x = angle1(x[ia1]-0.1*e1, y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
                x[ia3], y[ia3], z[ia3], &outrange);
@@ -215,7 +215,7 @@ float angle0witherr(int ia1, int ia2, int ia3,
                x[ia3], y[ia3]-0.1*e3, z[ia3], &outrange);
   d3z = angle1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
                x[ia3], y[ia3], z[ia3]-0.1*e3, &outrange);
-  /* The error of the angle is calculated using the standard error propogation
+  /* The error of the angle is calculated using the standard error propagation
      procedure shown below.*/
   *std=10*sqrt((d-d1x)*(d-d1x)+(d-d1y)*(d-d1y)+(d-d1z)*(d-d1z)
                +(d-d2x)*(d-d2x)+(d-d2y)*(d-d2y)+(d-d2z)*(d-d2z)
@@ -243,7 +243,7 @@ float dihedral0witherr(int ia1, int ia2, int ia3, int ia4,
   e2=biso[ia2]*errorscale;
   e3=biso[ia3]*errorscale;
   e4=biso[ia4]*errorscale;
-  /* The diff(andle,x1) is calculated numeriacally by changing the
+  /* The diff(angle,x1) is calculated numerically by changing the
      x1 to x1-0.1*e1(the error on x1) */
 
   dv[1] = dihedral1(x[ia1]-0.1*e1, y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
@@ -276,7 +276,7 @@ float dihedral0witherr(int ia1, int ia2, int ia3, int ia4,
   dv[0] = dihedral1(x[ia1], y[ia1], z[ia1], x[ia2], y[ia2], z[ia2],
                     x[ia3], y[ia3], z[ia3], x[ia4], y[ia4], z[ia4]-0.1*e4,
                     &outrange);
-  /* The error of the angle is calculated using the standard error propogation
+  /* The error of the angle is calculated using the standard error propagation
      procedure shown below. */
   dvs=0;
   for (i=0;i<12;i++) {

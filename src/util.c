@@ -1,6 +1,6 @@
 /** \file util.c           MDT utility functions
  *
- *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2025 Andrej Sali
  */
 
 #include <math.h>
@@ -384,7 +384,7 @@ double entrp2(double summdt, const int i_feat_fix[],
       }
 
       /* sumfrq/summdt is a weight for this contribution to total entropy:
-         it equals to the probability of occurence of this particular
+         it equals to the probability of occurrence of this particular
          combination of independent feature values in the sample: */
       pjk = sumfrq / summdt;
       entrp -= pjk * e2;

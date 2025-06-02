@@ -3,7 +3,7 @@
 """
    MDT, a module for protein structure analysis.
 
-   Copyright 1989-2020 Andrej Sali.
+   Copyright 1989-2025 Andrej Sali.
 
    MDT is free software: you can redistribute it and/or modify
    it under the terms of version 2 of the GNU General Public License
@@ -28,12 +28,17 @@ __all__ = ['MDTError', 'FileFormatError', 'TableSection', 'Table', 'Library',
            'write_improperlib', 'write_splinelib', 'uniform_bins',
            'write_statpot']
 
-from modeller.util.modobject import modobject
+try:
+    from modeller.util.modobject import ModObject
+except ImportError:
+    from modeller.util.modobject import modobject as ModObject
 from modeller.util import modlist
 # Import _modeller after modeller itself, since the latter modifies the search
 # path for the former:
 import _modeller
 import _mdt
+
+del _modeller
 
 #: Generic MDT exception
 MDTError = _mdt.MDTError
@@ -41,28 +46,36 @@ MDTError = _mdt.MDTError
 #: File format error
 FileFormatError = _mdt.FileFormatError
 
+
 # Get version info
 def __get_version_info(version):
     try:
         return tuple([int(x) for x in version.split('.')])
     except ValueError:
         return version
+
+
 __version__ = version = _mdt.mdt_version_get()
 version_info = __get_version_info(version)
+
 
 def _prepare_bond_span(bond_span):
     """Helper function for bond_span_range"""
     if bond_span is None:
-        return (-1,-1)
+        return (-1, -1)
     else:
         return bond_span
+
 
 class _BinType(object):
     def __init__(self, bin_type):
         self._bin_type = bin_type
+
+
 #: Single-precision floating-point bin storage (approximate range 0 to +/-1e38)
 Float = _BinType(_mdt.MOD_MDTB_FLOAT)
-#: Double-precision floating-point bin storage (approximate range 0 to +/-1e308)
+#: Double-precision floating-point bin storage (approximate range
+#: 0 to +/-1e308)
 Double = _BinType(_mdt.MOD_MDTB_DOUBLE)
 #: 32-bit signed integer bin storage (range -1e31 to 1e31)
 Int32 = _BinType(_mdt.MOD_MDTB_INT32)
@@ -77,7 +90,8 @@ Int8 = _BinType(_mdt.MOD_MDTB_INT8)
 #: 8-bit unsigned integer bin storage (range 0 to 255)
 UnsignedInt8 = _BinType(_mdt.MOD_MDTB_UINT8)
 
-class Library(modobject):
+
+class Library(ModObject):
     """
     Library data used in the construction and use of MDTs.
 
@@ -106,14 +120,19 @@ class Library(modobject):
 
     def __get_atom_classes(self):
         return BondClasses(self, 1)
+
     def __get_bond_classes(self):
         return BondClasses(self, 2)
+
     def __get_angle_classes(self):
         return BondClasses(self, 3)
+
     def __get_dihedral_classes(self):
         return BondClasses(self, 4)
+
     def __get_tuple_classes(self):
         return TupleClasses(self)
+
     def __get_hbond_classes(self):
         return HydrogenBondClasses(self)
 
@@ -123,13 +142,15 @@ class Library(modobject):
                             doc="Bond classes; see :class:`BondClasses`")
     angle_classes = property(__get_angle_classes,
                              doc="Angle classes; see :class:`BondClasses`")
-    dihedral_classes = property(__get_dihedral_classes,
-                               doc="Dihedral classes; see :class:`BondClasses`")
-    tuple_classes = property(__get_tuple_classes,
-                           doc="Atom tuple classes; see :class:`TupleClasses`" \
-                               + " and :ref:`tuple_features`")
+    dihedral_classes = property(
+        __get_dihedral_classes,
+        doc="Dihedral classes; see :class:`BondClasses`")
+    tuple_classes = property(
+        __get_tuple_classes,
+        doc="Atom tuple classes; see :class:`TupleClasses`"
+            " and :ref:`tuple_features`")
     hbond_classes = property(__get_hbond_classes,
-                             doc="Hydrogen bond atom classes; " + \
+                             doc="Hydrogen bond atom classes; "
                                  "see :class:`HydrogenBondClasses`")
 
 
@@ -181,7 +202,6 @@ class BondClasses(object):
                                           self.__n_atom)
 
 
-
 class TupleClasses(BondClasses):
     """Classifications of tuples of atoms into classes.
        Usually accessed as :attr:`Library.tuple_classes`.
@@ -231,7 +251,7 @@ class HydrogenBondClasses(BondClasses):
         return _mdt.mdt_hbond_read(filename, self._mlib._modpt)
 
 
-class TableSection(modobject):
+class TableSection(ModObject):
     """A section of a multi-dimensional table. You should not create
        TableSection objects directly, but rather by indexing a :class:`Table`
        object, as a TableSection is just a 'view' into an existing table.
@@ -308,16 +328,18 @@ class TableSection(modobject):
 
     def __get_features(self):
         return _FeatureList(self)
+
     def __get_offset(self):
         return tuple([f.offset for f in self.features])
+
     def __get_shape(self):
         return tuple([len(f.bins) for f in self.features])
     features = property(__get_features,
-                        doc="Features in this MDT; a list of " + \
+                        doc="Features in this MDT; a list of "
                             ":class:`Feature` objects")
     offset = property(__get_offset,
                       doc="Array offsets; see :attr:`Feature.offset`")
-    shape = property(__get_shape, doc="Array shape; the number of " + \
+    shape = property(__get_shape, doc="Array shape; the number of "
                                       "bins for each feature")
 
 
@@ -359,7 +381,7 @@ class Table(TableSection):
     def __init__(self, mlib, file=None, features=None, bin_type=Double,
                  shape=[]):
         if not isinstance(bin_type, _BinType):
-            raise TypeError("bin_type must be a BinType object - " + \
+            raise TypeError("bin_type must be a BinType object - "
                             "e.g. mdt.Float, mdt.Double")
         self.__views = []
         self._modpt = _mdt.mdt_new(bin_type._bin_type)
@@ -453,7 +475,7 @@ class Table(TableSection):
         elif isinstance(bin_type, _BinType):
             bin_type = bin_type._bin_type
         else:
-            raise TypeError("bin_type must be a BinType object - " + \
+            raise TypeError("bin_type must be a BinType object - "
                             "e.g. mdt.Float, mdt.Double")
         mdtout = Table(self._mlib)
         _mdt.mdt_copy(self._modpt, mdtout._modpt, bin_type)
@@ -498,7 +520,7 @@ class Table(TableSection):
 
         :Parameters:
           - `gzip`: If True, compress the table in the HDF5 file with gzip
-            using the default compresion level; if a number from 0-9, compress
+            using the default compression level; if a number from 0-9, compress
             using that gzip compression level (0=no compression, 9=most);
             if False (the default) do not compress.
           - `chunk_size`: when using gzip, the table must be split up into
@@ -549,10 +571,10 @@ class Table(TableSection):
         :Parameters:
           - `features`: the new ordering of the MDT features.
           - `offset`: the new offset (see `offset`).
-          - `shape`: the new shape (see `shape`). If any element in this list is
-            0 or negative, it is added to the MDT's existing shape to get the
-            new value. Thus, a value of 0 would leave the shape unchanged, -1
-            would remove the last (undefined) bin, etc.
+          - `shape`: the new shape (see `shape`). If any element in this list
+            is 0 or negative, it is added to the MDT's existing shape to get
+            the new value. Thus, a value of 0 would leave the shape unchanged,
+            -1 would remove the last (undefined) bin, etc.
         :return: the reshaped MDT.
         :rtype: :class:`Table`
         """
@@ -562,7 +584,7 @@ class Table(TableSection):
         return mdtout
 
     def smooth(self, dimensions, weight):
-        """
+        r"""
         Smooth the MDT with a uniform prior. The MDT is treated either as a
         histogram (if `dimensions` = 1) or a 2D density (`dimensions` = 2)
         of dependent features (the last 1 or 2 features in the table)
@@ -657,7 +679,7 @@ class Table(TableSection):
         return mdtout
 
     def exp_transform(self, offset, expoffset, multiplier, power):
-        """
+        r"""
         Apply an exponential transform to the MDT.
         Each element in the new MDT, *b*, is obtained from the original
         MDT element *a*, using the following relation:
@@ -671,7 +693,7 @@ class Table(TableSection):
         return mdtout
 
     def log_transform(self, offset, multiplier, undefined=0.):
-        """
+        r"""
         Apply a log transform to the MDT.
         Each element in the new MDT, *b*, is obtained from the original
         MDT element *a*, using the following relation:
@@ -686,7 +708,7 @@ class Table(TableSection):
         return mdtout
 
     def linear_transform(self, offset, multiplier):
-        """
+        r"""
         Apply a linear transform to the MDT.
         Each element in the new MDT, *b*, is obtained from the original
         MDT element *a*, using the following relation:
@@ -748,7 +770,7 @@ class Table(TableSection):
         return _mdt.mdt_entropy_full(self._basept, self._mlib._modpt)
 
     def entropy_hx(self):
-        """
+        r"""
         The MDT is integrated to get a 1D histogram, then normalized by
         the sum of the bin values. Finally, entropy is calculated as
         Σ\ :sub:`i` -p\ :sub:`i` ln p\ :sub:`i`
@@ -773,9 +795,9 @@ class Table(TableSection):
         obtained from a prior and the data, and so on recursively.
 
         The example above is for a single dependent feature (*x*), which is the
-        case when `dimensions` = 1. *x* should be the last feature in the table.
-        `dimensions` can be set to other values if you have more dependent
-        features - for example, `dimensions` = 2 will work with
+        case when `dimensions` = 1. *x* should be the last feature in the
+        table. `dimensions` can be set to other values if you have more
+        dependent features - for example, `dimensions` = 2 will work with
         *p(x, y | a, b, c, ...)* where *x* and *y* are the last two features
         in the table.
 
@@ -823,7 +845,6 @@ class Table(TableSection):
                                    every_y_numbered, plot_density_cutoff,
                                    plots_per_page, plot_position, plot_type,
                                    x_decimal, y_decimal)
-
 
     def add_alignment(self, aln, distngh=6.0, surftyp=1, accessibility_type=8,
                       residue_span_range=(-99999, -2, 2, 99999),
@@ -875,8 +896,8 @@ class Table(TableSection):
             chain indices. It is used only by the
             :ref:`atom pair <atom_pair_features>` and
             :ref:`tuple pair <tuple_pair_features>` features. The default value
-            of (-99999, 0, 0, 99999) allows all interactions. For example, using
-            (-99999, -1, 1, 99999) instead would exclude all interactions
+            of (-99999, 0, 0, 99999) allows all interactions. For example,
+            using (-99999, -1, 1, 99999) instead would exclude all interactions
             within the same chain.
           - `bond_span_range`: if given, it should be a list of two integers
             which specify the minimum and maximum number of bonds that separate
@@ -926,8 +947,9 @@ class Table(TableSection):
                                distngh, False, surftyp, accessibility_type,
                                residue_span_range, chain_span_range,
                                _prepare_bond_span(bond_span_range), disulfide,
-                               exclude_bonds, exclude_angles, exclude_dihedrals,
-                               sympairs, symtriples, io.modpt, edat.modpt)
+                               exclude_bonds, exclude_angles,
+                               exclude_dihedrals, sympairs, symtriples,
+                               io.modpt, edat.modpt)
 
     def add_alignment_witherr(self, aln, distngh=6.0, surftyp=1,
                               accessibility_type=8,
@@ -970,7 +992,8 @@ class Table(TableSection):
                        sympairs=False, symtriples=False, io=None, edat=None):
         """
         Open a Modeller alignment to allow MDT indices to be queried
-        (see :class:`Source`). Arguments are as for :meth:`Table.add_alignment`.
+        (see :class:`Source`). Arguments are as for
+        :meth:`Table.add_alignment`.
 
         :rtype: :class:`Source`
         """
@@ -992,14 +1015,19 @@ class Table(TableSection):
 
     def __get_pdf(self):
         return _mdt.mdt_pdf_get(self._modpt)
+
     def __get_n_proteins(self):
         return _mdt.mdt_n_proteins_get(self._modpt)
+
     def __get_n_protein_pairs(self):
         return _mdt.mdt_n_protein_pairs_get(self._modpt)
+
     def __get_sample_size(self):
         return _mdt.mdt_sample_size_get(self._modpt)
+
     def __get_symmetric(self):
         return _mdt.mdt_symmetric_get(self._modpt)
+
     def __get_basept(self):
         return _mdt.mdt_base_get(self._modpt)
 
@@ -1038,12 +1066,17 @@ class Feature(object):
 
     def __get_ifeat(self):
         return _mdt.mod_mdt_feature_ifeat_get(self._modpt)
+
     def __get_bins(self):
         return _BinList(self)
+
     def __get_offset(self):
         return _mdt.mod_mdt_feature_istart_get(self._modpt) - 1
+
     def __get_periodic(self):
-        return _mdt.mdt_feature_periodic_get(self._mdt._mlib._modpt, self.ifeat)
+        return _mdt.mdt_feature_periodic_get(self._mdt._mlib._modpt,
+                                             self.ifeat)
+
     def __get_modpt(self):
         return _mdt.mod_mdt_feature_get(self._mdt._basept, self._indx)
 
@@ -1052,8 +1085,8 @@ class Feature(object):
     bins = property(__get_bins,
                     doc="Feature bins; a list of :class:`Bin` objects")
     offset = property(__get_offset,
-                      doc="Offset of first bin compared to the MDT library " + \
-                          "feature (usually 0, but can be changed with " + \
+                      doc="Offset of first bin compared to the MDT library "
+                          "feature (usually 0, but can be changed with "
                           ":meth:`Table.reshape`)")
     periodic = property(__get_periodic, doc="Whether feature is periodic")
 
@@ -1074,7 +1107,8 @@ class _BinList(modlist.FixList):
 
 
 class Bin(object):
-    """A single bin in a feature. Generally accessed as :attr:`Feature.bins`."""
+    """A single bin in a feature. Generally accessed as
+       :attr:`Feature.bins`."""
 
     def __init__(self, feature, indx):
         self.__feature = feature
@@ -1084,8 +1118,8 @@ class Bin(object):
         return _mdt.mod_mdt_bin_symbol_get(self._modpt)
 
     def __get_range(self):
-        return ( _mdt.mod_mdt_bin_rang1_get(self._modpt),
-                 _mdt.mod_mdt_bin_rang2_get(self._modpt) )
+        return (_mdt.mod_mdt_bin_rang1_get(self._modpt),
+                _mdt.mod_mdt_bin_rang2_get(self._modpt))
 
     def __get_modpt(self):
         nfeat = self.__feature._indx
@@ -1096,8 +1130,8 @@ class Bin(object):
     _modpt = property(__get_modpt)
     symbol = property(__get_symb, doc="Bin symbol")
     range = property(__get_range,
-                     doc="Bin range; usually the minimum and maximum " + \
-                         "floating-point values for the feature to be " + \
+                     doc="Bin range; usually the minimum and maximum "
+                         "floating-point values for the feature to be "
                          "placed in this bin.")
 
 
@@ -1127,7 +1161,8 @@ class Source(object):
     def sum(self, residue_span_range=(-99999, -2, 2, 99999),
             chain_span_range=(-99999, 0, 0, 99999),
             bond_span_range=None, disulfide=False,
-            exclude_bonds=False, exclude_angles=False, exclude_dihedrals=False):
+            exclude_bonds=False, exclude_angles=False,
+            exclude_dihedrals=False):
         """Scan all data points in the source, and return the sum.
            See :meth:`Table.add_alignment` for a description of the
            `residue_span_range`, `chain_span_range` and `exclude_*`
@@ -1171,13 +1206,13 @@ def _pass_cutoffs(mdt, num, bin, density_cutoff, entropy_cutoff):
     if density_cutoff is not None:
         sum = mdt[num].sum()
         if sum < density_cutoff:
-            print("Restraint %s skipped: density %.4f below cutoff %.4f" \
+            print("Restraint %s skipped: density %.4f below cutoff %.4f"
                   % (bin.symbol, sum, density_cutoff))
             return False
     if entropy_cutoff is not None:
         entropy = mdt[num].entropy()
         if entropy > entropy_cutoff:
-            print("Restraint %s skipped: entropy %.4f above cutoff %.4f" \
+            print("Restraint %s skipped: entropy %.4f above cutoff %.4f"
                   % (bin.symbol, entropy, entropy_cutoff))
             return False
     return True
@@ -1187,7 +1222,7 @@ def _write_meanstdevlib(fh, mdt, numat, phystype, feattype, convfunc,
                         density_cutoff=None, entropy_cutoff=None):
     fh.write("#   residue    atoms        mean    stdev\n")
     fh.write("_params = [\n")
-    for (num,bin) in enumerate(mdt.features[0].bins):
+    for (num, bin) in enumerate(mdt.features[0].bins):
         if _pass_cutoffs(mdt, num, bin, density_cutoff, entropy_cutoff):
             symbols = bin.symbol.split(':')
             res = symbols[0]
@@ -1199,7 +1234,7 @@ def _write_meanstdevlib(fh, mdt, numat, phystype, feattype, convfunc,
                                  % (bin.symbol, numat,
                                     'ALA:' + ':'.join(example_atoms[:numat])))
             mean, stdev = mdt[num].mean_stdev()
-            fh.write("    ( '%s', %s, %.4f, %.4f ),\n" \
+            fh.write("    ( '%s', %s, %.4f, %.4f ),\n"
                      % (res, str(ats), convfunc(mean), convfunc(stdev)))
     fh.write("""  ]
 
@@ -1211,11 +1246,15 @@ def make_restraints(atmsel, restraints, num_selected):
                                stdev)
             restraints.add(r)\n""" % (phystype, feattype))
 
+
 def _noconv(a):
     return a
+
+
 def _degrees_to_radians(a):
     pi = 3.14159265358979323846
     return a / 180.0 * pi
+
 
 def write_bondlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     """
@@ -1236,6 +1275,7 @@ def write_bondlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     _write_meanstdevlib(fh, mdt, 2, "physical.bond", "features.distance",
                         _noconv, density_cutoff, entropy_cutoff)
 
+
 def write_anglelib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     """
     Write out a Modeller angle library file from an MDT. See
@@ -1245,6 +1285,7 @@ def write_anglelib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     _write_meanstdevlib(fh, mdt, 3, "physical.angle", "features.angle",
                         _degrees_to_radians, density_cutoff, entropy_cutoff)
 
+
 def write_improperlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     """
     Write out a Modeller dihedral angle library file from an MDT. See
@@ -1253,6 +1294,7 @@ def write_improperlib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
     """
     _write_meanstdevlib(fh, mdt, 4, "physical.improper", "features.dihedral",
                         _degrees_to_radians, density_cutoff, entropy_cutoff)
+
 
 def _get_splinerange(feat):
     periodic = feat.periodic
@@ -1271,6 +1313,7 @@ def _get_splinerange(feat):
     x1 = _degrees_to_radians(x1)
     x2 = _degrees_to_radians(x2)
     return periodic, dx, x1, x2
+
 
 def write_statpot(fh, mdt):
     """
@@ -1291,12 +1334,14 @@ def write_statpot(fh, mdt):
     fmt = "R" + " %4d" * 7 + " %5s   %5s  " + " %9.4f" * 6 + " "
     for na1, a1 in enumerate(mdt.features[1].bins):
         for na2, a2 in enumerate(mdt.features[2].bins[na1:]):
-            splinevals = ["%9.4f" % mdt[x,na1,na2] for x in range(modality)]
+            splinevals = ["%9.4f" % mdt[x, na1, na2] for x in range(modality)]
             fh.write(fmt % (10, modality, 1, 31, 2, modality + 6, 0, a1.symbol,
-                            a2.symbol, 0., low, high, delta, 0., 0.) \
+                            a2.symbol, 0., low, high, delta, 0., 0.)
                      + " ".join(splinevals) + "\n")
 
-def write_splinelib(fh, mdt, dihtype, density_cutoff=None, entropy_cutoff=None):
+
+def write_splinelib(fh, mdt, dihtype, density_cutoff=None,
+                    entropy_cutoff=None):
     """
     Write out a Modeller 1D spline library file from an MDT.
     The MDT should be a 2D table, usually of residue type and a chi dihedral
@@ -1314,11 +1359,11 @@ def write_splinelib(fh, mdt, dihtype, density_cutoff=None, entropy_cutoff=None):
 
     fh.write("#   residue   spline values\n")
     fh.write("_params = [\n")
-    for (nx,bin) in enumerate(mdt.features[0].bins):
+    for (nx, bin) in enumerate(mdt.features[0].bins):
         if _pass_cutoffs(mdt, nx, bin, density_cutoff, entropy_cutoff):
-            splinevals = ["%.4f" % mdt[nx,ny] \
+            splinevals = ["%.4f" % mdt[nx, ny]
                           for ny in range(len(mdt.features[1].bins))]
-            fh.write("    ( '%s', (%s) ),\n" \
+            fh.write("    ( '%s', (%s) ),\n"
                      % (bin.symbol, ', '.join(splinevals)))
     fh.write("""  ]
 
@@ -1346,13 +1391,13 @@ def write_2dsplinelib(fh, mdt, density_cutoff=None, entropy_cutoff=None):
 
     fh.write("#   residue   spline values\n")
     fh.write("_params = [\n")
-    for (nx,bin) in enumerate(mdt.features[0].bins):
+    for (nx, bin) in enumerate(mdt.features[0].bins):
         if _pass_cutoffs(mdt, nx, bin, density_cutoff, entropy_cutoff):
             splinevals = []
             for ny in range(len(mdt.features[1].bins)):
                 for nz in range(len(mdt.features[2].bins)):
-                    splinevals.append("%.4f" % mdt[nx,ny,nz])
-            fh.write("    ( '%s', (%s) ),\n" \
+                    splinevals.append("%.4f" % mdt[nx, ny, nz])
+            fh.write("    ( '%s', (%s) ),\n"
                      % (bin.symbol, ', '.join(splinevals)))
     fh.write("""  ]
 
@@ -1374,6 +1419,7 @@ def make_restraints(atmsel, restraints, num_selected):
                                             len(mdt.features[2].bins),
                                             not yperiodic, y1, y2, dy,
                                             not zperiodic, z1, z2, dz))
+
 
 def uniform_bins(num, start, width):
     """Make a list of `num` equally-sized bins, each of which has the given

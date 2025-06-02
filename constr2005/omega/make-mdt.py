@@ -4,7 +4,7 @@ import mdt.features
 
 # See ../bonds/make_mdt.py for additional comments
 
-env = environ()
+env = Environ()
 log.minimal()
 env.io.atom_files_directory = ['/salilab/park2/database/pdb/divided/']
 
@@ -16,7 +16,7 @@ omega = mdt.features.OmegaDihedral(mlib, bins=mdt.uniform_bins(720, -180, 0.5))
 # This table uses the subsequent residue type, relative to the omega
 m = mdt.Table(mlib, features=(xray, restyp_1, omega))
 
-a = alignment(env)
+a = Alignment(env)
 f = modfile.File('../cluster-PDB/pdb_60.pir', 'r')
 while a.read_one(f):
     m.add_alignment(a)

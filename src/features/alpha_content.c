@@ -1,6 +1,6 @@
 /** \file alpha_content.c  Protein alpha content feature.
  *
- *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2025 Andrej Sali
  */
 
 #include "modeller.h"

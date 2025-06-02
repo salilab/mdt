@@ -1,4 +1,8 @@
-import unittest, sys, os, re
+from __future__ import print_function
+import unittest
+import sys
+import os
+import re
 from optparse import OptionParser
 import glob
 
@@ -23,6 +27,7 @@ try:
                     return doc_first_line
                 else:
                     return str(test)
+
         def _makeResult(self):
             return self._TestResult(self.stream, self.descriptions,
                                     self.verbosity)
@@ -55,10 +60,15 @@ class RunAllTests(unittest.TestProgram):
         if coverage:
             self.cov.stop()
             self.cov.combine()
-            self.cov.use_cache(False)
-            print >> sys.stderr, "\nPython coverage report\n"
+            if hasattr(self.cov, 'use_cache'):
+                self.cov.use_cache(False)
+            print("\nPython coverage report\n", file=sys.stderr)
 
-            self.cov.file_locator.relative_dir = self.topdir + '/'
+            # Don't show full paths in coverage output
+            if hasattr(coverage.files, 'RELATIVE_DIR'):
+                coverage.files.RELATIVE_DIR = self.topdir + '/'
+            else:
+                self.cov.file_locator.relative_dir = self.topdir + '/'
             self.cov.report(self.mods, file=sys.stderr)
             html = self.opts.html_coverage
             if html:
@@ -72,13 +82,15 @@ class RunAllTests(unittest.TestProgram):
 def regressionTest():
     path = os.path.abspath(os.path.dirname(sys.argv[0]))
     files = os.listdir(path)
-    test = re.compile("^test_.*\.py$", re.IGNORECASE)
+    test = re.compile(r"^test_.*\.py$", re.IGNORECASE)
     files = filter(test.search, files)
     modnames = [os.path.splitext(f)[0] for f in files]
 
     modobjs = [__import__(m) for m in modnames]
-    tests = [unittest.defaultTestLoader.loadTestsFromModule(o) for o in modobjs]
+    tests = [unittest.defaultTestLoader.loadTestsFromModule(o)
+             for o in modobjs]
     return unittest.TestSuite(tests)
+
 
 def parse_options():
     parser = OptionParser()
@@ -88,6 +100,7 @@ def parse_options():
                       default=None,
                       help="directory to write HTML coverage info into")
     return parser.parse_args()
+
 
 if __name__ == "__main__":
     opts, args = parse_options()

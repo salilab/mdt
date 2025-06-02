@@ -1,4 +1,3 @@
-import unittest
 from modeller.test import ModellerTest
 import modeller
 import mdt
@@ -6,6 +5,7 @@ import sys
 
 if sys.version_info[0] >= 3:
     from functools import reduce
+
 
 class MDTTest(ModellerTest):
 
@@ -18,7 +18,7 @@ class MDTTest(ModellerTest):
         """Build a simple test MDT"""
         env = self.get_environ()
         m = mdt.Table(mlib, features=features)
-        aln = modeller.alignment(env, file='test/data/alignment.ali')
+        aln = modeller.Alignment(env, file='test/data/alignment.ali')
         m.add_alignment(aln)
         return m
 
@@ -48,7 +48,7 @@ class MDTTest(ModellerTest):
         while self.roll_inds(inds, mdt1.shape, mdt1.offset):
             npoints += 1
             self.assertAlmostEqual(mdt1[inds], mdt2[inds], places=3)
-        self.assertEqual(npoints, reduce(lambda x,y: x*y, shape))
+        self.assertEqual(npoints, reduce(lambda x, y: x*y, shape))
 
     def assertMDTsEqual(self, mdt1, mdt2, check_pdf=True):
         """Make sure that two MDTs are equal"""
@@ -66,4 +66,4 @@ class MDTTest(ModellerTest):
     def assertSectionNormalized(self, section):
         """Make sure that a table section is normalized"""
         sum = section.sum()
-        self.assertInTolerance(sum, 1.0, 1e-5)
+        self.assertAlmostEqual(sum, 1.0, delta=1e-5)

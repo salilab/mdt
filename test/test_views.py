@@ -6,6 +6,7 @@ import weakref
 import os
 import sys
 
+
 class ViewTests(MDTTest):
 
     def get_mdt_and_view(self):
@@ -13,7 +14,7 @@ class ViewTests(MDTTest):
         restyp = mdt.features.ResidueType(mlib)
         chi1 = mdt.features.Chi1Dihedral(mlib,
                                          mdt.uniform_bins(36, -180, 10))
-        m = self.get_test_mdt(mlib, features=(restyp,chi1))
+        m = self.get_test_mdt(mlib, features=(restyp, chi1))
         try:
             a = m.get_array_view()
         except (ImportError, NotImplementedError):
@@ -37,6 +38,7 @@ class ViewTests(MDTTest):
         self.assertNotEqual(mr(), None)
         del b
         self.assertEqual(mr(), None)
+        del ar, br
 
     def test_view_shared_data(self):
         """Check that views share data with tables"""
@@ -45,11 +47,11 @@ class ViewTests(MDTTest):
             return
         self.assertEqual(m.shape, a.shape)
         m[3][2] = 1000.
-        self.assertInTolerance(a[3][2], 1000., 1e-2)
+        self.assertAlmostEqual(a[3][2], 1000., delta=1e-2)
         # numpy array view should be writeable
         self.assertEqual(a.flags.writeable, True)
         a[4][1] = 2000.
-        self.assertInTolerance(m[4][1], 2000., 1e-2)
+        self.assertAlmostEqual(m[4][1], 2000., delta=1e-2)
 
     def test_view_no_own(self):
         """Check that views do not own data"""
@@ -78,6 +80,7 @@ class ViewTests(MDTTest):
         m.clear()
         os.unlink('test.mdt')
         os.unlink('test.hdf5')
+
 
 if __name__ == '__main__':
     unittest.main()

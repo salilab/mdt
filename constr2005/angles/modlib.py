@@ -2,7 +2,7 @@ from modeller import *
 import mdt
 import mdt.features
 
-env = environ()
+env = Environ()
 mlib = mdt.Library(env)
 mlib.angle_classes.read('${LIB}/anggrp.lib')
 xray = mdt.features.XRayResolution(mlib, bins=[(0.51, 2.001, 'High res(2.0A)')])

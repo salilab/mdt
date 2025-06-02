@@ -1,6 +1,6 @@
 /** \file mdt_tuples.c     Functions to build lists of atom tuples.
  *
- *             Part of MDT, Copyright(c) 1989-2020 Andrej Sali
+ *             Part of MDT, Copyright(c) 1989-2025 Andrej Sali
  */
 
 #include <string.h>

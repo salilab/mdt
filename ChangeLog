@@ -1,3 +1,7 @@
+MDT 5.6   06-02-2025
+====================
+ - Add support for NumPy 2, Python 3.13, and newer CMake
+
 MDT 5.5   04-07-2020
 ====================
  - Add more Python 3 support to the build system.

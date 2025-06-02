@@ -209,7 +209,7 @@ def DoxyEmitter(source, target, env):
             else:
                 targets.append(dir)
 
-    # add the tag file if neccessary:
+    # add the tag file if necessary:
     tagfile = data.get("GENERATE_TAGFILE", "")
     if tagfile != "":
         if not os.path.isabs(tagfile):
@@ -236,20 +236,17 @@ def generate(env):
 
     import SCons.Builder
     doxyfile_builder = SCons.Builder.Builder(
-       action = "cd ${SOURCE.dir}  &&  ${DOXYGEN} ${SOURCE.file}",
-       emitter = DoxyEmitter,
-       target_factory = env.fs.Entry,
-       single_source = True,
-       source_scanner =  doxyfile_scanner,
+       action="cd ${SOURCE.dir}  &&  ${DOXYGEN} ${SOURCE.file}",
+       emitter=DoxyEmitter,
+       target_factory=env.fs.Entry,
+       single_source=True,
+       source_scanner=doxyfile_scanner,
     )
 
-    env.Append(BUILDERS = {
-       'Doxygen': doxyfile_builder,
-    })
+    env.Append(BUILDERS={'Doxygen': doxyfile_builder,})
 
-    env.AppendUnique(
-       DOXYGEN = 'doxygen',
-    )
+    env.AppendUnique(DOXYGEN='doxygen',)
+
 
 def exists(env):
     """

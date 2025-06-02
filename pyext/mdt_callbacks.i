@@ -16,7 +16,7 @@ static float *python_cb_get_property(gpointer data,
     return NULL;
   }
 
-  result = PyEval_CallObject(func, arglist);
+  result = PyObject_Call(func, arglist, NULL);
   Py_DECREF(arglist);
 
   if (result) {

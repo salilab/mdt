@@ -10,7 +10,7 @@ URL:           https://salilab.org/mdt/
 Source0:       %{name}-%{version}.tar.gz
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 BuildRequires: modeller >= 9.15, glib2-devel >= 2.2.0
-BuildRequires: python-devel, python-sphinx, scons, hdf5-devel, swig
+BuildRequires: python3-devel, python3-sphinx, scons, hdf5-devel, swig
 Requires:      modeller >= 9.15
 
 %description
@@ -50,12 +50,15 @@ scons destdir=${RPM_BUILD_ROOT} docdir=/usr/share/doc/%{name}-%{version} \
 %files
 %defattr(-,root,root)
 %{_libdir}/libmdt.so
-%{_libdir}/python2.*/site-packages/_mdt.so
-%{_libdir}/python2.*/site-packages/mdt
+%{_libdir}/python3.*/site-packages/_mdt*.so
+%{_libdir}/python3.*/site-packages/mdt
 %doc /usr/share/doc/%{name}-%{version}
 /usr/share/mdt
 
 %changelog
+* Tue Apr 07 2020 Ben Webb <ben@salilab.org>   5.5-1
+- Update to new release.
+
 * Tue Jul 25 2017 Ben Webb <ben@salilab.org>   5.4-1
 - Update to new release.
 

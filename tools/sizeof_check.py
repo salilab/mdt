@@ -1,5 +1,6 @@
 """configure test to determine size of void *"""
 
+
 def _check(context):
     context.Message("Determining sizeof(void *)... ")
     text = """
@@ -20,8 +21,9 @@ int main(void) {
     context.Result(result)
     return int(result)
 
+
 def configure_check(env):
-    custom_tests = {'CheckSizeof':_check}
+    custom_tests = {'CheckSizeof': _check}
     conf = env.Configure(custom_tests=custom_tests)
     env['SIZEOF_POINTER'] = conf.CheckSizeof()
     conf.Finish()

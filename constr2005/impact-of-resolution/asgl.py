@@ -3,7 +3,7 @@ import os
 import mdt
 import mdt.features
 
-env = environ()
+env = Environ()
 mlib = mdt.Library(env)
 xray = mdt.features.XRayResolution(mlib, bins=mdt.uniform_bins(20, 0, 0.2))
 

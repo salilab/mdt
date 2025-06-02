@@ -43,7 +43,7 @@ Using a Homebrew package
 If you are using a Mac with `homebrew <https://brew.sh>`_ you can
 get MDT by running in a terminal window::
 
-    brew tap salilab/salilab; brew install mdt
+    brew tap salilab/salilab; brew install salilab/salilab/mdt
 
 If you don't already have Modeller installed, you can get it by running
 `brew install modeller` before you install MDT.

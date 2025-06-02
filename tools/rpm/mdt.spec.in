@@ -43,7 +43,7 @@ scons
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf ${RPM_BUILD_ROOT}
 
 %check
-scons test
+scons test python=python3
 
 %install
 scons destdir=${RPM_BUILD_ROOT} docdir=/usr/share/doc/%{name}-%{version} \

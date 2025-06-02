@@ -59,7 +59,7 @@ The MDT source code can be downloaded from
 Install dependent packages needed for MDT: MODELLER, glib, SWIG,
 pkg-config, Python, and HDF5:
 
-* MODELLER 9.15 or later is required.
+* MODELLER 10.0 or later is required.
 * glib 2.4 or later is required. It is available as pre-built packages for most
   modern Linux distributions; there is also a MacPorts package for Mac users.
 * SWIG 1.3.39 or later is required.

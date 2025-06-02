@@ -8,6 +8,7 @@ Packager:      Ben Webb <ben@salilab.org>
 Vendor:        Andrej Sali
 URL:           https://salilab.org/mdt/
 Source0:       %{name}-%{version}.tar.gz
+Patch0:        mdt-distutils.patch
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 BuildRequires: modeller >= 10.7, glib2-devel >= 2.2.0
 BuildRequires: python3-devel, python3-sphinx, scons, hdf5-devel, swig
@@ -33,6 +34,7 @@ by the user when each feature is created.
 
 %prep
 %setup
+%patch -P 0 -p1
 
 %build
 scons

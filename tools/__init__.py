@@ -105,11 +105,11 @@ def _get_python_include(env):
         return '/usr/lib/w32comp/w32python/2.7/include/'
     else:
         try:
-            import sysconfig
-            return sysconfig.get_path('include')
-        except ImportError:
             import distutils.sysconfig
             return distutils.sysconfig.get_python_inc()
+        except ImportError:
+            import sysconfig
+            return sysconfig.get_path('include')
 
 def _add_release_flags(env):
     """Add compiler flags for release builds, if requested"""
@@ -527,9 +527,9 @@ def get_pyext_environment(env, mod_prefix, cplusplus=False):
             # building AIX extension modules can find them:
             e['ENV']['PATH'] += ':/usr/vac/bin'
         try:
-            from sysconfig import get_config_vars
-        except ImportError:
             from distutils.sysconfig import get_config_vars
+        except ImportError:
+            from sysconfig import get_config_vars
         vars = get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS', 'LDSHARED',
                                'SO', 'EXT_SUFFIX')
         (cc, cxx, opt, basecflags, ldshared, so, ext_suffix) = vars

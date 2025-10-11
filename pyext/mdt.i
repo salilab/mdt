@@ -122,7 +122,7 @@ PyObject *get_numpy(struct mdt *mdt, PyObject *mdt_pyobj)
   /* Note that MDT tables are C-style contiguous so no special strides or
      other flags need to be passed to NumPy */
   obj = PyArray_New(&PyArray_Type, mdt->base.nfeat, dims, type_num, NULL,
-                    data, 0, NPY_WRITEABLE, NULL);
+                    data, 0, NPY_ARRAY_WRITEABLE, NULL);
   if (!obj) {
     g_free(dims);
     return NULL;

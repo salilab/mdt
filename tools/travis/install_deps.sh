@@ -8,10 +8,10 @@ if [ $# -ne 1 ]; then
 fi
 
 python_version=$1
-MODELLER_VERSION=10.6
-HDF5_VERSION=1.10.7
-HDF5_SOVER=103
-HDF5_HL_SOVER=100
+MODELLER_VERSION=10.7
+HDF5_VERSION=1.14.6
+HDF5_SOVER=310
+HDF5_HL_SOVER=310
 
 sudo apt-get -qq update
 sudo apt-get install -y swig bc libglib2.0-dev
@@ -21,7 +21,7 @@ pip install coverage pytest-cov pytest flake8
 modeller_url=https://salilab.org/modeller/${MODELLER_VERSION}
 wget ${modeller_url}/modeller_${MODELLER_VERSION}-1_amd64.deb
 sudo --preserve-env=KEY_MODELLER dpkg -i modeller_${MODELLER_VERSION}-1_amd64.deb
-# Modeller 10.6 only supports up to Python 3.13, but 3.14 should also work
+# Modeller 10.7 only supports up to Python 3.13, but 3.14 should also work
 sudo mkdir -p /usr/lib/python3.14/dist-packages/
 sudo ln -sf /usr/lib/modeller${MODELLER_VERSION}/lib/x86_64-intel8/python3.3/_modeller.so /usr/lib/python3.14/dist-packages/
 sudo ln -sf /usr/lib/modeller${MODELLER_VERSION}/modlib/modeller /usr/lib/python3.14/dist-packages/

@@ -4,7 +4,7 @@ Release:       1%{?dist}
 License:       GPLv2
 Summary:       Protein structure analysis
 Group:         Applications/Engineering
-Packager:      Ben Webb <ben@salilab.org>
+Packager:      Ben Webb <benmwebb@gmail.com>
 Vendor:        Andrej Sali
 URL:           https://salilab.org/mdt/
 Source0:       %{name}-%{version}.tar.gz
